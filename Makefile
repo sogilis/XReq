@@ -7,6 +7,7 @@ all: bin test doc
 dir:
 	mkdir -p obj
 	mkdir -p bin
+	mkdir -p doc
 	mkdir -p coverage
 
 bin: dir
@@ -15,7 +16,7 @@ bin: dir
 test: dir
 	$(GNATMAKE) -P tests.gpr
 
-doc: README.html src/README.html
+doc: dir README.html src/README.html
 	
 clean:
 	-$(RM) obj/*
