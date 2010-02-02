@@ -8,7 +8,7 @@ dir:
 	mkdir -p obj
 	mkdir -p bin
 	mkdir -p doc
-	mkdir -p coverage
+	mkdir -p reports
 
 bin: dir
 	$(GNATMAKE) -P main.gpr
@@ -23,21 +23,24 @@ clean:
 	-$(RM) bin/*
 	-$(RM) README.html
 	-$(RM) src/README.html
-	-$(RM) coverage/*.gcov
-	-$(RM) coverage/summary.txt
+	-$(RM) reports/*.gcov
+	-$(RM) reports/summary.txt
 
 gcov-reset: dir
 	-$(RM) obj/*.gcda
 
 gcov:
-	cd coverage && gcov -f -o ../obj ../src/*.adb | tee summary.txt
+	cd reports && gcov -f -o ../obj ../src/*.adb | tee summary.txt
 
 coverage: bin
 	$(MAKE) gcov-reset
 	bin/tests
 	$(MAKE) gcov
 
-.PHONY: all dir bin test doc clean gcov-reset gcov coverage
+check: dir
+	cd reports && gnat check -P ../main.gpr -rules -from=../gnatcheck.rules
+
+.PHONY: all dir bin test doc clean gcov-reset gcov coverage check
 
 
 

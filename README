@@ -14,7 +14,12 @@ Main directories:
 - `bin`:        Built executables directory
 - `features`:   The feature files to test adaspec2
 - `doc`:        Contains the documentation
-- `coverage`:   Contains the coverage information produced by gcov
+- `reports`:    Contains the coverage (by gcov) and gnatcheck reports
+
+Other files:
+
+`gnatcheck.rules` contain the [rules](http://www.adacore.com/wp-content/files/auto_update/gnat-unw-docs/html/gnat_ugn_24.html)
+used to check the source with gnatcheck.
 
 The file `Markdown.pl` is used to generate HTML pages from the text files using
 the [Markdown](http://daringfireball.net/projects/markdown/) syntax
@@ -55,7 +60,7 @@ covered by the tests, you first need to do in this order:
 - build the project (`make bin`)
 - remove previous coverage information (`make gcov-reset`)
 - run tests to build coverage information (`bin/tests`)
-- run gcov to produce output data in the `coverage` directory (`make gcov`)
+- run gcov to produce output data in the `reports` directory (`make gcov`)
 
 You can do all of this in one step running `make coverage`.
 
@@ -69,3 +74,11 @@ ratio for each file and each function.
 
 It is possible to generate additional coverage information to test dead code for
 instance by running another executable instead of the AUnit test suite.
+
+
+Checking the code with gnatcheck
+================================
+
+Just run `make check` and `gnatcheck.out` will be created in the `reports`
+directory. The file `gnatcheck.rules` contain the [rules](http://www.adacore.com/wp-content/files/auto_update/gnat-unw-docs/html/gnat_ugn_24.html)
+used.

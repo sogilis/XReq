@@ -1,0 +1,4 @@
+*.gcov
+summary.txt
+gnatcheck.out
+gnatcheck.log
