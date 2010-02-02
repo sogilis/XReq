@@ -8,15 +8,15 @@ package body CLI is
    begin
 
       --  (74)   0--------1--------2--------3--------4--------5--------6--------7----
-      Put_Line ("xspec - generate tests from specification");
+      Put_Line ("adaspec2 - generate tests from specification");
       Put_Line ("");
       Put_Line ("SYNOPSIS");
       Put_Line ("");
-      Put_Line ("    xspec [OPTIONS] FEATURE ...");
+      Put_Line ("    adaspec2 [OPTIONS] FEATURE ...");
       Put_Line ("");
       Put_Line ("DESCRIPTION");
       Put_Line ("");
-      Put_Line ("    xspec takes as input feature files describing specifications");
+      Put_Line ("    adaspec2 takes as input feature files describing specifications");
       Put_Line ("    and generate tests for these features in languages such as Ada,");
       Put_Line ("    C, C++ depending on the template used.");
       Put_Line ("");

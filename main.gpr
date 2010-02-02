@@ -13,7 +13,7 @@ project Main is
 
    package Builder is
       for Default_Switches ("Ada") use Config.Ada_Default_Switches & ("-g");
-      for Executable ("main")  use "xspec";
+      for Executable ("main")  use "adaspec2";
    end Builder;
 
    package Compiler is
