@@ -1,0 +1,22 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+abstract project Config is
+
+   Ada_Default_Switches := (
+      "-gnat05",
+      "-gnata",         --  Assertions enabled
+      "-gnatwa",        --  All warnings
+      "-gnatwe",        --  Warnings as error
+      "-gnatf",         --  Full errors
+      "-gnato",         --  Check numeric overflow
+      "-gnaty3abc"      --  Style checking
+         --  3: 3 spaces for indentation
+         --  a: check case
+         --  b: to trailing spaces after the end of the statement
+         --  c: check comments
+         --  ...
+         --  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
+      );
+
+end Config;

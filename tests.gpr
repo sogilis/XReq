@@ -1,0 +1,35 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "aunit";
+with "main";
+with "config";
+
+project Tests is
+
+   for Languages   use ("Ada");
+   for Main        use ("test_main");
+   for Source_Dirs use ("tests");
+   for Object_Dir  use "obj";
+   for Exec_Dir    use "bin";
+
+   Ada_Switches := Config.Ada_Default_Switches & ("-g", "-gnatQ");
+
+   package Builder is
+      for Executable ("test_main") use "tests";
+      for Default_Switches ("Ada") use Ada_Switches;
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("Ada") use ("-g");
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-E", "-static");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Ada_Switches;
+   end Compiler;
+
+end Tests;

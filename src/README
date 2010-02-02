@@ -1,0 +1,14 @@
+Source Organisation
+===================
+
+Entry point: `Main` (`main.ads`, `main.adb`)
+
+`CLI` package
+-------------
+
+Manage the command line interface.
+
+`Spec` package
+--------------
+
+nothing here yet
