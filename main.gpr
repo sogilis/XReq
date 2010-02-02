@@ -18,14 +18,16 @@ project Main is
 
    package Compiler is
       for Default_Switches ("Ada") use Config.Ada_Default_Switches & (
-         "-gnatx",
-         "-g",
-         "-fprofile-arcs",
-         "-ftest-coverage");
+         "-gnatx",              -- Suppress generation of cross-reference 
+                                -- information
+         "-g",                  -- debug
+         "-fprofile-arcs",      -- to use gcov
+         "-ftest-coverage");    -- to use gcov
    end Compiler;
 
    package Linker is
-      for Default_Switches ("Ada") use ("-fprofile-arcs");
+      for Default_Switches ("Ada") use (
+         "-fprofile-arcs");     -- to use gcov
    end Linker;
 
    package Binder is

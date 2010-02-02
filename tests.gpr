@@ -21,7 +21,9 @@ project Tests is
    end Builder;
 
    package Linker is
-      for Default_Switches ("Ada") use ("-g");
+      for Default_Switches ("Ada") use (
+         "-g",                  -- debug
+         "-fprofile-arcs");     -- to use gcov
    end Linker;
 
    package Binder is
@@ -29,7 +31,9 @@ project Tests is
    end Binder;
 
    package Compiler is
-      for Default_Switches ("Ada") use Ada_Switches;
+      for Default_Switches ("Ada") use Ada_Switches & (
+         "-fprofile-arcs",      -- to use gcov
+         "-ftest-coverage");    -- to use gcov
    end Compiler;
 
 end Tests;
