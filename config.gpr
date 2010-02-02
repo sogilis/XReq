@@ -10,13 +10,8 @@ abstract project Config is
       "-gnatwe",        --  Warnings as error
       "-gnatf",         --  Full errors
       "-gnato",         --  Check numeric overflow
-      "-gnaty3abc"      --  Style checking
-         --  3: 3 spaces for indentation
-         --  a: check case
-         --  b: to trailing spaces after the end of the statement
-         --  c: check comments
-         --  ...
-         --  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
+      "-gnaty"          --  Style checking
+--  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
       );
 
 end Config;

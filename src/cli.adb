@@ -7,7 +7,6 @@ package body CLI is
    procedure Help is
    begin
 
-      --  (74)   0--------1--------2--------3--------4--------5--------6--------7----
       Put_Line ("adaspec2 - generate tests from specification");
       Put_Line ("");
       Put_Line ("SYNOPSIS");
@@ -16,41 +15,46 @@ package body CLI is
       Put_Line ("");
       Put_Line ("DESCRIPTION");
       Put_Line ("");
-      Put_Line ("    adaspec2 takes as input feature files describing specifications");
-      Put_Line ("    and generate tests for these features in languages such as Ada,");
-      Put_Line ("    C, C++ depending on the template used.");
+      Put_Line ("    adaspec2 takes as input feature files describing");
+      Put_Line ("    specificationsand generate tests for these features in");
+      Put_Line ("    languages such as Ada, C, C++ depending on the template");
+      Put_Line ("    used.");
       Put_Line ("");
-      Put_Line ("    Specifications are described in a formalized natural language");
-      Put_Line ("    (see cucumber documentation) and the sentences are translated");
-      Put_Line ("    in code using steps. These steps define a relation between the");
-      Put_Line ("    regular expression matching the sentance and a function to");
-      Put_Line ("    perform what the sentance describes.");
+      Put_Line ("    Specifications are described in a formalized natural");
+      Put_Line ("    language (see cucumber documentation) and the sentences");
+      Put_Line ("    are translated in code using steps. These steps define");
+      Put_Line ("    a relation between the regular expression matching the");
+      Put_Line ("    sentance and a function toperform what the sentance");
+      Put_Line ("    describes.");
       Put_Line ("");
       Put_Line ("OPTIONS");
       Put_Line ("");
       Put_Line ("    FEATURE");
-      Put_Line ("        The .feature file containing cucumber-like specification. It");
-      Put_Line ("        is possible to specify multiple features on the command-line");
-      Put_Line ("        all of them will be processed");
+      Put_Line ("        The .feature file containing cucumber-like");
+      Put_Line ("        specification. It is possible to specify multiple");
+      Put_Line ("        features on the command-line all of them will be");
+      Put_Line ("        processed");
       Put_Line ("");
       Put_Line ("    -h, -help, --help");
       Put_Line ("        Help message");
       Put_Line ("");
       Put_Line ("    -t, --template TEMPLATE");
-      Put_Line ("        Choose a template to use for code generation. It can be a");
-      Put_Line ("        template name selected from a standard template directory or");
-      Put_Line ("        a fully qualified path to a template file.");
+      Put_Line ("        Choose a template to use for code generation. It");
+      Put_Line ("        can be a template name selected from a standard");
+      Put_Line ("        template directory or a fully qualified path to a");
+      Put_Line ("        template file.");
       Put_Line ("");
       Put_Line ("    -T, -templatedir TEMPLATEDIR");
-      Put_Line ("        Add TEMPLATEDIR to the list of template directory searched");
+      Put_Line ("        Add TEMPLATEDIR to the list of template directory");
+      Put_Line ("        searched");
       Put_Line ("");
       Put_Line ("    -s, --step STEPDIR");
-      Put_Line ("        Specify a step directory. By default, the step/ directory");
-      Put_Line ("        relative to each feature file specified is searched.");
+      Put_Line ("        Specify a step directory. By default, the step/");
+      Put_Line ("        directory relative to each feature file specified");
+      Put_Line ("        is searched.");
       Put_Line ("");
       Put_Line ("-- ");
       Put_Line ("Copyright (c) 2010 SOGILIS");
-      --  (74)  0--------1--------2--------3--------4--------5--------6--------7----
 
    end Help;
 
