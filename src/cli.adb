@@ -53,6 +53,15 @@ package body CLI is
       Put_Line ("        directory relative to each feature file specified");
       Put_Line ("        is searched.");
       Put_Line ("");
+      Put_Line ("    -o, --output DIR");
+      Put_Line ("        Choose in which directory to generate the files");
+      Put_Line ("        generated. They have the same name as the feature");
+      Put_Line ("        files.");
+      Put_Line ("");
+      Put_Line ("    -l, --lang LANG");
+      Put_Line ("        Choose wich language to generate.");
+      Put_Line ("        Available values: Ada");
+      Put_Line ("");
       Put_Line ("-- ");
       Put_Line ("Copyright (c) 2010 SOGILIS");
 
