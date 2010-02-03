@@ -2,7 +2,7 @@
 
 with Ada.Text_IO; use Ada.Text_IO;
 
-package body CLI is
+package body AdaSpec2.CLI is
 
    procedure Help is
    begin
@@ -57,4 +57,4 @@ package body CLI is
 
    end Help;
 
-end CLI;
+end AdaSpec2.CLI;
