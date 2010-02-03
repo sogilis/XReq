@@ -28,6 +28,7 @@ package body Coverage_Suite is
 
    procedure Run_Test (T : in out Test) is
       pragma Unreferenced (T);
+      type Percent is delta 0.01 range 0.00 .. 100.00;
       Search : Search_Type;
       Item   : Directory_Entry_Type;
       Count, Covered, Error : Integer;
@@ -58,11 +59,11 @@ package body Coverage_Suite is
             Ok := False;
          else
             declare
-               Percent : constant Float := 100.0 *
-                  Float (Covered) / Float (Count);
+               Ratio : constant Percent := Percent (100.0 *
+                  Float (Covered) / Float (Count));
                s       : constant String :=
                   "File: " & Simple_Name (Item) & " covered " &
-                  Float'Image (Percent) & "% (" &
+                  Percent'Image (Ratio) & "% (" &
                   Integer'Image (Covered) & " /" &
                   Integer'Image (Count) & " )";
             begin
