@@ -25,13 +25,17 @@ clean:
 	-$(RM) README.html
 	-$(RM) src/README.html
 	-$(RM) reports/*.gcov
-	-$(RM) reports/summary.txt
+	-$(RM) reports/gcov.summary.txt
+	-$(RM) reports/gnatcheck.out
+	-$(RM) reports/*.aunit.gcov
 
 gcov-reset: dir
+	-$(RM) reports/*.gcov
+	-$(RM) reports/gcov.summary.txt
 	-$(RM) obj/*.gcda
 
 gcov:
-	cd reports && gcov -f -o ../obj ../src/*.adb | tee summary.txt
+	cd reports && gcov -f -o ../obj ../src/*.adb | tee gcov.summary.txt
 
 coverage: test
 	$(MAKE) gcov-reset
