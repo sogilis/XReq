@@ -13,29 +13,14 @@ use AUnit.Assertions;
 package body Coverage_Suite is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
+
       Ret : constant AUnit.Test_Suites.Access_Test_Suite :=
             new AUnit.Test_Suites.Test_Suite;
-   begin
-      Ret.Add_Test (new Test);
-      return Ret;
-   end Suite;
+      Search       : Search_Type;
+      Item         : Directory_Entry_Type;
+      Current_Test : access Test;
 
-   function Name (T : Test) return AUnit.Message_String is
-      pragma Unreferenced (T);
    begin
-      return AUnit.Format ("Full Coverage");
-   end Name;
-
-   procedure Run_Test (T : in out Test) is
-      pragma Unreferenced (T);
-      type Percent is delta 0.01 range 0.00 .. 100.00;
-      Search : Search_Type;
-      Item   : Directory_Entry_Type;
-      Count, Covered, Error : Integer;
-      Ok : Boolean := True;
-      Message : Unbounded_String;
-   begin
-      Message := To_Unbounded_String ("");
 
       Put_Line ("The coverage test expect the .gcov files to be in the");
       Put_Line ("subdirectory `reports' of the current directory.");
@@ -44,39 +29,67 @@ package body Coverage_Suite is
                     Directory => Compose (Current_Directory, "reports"),
                     Pattern   => "*.gcov",
                     Filter    => (Ordinary_File => True, others => False));
+
       while More_Entries (Search) loop
+
          Get_Next_Entry (Search, Item);
-         Read_Gcov (Full_Name (Item), Count, Covered, Error);
-         if Error > 0 then
-            declare
-               s : constant String :=
-                  "File: " & Simple_Name (Item) & " error line " &
-                  Integer'Image (Error);
-            begin
-               Append (Message, s & ASCII.CR & ASCII.LF);
-               Put_Line (s);
-            end;
-            Ok := False;
-         else
-            declare
-               Ratio : constant Percent := Percent (100.0 *
-                  Float (Covered) / Float (Count));
-               s       : constant String :=
-                  "File: " & Simple_Name (Item) & " covered " &
-                  Percent'Image (Ratio) & "% (" &
-                  Integer'Image (Covered) & " /" &
-                  Integer'Image (Count) & " )";
-            begin
-               Append (Message, s & ASCII.CR & ASCII.LF);
-               Put_Line (s);
-               Ok := False;
-            end;
-            Ok := Ok and Covered = Count;
-         end if;
+
+         Current_Test := new Test'(AUnit.Simple_Test_Cases.Test_Case with
+            File => To_Unbounded_String (Simple_Name (Item)),
+            Path => To_Unbounded_String (Full_Name   (Item)));
+
+--          Put_Line ("1 " & Simple_Name (Item));
+--          Put_Line ("2 " & To_String (Current_Test.File));
+--          Put_Line ("3 " & Name (Current_Test.all).all);
+
+         --  TODO: For some reason, I must assign again File and Path, else it
+         --  doesn't work.
+
+         Current_Test.all.File := To_Unbounded_String (Simple_Name (Item));
+         Current_Test.all.Path := To_Unbounded_String (Full_Name   (Item));
+
+--          Put_Line ("4 " & To_String (Current_Test.File));
+--          Put_Line ("5 " & Name (Current_Test.all).all);
+
+         Ret.Add_Test (Current_Test);
+
       end loop;
+
       End_Search (Search);
 
-      Assert (Ok, To_String (Message));
+      return Ret;
+
+   end Suite;
+
+
+
+   function Name (T : Test) return AUnit.Message_String is
+   begin
+      return AUnit.Format ("Coverage for " & To_String (T.File));
+   end Name;
+
+
+
+   procedure Run_Test (T : in out Test) is
+      type Percent is delta 0.01 range 0.00 .. 100.00;
+      Count   : Natural;
+      Covered : Natural;
+      Error   : Integer;
+      Ratio   : Percent;
+   begin
+
+      Read_Gcov (To_String (T.Path), Count, Covered, Error);
+      Ratio := Percent (100.0 * Float (Covered) / Float (Count));
+
+      Assert (Error <= 0,
+              "File: " & To_String (T.File) & " error line" &
+              Integer'Image (Error));
+
+      Assert (Covered = Count,
+              "File: " & To_String (T.File) & Percent'Image (Ratio) &
+              "% covered (" & Natural'Image (Covered) & "/" &
+              Natural'Image (Count) & ")");
+
    end Run_Test;
 
    procedure Read_Gcov_Line (File   : in out File_Type;
@@ -137,13 +150,13 @@ package body Coverage_Suite is
    end Read_Gcov_Line;
 
    procedure Read_Gcov (Filename         : in  String;
-                        Out_Line_Count   : out Integer;
-                        Out_Line_Covered : out Integer;
+                        Out_Line_Count   : out Natural;
+                        Out_Line_Covered : out Natural;
                         Out_Error        : out Integer) is
       File   : File_Type;
       Status : Gcov_Line_Type := Gcov_Line_Error;
-      Line_Count   : Integer :=  0;
-      Line_Covered : Integer :=  0;
+      Line_Count   : Natural :=  0;
+      Line_Covered : Natural :=  0;
       Error        : Integer := -1;
       Line_Number  : Integer :=  1;
    begin
