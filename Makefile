@@ -32,7 +32,7 @@ gcov-reset: dir
 gcov:
 	cd reports && gcov -f -o ../obj ../src/*.adb | tee summary.txt
 
-coverage: bin
+coverage: test
 	$(MAKE) gcov-reset
 	bin/tests
 	$(MAKE) gcov
@@ -40,7 +40,10 @@ coverage: bin
 check: dir
 	cd reports && gnat check -P ../main.gpr -rules -from=../gnatcheck.rules
 
-.PHONY: all dir bin test doc clean gcov-reset gcov coverage check
+test-report: dir test
+	bin/tests -xml >reports/aunit.xml
+
+.PHONY: all dir bin test doc clean gcov-reset gcov coverage check test-report
 
 
 

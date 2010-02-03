@@ -2,3 +2,4 @@
 summary.txt
 gnatcheck.out
 gnatcheck.log
+*aunit.xml
