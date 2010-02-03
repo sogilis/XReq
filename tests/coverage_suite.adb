@@ -2,10 +2,12 @@
 
 with Ada.Text_IO;
 with Ada.Directories;
+with Ada.Strings.Unbounded;
 with AUnit.Assertions;
 
 use Ada.Text_IO;
 use Ada.Directories;
+use Ada.Strings.Unbounded;
 use AUnit.Assertions;
 
 package body Coverage_Suite is
@@ -30,7 +32,10 @@ package body Coverage_Suite is
       Item   : Directory_Entry_Type;
       Count, Covered, Error : Integer;
       Ok : Boolean := True;
+      Message : Unbounded_String;
    begin
+      Message := To_Unbounded_String ("");
+
       Put_Line ("The coverage test expect the .gcov files to be in the");
       Put_Line ("subdirectory `reports' of the current directory.");
 
@@ -42,18 +47,35 @@ package body Coverage_Suite is
          Get_Next_Entry (Search, Item);
          Read_Gcov (Full_Name (Item), Count, Covered, Error);
          if Error > 0 then
-            Put_Line ("File: " & Simple_Name (Item) & " error line " &
-                     Integer'Image (Error));
+            declare
+               s : constant String :=
+                  "File: " & Simple_Name (Item) & " error line " &
+                  Integer'Image (Error);
+            begin
+               Append (Message, s & ASCII.CR & ASCII.LF);
+               Put_Line (s);
+            end;
             Ok := False;
          else
-            Put_Line ("File: " & Simple_Name (Item) & " covered " &
-                     Integer'Image (Covered) & " /" & Integer'Image (Count));
+            declare
+               Percent : constant Float := 100.0 *
+                  Float (Covered) / Float (Count);
+               s       : constant String :=
+                  "File: " & Simple_Name (Item) & " covered " &
+                  Float'Image (Percent) & "% (" &
+                  Integer'Image (Covered) & " /" &
+                  Integer'Image (Count) & " )";
+            begin
+               Append (Message, s & ASCII.CR & ASCII.LF);
+               Put_Line (s);
+               Ok := False;
+            end;
             Ok := Ok and Covered = Count;
          end if;
       end loop;
       End_Search (Search);
 
-      Assert (Ok, "Coverage");
+      Assert (Ok, To_String (Message));
    end Run_Test;
 
    procedure Read_Gcov_Line (File   : in out File_Type;

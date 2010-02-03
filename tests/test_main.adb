@@ -2,11 +2,10 @@
 
 with Ada.Text_IO;
 with Ada.Command_Line;
+with GNAT.IO;
 with GNAT.Command_Line;
-with AUnit.Reporter;
-with AUnit.Reporter.Text;
-with AUnit.Reporter.XML;
 with AUnit.Run;
+with AUnit_Reporter;
 with Test_Suite;
 with Coverage_Suite;
 
@@ -20,22 +19,17 @@ procedure Test_Main is
    Choosen_Suite : Suite := Test;
    Suite_Error   : exception;
 
-   --  AUnit  -----------------------------------------------------------------
 
-   --  TODO: we should only have one variable here, but I don't know how to
-   --  make an object Xml.Reporter or Text.Reporter in the code without using
-   --  the heap (overkill). In C I would use unions, and in Ada I thought I
-   --  could use a 'Class type but that doesn't work.
+   --  AUnit  -----------------------------------------------------------------
 
    procedure Runner_Test     is new AUnit.Run.Test_Runner (Test_Suite.Suite);
    procedure Runner_Coverage is new
       AUnit.Run.Test_Runner (Coverage_Suite.Suite);
 
-   Reporter_Text : aliased AUnit.Reporter.Text.Text_Reporter;
-   Reporter_XML  : aliased AUnit.Reporter.XML.XML_Reporter;
-   Reporter : access AUnit.Reporter.Reporter'Class := Reporter_Text'Access;
+   Reporter : AUnit_Reporter.Reporter;
 
    --  CLI  -------------------------------------------------------------------
+
    procedure Display_Help;
    procedure Display_Help is
    begin
@@ -70,10 +64,10 @@ begin
          return;
 
       elsif Full_Switch = "xml" then
-         Reporter := Reporter_XML'Access;
+         Reporter.Reporter := AUnit_Reporter.Reporter_XML'Access;
 
       elsif Full_Switch = "text" then
-         Reporter := Reporter_Text'Access;
+         Reporter.Reporter := AUnit_Reporter.Reporter_Text'Access;
 
       elsif Full_Switch = "suite" then
          begin
@@ -87,13 +81,22 @@ begin
    end loop;
 
 
+   --  Change output streams so the test output are to stderr and the report to
+   --  stdout
+
+   Ada.Text_IO.Set_Output (Ada.Text_IO.Current_Error);
+   GNAT.IO    .Set_Output (GNAT.IO    .Standard_Error);
+
+   Reporter.GNAT_IO := AUnit_Reporter.GNAT_IO_out'Access;
+
+
    --  AUnit
 
    case Choosen_Suite is
       when Test =>
-         Runner_Test (Reporter.all);
+         Runner_Test (Reporter);
       when Coverage =>
-         Runner_Coverage (Reporter.all);
+         Runner_Coverage (Reporter);
 --       when others =>
 --          Put_Line (Standard_Error, "Suite " & Suite'Image (Choosen_Suite) &
 --                    " not implemented");

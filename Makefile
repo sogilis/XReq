@@ -35,7 +35,7 @@ gcov:
 
 coverage: test
 	$(MAKE) gcov-reset
-	bin/tests -xml >reports/aunit.xml
+	bin/tests -xml >reports/test.aunit.xml
 	$(MAKE) gcov
 
 check: dir
