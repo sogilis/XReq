@@ -7,7 +7,7 @@ with AUnit.Reporter;
 with AUnit.Reporter.Text;
 with AUnit.Reporter.XML;
 with AUnit.Run;
-with Suite;
+with Test_Suite;
 
 use Ada.Text_IO;
 use Ada.Command_Line;
@@ -15,23 +15,24 @@ use GNAT.Command_Line;
 
 procedure Test_Main is
 
-   type Report is (Text, XML);
+   type Suite is (Test);
+   Choosen_Suite : Suite := Test;
+   Suite_Error   : exception;
 
-   Report_Type : Report := Text;
-
-   --  AUnit
-   procedure Runner is new AUnit.Run.Test_Runner (Suite.Suite);
-   Reporter : access AUnit.Reporter.Reporter'Class;
+   --  AUnit  -----------------------------------------------------------------
 
    --  TODO: we should only have one variable here, but I don't know how to
    --  make an object Xml.Reporter or Text.Reporter in the code without using
    --  the heap (overkill). In C I would use unions, and in Ada I thought I
    --  could use a 'Class type but that doesn't work.
 
+   procedure Runner_Test is new AUnit.Run.Test_Runner (Test_Suite.Suite);
+
    Reporter_Text : aliased AUnit.Reporter.Text.Text_Reporter;
    Reporter_XML  : aliased AUnit.Reporter.XML.XML_Reporter;
+   Reporter : access AUnit.Reporter.Reporter'Class := Reporter_Text'Access;
 
-   --  CLI
+   --  CLI  -------------------------------------------------------------------
    procedure Display_Help;
    procedure Display_Help is
    begin
@@ -40,7 +41,13 @@ procedure Test_Main is
       Put_Line ("SYNOPSIS");
       Put_Line ("");
       Put_Line ("    tests [-help]");
-      Put_Line ("    tests [-xml] [-text]");
+      Put_Line ("    tests [-suite SUITE] [-xml] [-text]");
+      Put_Line ("");
+      Put_Line ("AVAILABLE TEST SUITES");
+      Put_Line ("");
+      for s in Suite'Range loop
+         Put_Line ("    " & Suite'Image (s));
+      end loop;
       Put_Line ("");
       Put_Line ("-- ");
       Put_Line ("Copyright (c) 2010 SOGILIS");
@@ -50,7 +57,7 @@ begin
 
    --  Command Line
 
-   while Getopt ("help h -help xml text") /= ASCII.NUL loop
+   while Getopt ("help h -help xml text suite:") /= ASCII.NUL loop
 
       if Full_Switch = "h" or
          Full_Switch = "help" or
@@ -60,10 +67,18 @@ begin
          return;
 
       elsif Full_Switch = "xml" then
-         Report_Type := XML;
+         Reporter := Reporter_XML'Access;
 
       elsif Full_Switch = "text" then
-         Report_Type := Text;
+         Reporter := Reporter_Text'Access;
+
+      elsif Full_Switch = "suite" then
+         begin
+            Choosen_Suite := Suite'Value (Parameter);
+         exception
+            when Constraint_Error =>
+               raise Suite_Error;
+         end;
 
       end if;
    end loop;
@@ -71,14 +86,10 @@ begin
 
    --  AUnit
 
-   case Report_Type is
-      when Text =>
-         Reporter := Reporter_Text'Access;
-      when XML =>
-         Reporter := Reporter_XML'Access;
+   case Choosen_Suite is
+      when Test =>
+         Runner_Test (Reporter.all);
    end case;
-
-   Runner (Reporter.all);
 
 exception
 
@@ -90,6 +101,11 @@ exception
 
    when Invalid_Parameter =>
       Put_Line (Standard_Error, "Missing parameter for switch " & Full_Switch);
+      Display_Help;
+      Set_Exit_Status (Failure);
+
+   when Suite_Error =>
+      Put_Line (Standard_Error, "Incorrect test suite chosen " & Parameter);
       Display_Help;
       Set_Exit_Status (Failure);
 

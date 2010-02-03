@@ -3,7 +3,7 @@
 with AUnit;
 with AUnit.Simple_Test_Cases;
 
-package Test1 is
+package Test_Suite.Test1 is
 
    --  Test type
    type Test is new AUnit.Simple_Test_Cases.Test_Case with null record;
@@ -12,4 +12,4 @@ package Test1 is
    function Name (T : Test) return AUnit.Message_String;
    procedure Run_Test (T : in out Test);
 
-end Test1;
+end Test_Suite.Test1;

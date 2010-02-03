@@ -2,7 +2,7 @@
 
 with AUnit.Assertions; use AUnit.Assertions;
 
-package body Test1 is
+package body Test_Suite.Test1 is
 
    function Name (T : Test) return AUnit.Message_String is
       pragma Unreferenced (T);
@@ -16,4 +16,4 @@ package body Test1 is
       Assert (True, "True test");
    end Run_Test;
 
-end Test1;
+end Test_Suite.Test1;
