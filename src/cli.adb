@@ -38,16 +38,6 @@ package body CLI is
       Put_Line ("    -h, -help, --help");
       Put_Line ("        Help message");
       Put_Line ("");
-      Put_Line ("    -t, --template TEMPLATE");
-      Put_Line ("        Choose a template to use for code generation. It");
-      Put_Line ("        can be a template name selected from a standard");
-      Put_Line ("        template directory or a fully qualified path to a");
-      Put_Line ("        template file.");
-      Put_Line ("");
-      Put_Line ("    -T, -templatedir TEMPLATEDIR");
-      Put_Line ("        Add TEMPLATEDIR to the list of template directory");
-      Put_Line ("        searched");
-      Put_Line ("");
       Put_Line ("    -s, --step STEPDIR");
       Put_Line ("        Specify a step directory. By default, the step/");
       Put_Line ("        directory relative to each feature file specified");
