@@ -8,6 +8,7 @@ with AUnit.Reporter.Text;
 with AUnit.Reporter.XML;
 with AUnit.Run;
 with Test_Suite;
+with Coverage_Suite;
 
 use Ada.Text_IO;
 use Ada.Command_Line;
@@ -15,7 +16,7 @@ use GNAT.Command_Line;
 
 procedure Test_Main is
 
-   type Suite is (Test);
+   type Suite is (Test, Coverage);
    Choosen_Suite : Suite := Test;
    Suite_Error   : exception;
 
@@ -26,7 +27,9 @@ procedure Test_Main is
    --  the heap (overkill). In C I would use unions, and in Ada I thought I
    --  could use a 'Class type but that doesn't work.
 
-   procedure Runner_Test is new AUnit.Run.Test_Runner (Test_Suite.Suite);
+   procedure Runner_Test     is new AUnit.Run.Test_Runner (Test_Suite.Suite);
+   procedure Runner_Coverage is new
+      AUnit.Run.Test_Runner (Coverage_Suite.Suite);
 
    Reporter_Text : aliased AUnit.Reporter.Text.Text_Reporter;
    Reporter_XML  : aliased AUnit.Reporter.XML.XML_Reporter;
@@ -89,6 +92,12 @@ begin
    case Choosen_Suite is
       when Test =>
          Runner_Test (Reporter.all);
+      when Coverage =>
+         Runner_Coverage (Reporter.all);
+--       when others =>
+--          Put_Line (Standard_Error, "Suite " & Suite'Image (Choosen_Suite) &
+--                    " not implemented");
+--          Set_Exit_Status (Failure);
    end case;
 
 exception
