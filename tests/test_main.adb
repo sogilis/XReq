@@ -60,7 +60,7 @@ begin
 
    --  Command Line
 
-   while Getopt ("help h -help xml text suite:") /= ASCII.NUL loop
+   while Getopt ("help h -help xml text suite=") /= ASCII.NUL loop
 
       if Full_Switch = "h" or
          Full_Switch = "help" or

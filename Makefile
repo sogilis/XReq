@@ -1,6 +1,7 @@
 ##                         Copyright (C) 2010, Sogilis                       ##
 
 GNATMAKE=gnatmake
+TEST_SUITES=test coverage
 
 all: bin test doc
 
@@ -41,7 +42,9 @@ check: dir
 	cd reports && gnat check -P ../main.gpr -rules -from=../gnatcheck.rules
 
 test-report: dir test
-	bin/tests -xml >reports/aunit.xml
+	for t in $(TEST_SUITES); do \
+	  bin/tests -xml -suite="$$t" >"reports/$$t.aunit.xml"; \
+	done
 
 .PHONY: all dir bin test doc clean gcov-reset gcov coverage check test-report
 
