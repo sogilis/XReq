@@ -45,18 +45,30 @@ gcov:
 
 coverage: test
 	$(MAKE) gcov-reset
-	bin/tests -xml >reports/test.aunit.xml
+	bin/tests
 	$(MAKE) gcov
 
-check: dir
+gnatcheck: dir
 	cd reports && gnat check -P ../tests.gpr -rules -from=../gnatcheck.rules
 
-test-report: dir test
+test-report: dir bin test
 	for t in $(TEST_SUITES); do \
+	  echo "========== RUN TEST SUITE $$t =========="; \
 	  bin/tests -xml -suite="$$t" >"reports/$$t.aunit.xml"; \
+	  cat "reports/$$t.aunit.xml"; \
 	done
 
-.PHONY: all dir bin test doc clean gcov-reset gcov coverage check test-report
+clean-reports: gcov-reset
+	-$(RM) reports/gnatcheck.out
+	-$(RM) reports/*.aunit.gcov
+
+check: bin clean-reports coverage gnatcheck
+	for t in $(TEST_SUITES); do \
+	  echo bin/tests -suite="$$t"; \
+	  bin/tests -suite="$$t"; \
+	done
+
+.PHONY: all dir bin test doc clean clean-reports gcov-reset gcov coverage gnatcheck check test-report
 
 
 
