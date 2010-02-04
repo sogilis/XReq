@@ -4,7 +4,7 @@ with AUnit.Assertions; use AUnit.Assertions;
 
 package body Test_Suite.Test1 is
 
-   function Name (T : Test) return AUnit.Message_String is
+   function Name (T : in Test) return AUnit.Message_String is
       pragma Unreferenced (T);
    begin
       return AUnit.Format ("Test1 HelloWorld");

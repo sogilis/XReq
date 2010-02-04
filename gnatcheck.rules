@@ -1,4 +1,4 @@
--ALL
+-- -ALL
 +RBoolean_Relational_Operators
 +RExceptions_As_Control_Flow
 +REXIT_Statements_With_No_Loop_Name
@@ -6,10 +6,9 @@
 +RGOTO_Statements
 +RImplicit_IN_Mode_Parameters
 +RImproper_Returns
-+RImproperly_Located_Instantiations
 +RLocal_Packages
 +RMisnamed_Identifiers
--RName_Clashes
+-- +RName_Clashes
 +RNon_Visible_Exceptions
 +ROuter_Loop_Exits
 +ROverloaded_Operators

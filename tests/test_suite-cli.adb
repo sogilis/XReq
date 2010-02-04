@@ -6,7 +6,7 @@ with AdaSpec2.CLI;
 
 package body Test_Suite.CLI is
 
-   function Name (T : Test) return AUnit.Message_String is
+   function Name (T : in Test) return AUnit.Message_String is
       pragma Unreferenced (T);
    begin
       return AUnit.Format ("Test Command Line Interface");

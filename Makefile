@@ -43,7 +43,7 @@ coverage: test
 	$(MAKE) gcov
 
 check: dir
-	cd reports && gnat check -P ../main.gpr -rules -from=../gnatcheck.rules
+	cd reports && gnat check -P ../tests.gpr -rules -from=../gnatcheck.rules
 
 test-report: dir test
 	for t in $(TEST_SUITES); do \

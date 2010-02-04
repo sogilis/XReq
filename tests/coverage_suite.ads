@@ -20,7 +20,7 @@ private
       end record;
 
    --  Operation on Test
-   function Name (T : Test) return AUnit.Message_String;
+   function Name (T : in Test) return AUnit.Message_String;
    procedure Run_Test (T : in out Test);
 
    type Gcov_Line_Type is (Gcov_Line_Error,

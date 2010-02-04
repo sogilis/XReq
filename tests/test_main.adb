@@ -19,6 +19,8 @@ procedure Test_Main is
    Choosen_Suite : Suite := Test;
    Suite_Error   : exception;
 
+   Quit : Boolean := False;
+
 
    --  AUnit  -----------------------------------------------------------------
 
@@ -54,6 +56,7 @@ begin
 
    --  Command Line
 
+   Getopt_Loop :
    while Getopt ("help h -help xml text suite=") /= ASCII.NUL loop
 
       if Full_Switch = "h" or
@@ -61,7 +64,8 @@ begin
          Full_Switch = "-help"
       then
          Display_Help;
-         return;
+         Quit := True;
+         exit Getopt_Loop;
 
       elsif Full_Switch = "xml" then
          Reporter.Reporter := AUnit_Reporter.Reporter_XML'Access;
@@ -78,30 +82,33 @@ begin
          end;
 
       end if;
-   end loop;
+   end loop Getopt_Loop;
+
+   if not Quit then
+
+      --  Change output streams so the test output are to stderr and the report
+      --  to stdout
+
+      Ada.Text_IO.Set_Output (Ada.Text_IO.Current_Error);
+      GNAT.IO    .Set_Output (GNAT.IO    .Standard_Error);
+
+      Reporter.GNAT_IO := AUnit_Reporter.GNAT_IO_out'Access;
 
 
-   --  Change output streams so the test output are to stderr and the report to
-   --  stdout
+      --  AUnit
 
-   Ada.Text_IO.Set_Output (Ada.Text_IO.Current_Error);
-   GNAT.IO    .Set_Output (GNAT.IO    .Standard_Error);
+      case Choosen_Suite is
+         when Test =>
+            Runner_Test (Reporter);
+         when Coverage =>
+            Runner_Coverage (Reporter);
+--          when others =>
+--             Put_Line (Standard_Error, "Suite " &
+--                       Suite'Image (Choosen_Suite) & " not implemented");
+--             Set_Exit_Status (Failure);
+      end case;
 
-   Reporter.GNAT_IO := AUnit_Reporter.GNAT_IO_out'Access;
-
-
-   --  AUnit
-
-   case Choosen_Suite is
-      when Test =>
-         Runner_Test (Reporter);
-      when Coverage =>
-         Runner_Coverage (Reporter);
---       when others =>
---          Put_Line (Standard_Error, "Suite " & Suite'Image (Choosen_Suite) &
---                    " not implemented");
---          Set_Exit_Status (Failure);
-   end case;
+   end if;
 
 exception
 

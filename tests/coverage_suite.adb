@@ -63,7 +63,7 @@ package body Coverage_Suite is
 
 
 
-   function Name (T : Test) return AUnit.Message_String is
+   function Name (T : in Test) return AUnit.Message_String is
    begin
       return AUnit.Format ("Coverage for " & To_String (T.File));
    end Name;
