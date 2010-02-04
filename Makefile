@@ -35,7 +35,13 @@ gcov-reset: dir
 	-$(RM) obj/*.gcda
 
 gcov:
-	cd reports && gcov -f -o ../obj ../src/*.adb | tee gcov.summary.txt
+	cd reports && gcov -o ../obj ../src/*.adb | tee gcov.summary.txt
+	for gcov in reports/*.gcov; do \
+		base="`basename "$$gcov"`"; \
+		if [ ! -e "src/$${base%.gcov}" ]; then \
+			rm "$$gcov"; \
+		fi; \
+	done
 
 coverage: test
 	$(MAKE) gcov-reset
