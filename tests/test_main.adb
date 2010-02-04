@@ -1,15 +1,18 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
+with Ada.Strings.Unbounded;
 with Ada.Command_Line;
-with GNAT.IO;
 with GNAT.Command_Line;
 with AUnit.Run;
-with AUnit_Reporter;
+with AUnit.Reporter;
+with AUnit.Reporter.XML2;
+with AUnit.Reporter.Text2;
 with Test_Suite;
 with Coverage_Suite;
 
 use Ada.Text_IO;
+use Ada.Strings.Unbounded;
 use Ada.Command_Line;
 use GNAT.Command_Line;
 
@@ -19,7 +22,8 @@ procedure Test_Main is
    Choosen_Suite : Suite := Test;
    Suite_Error   : exception;
 
-   Quit : Boolean := False;
+   Quit   : Boolean := False;
+   File   : File_Type;
 
 
    --  AUnit  -----------------------------------------------------------------
@@ -28,7 +32,14 @@ procedure Test_Main is
    procedure Runner_Coverage is new
       AUnit.Run.Test_Runner (Coverage_Suite.Suite);
 
-   Reporter : AUnit_Reporter.Reporter;
+   Reporter_XML    : aliased AUnit.Reporter.XML2.XML_Reporter;
+   Reporter_Text   : aliased AUnit.Reporter.Text2.Text_Reporter;
+   Reporter        : access  AUnit.Reporter.Reporter'Class :=
+                     Reporter_Text'Access;
+
+   Reporter_String : access Unbounded_String :=
+                     AUnit.Reporter.Text2.String_Result'Access;
+
 
    --  CLI  -------------------------------------------------------------------
 
@@ -40,7 +51,7 @@ procedure Test_Main is
       Put_Line ("SYNOPSIS");
       Put_Line ("");
       Put_Line ("    tests [-help]");
-      Put_Line ("    tests [-suite SUITE] [-xml] [-text]");
+      Put_Line ("    tests [-suite SUITE] [-xml] [-text] [-o OUTFILE]");
       Put_Line ("");
       Put_Line ("AVAILABLE TEST SUITES");
       Put_Line ("");
@@ -57,7 +68,7 @@ begin
    --  Command Line
 
    Getopt_Loop :
-   while Getopt ("help h -help xml text suite=") /= ASCII.NUL loop
+   while Getopt ("help h -help xml text suite= o:") /= ASCII.NUL loop
 
       if Full_Switch = "h" or
          Full_Switch = "help" or
@@ -67,12 +78,6 @@ begin
          Quit := True;
          exit Getopt_Loop;
 
-      elsif Full_Switch = "xml" then
-         Reporter.Reporter := AUnit_Reporter.Reporter_XML'Access;
-
-      elsif Full_Switch = "text" then
-         Reporter.Reporter := AUnit_Reporter.Reporter_Text'Access;
-
       elsif Full_Switch = "suite" then
          begin
             Choosen_Suite := Suite'Value (Parameter);
@@ -81,32 +86,40 @@ begin
                raise Suite_Error;
          end;
 
+      elsif Full_Switch = "xml" then
+         Reporter := Reporter_XML'Access;
+         Reporter_String := AUnit.Reporter.XML2.String_Result'Access;
+
+      elsif Full_Switch = "text" then
+         Reporter := Reporter_Text'Access;
+         Reporter_String := AUnit.Reporter.Text2.String_Result'Access;
+
+      elsif Full_Switch = "o" then
+         Create (File, Out_File, Parameter);
+
       end if;
    end loop Getopt_Loop;
 
    if not Quit then
 
-      --  Change output streams so the test output are to stderr and the report
-      --  to stdout
-
-      Ada.Text_IO.Set_Output (Ada.Text_IO.Current_Error);
-      GNAT.IO    .Set_Output (GNAT.IO    .Standard_Error);
-
-      Reporter.GNAT_IO := AUnit_Reporter.GNAT_IO_out'Access;
-
-
       --  AUnit
 
       case Choosen_Suite is
          when Test =>
-            Runner_Test (Reporter);
+            Runner_Test (Reporter.all);
          when Coverage =>
-            Runner_Coverage (Reporter);
+            Runner_Coverage (Reporter.all);
 --          when others =>
 --             Put_Line (Standard_Error, "Suite " &
 --                       Suite'Image (Choosen_Suite) & " not implemented");
 --             Set_Exit_Status (Failure);
       end case;
+
+      if Is_Open (File) then
+         Put (File, To_String (Reporter_String.all));
+      else
+         Put (To_String (Reporter_String.all));
+      end if;
 
    end if;
 

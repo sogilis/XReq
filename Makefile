@@ -54,7 +54,8 @@ gnatcheck: dir
 test-report: dir bin test
 	for t in $(TEST_SUITES); do \
 	  echo "========== RUN TEST SUITE $$t =========="; \
-	  bin/tests -xml -suite="$$t" >"reports/$$t.aunit.xml"; \
+	  echo bin/tests -xml -suite="$$t" -o"reports/$$t.aunit.xml"; \
+	  bin/tests -xml -suite="$$t" -o"reports/$$t.aunit.xml"; \
 	  cat "reports/$$t.aunit.xml"; \
 	done
 
