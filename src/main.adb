@@ -42,17 +42,17 @@ begin
             raise Not_Yet_Implemented with "multiple --step";
          end if;
          Job.Step_Dir := To_Unbounded_String (Parameter);
-         Put_Line ("--step=" & Parameter);
+         --  Put_Line ("--step=" & Parameter);
 
       elsif Full_Switch = "o" or Full_Switch = "-output" then
          Job.Out_Dir  := To_Unbounded_String (Parameter);
-         Put_Line ("--output=" & Parameter);
+         --  Put_Line ("--output=" & Parameter);
 
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
          raise Not_Yet_Implemented with "--lang";
 
-      else
-         raise Invalid_Switch;
+--       else
+--          raise Invalid_Switch;
 
       end if;
 

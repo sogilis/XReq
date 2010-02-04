@@ -20,16 +20,16 @@ package Test_Suite.Main is
 
 private
 
+   procedure Spawn_Assert  (Executable_Name : in String := "adaspec";
+                            Argument_String : in String;
+                            Expected_Result : in Boolean := True);
+
    function Command_Path  (Executable_Name : in String := "adaspec")
                            return String;
 
    function Command_Line  (Executable_Path : in String;
                            Argument_String : in String)
                            return String;
-
-   function Argument_List (Executable_Path : in String;
-                           Argument_String : in String)
-                           return GNAT.OS_Lib.Argument_List_Access;
 
    function Argument_List (Command_Line    : in String)
                            return GNAT.OS_Lib.Argument_List_Access;
