@@ -42,8 +42,9 @@ gcov:
 			rm "$$gcov"; \
 		fi; \
 	done
+	bin/tests -suite=coverage -text
 
-coverage: test
+coverage: all test
 	$(MAKE) gcov-reset
 	bin/tests
 	$(MAKE) gcov

@@ -98,11 +98,21 @@ package body Coverage_Suite is
       Count   : Natural;
       Covered : Natural;
       Error   : Integer;
+      Ratio_F : Float;
       Ratio   : Percent;
    begin
 
       Read_Gcov (To_String (T.Path), Count, Covered, Error);
-      Ratio := Percent (100.0 * Float (Covered) / Float (Count));
+
+      Assert (Count /= 0,
+              "File: " & To_String (T.File) & " error, empty file");
+
+      if Count = 0 then
+         Ratio   := 100.00;
+      else
+         Ratio_F := 100.0 * Float (Covered) / Float (Count);
+         Ratio   := Percent (Ratio_F);
+      end if;
 
       Assert (Error <= 0,
               "File: " & To_String (T.File) & " error line" &
