@@ -1,7 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-package AdaSpec2.CLI is
+package AdaSpec.CLI is
 
    procedure Help;
 
-end AdaSpec2.CLI;
+end AdaSpec.CLI;

@@ -2,21 +2,21 @@
 
 with Ada.Text_IO; use Ada.Text_IO;
 
-package body AdaSpec2.CLI is
+package body AdaSpec.CLI is
 
    procedure Help is
    begin
 
-      Put_Line ("adaspec2 - generate tests from specification");
+      Put_Line ("adaspec - generate tests from specification");
       Put_Line ("");
       Put_Line ("SYNOPSIS");
       Put_Line ("");
-      Put_Line ("    adaspec2 [OPTIONS] FEATURE ...");
+      Put_Line ("    adaspec [OPTIONS] FEATURE ...");
       Put_Line ("");
       Put_Line ("DESCRIPTION");
       Put_Line ("");
-      Put_Line ("    adaspec2 takes as input feature files describing");
-      Put_Line ("    specificationsand generate tests for these features in");
+      Put_Line ("    adaspec takes as input feature files describing");
+      Put_Line ("    specifications and generate tests for these features in");
       Put_Line ("    languages such as Ada, C, C++ depending on the template");
       Put_Line ("    used.");
       Put_Line ("");
@@ -57,4 +57,4 @@ package body AdaSpec2.CLI is
 
    end Help;
 
-end AdaSpec2.CLI;
+end AdaSpec.CLI;

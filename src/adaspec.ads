@@ -1,5 +1,5 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-package AdaSpec2 is
+package AdaSpec is
 
-end AdaSpec2;
+end AdaSpec;
