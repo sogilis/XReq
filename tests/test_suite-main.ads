@@ -20,9 +20,9 @@ package Test_Suite.Main is
 
 private
 
-   procedure Spawn_Assert  (Executable_Name : in String := "adaspec";
-                            Argument_String : in String;
-                            Expected_Result : in Boolean := True);
+   procedure Spawn_Assert  (Argument_String : in String;
+                            Expected_Result : in Boolean := True;
+                            Executable_Name : in String := "adaspec");
 
    function Command_Path  (Executable_Name : in String := "adaspec")
                            return String;

@@ -65,9 +65,9 @@ package body Test_Suite.Main is
    --  Private  ---------------------------------------------------------------
    --  See <http://www.adacore.com/2008/11/24/gem-54/>
 
-   procedure Spawn_Assert  (Executable_Name : in String := "adaspec";
-                            Argument_String : in String;
-                            Expected_Result : in Boolean := True) is
+   procedure Spawn_Assert  (Argument_String : in String;
+                            Expected_Result : in Boolean := True;
+                            Executable_Name : in String := "adaspec") is
       Success   : Boolean;
       Command   : constant String := Command_Path (Executable_Name);
       Cmd_Line  : constant String := Command_Line (Command, Argument_String);

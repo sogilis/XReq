@@ -54,17 +54,17 @@ package body AUnit.Reporter.Text2 is
       Append (String_Result, CRLF);
    end New_Line;
 
-   procedure Dump_Result_List (L : Result_Lists.List);
+   procedure Dump_Result_List (L : in Result_Lists.List);
    --  Dump a result list
 
-   procedure Report_Test (Test : Test_Result);
+   procedure Report_Test (Test : in Test_Result);
    --  Report a single assertion failure or unexpected exception
 
    ----------------------
    -- Dump_Result_List --
    ----------------------
 
-   procedure Dump_Result_List (L : Result_Lists.List) is
+   procedure Dump_Result_List (L : in Result_Lists.List) is
 
       use Result_Lists;
 
@@ -84,7 +84,7 @@ package body AUnit.Reporter.Text2 is
    -- Report --
    ------------
 
-   procedure Report (Engine : Text_Reporter;
+   procedure Report (Engine : in Text_Reporter;
                      R      : in out Result)
    is
       pragma Unreferenced (Engine);
@@ -149,7 +149,7 @@ package body AUnit.Reporter.Text2 is
    -- Report_Test --
    -----------------
 
-   procedure Report_Test (Test : Test_Result) is
+   procedure Report_Test (Test : in Test_Result) is
       Error : Test_Failure_Access;
    begin
       if Test.Error /= null or else Test.Failure /= null then
