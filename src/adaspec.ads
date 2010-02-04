@@ -2,4 +2,6 @@
 
 package AdaSpec is
 
+   Not_Yet_Implemented : exception;
+
 end AdaSpec;

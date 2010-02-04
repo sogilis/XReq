@@ -29,7 +29,7 @@ package body AdaSpec.CLI is
       Put_Line ("");
       Put_Line ("OPTIONS");
       Put_Line ("");
-      Put_Line ("    FEATURE");
+      Put_Line ("    FEATURE (NOT IMPLEMENTED: more than one features file)");
       Put_Line ("        The .feature file containing cucumber-like");
       Put_Line ("        specification. It is possible to specify multiple");
       Put_Line ("        features on the command-line all of them will be");
@@ -47,8 +47,10 @@ package body AdaSpec.CLI is
       Put_Line ("        Choose in which directory to generate the files");
       Put_Line ("        generated. They have the same name as the feature");
       Put_Line ("        files.");
+      Put_Line ("        By default, they are generated in the tests/");
+      Put_Line ("        directory relative to the feature file.");
       Put_Line ("");
-      Put_Line ("    -l, --lang LANG");
+      Put_Line ("    -l, --lang LANG (NOT IMPLEMENTED)");
       Put_Line ("        Choose wich language to generate.");
       Put_Line ("        Available values: Ada");
       Put_Line ("");
