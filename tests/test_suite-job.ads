@@ -14,6 +14,8 @@ package Test_Suite.Job is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
    type Test_Fill_Missing is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
+   type Test_Fill_Missing_2 is
+      new AUnit.Simple_Test_Cases.Test_Case with null record;
 
    --  Operation on Test
    function  Name     (T : in     Test_Describe) return AUnit.Message_String;
@@ -23,5 +25,10 @@ package Test_Suite.Job is
    function  Name     (T : in     Test_Fill_Missing)
       return AUnit.Message_String;
    procedure Run_Test (T : in out Test_Fill_Missing);
+
+   --  Operation on Test
+   function  Name     (T : in     Test_Fill_Missing_2)
+      return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_Fill_Missing_2);
 
 end Test_Suite.Job;

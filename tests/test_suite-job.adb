@@ -16,6 +16,7 @@ package body Test_Suite.Job is
    begin
       Ret.Add_Test (new Test_Describe);
       Ret.Add_Test (new Test_Fill_Missing);
+      Ret.Add_Test (new Test_Fill_Missing_2);
    end Add_Tests;
 
    --  Describe  --------------------------------------------------------------
@@ -58,6 +59,29 @@ package body Test_Suite.Job is
       Fill_Missing (Job);
       Assert (To_String (Job.Step_Dir) = "A/B/steps", "Incorrect step dir");
       Assert (To_String (Job.Out_Dir)  = "A/B/tests", "Incorrect out dir");
+   end Run_Test;
+
+   function  Name (T : in Test_Fill_Missing_2) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AsaSpec.Job.Fill_Missing (invalid job)");
+   end Name;
+
+   procedure Run_Test (T : in out Test_Fill_Missing_2) is
+      pragma Unreferenced (T);
+      Job  : Job_Type;
+   begin
+
+      declare
+         procedure P;
+         procedure P is begin
+            Fill_Missing (Job);
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Invalid Job");
+      end;
+
    end Run_Test;
 
 end Test_Suite.Job;
