@@ -23,6 +23,8 @@ private
    function Name (T : in Test) return AUnit.Message_String;
    procedure Run_Test (T : in out Test);
 
+   function PkgName (T : in Test) return String;
+
    type Gcov_Line_Type is (Gcov_Line_Error,
                            Gcov_Line_Alive,
                            Gcov_Line_Dead,

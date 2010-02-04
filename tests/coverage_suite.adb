@@ -63,9 +63,32 @@ package body Coverage_Suite is
 
 
 
+   function PkgName (T : in Test) return String is
+      File : constant String := To_String (T.File);
+      Name : Unbounded_String;
+   begin
+      if File (File'Length - 4 .. File'Length) = ".gcov" then
+         Name := To_Unbounded_String (File (File'First .. File'Length - 5));
+      else
+         Name := To_Unbounded_String (File);
+      end if;
+      declare
+         Name2 : String := To_String (Name);
+      begin
+         for i in Name2'Range loop
+            if Name2 (i) = '-' then
+               Name2 (i) := '.';
+            end if;
+         end loop;
+         return Name2;
+      end;
+   end PkgName;
+
+
+
    function Name (T : in Test) return AUnit.Message_String is
    begin
-      return AUnit.Format ("Coverage for " & To_String (T.File));
+      return AUnit.Format ("Coverage " & PkgName (T));
    end Name;
 
 
