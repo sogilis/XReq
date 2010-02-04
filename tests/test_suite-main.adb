@@ -1,12 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 --  with Ada.Strings.Unbounded;
+with Ada.Text_IO;
 with Ada.Directories;
 with Ada.Command_Line;
 with GNAT.OS_Lib;
 with AUnit.Assertions;
 
 --  use Ada.Strings.Unbounded;
+use Ada.Text_IO;
 use Ada.Directories;
 use Ada.Command_Line;
 use GNAT.OS_Lib;
@@ -37,6 +39,8 @@ package body Test_Suite.Main is
       Cmd_Line  : constant String := Command_Line (Command, "-h");
       Arguments : constant Argument_List_Access := Argument_List (Cmd_Line);
    begin
+      Put_Line ("Current Directory: " & Current_Directory);
+      Put_Line ("Spawn: " & Cmd_Line);
       Spawn (Command, Arguments.all, Success);
       Assert (Success, "[" & Cmd_Line & "] failed");
    end Run_Test;
