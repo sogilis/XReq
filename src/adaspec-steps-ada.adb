@@ -26,7 +26,7 @@ package body AdaSpec.Steps.Ada is
 
    procedure Parse (S : in out Ada_Step_File_Type) is
       File     : File_Type;
-      Line     : Unbounded_String;
+      Line_S   : Unbounded_String;
       Idx_Next : Natural;
       Idx_Tk   : Natural;
       Idx      : Natural;
@@ -35,18 +35,18 @@ package body AdaSpec.Steps.Ada is
                                           To_Unbounded_String ("@then"));
       Prefix   : Prefix_Type;
       Found    : Boolean;
-      Pattern  : Regexp;
+      Pattern  : Unbounded_String;
    begin
       Open (File, In_File, To_String (S.File_Name));
       while not End_Of_File (File) loop
          --
          --  Read Line
          --
-         Line := Get_Whole_Line (File);
+         Line_S := Get_Whole_Line (File);
          --
          --  Find Token
          --
-         Find_Token (To_String (Line), Tokens, Idx_Next, Idx_Tk);
+         Find_Token (To_String (Line_S), Tokens, Idx_Next, Idx_Tk);
          case Idx_Tk is
             when 1 =>   Prefix := Prefix_Given; Found := True;
             when 2 =>   Prefix := Prefix_When;  Found := True;
@@ -57,12 +57,20 @@ package body AdaSpec.Steps.Ada is
          --  Get Argument
          --
          if Found then
-            Idx := Index_Non_Blank (Line, Idx_Next);
-            Pattern := Compile (Slice (Line, Idx, Length (Line)));
-            S.Steps.Append (Step_Type'(
-               Prefix  => Prefix,
-               Pattern => Pattern,
-               Pat_S   => Unbounded_Slice (Line, Idx, Length (Line))));
+            Idx := Index_Non_Blank (Line_S, Idx_Next);
+            if Idx /= 0 then
+               Pattern := Unbounded_Slice (Line_S, Idx, Length (Line_S));
+               S.Steps.Append (Step_Type'(
+                  Prefix    => Prefix,
+                  Pattern_R => Compile (To_String (Pattern)),
+                  Pattern_S => Pattern));
+            else
+               --  TODO: use better reporting method
+               Put_Line (Name (File) & ":" &
+                         Natural'Image (Natural (Line (File))) & ":" &
+                         Natural'Image (Idx_Next) & ": " &
+                         "Warning: expecting argument");
+            end if;
          end if;
       end loop;
       Close (File);
@@ -84,7 +92,7 @@ package body AdaSpec.Steps.Ada is
       --  Look for the phrase
       For_Loop : for i in S.Steps.First_Index .. S.Steps.Last_Index loop
          Step  := S.Steps.Element (i);
-         if Step.Prefix = Prefix and Match (Phrase, Step.Pattern) then
+         if Step.Prefix = Prefix and Match (Phrase, Step.Pattern_R) then
             Found := True;
             exit For_Loop;
          end if;

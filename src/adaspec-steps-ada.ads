@@ -25,9 +25,9 @@ private
 
    type Step_Type is
       record
-         Prefix  : Prefix_Type;
-         Pattern : Regexp;
-         Pat_S   : Unbounded_String;
+         Prefix    : Prefix_Type;
+         Pattern_R : Regexp;
+         Pattern_S : Unbounded_String;
       end record;
 
    package Step_Container is new Vectors (Natural, Step_Type);
