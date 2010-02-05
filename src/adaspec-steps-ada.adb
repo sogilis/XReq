@@ -74,6 +74,7 @@ package body AdaSpec.Steps.Ada is
                         Phrase : in String) return Boolean
    is
       Step  : Step_Type;
+      Found : Boolean := False;
    begin
       --  Error if not parsed
       if not S.Parsed then
@@ -81,15 +82,16 @@ package body AdaSpec.Steps.Ada is
       end if;
 
       --  Look for the phrase
-      for i in S.Steps.First_Index .. S.Steps.Last_Index loop
+      For_Loop : for i in S.Steps.First_Index .. S.Steps.Last_Index loop
          Step  := S.Steps.Element (i);
          if Step.Prefix = Prefix and Match (Phrase, Step.Pattern) then
-            return True;
+            Found := True;
+            exit For_Loop;
          end if;
-      end loop;
+      end loop For_Loop;
 
       --  No match
-      return False;
+      return Found;
    end Contains;
 
 end AdaSpec.Steps.Ada;

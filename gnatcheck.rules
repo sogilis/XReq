@@ -16,6 +16,5 @@
 +RNon_Visible_Exceptions
 +ROuter_Loop_Exits
 +ROverloaded_Operators
-+RParameters_Out_Of_Order
 +RUnassigned_OUT_Parameters
 +RUncommented_BEGIN_In_Package_Bodies

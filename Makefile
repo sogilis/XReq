@@ -27,6 +27,9 @@ clean:
 	-$(RM) reports/*.gcov
 	-$(RM) reports/gcov.summary.txt
 	-$(RM) reports/gnatcheck.out
+	-$(RM) reports/gnatcheck.log
+	-$(RM) reports/gnatcheck.*.out
+	-$(RM) reports/gnatcheck.*.log
 	-$(RM) reports/*.aunit.gcov
 
 gcov-reset: dir
@@ -50,7 +53,10 @@ coverage: test bin
 	$(MAKE) gcov
 
 gnatcheck: dir
+	cd reports && gnat check -P ../main.gpr -rules -from=../gnatcheck.rules
+	cd reports && mv gnatcheck.out gnatcheck.main.out
 	cd reports && gnat check -P ../tests.gpr -rules -from=../gnatcheck.rules
+	cd reports && mv gnatcheck.out gnatcheck.tests.out
 
 test-report: dir bin test
 	for t in $(TEST_SUITES); do \

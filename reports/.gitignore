@@ -1,5 +1,7 @@
 *.gcov
 gcov.summary.txt
+gnatcheck.*.out
+gnatcheck.*.log
 gnatcheck.out
 gnatcheck.log
 *aunit.xml
