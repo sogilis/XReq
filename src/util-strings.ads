@@ -8,9 +8,6 @@ package Util.Strings is
 
    type String_List is array (Positive range <>) of Unbounded_String;
 
---    function  Find_Token (Search : in String;
---                          Tokens : in String_List) return Natural;
-
    procedure Find_Token (Search     : in String;
                          Tokens     : in String_List;
                          Index_Next : out Natural;

@@ -29,7 +29,8 @@ package body Test_Suite.Steps.Ada is
       pragma Unreferenced (T);
       Step  : Ada_Step_File_Type;
       File  : constant String := "tests/features/step_definitions/sample1.ads";
-      Given : constant String := "this step works";
+      Given1 : constant String := "this step works";
+      Given2 : constant String := "this step does not work";
    begin
 
       Make (Step, File);
@@ -44,7 +45,7 @@ package body Test_Suite.Steps.Ada is
          Foo : Boolean;
          procedure P;
          procedure P is begin
-            Foo := Contains (Step, Prefix_Given, Given);
+            Foo := Contains (Step, Prefix_Given, Given1);
             Assert (Foo and not Foo, "Should never reach here");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
@@ -58,8 +59,11 @@ package body Test_Suite.Steps.Ada is
       Assert (Parsed (Step),
               "Step has not been parsed after invoking Parse");
 
-      Assert (Contains (Step, Prefix_Given, Given),
-              "Step should contain """ & Given & """");
+      Assert (Contains (Step, Prefix_Given, Given1),
+              "Step should contain """ & Given1 & """");
+
+      Assert (not Contains (Step, Prefix_Given, Given2),
+              "Step should not contain """ & Given2 & """");
 
    end Run_Test;
 
