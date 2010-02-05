@@ -40,11 +40,11 @@ package AdaSpec.Features is
 
    Unparsed_Feature : exception;
 
-   procedure Make (S         : in out Feature_File_Type;
+   procedure Make (F         : in out Feature_File_Type;
                    File_Name : in String);
 
-   function  File_Name (S : in Feature_File_Type) return String;
-   function  Parsed    (S : in Feature_File_Type) return Boolean;
-   procedure Parse     (S : in out Feature_File_Type);
+   function  File_Name (F : in Feature_File_Type) return String;
+   function  Parsed    (F : in Feature_File_Type) return Boolean;
+   procedure Parse     (F : in out Feature_File_Type);
 
 end AdaSpec.Features;

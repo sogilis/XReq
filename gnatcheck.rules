@@ -5,11 +5,14 @@
 -- ideally, exception should not serve as control flow, but in fact it does
 -- detect constructions that to me seems perfectly fine.
 
+-- +RImproper_Returns
+-- Should be ok but when there is a return in an exception block, it detect two
+-- return in the same function body, but how can you avoid that?
+
 +REXIT_Statements_With_No_Loop_Name
 +RExpanded_Loop_Exit_Names
 +RGOTO_Statements
 +RImplicit_IN_Mode_Parameters
-+RImproper_Returns
 +RLocal_Packages
 +RMisnamed_Identifiers
 -- +RName_Clashes
