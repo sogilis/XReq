@@ -34,8 +34,8 @@ gcov-reset: dir
 	-$(RM) reports/gcov.summary.txt
 	-$(RM) obj/*.gcda
 
-gcov:
-	cd reports && gcov -o ../obj ../src/*.adb | tee gcov.summary.txt
+gcov: bin
+	cd reports && gcov -o ../obj ../src/*.adb > gcov.summary.txt
 	for gcov in reports/*.gcov; do \
 		base="`basename "$$gcov"`"; \
 		if [ ! -e "src/$${base%.gcov}" ]; then \
@@ -44,9 +44,9 @@ gcov:
 	done
 	bin/tests -suite=coverage -text
 
-coverage: all test
+coverage: test bin
 	$(MAKE) gcov-reset
-	bin/tests
+	bin/tests >/dev/null 2>/dev/null
 	$(MAKE) gcov
 
 gnatcheck: dir

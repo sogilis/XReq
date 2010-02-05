@@ -105,7 +105,7 @@ package body Coverage_Suite is
       Read_Gcov (To_String (T.Path), Count, Covered, Error);
 
       Assert (Count /= 0,
-              "File: " & To_String (T.File) & " error, empty file");
+              "File: " & To_String (T.File) & " error, non executable file");
 
       if Count = 0 then
          Ratio   := 100.00;
