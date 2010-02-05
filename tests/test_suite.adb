@@ -7,6 +7,7 @@ with Test_Suite.Main;
 with Test_Suite.CLI;
 with Test_Suite.Job;
 with Test_Suite.Steps.Ada;
+with Test_Suite.Features;
 
 package body Test_Suite is
 
@@ -22,6 +23,7 @@ package body Test_Suite is
       Test_Suite.CLI      .Add_Tests (Ret);
       Test_Suite.Job      .Add_Tests (Ret);
       Test_Suite.Steps.Ada.Add_Tests (Ret);
+      Test_Suite.Features .Add_Tests (Ret);
 
       return Ret;
 

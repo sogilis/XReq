@@ -4,11 +4,13 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Util.IO;
 with Util.Strings;
+with AdaSpec;
 
 use Ada.Strings.Unbounded;
 use Ada.Text_IO;
 use Util.IO;
 use Util.Strings;
+use AdaSpec;
 
 package body AdaSpec.Steps.Ada is
 

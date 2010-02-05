@@ -1,10 +1,12 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with AUnit.Assertions;
+with AdaSpec;
 with AdaSpec.Steps;
 with AdaSpec.Steps.Ada;
 
 use AUnit.Assertions;
+use AdaSpec;
 use AdaSpec.Steps;
 use AdaSpec.Steps.Ada;
 

@@ -6,8 +6,6 @@ use Ada.Strings.Unbounded;
 
 package AdaSpec.Steps is
 
-   type Prefix_Type is (Prefix_Given, Prefix_When, Prefix_Then);
-
    type Step_File_Type is abstract tagged private;
    type Step_File_Ptr  is access all Step_File_Type'Class;
 
