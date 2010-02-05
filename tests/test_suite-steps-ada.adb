@@ -27,7 +27,7 @@ package body Test_Suite.Steps.Ada is
 
    procedure Run_Test (T : in out Test_Sample1) is
       pragma Unreferenced (T);
-      Step  : Ada_Step_Type;
+      Step  : Ada_Step_File_Type;
       File  : constant String := "tests/features/step_definitions/sample1.ads";
       Given : constant String := "this step works";
    begin

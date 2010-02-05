@@ -2,7 +2,7 @@
 
 package body AdaSpec.Steps is
 
-   function  File_Name (S : in Step_Type) return String is
+   function  File_Name (S : in Step_File_Type) return String is
    begin
       return To_String (S.File_Name);
    end File_Name;
