@@ -5,6 +5,8 @@ package Steps is
    --  @given (this step works)
    procedure This_Step_Works;
 
+   --  @given
+
    --  @when toto
 
    --  @then tata
