@@ -1,7 +1,5 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.IO_Exceptions;
-
 package body Util.IO is
 
    --  Thanks to WikiBooks
@@ -20,9 +18,6 @@ package body Util.IO is
 
       end loop Get_Whole_Line;
       return Retval;
-   exception
-      when Ada.IO_Exceptions.End_Error =>
-         return Null_Unbounded_String;
    end Get_Line;
 
 end Util.IO;

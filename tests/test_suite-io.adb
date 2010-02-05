@@ -51,8 +51,17 @@ package body Test_Suite.IO is
       Assert (End_Of_File (File),
               "No 3rd line expected in test_data/file1.txt");
 
-      Assert (To_String (Get_Line (File)) = Null_Unbounded_String,
-              "Get_Line shouldn't return a string when end of file");
+      declare
+         procedure P;
+         procedure P is begin
+            Assert (To_String (Get_Line (File)) = Null_Unbounded_String,
+                  "Get_Line shouldn't return a string when end of file");
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Get_Line should raise " &
+                                  "Ada.IO_Exceptions.End_Error at EOF");
+      end;
 
       Close (File);
 
