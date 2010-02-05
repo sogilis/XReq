@@ -27,6 +27,7 @@ private
       record
          Prefix  : Prefix_Type;
          Pattern : Regexp;
+         Pat_S   : Unbounded_String;
       end record;
 
    package Step_Container is new Vectors (Natural, Step_Type);

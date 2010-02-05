@@ -2,7 +2,11 @@
 
 package Steps is
 
-   --  @given ^this step works$
+   --  @given (this step works)
    procedure This_Step_Works;
+
+   --  @when toto
+
+   --  @then tata
 
 end Steps;
