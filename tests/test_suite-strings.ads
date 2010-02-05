@@ -10,12 +10,19 @@ package Test_Suite.Strings is
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_1 is
+   type Test_Starts_With is
+      new AUnit.Simple_Test_Cases.Test_Case with null record;
+   type Test_Find_Token is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
 
-   --  Operation on Test_1
-   function  Name     (T : in     Test_1) return AUnit.Message_String;
-   procedure Run_Test (T : in out Test_1);
+   --  Operation on Test_Starts_With
+   function  Name     (T : in     Test_Starts_With)
+                      return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_Starts_With);
+
+   --  Operation on Test_Find_Token
+   function  Name     (T : in     Test_Find_Token) return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_Find_Token);
 
 end Test_Suite.Strings;
 

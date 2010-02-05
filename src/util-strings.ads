@@ -16,4 +16,8 @@ package Util.Strings is
                          Index_Next : out Natural;
                          Token      : out Natural);
 
+   function Starts_With (Search      : in String;
+                         Pattern     : in String;
+                         Start_Index : in Natural := 1) return Boolean;
+
 end Util.Strings;

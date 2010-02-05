@@ -37,4 +37,18 @@ package body Util.Strings is
       end if;
    end Find_Token;
 
+
+   function Starts_With (Search      : in String;
+                         Pattern     : in String;
+                         Start_Index : in Natural := 1) return Boolean
+   is
+      sub : String (Pattern'First .. Pattern'Last);
+   begin
+      sub := Search (Start_Index .. Start_Index + Pattern'Length - 1);
+      return sub = Pattern;
+   exception
+      when Constraint_Error =>
+         return False;
+   end Starts_With;
+
 end Util.Strings;
