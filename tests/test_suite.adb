@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Test_Suite.IO;
+with Test_Suite.Strings;
 
 with Test_Suite.Main;
 with Test_Suite.CLI;
@@ -15,6 +16,7 @@ package body Test_Suite is
    begin
 
       Test_Suite.IO       .Add_Tests (Ret);
+      Test_Suite.Strings  .Add_Tests (Ret);
 
       Test_Suite.Main     .Add_Tests (Ret);
       Test_Suite.CLI      .Add_Tests (Ret);
