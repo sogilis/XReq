@@ -39,14 +39,18 @@ package body Test_Suite.IO is
       Assert (not End_Of_File (File),
               "Missing 1st line of test_data/file1.txt");
 
-      Assert (To_String (Get_Line (File)) = "First Line",
+      Assert (To_String (Get_Whole_Line (File)) = "First Line",
               "First line of test_data/file1.txt incorrect");
 
       Assert (not End_Of_File (File),
               "Missing 2nd line of test_data/file1.txt");
 
-      Assert (To_String (Get_Line (File)) = "Second Line",
-              "First line of test_data/file1.txt incorrect");
+      declare
+         s : constant String := Get_Whole_Line (File);
+      begin
+         Assert (s = "Second Line",
+                 "First line of test_data/file1.txt incorrect");
+      end;
 
       Assert (End_Of_File (File),
               "No 3rd line expected in test_data/file1.txt");
@@ -54,7 +58,7 @@ package body Test_Suite.IO is
       declare
          procedure P;
          procedure P is begin
-            Assert (To_String (Get_Line (File)) = Null_Unbounded_String,
+            Assert (To_String (Get_Whole_Line (File)) = Null_Unbounded_String,
                   "Get_Line shouldn't return a string when end of file");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
