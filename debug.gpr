@@ -3,7 +3,7 @@
 
 with "config";
 
-project Main is
+project Debug is
 
    for Languages   use ("Ada");
    for Main        use ("main");
@@ -12,15 +12,14 @@ project Main is
    for Exec_Dir    use "bin";
 
    package Builder is
-      for Default_Switches ("Ada") use Config.Ada_Default_Switches & ("-g");
-      for Executable ("main")  use "adaspec";
+      for Executable ("main") use "adaspec";
+      for Default_Switches ("Ada") use Config.Ada_Default_Switches_Debug;
    end Builder;
 
    package Compiler is
-      for Default_Switches ("Ada") use Config.Ada_Default_Switches & (
+      for Default_Switches ("Ada") use Config.Ada_Default_Switches_Debug & (
          "-gnatx",              -- Suppress generation of cross-reference 
                                 -- information
-         "-g",                  -- debug
          "-fprofile-arcs",      -- to use gcov
          "-ftest-coverage");    -- to use gcov
    end Compiler;
@@ -31,7 +30,8 @@ project Main is
    end Linker;
 
    package Binder is
-      for Default_Switches ("Ada") use ("-E");
+      for Default_Switches ("Ada") use (
+         "-E");                 -- ???
    end Binder;
 
-end Main;
+end Debug;

@@ -2,7 +2,7 @@
 -- kate: hl Ada; indent-width 3;
 
 with "aunit";
-with "main";
+with "debug";
 with "config";
 
 project Tests is
@@ -13,7 +13,7 @@ project Tests is
    for Object_Dir  use "obj";
    for Exec_Dir    use "bin";
 
-   Ada_Switches := Config.Ada_Default_Switches & ("-g", "-gnatQ");
+   Ada_Switches := Config.Ada_Default_Switches_Debug & ("-gnatQ");
 
    package Builder is
       for Executable ("test_main") use "tests";

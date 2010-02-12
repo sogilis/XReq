@@ -1,0 +1,28 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config";
+
+project Release is
+
+   for Languages   use ("Ada");
+   for Main        use ("main");
+   for Source_Dirs use ("src");
+   for Object_Dir  use "obj";
+   for Exec_Dir    use "bin";
+
+   package Builder is
+      for Executable ("main") use "adaspec";
+      for Default_Switches ("Ada") use Config.Ada_Default_Switches_Release;
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Config.Ada_Default_Switches_Release;
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use (
+         "-E");                 -- ???
+   end Binder;
+
+end Release;

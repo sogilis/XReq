@@ -2,6 +2,7 @@
 
 GNATMAKE=gnatmake
 TEST_SUITES=test coverage
+CONFIG=debug
 
 all: bin test doc
 
@@ -12,7 +13,7 @@ dir:
 	mkdir -p reports
 
 bin: dir
-	$(GNATMAKE) -P main.gpr
+	$(GNATMAKE) -P $(CONFIG).gpr
 
 test: dir
 	$(GNATMAKE) -P tests.gpr
@@ -53,7 +54,7 @@ coverage: test bin
 	$(MAKE) gcov
 
 gnatcheck: dir
-	cd reports && gnat check -P ../main.gpr -rules -from=../gnatcheck.rules
+	cd reports && gnat check -P ../$(CONFIG).gpr -rules -from=../gnatcheck.rules
 	cd reports && mv gnatcheck.out gnatcheck.main.out
 	cd reports && gnat check -P ../tests.gpr -rules -from=../gnatcheck.rules
 	cd reports && mv gnatcheck.out gnatcheck.tests.out

@@ -3,15 +3,23 @@
 
 abstract project Config is
 
-   Ada_Default_Switches := (
-      "-gnat05",
+   --  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
+
+   Ada_Default_Switches_Common := (
+      "-gnat05",        --  Ada 2005
       "-gnata",         --  Assertions enabled
       "-gnatwa",        --  All warnings
-      "-gnatwe",        --  Warnings as error
       "-gnatf",         --  Full errors
       "-gnato",         --  Check numeric overflow
       "-gnaty"          --  Style checking
---  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
+      );
+
+   Ada_Default_Switches_Release := Ada_Default_Switches_Common & (
+      "-gnatwe"         --  Warnings as error
+      );
+
+   Ada_Default_Switches_Debug := Ada_Default_Switches_Common & (
+      "-g"              --  Debug
       );
 
 end Config;
