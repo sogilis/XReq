@@ -4,7 +4,6 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.Strings;
 
-use Ada.Containers;
 use Ada.Strings.Unbounded;
 
 package AdaSpec.Features is
@@ -15,8 +14,8 @@ package AdaSpec.Features is
          Stanza : Unbounded_String;
       end record;
 
-   package Stanza_Container is new Vectors (Natural, Stanza_Type);
-   use Stanza_Container;
+   package Stanza_Container is
+      new Ada.Containers.Vectors (Natural, Stanza_Type);
 
    type Scenario_Type is
       record
@@ -24,8 +23,8 @@ package AdaSpec.Features is
          Stanzas : Stanza_Container.Vector;
       end record;
 
-   package Scenario_Container is new Vectors (Natural, Scenario_Type);
-   use Scenario_Container;
+   package Scenario_Container is
+      new Ada.Containers.Vectors (Natural, Scenario_Type);
 
    type Feature_File_Type is tagged
       record
@@ -46,5 +45,6 @@ package AdaSpec.Features is
    function  File_Name (F : in Feature_File_Type) return String;
    function  Parsed    (F : in Feature_File_Type) return Boolean;
    procedure Parse     (F : in out Feature_File_Type);
+   function  To_String (F : in Feature_File_Type) return String;
 
 end AdaSpec.Features;

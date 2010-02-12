@@ -20,4 +20,10 @@ package Util.Strings is
                          Pattern     : in String;
                          Start_Index : in Natural := 1) return Boolean;
 
+   function Trimed_Suffix (Source      : in Unbounded_String;
+                           Start_Index : in Natural) return Unbounded_String;
+
+   function Trimed_Suffix (Source      : in String;
+                           Start_Index : in Natural) return String;
+
 end Util.Strings;

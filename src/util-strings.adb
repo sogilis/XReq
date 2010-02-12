@@ -51,4 +51,29 @@ package body Util.Strings is
          return False;
    end Starts_With;
 
+
+
+   function Trimed_Suffix (Source      : in Unbounded_String;
+                           Start_Index : in Natural) return Unbounded_String
+   is
+   begin
+      return Unbounded_Slice (Source,
+                              Index_Non_Blank (Source, Start_Index),
+                              Length (Source));
+   exception
+      when Constraint_Error =>
+         return Null_Unbounded_String;
+   end Trimed_Suffix;
+
+
+   function Trimed_Suffix (Source      : in String;
+                           Start_Index : in Natural) return String
+   is
+   begin
+      return Source (Index_Non_Blank (Source, Start_Index) .. Source'Last);
+   exception
+      when Constraint_Error =>
+         return "";
+   end Trimed_Suffix;
+
 end Util.Strings;

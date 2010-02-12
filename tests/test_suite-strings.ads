@@ -14,6 +14,8 @@ package Test_Suite.Strings is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
    type Test_Find_Token is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
+   type Test_Trimed_Suffix is
+      new AUnit.Simple_Test_Cases.Test_Case with null record;
 
    --  Operation on Test_Starts_With
    function  Name     (T : in     Test_Starts_With)
@@ -23,6 +25,11 @@ package Test_Suite.Strings is
    --  Operation on Test_Find_Token
    function  Name     (T : in     Test_Find_Token) return AUnit.Message_String;
    procedure Run_Test (T : in out Test_Find_Token);
+
+   --  Operation on Test_Trimed_Suffix
+   function  Name     (T : in     Test_Trimed_Suffix)
+                      return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_Trimed_Suffix);
 
 end Test_Suite.Strings;
 

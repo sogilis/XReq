@@ -1,10 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Exceptions;
 with Ada.Strings.Unbounded;
+with Ada.Text_IO;
 with AUnit.Assertions;
 with Util.Strings;
 
+use Ada.Exceptions;
 use Ada.Strings.Unbounded;
+use Ada.Text_IO;
 use AUnit.Assertions;
 use Util.Strings;
 
@@ -16,6 +20,7 @@ package body Test_Suite.Strings is
    begin
       Ret.Add_Test (new Test_Starts_With);
       Ret.Add_Test (new Test_Find_Token);
+      Ret.Add_Test (new Test_Trimed_Suffix);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -86,6 +91,48 @@ package body Test_Suite.Strings is
       Assert (Index = 6,
               "@tk1 not at the correct position. Found: " &
               Natural'Image (Index) & " instead of 6");
+
+   end Run_Test;
+
+   --  Test_Find_Token  -------------------------------------------------------
+
+   function  Name (T : in Test_Trimed_Suffix) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("Util.Strings.Trimed_Suffix");
+   end Name;
+
+   procedure Run_Test (T : in out Test_Trimed_Suffix) is
+      pragma Unreferenced (T);
+
+      function Call (Source : in String;
+                     Start_Index : in Natural) return String;
+      function Call (Source : in String;
+                     Start_Index : in Natural) return String is
+         Result1 : constant String := Trimed_Suffix (Source, Start_Index);
+         Result2 : constant String := To_String (
+                   Trimed_Suffix (To_Unbounded_String (Source), Start_Index));
+      begin
+         Assert (Result1 = Result2, "Trimed_Suffix is not the same for " &
+                 "type String and Unbounded_String. '" & Result1 & "' /= '" &
+                 Result2 & "'");
+         return Result1;
+      end Call;
+   begin
+
+      Assert (Call ("   ABC   DEF  ",  1) = "ABC   DEF  ", "Error1");
+      Assert (Call ("   ABC   DEF  ",  4) = "ABC   DEF  ", "Error2");
+      Assert (Call ("   ABC   DEF  ",  5) =  "BC   DEF  ", "Error3");
+      Assert (Call ("   ABC   DEF  ",  7) =       "DEF  ", "Error4");
+      Assert (Call ("   ABC   DEF  ", 13) =            "", "Error5");
+      Assert (Call ("   ABC   DEF  ", 20) =            "", "Error6");
+      Assert (Call ("",               22) =            "", "Error7");
+      Assert (Call ("",                0) =            "", "Error8");
+
+   exception
+      when Error : others =>
+         Put_Line (Exception_Information (Error));
+         Reraise_Occurrence (Error);
 
    end Run_Test;
 
