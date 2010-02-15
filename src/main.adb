@@ -51,8 +51,9 @@ begin
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
          raise Not_Yet_Implemented with "--lang";
 
---       else
---          raise Invalid_Switch;
+      --  Never happen unless a bug in Getopt   --  GCOV_IGNORE
+      else                                      --  GCOV_IGNORE
+         raise Invalid_Switch;                  --  GCOV_IGNORE
 
       end if;
 

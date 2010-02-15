@@ -145,40 +145,42 @@ package body Coverage_Suite is
          Found : Boolean := False;
       begin
 
-         if Index (Line, "GCOV_IGNORE") in Line'Range then
-            Put_Line ("Ignore line: " & Name (File) & ": " & Line);
-            Status := Gcov_Line_Ignored;
-            Found  := True;
-         else
-
-            Loop_Characters :
-            for i in Line'Range loop
-               case Line (i) is
-                  when ' ' =>
-                     null;
-                  when '#' =>
+         Loop_Characters :
+         for i in Line'Range loop
+            case Line (i) is
+               when ' ' =>
+                  null;
+               when '#' =>
+                  if Index (Line, "GCOV_IGNORE") in Line'Range then
+                     Put_Line ("Ignore line: " & Name (File) & ": " & Line);
+                     Status := Gcov_Line_Ignored;
+                  else
                      Status := Gcov_Line_Dead;
-                     Found := True;
-                     exit Loop_Characters;
-                  when '-' =>
-                     Status := Gcov_Line_Blank;
-                     Found := True;
-                     exit Loop_Characters;
-                  when '0' .. '9' =>
-                     Status := Gcov_Line_Alive;
-                     Found := True;
-                     exit Loop_Characters;
-                  when others =>
+                  end if;
+                  Found := True;
+                  exit Loop_Characters;
+               when '-' =>
+                  Status := Gcov_Line_Blank;
+                  Found := True;
+                  exit Loop_Characters;
+               when '0' .. '9' =>
+                  Status := Gcov_Line_Alive;
+                  Found := True;
+                  exit Loop_Characters;
+               when others =>
+                  if Index (Line, "GCOV_IGNORE") in Line'Range then
+                     Put_Line ("Ignore line: " & Name (File) & ": " & Line);
+                     Status := Gcov_Line_Ignored;
+                  else
                      Status := Gcov_Line_Error;
-                     Found := True;
-                     exit Loop_Characters;
-               end case;
-            end loop Loop_Characters;
+                  end if;
+                  Found := True;
+                  exit Loop_Characters;
+            end case;
+         end loop Loop_Characters;
 
-            if not Found then
-               Status := Gcov_Line_Error;
-            end if;
-
+         if not Found then
+            Status := Gcov_Line_Error;
          end if;
       end;
    exception
