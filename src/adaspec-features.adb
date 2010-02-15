@@ -5,6 +5,71 @@ with Util.IO;
 
 package body AdaSpec.Features is
 
+   -------------------------------------
+   --  Stanza_Type  --  Stanza_Given  --
+   -------------------------------------
+
+   function Stanza_Given (S : in String) return Stanza_Type is begin
+      return Stanza_Type'(Prefix => Prefix_Given,
+                          Stanza => To_Unbounded_String (S));
+   end Stanza_Given;
+
+   ------------------------------------
+   --  Stanza_Type  --  Stanza_When  --
+   ------------------------------------
+
+   function Stanza_When  (S : in String) return Stanza_Type is begin
+      return Stanza_Type'(Prefix => Prefix_When,
+                          Stanza => To_Unbounded_String (S));
+   end Stanza_When;
+
+   ------------------------------------
+   --  Stanza_Type  --  Stanza_Then  --
+   ------------------------------------
+
+   function Stanza_Then  (S : in String) return Stanza_Type is begin
+      return Stanza_Type'(Prefix => Prefix_Then,
+                          Stanza => To_Unbounded_String (S));
+   end Stanza_Then;
+
+   --------------------------
+   --  Scenario  --  Make  --
+   --------------------------
+
+   procedure Make   (Scenario : out    Scenario_Type;
+                     Name     : in     String := "")
+   is
+      S : Scenario_Type := Null_Scenario;
+   begin
+      S.Name   := To_Unbounded_String (Name);
+      Scenario := S;
+   end Make;
+
+   ----------------------------
+   --  Scenario  --  Append  --
+   ----------------------------
+
+   procedure Append (Scenario : in out Scenario_Type;
+                     Stanza   : in     Stanza_Type)
+   is
+      use Stanza_Container;
+   begin
+      Append (Scenario.Stanzas, Stanza);
+   end Append;
+
+   ------------------------------
+   --  Feature_Type  --  Make  --
+   ------------------------------
+
+   procedure Make (F      : out    Feature_Type;
+                   Name   : in     String := "")
+   is
+      Feature : Feature_Type := Null_Feature;
+   begin
+      Feature.Name := To_Unbounded_String (Name);
+      F := Feature;
+   end Make;
+
    --------------------------------
    --  Feature_Type  --  Parsed  --
    --------------------------------
@@ -33,15 +98,28 @@ package body AdaSpec.Features is
       return To_String (F.Name);
    end Name;
 
+   ------------------------------------------------
+   --  Feature_File_Type  --  Null_Feature_File  --
+   ------------------------------------------------
+
+   function Null_Feature_File return Feature_File_Type is
+      F : Feature_File_Type;
+   begin
+      return F;
+   end Null_Feature_File;
+
    -----------------------------------
    --  Feature_File_Type  --  Make  --
    -----------------------------------
 
-   procedure Make (F         : in out Feature_File_Type;
-                   File_Name : in String) is
+   procedure Make (F         : out Feature_File_Type;
+                   File_Name : in  String)
+   is
+      Feature : Feature_File_Type := Null_Feature_File;
    begin
-      F.File_Name := To_Unbounded_String (File_Name);
-      F.Parsed    := False;
+      Feature.File_Name := To_Unbounded_String (File_Name);
+      Feature.Parsed    := False;
+      F := Feature;
    end Make;
 
    ------------------------------------
@@ -292,5 +370,36 @@ package body AdaSpec.Features is
       return To_String (Res);
    end To_String;
 
+   ------------------------------
+   --  Feature_Type  --  Same  --
+   ------------------------------
+
+   function Same (F1, F2 : in Feature_Type'Class) return Boolean is
+   begin
+      return False;
+   end Same;
+
+   --------------------------------
+   --  Feature_Type  --  Append  --
+   --------------------------------
+
+   procedure Append         (F      : in out Feature_Type;
+                             S      : in     Scenario_Type)
+   is
+      use Scenario_Container;
+   begin
+      Append (F.Scenarios, S);
+   end Append;
+
+   ----------------------------------------
+   --  Feature_Type  --  Set_Background  --
+   ----------------------------------------
+
+   procedure Set_Background (F      : in out Feature_Type;
+                             Bg     : in     Scenario_Type)
+   is
+   begin
+      F.Background := Bg;
+   end Set_Background;
 
 end AdaSpec.Features;

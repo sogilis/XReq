@@ -24,6 +24,8 @@ package body Test_Suite.Features is
    is
    begin
       Ret.Add_Test (new Test_1);
+      Ret.Add_Test (new Test_2);
+      Ret.Add_Test (new Test_3);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
@@ -147,6 +149,85 @@ package body Test_Suite.Features is
 
       Assert (To_String (Feature) = Canonical_Feature_Text,
               "To_String do not match the canonical text");
+
+   exception
+      when Error : others =>
+         Put_Line (Exception_Information (Error));
+         Reraise_Occurrence (Error);
+
+   end Run_Test;
+
+   --  Test_2  ----------------------------------------------------------------
+
+   function  Name (T : in Test_2) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AdaSpec.Features.Same simplest2.feature");
+   end Name;
+
+   procedure Run_Test (T : in out Test_2) is
+      pragma Unreferenced (T);
+      use Ada.Text_IO;
+
+      Feature1 : Feature_Type := Null_Feature;
+      Feature2 : Feature_File_Type;
+      File     : constant String := "tests/features/simplest2.feature";
+      Scenario : Scenario_Type;
+
+   begin
+
+      Make (Feature1, "Sample2");
+
+      Assert (Name   (Feature1) = "Sample2", "Incorrect feature name");
+      Assert (Parsed (Feature1), "Feature_Type is always parsed");
+
+      Make   (Scenario, "Run a good step");
+      Append (Scenario, Stanza_Given ("this step works"));
+      Append (Scenario, Stanza_Given ("I am in front of a cake machine"));
+      Append (Scenario, Stanza_When  ("I insert money"));
+      Append (Scenario, Stanza_When  ("I push the button"));
+      Append (Scenario, Stanza_Then  ("I get a cake"));
+      Append (Feature1, Scenario);
+
+      Make   (Scenario, "Background");
+      Append (Scenario, Stanza_Given ("this step works"));
+      Set_Background (Feature1, Scenario);
+
+      Make  (Feature2, File);
+      Parse (Feature2);
+
+      Put_Line ("Feature1:");
+      Put_Line (To_String (Feature1));
+      Put_Line ("Feature2:");
+      Put_Line (To_String (Feature2));
+
+      Assert (To_String (Feature1) = To_String (Feature_Type (Feature2)),
+              "The two features text representation must be the same");
+
+      Assert (Same (Feature1, Feature2), "The two features must be the same");
+
+   exception
+      when Error : others =>
+         Put_Line (Exception_Information (Error));
+         Reraise_Occurrence (Error);
+
+   end Run_Test;
+
+
+   --  Test_3  ----------------------------------------------------------------
+
+   function  Name (T : in Test_3) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AdaSpec.Features null test");
+   end Name;
+
+   procedure Run_Test (T : in out Test_3) is
+      pragma Unreferenced (T);
+      use Ada.Text_IO;
+   begin
+
+      null;
 
    exception
       when Error : others =>
