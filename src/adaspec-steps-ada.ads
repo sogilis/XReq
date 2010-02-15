@@ -19,11 +19,17 @@ package AdaSpec.Steps.Ada is
    procedure Make (S         : out Ada_Step_File_Type;
                    File_Name : in  String);
 
-   overriding function  Parsed    (S : in Ada_Step_File_Type) return Boolean;
-   overriding procedure Parse     (S : in out Ada_Step_File_Type);
+   overriding function  Parsed    (S       : in     Ada_Step_File_Type)
+                                            return Boolean;
+   overriding procedure Parse     (S      : in out Ada_Step_File_Type);
 
-   overriding function  Contains  (S      : in Ada_Step_File_Type;
-                                   Stanza : in Stanza_Type) return Boolean;
+   overriding function  Contains  (S      : in     Ada_Step_File_Type;
+                                   Stanza : in     Stanza_Type)
+                                            return Boolean;
+
+   overriding function  Find      (S      : in     Ada_Step_File_Type;
+                                   Stanza : in     Stanza_Type)
+                                            return String;
 
 private
 
@@ -32,6 +38,7 @@ private
          Prefix    : Prefix_Type;
          Pattern_R : Regexp;
          Pattern_S : Unbounded_String;
+         Proc_Name : Unbounded_String;
       end record;
 
    package Step_Container is new Vectors (Natural, Step_Type);

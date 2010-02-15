@@ -24,6 +24,9 @@ package AdaSpec.Steps is
    function  Contains  (S      : in Step_File_Type;
                         Stanza : in Stanza_Type) return Boolean is abstract;
 
+   function  Find      (S      : in Step_File_Type;
+                        Stanza : in Stanza_Type) return String is abstract;
+
 private
 
    type Step_File_Type is abstract tagged

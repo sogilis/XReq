@@ -74,6 +74,12 @@ package body Test_Suite.Steps.Ada is
       Assert (not Contains (Step, Stanza_Given (Given2)),
               "Step should not contain """ & Given2 & """");
 
+      Assert (Find (Step, Stanza_Given (Given1)) = "Steps.This_Step_Works",
+              "`Given " & Given1 & "' should find `Steps.This_Step_Works'");
+
+      Assert (Find (Step, Stanza_Given (Given2)) = "",
+              "`Given " & Given2 & "' should find '");
+
    end Run_Test;
 
    --  Parse_Directory  -------------------------------------------------------
