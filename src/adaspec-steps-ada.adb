@@ -123,8 +123,7 @@ package body AdaSpec.Steps.Ada is
    ----------------
 
    function  Contains  (S      : in Ada_Step_File_Type;
-                        Prefix : in Prefix_Type;
-                        Phrase : in String) return Boolean
+                        Stanza : in Stanza_Type) return Boolean
    is
       Step  : Step_Type;
       Found : Boolean := False;
@@ -137,7 +136,9 @@ package body AdaSpec.Steps.Ada is
       --  Look for the phrase
       For_Loop : for i in S.Steps.First_Index .. S.Steps.Last_Index loop
          Step  := S.Steps.Element (i);
-         if Step.Prefix = Prefix and Match (Phrase, Step.Pattern_R) then
+         if Step.Prefix = Stanza.Prefix and
+            Match (To_String (Stanza.Stanza), Step.Pattern_R)
+         then
             Found := True;
             exit For_Loop;
          end if;

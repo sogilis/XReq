@@ -4,6 +4,7 @@ with Ada.Containers;
 with Ada.Directories;
 with AUnit.Assertions;
 with AdaSpec;
+with AdaSpec.Stanzas;
 with AdaSpec.Steps;
 with AdaSpec.Steps.Ada;
 
@@ -11,6 +12,7 @@ use Ada.Containers;
 use Ada.Directories;
 use AUnit.Assertions;
 use AdaSpec;
+use AdaSpec.Stanzas;
 use AdaSpec.Steps;
 use AdaSpec.Steps.Ada;
 
@@ -52,7 +54,7 @@ package body Test_Suite.Steps.Ada is
          Foo : Boolean;
          procedure P;
          procedure P is begin
-            Foo := Contains (Step, Prefix_Given, Given1);
+            Foo := Contains (Step, Stanza_Given (Given1));
             Assert (Foo and not Foo, "Should never reach here");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
@@ -66,10 +68,10 @@ package body Test_Suite.Steps.Ada is
       Assert (Parsed (Step),
               "Step has not been parsed after invoking Parse");
 
-      Assert (Contains (Step, Prefix_Given, Given1),
+      Assert (Contains (Step, Stanza_Given (Given1)),
               "Step should contain """ & Given1 & """");
 
-      Assert (not Contains (Step, Prefix_Given, Given2),
+      Assert (not Contains (Step, Stanza_Given (Given2)),
               "Step should not contain """ & Given2 & """");
 
    end Run_Test;
@@ -105,7 +107,7 @@ package body Test_Suite.Steps.Ada is
 
       Assert (Parsed (Step.all), "Should have parsed the step definition");
 
-      Assert (Contains (Step.all, Prefix_Given, "this step works"),
+      Assert (Contains (Step.all, Stanza_Given ("this step works")),
               "The step definition should contain `Given this step works'");
 
    end Run_Test;

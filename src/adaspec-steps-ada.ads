@@ -23,8 +23,7 @@ package AdaSpec.Steps.Ada is
    overriding procedure Parse     (S : in out Ada_Step_File_Type);
 
    overriding function  Contains  (S      : in Ada_Step_File_Type;
-                                   Prefix : in Prefix_Type;
-                                   Phrase : in String) return Boolean;
+                                   Stanza : in Stanza_Type) return Boolean;
 
 private
 

@@ -2,8 +2,10 @@
 
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
+with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use AdaSpec.Stanzas;
 
 package AdaSpec.Steps is
 
@@ -20,8 +22,7 @@ package AdaSpec.Steps is
    procedure Parse     (S : in out Step_File_Type) is abstract;
 
    function  Contains  (S      : in Step_File_Type;
-                        Prefix : in Prefix_Type;
-                        Phrase : in String) return Boolean is abstract;
+                        Stanza : in Stanza_Type) return Boolean is abstract;
 
 private
 
