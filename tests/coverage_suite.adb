@@ -4,6 +4,8 @@ with Ada.Text_IO;
 with Ada.Directories;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
+with Ada.IO_Exceptions;
+with Util.IO;
 with AUnit.Assertions;
 
 use Ada.Text_IO;
@@ -110,7 +112,8 @@ package body Coverage_Suite is
       Read_Gcov (To_String (T.Path), Count, Covered, Error);
 
       Assert (Count /= 0,
-              "File: reports/" & To_String (T.File) & " error, non executable file");
+              "File: reports/" & To_String (T.File) & " " &
+              "error, non executable file");
 
       if Count = 0 then
          Ratio   := 100.00;
@@ -133,57 +136,53 @@ package body Coverage_Suite is
    procedure Read_Gcov_Line (File   : in out File_Type;
                              Status : out    Gcov_Line_Type)
    is
-      Line      : String (1 .. 15);
-      Last      : Natural := Line'Last;
-      Found     : Boolean := False;
-      First_Run : Boolean := True;
+      use Ada.Strings.Fixed;
+      use Util.IO;
    begin
-      Get_Line (File, Line, Last);
-      if Last = 0 then
-         Status := Gcov_End_Of_File;
-      else
-         while First_Run or Last = Line'Last loop
-            if not First_Run then
-               Get_Line (File, Line, Last);
-            else
-               First_Run := False;
-            end if;
-            --  If we already found the information we needed, don't parse the
-            --  line. Else look for the first non space character to know if
-            --  the line has been executed (digit), or has not ('#'). The
-            --  character '-' means that the line do not contain instructions.
+
+      declare
+         Line  : String  := Get_Whole_Line (File);
+         Found : Boolean := False;
+      begin
+
+         if Index (Line, "GCOV_IGNORE") in Line'Range then
+            Put_Line ("Ignore line: " & Name (File) & ": " & Line);
+            Status := Gcov_Line_Ignored;
+            Found  := True;
+         else
+
+            Loop_Characters :
+            for i in Line'Range loop
+               case Line (i) is
+                  when ' ' =>
+                     null;
+                  when '#' =>
+                     Status := Gcov_Line_Dead;
+                     Found := True;
+                     exit Loop_Characters;
+                  when '-' =>
+                     Status := Gcov_Line_Blank;
+                     Found := True;
+                     exit Loop_Characters;
+                  when '0' .. '9' =>
+                     Status := Gcov_Line_Alive;
+                     Found := True;
+                     exit Loop_Characters;
+                  when others =>
+                     Status := Gcov_Line_Error;
+                     Found := True;
+                     exit Loop_Characters;
+               end case;
+            end loop Loop_Characters;
+
             if not Found then
-               Loop_Characters :
-               for i in Line'First .. Last loop
-                  case Line (i) is
-                     when ' ' =>
-                        null;
-                     when '#' =>
-                        Status := Gcov_Line_Dead;
-                        Found := True;
-                        exit Loop_Characters;
-                     when '-' =>
-                        Status := Gcov_Line_Blank;
-                        Found := True;
-                        exit Loop_Characters;
-                     when '0' .. '9' =>
-                        Status := Gcov_Line_Alive;
-                        Found := True;
-                        exit Loop_Characters;
-                     when others =>
-                        Status := Gcov_Line_Error;
-                        Found := True;
-                        exit Loop_Characters;
-                  end case;
-               end loop Loop_Characters;
+               Status := Gcov_Line_Error;
             end if;
-         end loop;
-         if not Found then
-            Status := Gcov_Line_Error;
+
          end if;
-      end if;
+      end;
    exception
-      when End_Error =>
+      when Ada.IO_Exceptions.End_Error =>
          Status := Gcov_End_Of_File;
    end Read_Gcov_Line;
 
@@ -198,10 +197,12 @@ package body Coverage_Suite is
       Error        : Integer := -1;
       Line_Number  : Integer :=  1;
    begin
+--       Put_Line ("File: " & Filename);
       Open (File, In_File, Filename);
 
       while Error = -1 and Status /= Gcov_End_Of_File loop
          Read_Gcov_Line (File, Status);
+--          Put_Line ("   " & Status'Img);
          case Status is
             when Gcov_Line_Error =>
                Error := Line_Number;

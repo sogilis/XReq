@@ -49,7 +49,7 @@ package body Util.Strings is
    exception
       when Constraint_Error =>
          return False;
-   end Starts_With;
+   end Starts_With; --  GCOV_IGNORE
 
 
 

@@ -9,7 +9,8 @@ package Util.Strings is
 
    package Vectors is new Ada.Containers.Vectors (Natural, Unbounded_String);
 
-   type String_List is array (Positive range <>) of Unbounded_String;
+   type String_List is  --  GCOV_IGNORE
+      array (Positive range <>) of Unbounded_String;
 
    procedure Find_Token (Search     : in String;
                          Tokens     : in String_List;
@@ -23,7 +24,7 @@ package Util.Strings is
    function Trimed_Suffix (Source      : in Unbounded_String;
                            Start_Index : in Natural) return Unbounded_String;
 
-   function Trimed_Suffix (Source      : in String;
+   function Trimed_Suffix (Source      : in String;  --  GCOV_IGNORE
                            Start_Index : in Natural) return String;
 
 end Util.Strings;

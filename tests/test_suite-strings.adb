@@ -107,6 +107,7 @@ package body Test_Suite.Strings is
 
       function Call (Source : in String;
                      Start_Index : in Natural) return String;
+
       function Call (Source : in String;
                      Start_Index : in Natural) return String is
          Result1 : constant String := Trimed_Suffix (Source, Start_Index);
@@ -118,6 +119,7 @@ package body Test_Suite.Strings is
                  Result2 & "'");
          return Result1;
       end Call;
+
    begin
 
       Assert (Call ("   ABC   DEF  ",  1) = "ABC   DEF  ", "Error1");

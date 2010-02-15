@@ -29,6 +29,7 @@ private
                            Gcov_Line_Alive,
                            Gcov_Line_Dead,
                            Gcov_Line_Blank,
+                           Gcov_Line_Ignored,
                            Gcov_End_Of_File);
 
    procedure Read_Gcov_Line (File   : in out Ada.Text_IO.File_Type;
