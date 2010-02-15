@@ -48,8 +48,9 @@ package body AdaSpec.Job is
    procedure Run (Job    : in  Job_Type;
                   Result : out Job_Result_Type)
    is
+      Res : Job_Result_Type;
    begin
-      null;
+      Result := Res;
    end Run;
 
 
