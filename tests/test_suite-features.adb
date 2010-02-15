@@ -56,6 +56,9 @@ package body Test_Suite.Features is
 
    begin
 
+      Assert (not Parsed (Feature),
+              "Feature has been parsed without invoking Make");
+
       declare
          procedure P;
          procedure P is
@@ -71,6 +74,12 @@ package body Test_Suite.Features is
 
       Make (Feature, File);
 
+      Assert (File_Name (Feature) = File,
+              "Feature filename (" & File_Name (Feature) & ") is incorrect");
+
+      Assert (not Parsed (Feature),
+              "Feature has been parsed without invoking Parse");
+
       declare
          procedure P;
          procedure P is
@@ -84,20 +93,14 @@ package body Test_Suite.Features is
          Assert_Exception_Raised ("2:To_String should raise Unparsed_Feature");
       end;
 
-      Assert (File_Name (Feature) = File,
-              "Feature filename (" & File_Name (Feature) & ") is incorrect");
-
-      Assert (not Parsed (Feature),
-              "Feature has been parsed without invoking Parse");
-
       Parse (Feature);
-
-      Put_Line (To_String (Feature));
 
       Assert (Parsed (Feature),
               "Feature has not been parsed after invoking Parse");
 
-      Assert (To_String (Feature.Name) = "Sample",
+      Put_Line (To_String (Feature));
+
+      Assert (Feature.Name = "Sample",
               "Feature name incorrect");
 
       Assert (Integer (Length (Feature.Description)) = 0,

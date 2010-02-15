@@ -5,6 +5,38 @@ with Util.IO;
 
 package body AdaSpec.Features is
 
+   --------------------------------
+   --  Feature_Type  --  Parsed  --
+   --------------------------------
+
+   function Parsed (F : in Feature_Type) return Boolean is
+      pragma Unreferenced (F);
+   begin
+      return True;
+   end Parsed;
+
+   -------------------------------------
+   --  Feature_File_Type  --  Parsed  --
+   -------------------------------------
+
+   function Parsed (F : in Feature_File_Type) return Boolean is
+   begin
+      return F.Parsed;
+   end Parsed;
+
+   ------------------------------
+   --  Feature_Type  --  Name  --
+   ------------------------------
+
+   function Name (F : in Feature_Type) return String is
+   begin
+      return To_String (F.Name);
+   end Name;
+
+   -----------------------------------
+   --  Feature_File_Type  --  Make  --
+   -----------------------------------
+
    procedure Make (F         : in out Feature_File_Type;
                    File_Name : in String) is
    begin
@@ -12,12 +44,13 @@ package body AdaSpec.Features is
       F.Parsed    := False;
    end Make;
 
-   function  Parsed (F : in Feature_File_Type) return Boolean is
-   begin
-      return F.Parsed;
-   end Parsed;
+   ------------------------------------
+   --  Feature_File_Type  --  Parse  --
+   ------------------------------------
 
    procedure Parse (F : in out Feature_File_Type) is
+
+      Self : constant access Feature_File_Type'Class := F'Access;
 
       use Ada.Text_IO;
       use Util.IO;
@@ -57,9 +90,9 @@ package body AdaSpec.Features is
       begin
          Add_Stanza;
          if State = M_Scenario then
-            Append (F.Scenarios, Current_Scenario);
+            Append (Self.Scenarios, Current_Scenario);
          elsif State = M_Background then
-            F.Background.Stanzas := Current_Scenario.Stanzas;
+            Self.Background.Stanzas := Current_Scenario.Stanzas;
          end if;
          Current_Scenario.Name := Null_Unbounded_String;
          Clear (Current_Scenario.Stanzas);
@@ -74,7 +107,7 @@ package body AdaSpec.Features is
       end Add_Stanza;
 
    begin
-      Open (File, In_File, To_String (F.File_Name));
+      Open (File, In_File, To_String (Self.File_Name));
       while not End_Of_File (File) loop
          --
          --  Read Line
@@ -93,7 +126,7 @@ package body AdaSpec.Features is
                if Starts_With_K (K_Feature) then
                   State := M_Feature;
                   Stanza_State := Prefix_None;
-                  F.Name := Trimed_Suffix (Line_S,
+                  Self.Name := Trimed_Suffix (Line_S,
                                            Idx_Start + K_Feature'Length);
                end if;
 
@@ -104,7 +137,7 @@ package body AdaSpec.Features is
                   Add_Scenario;
                   State := M_Background;
                   Stanza_State := Prefix_None;
-                  F.Background.Name :=
+                  Self.Background.Name :=
                      Trimed_Suffix (Line_S, Idx_Start + K_Background'Length);
 
                --  Found "Scenario: Name"
@@ -123,7 +156,7 @@ package body AdaSpec.Features is
                   Add_Scenario;
                   State := M_Background;
                   Stanza_State := Prefix_None;
-                  F.Background.Name :=
+                  Self.Background.Name :=
                      Trimed_Suffix (Line_S, Idx_Start + K_Background'Length);
 
                --  Found "Scenario: Name"
@@ -174,8 +207,12 @@ package body AdaSpec.Features is
       end loop;
       Add_Scenario;
       Close (File);
-      F.Parsed := True;
+      Self.Parsed := True;
    end Parse;
+
+   ----------------------------------------
+   --  Feature_File_Type  --  File_Name  --
+   ----------------------------------------
 
    function  File_Name (F : in Feature_File_Type) return String is
    begin
@@ -183,7 +220,25 @@ package body AdaSpec.Features is
    end File_Name;
 
 
+   ----------------------------------------
+   --  Feature_File_Type  --  To_String  --
+   ----------------------------------------
+
    function To_String (F : in Feature_File_Type) return String is
+      CRLF : constant String := ASCII.CR & ASCII.LF;
+   begin
+      return "# File: " & To_String (F.File_Name) & CRLF &
+             To_String (Feature_Type (F));
+   end To_String;
+
+
+   -----------------------------------
+   --  Feature_Type  --  To_String  --
+   -----------------------------------
+
+   function To_String (F : in Feature_Type) return String is
+
+      Self : constant access constant Feature_Type'Class := F'Access;
 
       use Scenario_Container;
       CRLF : constant String := ASCII.CR & ASCII.LF;
@@ -219,10 +274,9 @@ package body AdaSpec.Features is
       end Output_Stanzas;
 
    begin
-      if not F.Parsed then
+      if not Parsed (Self.all) then
          raise Unparsed_Feature;
       end if;
-      Append (Res, "# File: " & To_String (F.File_Name) & CRLF);
       Append (Res, "Feature: " & To_String (F.Name) & CRLF);
       Append (Res, CRLF);
       Append (Res, "  Background: " & To_String (F.Background.Name) & CRLF);
@@ -237,5 +291,6 @@ package body AdaSpec.Features is
       end loop;
       return To_String (Res);
    end To_String;
+
 
 end AdaSpec.Features;
