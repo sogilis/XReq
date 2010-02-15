@@ -5,6 +5,7 @@ with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with AUnit.Assertions;
 with AdaSpec;
+with AdaSpec.Stanzas;
 with AdaSpec.Features;
 with Util.Strings;
 
@@ -12,8 +13,9 @@ use Ada.Exceptions;
 use Ada.Strings.Unbounded;
 use AUnit.Assertions;
 use AdaSpec;
+use AdaSpec.Stanzas;
+use AdaSpec.Stanzas.Stanza_Container;
 use AdaSpec.Features;
-use AdaSpec.Features.Stanza_Container;
 use AdaSpec.Features.Scenario_Container;
 use Util.Strings.Vectors;
 

@@ -3,28 +3,12 @@
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.Strings;
+with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use AdaSpec.Stanzas;
 
 package AdaSpec.Features is
-
-   -------------------
-   --  Stanza_Type  --
-   -------------------
-
-   type Stanza_Type is
-      record
-         Prefix : Prefix_Type;
-         Stanza : Unbounded_String;
-      end record;
-   Null_Stanza : Stanza_Type;
-
-   package Stanza_Container is
-      new Ada.Containers.Vectors (Natural, Stanza_Type, "=");
-
-   function Stanza_Given (S : in String) return Stanza_Type;
-   function Stanza_When  (S : in String) return Stanza_Type;
-   function Stanza_Then  (S : in String) return Stanza_Type;
 
    ---------------------
    --  Scenario_Type  --
