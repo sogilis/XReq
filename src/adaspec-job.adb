@@ -6,6 +6,10 @@ use Ada.Directories;
 
 package body AdaSpec.Job is
 
+   ----------------
+   --  Describe  --
+   ----------------
+
    function Describe (Job : in Job_Type) return String is
       CRLF : constant String := ASCII.CR & ASCII.LF;
    begin
@@ -13,6 +17,10 @@ package body AdaSpec.Job is
              "Steps in:    " & To_String (Job.Step_Dir) & CRLF &
              "Generate in: " & To_String (Job.Out_Dir)  & CRLF;
    end Describe;
+
+   --------------------
+   --  Fill_Missing  --
+   --------------------
 
    procedure Fill_Missing (Job : in out Job_Type) is
    begin
@@ -32,5 +40,17 @@ package body AdaSpec.Job is
       end if;
 
    end Fill_Missing;
+
+   -----------
+   --  Run  --
+   -----------
+
+   procedure Run (Job    : in  Job_Type;
+                  Result : out Job_Result_Type)
+   is
+   begin
+      null;
+   end Run;
+
 
 end AdaSpec.Job;

@@ -17,6 +17,7 @@ package body Test_Suite.Job is
       Ret.Add_Test (new Test_Describe);
       Ret.Add_Test (new Test_Fill_Missing);
       Ret.Add_Test (new Test_Fill_Missing_2);
+      Ret.Add_Test (new Test_Run);
    end Add_Tests;
 
    --  Describe  --------------------------------------------------------------
@@ -61,6 +62,8 @@ package body Test_Suite.Job is
       Assert (To_String (Job.Out_Dir)  = "A/B/tests", "Incorrect out dir");
    end Run_Test;
 
+   --  Fill_Missing (2) -------------------------------------------------------
+
    function  Name (T : in Test_Fill_Missing_2) return AUnit.Message_String is
       pragma Unreferenced (T);
    begin
@@ -82,6 +85,25 @@ package body Test_Suite.Job is
          Assert_Exception_Raised ("Invalid Job");
       end;
 
+   end Run_Test;
+
+   --  Fill_Missing (2) -------------------------------------------------------
+
+   function  Name (T : in Test_Run) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AsaSpec.Job.Run");
+   end Name;
+
+   procedure Run_Test (T : in out Test_Run) is
+      pragma Unreferenced (T);
+      Job  : constant Job_Type := (
+         Feature  => To_Unbounded_String ("tests/features/simplest.feature"),
+         Step_Dir => To_Unbounded_String ("tests/features/step_definitions"),
+         Out_Dir  => To_Unbounded_String ("tests/features/tests"));
+      Res  : Job_Result_Type;
+   begin
+      Run (Job, Res);
    end Run_Test;
 
 end Test_Suite.Job;
