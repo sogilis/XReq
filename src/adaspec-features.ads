@@ -20,7 +20,7 @@ package AdaSpec.Features is
    Null_Stanza : Stanza_Type;
 
    package Stanza_Container is
-      new Ada.Containers.Vectors (Natural, Stanza_Type);
+      new Ada.Containers.Vectors (Natural, Stanza_Type, "=");
 
    function Stanza_Given (S : in String) return Stanza_Type;
    function Stanza_When  (S : in String) return Stanza_Type;
@@ -38,7 +38,7 @@ package AdaSpec.Features is
    Null_Scenario : Scenario_Type;
 
    package Scenario_Container is
-      new Ada.Containers.Vectors (Natural, Scenario_Type);
+      new Ada.Containers.Vectors (Natural, Scenario_Type, "=");
 
    procedure Make   (Scenario : out    Scenario_Type;
                      Name     : in     String := "");

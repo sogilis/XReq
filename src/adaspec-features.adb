@@ -375,8 +375,14 @@ package body AdaSpec.Features is
    ------------------------------
 
    function Same (F1, F2 : in Feature_Type'Class) return Boolean is
+      use Util.Strings.Vectors;
+      use Scenario_Container;
    begin
-      return False;
+      return
+         F1.Name        = F2.Name and
+         F1.Description = F2.Description and
+         F1.Background  = F2.Background and
+         F1.Scenarios   = F2.Scenarios;
    end Same;
 
    --------------------------------
