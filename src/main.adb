@@ -26,6 +26,10 @@ procedure Main is
 
 begin
 
+   -------------------
+   --  Get Options  --
+   -------------------
+
    Getopt_Loop :
    while Getopt (Options) /= ASCII.NUL loop
 
@@ -59,6 +63,10 @@ begin
 
    end loop Getopt_Loop;
 
+   ----------------------
+   --  Get Parameters  --
+   ----------------------
+
    if not Quit then
 
       declare
@@ -74,6 +82,10 @@ begin
       end;
 
    end if;
+
+   ------------------------
+   --  Convert Features  --
+   ------------------------
 
    if not Quit then
 

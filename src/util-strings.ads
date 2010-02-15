@@ -7,7 +7,8 @@ use Ada.Strings.Unbounded;
 
 package Util.Strings is
 
-   package Vectors is new Ada.Containers.Vectors (Natural, Unbounded_String);
+   package Vectors is
+      new Ada.Containers.Vectors (Natural, Unbounded_String, "=");
 
    type String_List is  --  GCOV_IGNORE
       array (Positive range <>) of Unbounded_String;

@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Ada.Containers.Vectors;
 
 use Ada.Strings.Unbounded;
 
@@ -8,6 +9,9 @@ package AdaSpec.Steps is
 
    type Step_File_Type is abstract tagged private;
    type Step_File_Ptr  is access all Step_File_Type'Class;
+
+   package Step_Vectors is
+      new Ada.Containers.Vectors (Natural, Step_File_Ptr, "=");
 
    Unparsed_Step : exception;
 

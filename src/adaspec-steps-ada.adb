@@ -1,12 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Ada.Directories;
 with Ada.Text_IO;
 with Util.IO;
 with Util.Strings;
 with AdaSpec;
 
 use Ada.Strings.Unbounded;
+use Ada.Directories;
 use Ada.Text_IO;
 use Util.IO;
 use Util.Strings;
@@ -14,17 +16,54 @@ use AdaSpec;
 
 package body AdaSpec.Steps.Ada is
 
-   procedure Make (S         : in out Ada_Step_File_Type;
+   -----------------------
+   --  Parse_Directory  --
+   -----------------------
+
+   procedure Parse_Directory (Steps     : in out Step_Vectors.Vector;
+                              Directory : in     String)
+   is
+      use Step_Vectors;
+      Search  : Search_Type;
+      Element : Directory_Entry_Type;
+      Step    : Ada_Step_File_Ptr;
+   begin
+      Start_Search (Search, Directory, "*.ads",
+                    (Ordinary_File => True, others => False));
+      while More_Entries (Search) loop
+         Get_Next_Entry (Search, Element);
+         Step := new Ada_Step_File_Type;
+         Make (Step.all, Full_Name (Element));
+         Parse (Step.all);
+         Step_Vectors.Append (Steps, Step_File_Ptr (Step));
+      end loop;
+      End_Search (Search);
+   end Parse_Directory;
+
+   ------------
+   --  Make  --
+   ------------
+
+   procedure Make (S         : out Ada_Step_File_Type;
                    File_Name : in String) is
    begin
-      S.File_Name := To_Unbounded_String (File_Name);
-      S.Parsed    := False;
+      S := (File_Name => To_Unbounded_String (File_Name),
+            Parsed    => False,
+            Steps     => <>);
    end Make;
+
+   --------------
+   --  Parsed  --
+   --------------
 
    function  Parsed (S : in Ada_Step_File_Type) return Boolean is
    begin
       return S.Parsed;
    end Parsed;
+
+   -------------
+   --  Parse  --
+   -------------
 
    procedure Parse (S : in out Ada_Step_File_Type) is
       File     : File_Type;
@@ -78,6 +117,10 @@ package body AdaSpec.Steps.Ada is
       Close (File);
       S.Parsed := True;
    end Parse;
+
+   ----------------
+   --  Contains  --
+   ----------------
 
    function  Contains  (S      : in Ada_Step_File_Type;
                         Prefix : in Prefix_Type;

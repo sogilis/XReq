@@ -1,10 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Containers;
+with Ada.Directories;
 with AUnit.Assertions;
 with AdaSpec;
 with AdaSpec.Steps;
 with AdaSpec.Steps.Ada;
 
+use Ada.Containers;
+use Ada.Directories;
 use AUnit.Assertions;
 use AdaSpec;
 use AdaSpec.Steps;
@@ -17,6 +21,7 @@ package body Test_Suite.Steps.Ada is
    is
    begin
       Ret.Add_Test (new Test_Sample1);
+      Ret.Add_Test (new Test_Parse_Dir);
    end Add_Tests;
 
    --  Sample1  ---------------------------------------------------------------
@@ -24,7 +29,7 @@ package body Test_Suite.Steps.Ada is
    function  Name (T : in Test_Sample1) return AUnit.Message_String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Steps sample1.ads");
+      return AUnit.Format ("AsaSpec.Steps.Ada sample1.ads");
    end Name;
 
    procedure Run_Test (T : in out Test_Sample1) is
@@ -66,6 +71,42 @@ package body Test_Suite.Steps.Ada is
 
       Assert (not Contains (Step, Prefix_Given, Given2),
               "Step should not contain """ & Given2 & """");
+
+   end Run_Test;
+
+   --  Parse_Directory  -------------------------------------------------------
+
+   function  Name (T : in Test_Parse_Dir) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AsaSpec.Steps.Ada.Parse_Directory");
+   end Name;
+
+   procedure Run_Test (T : in out Test_Parse_Dir) is
+      pragma Unreferenced (T);
+      use Step_Vectors;
+
+      Directory : constant String := "tests/features/step_definitions";
+      Steps     : Step_Vectors.Vector;
+      Step      : Step_File_Ptr;
+   begin
+
+      Parse_Directory (Steps, Directory);
+
+      Assert (Length (Steps) = 1,
+              "Detected " & Length (Steps)'Img &
+              " steps instead of 1");
+
+      Step := Element (Steps, 0);
+
+      Assert (Simple_Name (File_Name (Step.all)) = "sample1.ads",
+              "Should have detected step sample1.ads instead of " &
+              File_Name (Step.all));
+
+      Assert (Parsed (Step.all), "Should have parsed the step definition");
+
+      Assert (Contains (Step.all, Prefix_Given, "this step works"),
+              "The step definition should contain `Given this step works'");
 
    end Run_Test;
 

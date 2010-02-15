@@ -8,11 +8,16 @@ use GNAT.Regexp;
 
 package AdaSpec.Steps.Ada is
 
+
+   procedure Parse_Directory (Steps     : in out Step_Vectors.Vector;
+                              Directory : in     String);
+
+
    type Ada_Step_File_Type is new Step_File_Type with private;
    type Ada_Step_File_Ptr  is access all Ada_Step_File_Type'Class;
 
-   procedure Make (S         : in out Ada_Step_File_Type;
-                   File_Name : in String);
+   procedure Make (S         : out Ada_Step_File_Type;
+                   File_Name : in  String);
 
    overriding function  Parsed    (S : in Ada_Step_File_Type) return Boolean;
    overriding procedure Parse     (S : in out Ada_Step_File_Type);
@@ -31,7 +36,6 @@ private
       end record;
 
    package Step_Container is new Vectors (Natural, Step_Type);
-   use Step_Container;
 
    type Ada_Step_File_Type is new Step_File_Type with
       record
