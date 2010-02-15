@@ -2,6 +2,7 @@
 
 with Ada.Text_IO;
 with Ada.Directories;
+with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with AUnit.Assertions;
 
@@ -94,6 +95,10 @@ package body Coverage_Suite is
 
 
    procedure Run_Test (T : in out Test) is
+
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
+
       type Percent is delta 0.01 range 0.00 .. 100.00;
       Count   : Natural;
       Covered : Natural;
@@ -105,7 +110,7 @@ package body Coverage_Suite is
       Read_Gcov (To_String (T.Path), Count, Covered, Error);
 
       Assert (Count /= 0,
-              "File: " & To_String (T.File) & " error, non executable file");
+              "File: reports/" & To_String (T.File) & " error, non executable file");
 
       if Count = 0 then
          Ratio   := 100.00;
@@ -115,13 +120,13 @@ package body Coverage_Suite is
       end if;
 
       Assert (Error <= 0,
-              "File: " & To_String (T.File) & " error line" &
+              "File: reports/" & To_String (T.File) & " error line" &
               Integer'Image (Error));
 
       Assert (Covered = Count,
-              "File: " & To_String (T.File) & Percent'Image (Ratio) &
-              "% covered (" & Natural'Image (Covered) & "/" &
-              Natural'Image (Count) & ")");
+              "File: reports/" & To_String (T.File) & Percent'Image (Ratio) &
+              "% covered (" & Trim (Natural'Image (Covered), Left) & "/" &
+              Trim (Natural'Image (Count), Left) & ")");
 
    end Run_Test;
 

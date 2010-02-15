@@ -94,7 +94,7 @@ package body Test_Suite.Strings is
 
    end Run_Test;
 
-   --  Test_Find_Token  -------------------------------------------------------
+   --  Test_Trimed_Suffix  ----------------------------------------------------
 
    function  Name (T : in Test_Trimed_Suffix) return AUnit.Message_String is
       pragma Unreferenced (T);
