@@ -104,14 +104,15 @@ package body Coverage_Suite is
       type Percent is delta 0.01 range 0.00 .. 100.00;
       Count   : Natural;
       Covered : Natural;
+      Ignored : Natural;
       Error   : Integer;
       Ratio_F : Float;
       Ratio   : Percent;
    begin
 
-      Read_Gcov (To_String (T.Path), Count, Covered, Error);
+      Read_Gcov (To_String (T.Path), Count, Covered, Ignored, Error);
 
-      Assert (Count /= 0,
+      Assert (Count /= 0 or Ignored /= 0,
               "File: reports/" & To_String (T.File) & " " &
               "error, non executable file");
 
@@ -141,7 +142,7 @@ package body Coverage_Suite is
    begin
 
       declare
-         Line  : String  := Get_Whole_Line (File);
+         Line  : constant String  := Get_Whole_Line (File);
          Found : Boolean := False;
       begin
 
@@ -191,11 +192,13 @@ package body Coverage_Suite is
    procedure Read_Gcov (Filename         : in  String;
                         Out_Line_Count   : out Natural;
                         Out_Line_Covered : out Natural;
+                        Out_Line_Ignored : out Natural;
                         Out_Error        : out Integer) is
       File   : File_Type;
       Status : Gcov_Line_Type := Gcov_Line_Error;
       Line_Count   : Natural :=  0;
       Line_Covered : Natural :=  0;
+      Line_Ignored : Natural :=  0;
       Error        : Integer := -1;
       Line_Number  : Integer :=  1;
    begin
@@ -213,6 +216,8 @@ package body Coverage_Suite is
                Line_Covered := Line_Covered + 1;
             when Gcov_Line_Dead =>
                Line_Count   := Line_Count + 1;
+            when Gcov_Line_Ignored =>
+               Line_Ignored := Line_Ignored + 1;
             when others =>
                null;
          end case;
@@ -222,6 +227,7 @@ package body Coverage_Suite is
       Close (File);
       Out_Line_Count   := Line_Count;
       Out_Line_Covered := Line_Covered;
+      Out_Line_Ignored := Line_Ignored;
       Out_Error        := Error;
    end Read_Gcov;
 

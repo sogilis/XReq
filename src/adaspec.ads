@@ -7,6 +7,7 @@ package AdaSpec is
    type Prefix_Type_Maybe is
       (Prefix_None, Prefix_Given, Prefix_When, Prefix_Then);
 
-   subtype Prefix_Type is Prefix_Type_Maybe range Prefix_Given .. Prefix_Then;
+   subtype Prefix_Type is
+      Prefix_Type_Maybe range Prefix_Given .. Prefix_Then; --  GCOV_IGNORE
 
 end AdaSpec;

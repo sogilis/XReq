@@ -102,6 +102,7 @@ package body Test_Suite.Job is
          Step_Dir => To_Unbounded_String ("tests/features/step_definitions"),
          Out_Dir  => To_Unbounded_String ("tests/features/tests"));
       Res  : Job_Result_Type;
+      pragma Unreferenced (Res);
    begin
       Run (Job, Res);
    end Run_Test;

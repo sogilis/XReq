@@ -37,6 +37,7 @@ private
    procedure Read_Gcov (Filename         : in  String;
                         Out_Line_Count   : out Natural;
                         Out_Line_Covered : out Natural;
+                        Out_Line_Ignored : out Natural;
                         Out_Error        : out Integer);
 
 end Coverage_Suite;

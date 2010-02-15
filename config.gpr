@@ -19,6 +19,7 @@ abstract project Config is
       );
 
    Ada_Default_Switches_Debug := Ada_Default_Switches_Common & (
+      "-gnatwe",        --  Warnings as error
       "-g"              --  Debug
       );
 
