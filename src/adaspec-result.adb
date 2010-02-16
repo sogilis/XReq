@@ -97,7 +97,8 @@ package body AdaSpec.Result is
          end;
          Next (I);
       end loop;
-      Res := (Steps => StepsV);
+      Res := (Name  => Scenario.Name,
+              Steps => StepsV);
    end Process_Scenario;
 
    ------------------------------------------------
@@ -124,6 +125,7 @@ package body AdaSpec.Result is
          Append (Result, R_Scen);
          Next (I);
       end loop;
+      Result.Name := Feature.Name;
       Res := Result;
    end Process_Feature;
 
@@ -171,16 +173,23 @@ package body AdaSpec.Result is
       CRLF   : constant String := ASCII.CR & ASCII.LF;
       I      : Result_Scenarios.Cursor := First (Res.Scenarios);
       Buffer : Unbounded_String;
+      S      : constant String := To_String (Res.Background.Name);
    begin
-      Append (Buffer, Indent & "Background" & CRLF);
-      Append (Buffer, To_String (Res.Background, Indent & "   "));
-      Append (Buffer, Indent & "End Background" & CRLF);
+      Append (Buffer, Indent & "Feature " & To_String (Res.Name) & CRLF);
+      Append (Buffer, Indent & "   Background " & S & CRLF);
+      Append (Buffer, To_String (Res.Background, Indent & "      "));
+      Append (Buffer, Indent & "   End Background " & S & CRLF);
       while Has_Element (I) loop
-         Append (Buffer, Indent & "Scenario" & CRLF);
-         Append (Buffer, To_String (Element (I), Indent & "   "));
-         Append (Buffer, Indent & "End Scenario" & CRLF);
+         declare
+            S2 : constant String := To_String (Element (I).Name);
+         begin
+            Append (Buffer, Indent & "   Scenario " & S2 & CRLF);
+            Append (Buffer, To_String (Element (I), Indent & "      "));
+            Append (Buffer, Indent & "   End Scenario " & S2 & CRLF);
+         end;
          Next (I);
       end loop;
+      Append (Buffer, Indent & "End Feature " & To_String (Res.Name) & CRLF);
       return To_String (Buffer);
    end To_String;
 

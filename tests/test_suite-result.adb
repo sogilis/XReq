@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Containers;
+with Ada.Strings.Unbounded;
 with AUnit.Assertions;
 with AdaSpec.Features;
 with AdaSpec.Steps;
@@ -8,6 +9,7 @@ with AdaSpec.Stanzas;
 with AdaSpec.Result;
 
 use AUnit.Assertions;
+use Ada.Strings.Unbounded;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
@@ -124,6 +126,15 @@ package body Test_Suite.Result is
       Result   : Result_Feature_Type;
       Feature  : Feature_File_Ptr;
       Steps    : Steps_Type;
+      Exp_Str  : constant String :=
+               "Feature Sample"                    & CRLF &
+               "   Background "                    & CRLF &
+               "      Steps.This_Step_Works"       & CRLF &
+               "   End Background "                & CRLF &
+               "   Scenario Run a good step"       & CRLF &
+               "      Steps.This_Step_Works"       & CRLF &
+               "   End Scenario Run a good step"   & CRLF &
+               "End Feature Sample"                & CRLF;
    begin
 
       Steps   := Load   ("tests/features/step_definitions");
@@ -144,17 +155,27 @@ package body Test_Suite.Result is
 
       Parse (Feature.all);
 
+      Assert (Feature_Ptr (Feature).all.Name = "Sample",
+              "Feature name incorrect");
+
       Process_Feature (Result, Feature_Ptr (Feature), Steps);
+
+      Assert (Result.Name = "Sample",
+              "Feature name incorrect (2)");
 
       Append (R_Scen, Create ("Steps.This_Step_Works"));
       Expected.Background := R_Scen;
+      R_Scen.Name := To_Unbounded_String ("Run a good step");
       Append (Expected, R_Scen);
+      Expected.Name := To_Unbounded_String ("Sample");
 
       Assert (Result = Expected,
               "Result not expected. Found:" & CRLF &
               To_String (Result) & "Expected:" & CRLF &
-              To_String (Expected) & "With feature:" & CRLF &
-              To_String (Feature.all));
+              To_String (Expected) & "---");
+
+      Assert (To_String (Result) = Exp_Str,
+              "To_String value not expected:" & CRLF & To_String (Result));
 
    end Run_Test;
 
@@ -172,20 +193,25 @@ package body Test_Suite.Result is
       use Result_Steps;
       use Result_Scenarios;
       CRLF     : constant String := ASCII.CR & ASCII.LF;
-      Expected : constant String
-               := "Background"                  & CRLF &
-                  "   Steps.This_Step_Works"    & CRLF &
-                  "End Background"              & CRLF &
-                  "Scenario"                    & CRLF &
-                  "   Steps.This_Step_Works"    & CRLF &
-                  "End Scenario"                & CRLF;
+      Expected : constant String :=
+               "Feature simplest feature"          & CRLF &
+               "   Background BG"                  & CRLF &
+               "      Steps.This_Step_Works"       & CRLF &
+               "   End Background BG"              & CRLF &
+               "   Scenario Run a good step"       & CRLF &
+               "      Steps.This_Step_Works"       & CRLF &
+               "   End Scenario Run a good step"   & CRLF &
+               "End Feature simplest feature"      & CRLF;
       R_Scen   : Result_Scenario_Type;
       Feature  : Result_Feature_Type;
    begin
 
       Append (R_Scen, Create ("Steps.This_Step_Works"));
       Feature.Background := R_Scen;
+      Feature.Background.Name := To_Unbounded_String ("BG");
+      R_Scen.Name := To_Unbounded_String ("Run a good step");
       Append (Feature, R_Scen);
+      Feature.Name := To_Unbounded_String ("simplest feature");
 
       Assert (To_String (Feature) = Expected,
               "To_String value not expected:" & CRLF & To_String (Feature));
