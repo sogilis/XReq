@@ -38,7 +38,7 @@ gcov-reset: dir
 	-$(RM) reports/gcov.summary.txt
 	-$(RM) obj/*.gcda
 
-gcov: bin
+gcov-prepare: bin
 	cd reports && gcov -o ../obj ../src/*.adb > gcov.summary.txt
 	for gcov in reports/*.gcov; do \
 		base="`basename "$$gcov"`"; \
@@ -46,6 +46,9 @@ gcov: bin
 			rm "$$gcov"; \
 		fi; \
 	done
+
+gcov:
+	@$(MAKE) gcov-prepare >/dev/null 2>&1
 	bin/tests -suite=coverage -text
 
 coverage: test bin
@@ -67,6 +70,17 @@ test-report: dir bin test
 	  cat "reports/$$t.aunit.xml"; \
 	done
 
+run-tests: dir bin test
+	$(MAKE) gcov-reset
+	@for t in $(TEST_SUITES); do \
+	  [ coverage = "$$t" ] && continue; \
+	  echo "========== RUN TEST SUITE $$t =========="; \
+	  echo bin/tests -suite="$$t"; \
+	  bin/tests -suite="$$t"; \
+	done
+	@echo "========== RUN COVERAGE TESTS =========="
+	$(MAKE) gcov
+
 clean-reports: gcov-reset
 	-$(RM) reports/gnatcheck.out
 	-$(RM) reports/*.aunit.gcov
@@ -77,7 +91,8 @@ check: bin clean-reports coverage gnatcheck
 	  bin/tests -suite="$$t"; \
 	done
 
-.PHONY: all dir bin test doc clean clean-reports gcov-reset gcov coverage gnatcheck check test-report
+.PHONY: all dir bin test doc clean clean-reports gcov-reset gcov-prepare gcov \
+        coverage gnatcheck check test-report run-tests
 
 
 
