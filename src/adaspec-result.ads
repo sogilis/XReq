@@ -2,8 +2,12 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
+with AdaSpec.Features;
+with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
+use AdaSpec.Features;
+use AdaSpec.Steps;
 
 package AdaSpec.Result is
 
@@ -23,8 +27,9 @@ package AdaSpec.Result is
    package Result_Steps is
       new Ada.Containers.Vectors (Natural, Result_Step_Type, "=");
 
-   procedure Make (S              : out Result_Step_Type;
-                   Procedure_Name : in  String);
+   function  Create (Procedure_Name : in  String) return Result_Step_Type;
+   procedure Make   (S              : out Result_Step_Type;
+                     Procedure_Name : in  String);
 
    function Procedure_Name (S : in Result_Step_Type) return String;
 
@@ -42,6 +47,10 @@ package AdaSpec.Result is
 
    package Result_Scenarios is
       new Ada.Containers.Vectors (Natural, Result_Scenario_Type, "=");
+
+   procedure Process_Scenario (Res      : out Result_Scenario_Type;
+                               Scenario : in  Scenario_Type;
+                               Steps    : in  Steps_Type);
 
    ---------------------------
    --  Result_Feature_Type  --

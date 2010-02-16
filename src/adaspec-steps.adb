@@ -4,10 +4,18 @@ with AdaSpec.Steps.Ada;
 
 package body AdaSpec.Steps is
 
+   -----------------
+   --  File_Name  --
+   -----------------
+
    function  File_Name (S : in Step_File_Type) return String is
    begin
       return To_String (S.File_Name);
    end File_Name;
+
+   ------------
+   --  Load  --
+   ------------
 
    procedure Load (Steps     : in out Steps_Type;
                    Directory : in     String) is
@@ -15,6 +23,16 @@ package body AdaSpec.Steps is
       AdaSpec.Steps.Ada.Parse_Directory (Steps, Directory);
    end Load;
 
+   function  Load      (Directory : in     String) return Steps_Type is
+      Result : Steps_Type;
+   begin
+      Load (Result, Directory);
+      return Result;
+   end Load;
+
+   ----------------
+   --  Contains  --
+   ----------------
 
    function  Contains  (Steps     : in Steps_Type;
                         Stanza    : in Stanza_Type) return Boolean
@@ -22,6 +40,10 @@ package body AdaSpec.Steps is
    begin
       return Find (Steps, Stanza) /= "";
    end Contains;
+
+   ------------
+   --  Find  --
+   ------------
 
    function  Find      (Steps     : in Steps_Type;
                         Stanza    : in Stanza_Type) return String

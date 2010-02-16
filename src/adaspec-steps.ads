@@ -34,6 +34,8 @@ package AdaSpec.Steps is
 
    subtype Steps_Type is Step_Vectors.Vector;
 
+   function  Load      (Directory : in     String) return Steps_Type;
+
    procedure Load      (Steps     : in out Steps_Type;
                         Directory : in     String);
 

@@ -10,12 +10,20 @@ package Test_Suite.Result is
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_1 is
+   type Test_Result_Step_Type is
+      new AUnit.Simple_Test_Cases.Test_Case with null record;
+   type Test_Result_Scenario_Type is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
 
-   --  Operation on Test_1
-   function  Name     (T : in     Test_1) return AUnit.Message_String;
-   procedure Run_Test (T : in out Test_1);
+   --  Operation on Test_Result_Step_Type
+   function  Name     (T : in     Test_Result_Step_Type)
+                           return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_Result_Step_Type);
+
+   --  Operation on Test_Result_Scenario_Type
+   function  Name     (T : in     Test_Result_Scenario_Type)
+                           return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_Result_Scenario_Type);
 
 end Test_Suite.Result;
 
