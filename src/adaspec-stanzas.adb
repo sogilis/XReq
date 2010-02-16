@@ -29,4 +29,23 @@ package body AdaSpec.Stanzas is
                           Stanza => To_Unbounded_String (S));
    end Stanza_Then;
 
+
+   ----------------------------------
+   --  Stanza_Type  --  To_String  --
+   ----------------------------------
+
+   function To_String (S : in Stanza_Type) return String is
+      Buffer : Unbounded_String;
+   begin
+      case S.Prefix is
+         when Prefix_Given => Append (Buffer, "Given ");
+         when Prefix_When  => Append (Buffer, "When ");
+         when Prefix_Then  => Append (Buffer, "Then ");
+--          when others       => Append (Buffer, "<?> ");
+      end case;
+      Append (Buffer, S.Stanza);
+      return To_String (Buffer);
+   end To_String;
+
+
 end AdaSpec.Stanzas;

@@ -25,4 +25,6 @@ package AdaSpec.Stanzas is
    function Stanza_When  (S : in String) return Stanza_Type;
    function Stanza_Then  (S : in String) return Stanza_Type;
 
+   function To_String (S : in Stanza_Type) return String;
+
 end AdaSpec.Stanzas;

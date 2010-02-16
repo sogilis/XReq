@@ -32,6 +32,7 @@ package AdaSpec.Result is
                      Procedure_Name : in  String);
 
    function Procedure_Name (S : in Result_Step_Type) return String;
+   function To_String      (S : in Result_Step_Type) return String;
 
    ----------------------------
    --  Result_Scenario_Type  --
@@ -50,7 +51,8 @@ package AdaSpec.Result is
 
    procedure Process_Scenario (Res      : out Result_Scenario_Type;
                                Scenario : in  Scenario_Type;
-                               Steps    : in  Steps_Type);
+                               Steps    : in  Steps_Type;
+                               Errors   : out Boolean);
 
    ---------------------------
    --  Result_Feature_Type  --

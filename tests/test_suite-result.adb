@@ -61,23 +61,45 @@ package body Test_Suite.Result is
       Steps        : constant Steps_Type
                    := Load ("tests/features/step_definitions");
       Ideal_Result : Result_Steps.Vector;
+      A, B         : Result_Step_Type;
+      Errors       : Boolean;
    begin
 
       Make   (Scenario, "Scenario");
       Append (Scenario, Stanza_Given ("this step works"));
-      Append (Scenario, Stanza_Given ("this step works too"));
+      Append (Scenario, Stanza_When  ("this step works too"));
 
-      Process_Scenario (Result, Scenario, Steps);
+      Process_Scenario (Result, Scenario, Steps, Errors);
 
-      Append (Ideal_Result, AdaSpec.Result.Create ("This_Step_Works"));
-      Append (Ideal_Result, AdaSpec.Result.Create ("This_Step_Works_Too"));
+      Assert (not Errors, "Errors happened while processing scenario (1)");
+
+      Append (Ideal_Result, AdaSpec.Result.Create ("Steps.This_Step_Works"));
+      Append (Ideal_Result,
+              AdaSpec.Result.Create ("Steps.This_Step_Works_Too"));
 
       Assert (Length (Result.Steps) = 2,
               "Wrong length of result, " & Length (Result.Steps)'Img &
               " instead of 2");
 
+      A := Element (Result.Steps, 0);
+      B := Element (Ideal_Result, 0);
+      Assert (A = B,
+              "Wrong Step #0: " & To_String (A) & " /= " & To_String (B));
+
+      A := Element (Result.Steps, 1);
+      B := Element (Ideal_Result, 1);
+      Assert (A = B,
+              "Wrong Step #1: " & To_String (A) & " /= " & To_String (B));
+
       Assert (Result.Steps = Ideal_Result,
-              "Wrong scenario result");
+              "Wrong scenario result (1)");
+
+      Append (Scenario, Stanza_When  ("this step doesn't work"));
+      Process_Scenario (Result, Scenario, Steps, Errors);
+      Assert (Errors, "No error while processing scenario (2)");
+
+      Assert (Result.Steps = Ideal_Result,
+              "Wrong scenario result (2)");
 
    end Run_Test;
 
