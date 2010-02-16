@@ -5,17 +5,21 @@ with Ada.Strings.Unbounded;
 with Ada.Exceptions;
 with Ada.Command_Line;
 with GNAT.Command_Line;
+with Util.Strings.Pool;
 with AdaSpec;
 with AdaSpec.CLI;
 with AdaSpec.Job;
+with AdaSpec.Generator.Ada;
 
 use Ada.Text_IO;
 use Ada.Strings.Unbounded;
 use Ada.Exceptions;
 use Ada.Command_Line;
 use GNAT.Command_Line;
+use Util.Strings.Pool;
 use AdaSpec;
 use AdaSpec.Job;
+use AdaSpec.Generator.Ada;
 
 procedure Main is
 
@@ -24,6 +28,8 @@ procedure Main is
    Quit      : Boolean := False;
    Options   : constant String := "help h -help " &
              "s: -step= o: -output= l: -lang=";
+   Buffer    : Unbounded_String;
+   Pool      : String_Pool;
 
 begin
 
@@ -98,6 +104,8 @@ begin
       Load (Env);
       Put_Line (Describe (Job, Env));
       Run (Job, Env);
+      Generate_Feature (Buffer, Pool, Job.Result);
+      Put_Line (To_String (Buffer));
 
    end if;
 
