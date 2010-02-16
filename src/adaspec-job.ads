@@ -22,7 +22,7 @@ package AdaSpec.Job is
       record
          Step_Dir  : Unbounded_String;
          Out_Dir   : Unbounded_String;
-         Steps     : Step_Vectors.Vector;
+         Steps     : Steps_Type;
          Loaded    : Boolean := False;
       end record;
 

@@ -9,8 +9,8 @@ use GNAT.Regexp;
 package AdaSpec.Steps.Ada is
 
 
-   --  Called in AdaSpec.Job.Load
-   procedure Parse_Directory (Steps     : in out Step_Vectors.Vector;
+   --  Called in AdaSpec.Steps.Load
+   procedure Parse_Directory (Steps     : in out Steps_Type;
                               Directory : in     String);
 
 

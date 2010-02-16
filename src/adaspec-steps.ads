@@ -27,6 +27,22 @@ package AdaSpec.Steps is
    function  Find      (S      : in Step_File_Type;
                         Stanza : in Stanza_Type) return String is abstract;
 
+
+   ------------------
+   --  Steps_Type  --
+   ------------------
+
+   subtype Steps_Type is Step_Vectors.Vector;
+
+   procedure Load      (Steps     : in out Steps_Type;
+                        Directory : in     String);
+
+   function  Contains  (Steps     : in Steps_Type;
+                        Stanza    : in Stanza_Type) return Boolean;
+
+   function  Find      (Steps     : in Steps_Type;
+                        Stanza    : in Stanza_Type) return String;
+
 private
 
    type Step_File_Type is abstract tagged

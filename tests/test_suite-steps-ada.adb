@@ -71,6 +71,9 @@ package body Test_Suite.Steps.Ada is
       Assert (Contains (Step, Stanza_Given (Given1)),
               "Step should contain """ & Given1 & """");
 
+      Assert (Contains (Step, Stanza_When ("this step works too")),
+              "Step should contains `When this step works too'");
+
       Assert (not Contains (Step, Stanza_Given (Given2)),
               "Step should not contain """ & Given2 & """");
 

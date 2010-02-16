@@ -1,7 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
-with AdaSpec.Steps.Ada;
 
 use Ada.Directories;
 
@@ -77,7 +76,7 @@ package body AdaSpec.Job is
       Create_Path (Step_Dir (Env));
       Create_Path (Out_Dir (Env));
 
-      AdaSpec.Steps.Ada.Parse_Directory (Env.Steps, Step_Dir (Env));
+      Load (Env.Steps, Step_Dir (Env));
       Env.Loaded := True;
 
    end Load;

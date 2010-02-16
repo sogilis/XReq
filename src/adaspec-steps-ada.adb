@@ -20,7 +20,7 @@ package body AdaSpec.Steps.Ada is
    --  Parse_Directory  --
    -----------------------
 
-   procedure Parse_Directory (Steps     : in out Step_Vectors.Vector;
+   procedure Parse_Directory (Steps     : in out Steps_Type;
                               Directory : in     String)
    is
       use Step_Vectors;
