@@ -14,4 +14,8 @@ package Util.IO is
 
    function Get_Whole_Line (File : in File_Type) return String;
 
+   function Read_Whole_File (File_Name : in String;
+                             CRLF      : in String := ASCII.CR & ASCII.LF)
+                                         return String;
+
 end Util.IO;

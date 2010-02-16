@@ -100,21 +100,26 @@ package body Coverage_Suite is
 
       use Ada.Strings;
       use Ada.Strings.Fixed;
+      use Util.IO;
 
       type Percent is delta 0.01 range 0.00 .. 100.00;
-      Count   : Natural;
-      Covered : Natural;
-      Ignored : Natural;
-      Error   : Integer;
-      Ratio_F : Float;
-      Ratio   : Percent;
+
+      CRLF      : constant String := ASCII.CR & ASCII.LF;
+      File_Path : constant String := To_String (T.Path);
+      Count     : Natural;
+      Covered   : Natural;
+      Ignored   : Natural;
+      Error     : Integer;
+      Ratio_F   : Float;
+      Ratio     : Percent;
    begin
 
-      Read_Gcov (To_String (T.Path), Count, Covered, Ignored, Error);
+      Read_Gcov (File_Path, Count, Covered, Ignored, Error);
 
       Assert (Count /= 0 or Ignored /= 0,
               "File: reports/" & To_String (T.File) & " " &
-              "error, non executable file");
+              "error, non executable file" &
+              CRLF & Read_Whole_File (File_Path));
 
       if Count = 0 then
          Ratio   := 100.00;
@@ -125,12 +130,14 @@ package body Coverage_Suite is
 
       Assert (Error <= 0,
               "File: reports/" & To_String (T.File) & " error line" &
-              Integer'Image (Error));
+              Integer'Image (Error) &
+              CRLF & Read_Whole_File (File_Path));
 
       Assert (Covered = Count,
               "File: reports/" & To_String (T.File) & Percent'Image (Ratio) &
               "% covered (" & Trim (Natural'Image (Covered), Left) & "/" &
-              Trim (Natural'Image (Count), Left) & ")");
+              Trim (Natural'Image (Count), Left) & ")" &
+              CRLF & Read_Whole_File (File_Path));
 
    end Run_Test;
 

@@ -29,31 +29,42 @@ package body Test_Suite.IO is
 
    procedure Run_Test (T : in out Test_1) is
       pragma Unreferenced (T);
-      File : File_Type;
+      File_Name : constant String := "tests/test_data/file1.txt";
+      CRLF      : constant String := ASCII.CR & ASCII.LF;
+      Line_1    : constant String := "First Line";
+      Line_2    : constant String := "Second Line";
+      File_Cnt  : constant String
+                := Line_1 & CRLF & Line_2 & CRLF;
+      File      : File_Type;
    begin
 
       Util.IO.BufferSize := 5;
 
-      Open (File, In_File, "tests/test_data/file1.txt");
+      Assert (Read_Whole_File (File_Name) = File_Cnt,
+              "Content of the file " & File_Name &
+              " incorrect (Read_Whole_File).");
+
+      Open (File, In_File, File_Name);
 
       Assert (not End_Of_File (File),
-              "Missing 1st line of test_data/file1.txt");
+              "Missing 1st line of " & File_Name);
 
-      Assert (To_String (Get_Whole_Line (File)) = "First Line",
-              "First line of test_data/file1.txt incorrect");
+      Assert (To_String (Get_Whole_Line (File)) = Line_1,
+              "First line of " & File_Name & " incorrect (Get_Whole_Line)");
 
       Assert (not End_Of_File (File),
-              "Missing 2nd line of test_data/file1.txt");
+              "Missing 2nd line of " & File_Name);
 
       declare
          s : constant String := Get_Whole_Line (File);
       begin
-         Assert (s = "Second Line",
-                 "First line of test_data/file1.txt incorrect");
+         Assert (s = Line_2,
+                 "Second line of " & File_Name &
+                 " incorrect (Get_Whole_Line)");
       end;
 
       Assert (End_Of_File (File),
-              "No 3rd line expected in test_data/file1.txt");
+              "No 3rd line expected in " & File_Name);
 
       declare
          procedure P;

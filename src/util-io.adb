@@ -25,5 +25,24 @@ package body Util.IO is
       return To_String (Get_Whole_Line (File));
    end Get_Whole_Line;
 
+   function Read_Whole_File (File_Name : in String;
+                             CRLF      : in String := ASCII.CR & ASCII.LF)
+                                         return String
+   is
+      Content : Unbounded_String;
+      Line    : Unbounded_String;
+      File    : File_Type;
+   begin
+      Open (File, In_File, File_Name);
+      loop
+         Line := Get_Whole_Line (File);
+         Append (Content, Line);
+         Append (Content, CRLF);
+      end loop;
+   exception
+      when End_Error =>
+         Close (File);
+         return To_String (Content);
+   end Read_Whole_File;
 
 end Util.IO;
