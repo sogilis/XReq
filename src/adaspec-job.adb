@@ -122,11 +122,14 @@ package body AdaSpec.Job is
    procedure Run (Job : in out Job_Type;
                   Env : in     Job_Environment)
    is
-      pragma Unreferenced (Job);
+      F : constant Feature_File_Ptr := new Feature_File_Type;
    begin
       if not Env.Loaded then
          raise Invalid_Environment with "Must call Load (Env) first";
       end if;
+
+      Make (F.all, Feature_File (Job));
+      Job.Feature := Feature_Ptr (F);
    end Run;
 
 

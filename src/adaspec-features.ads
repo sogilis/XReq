@@ -63,6 +63,7 @@ package AdaSpec.Features is
    ------------------------
 
    type Feature_File_Type is new Feature_Type with private;
+   type Feature_File_Ptr  is access all Feature_File_Type'Class;
 
    function  Null_Feature_File return Feature_File_Type;
 
