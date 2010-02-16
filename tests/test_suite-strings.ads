@@ -16,6 +16,8 @@ package Test_Suite.Strings is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
    type Test_Trimed_Suffix is
       new AUnit.Simple_Test_Cases.Test_Case with null record;
+   type Test_To_Identifier is
+      new AUnit.Simple_Test_Cases.Test_Case with null record;
 
    --  Operation on Test_Starts_With
    function  Name     (T : in     Test_Starts_With)
@@ -30,6 +32,11 @@ package Test_Suite.Strings is
    function  Name     (T : in     Test_Trimed_Suffix)
                       return AUnit.Message_String;
    procedure Run_Test (T : in out Test_Trimed_Suffix);
+
+   --  Operation on Test_To_Identifier
+   function  Name     (T : in     Test_To_Identifier)
+                      return AUnit.Message_String;
+   procedure Run_Test (T : in out Test_To_Identifier);
 
 end Test_Suite.Strings;
 

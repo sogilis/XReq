@@ -6,6 +6,10 @@ use Ada.Strings.Fixed;
 
 package body Util.Strings is
 
+   ------------------
+   --  Find_Token  --
+   ------------------
+
    procedure Find_Token (Search     : in String;
                          Tokens     : in String_List;
                          Index_Next : out Natural;
@@ -37,6 +41,9 @@ package body Util.Strings is
       end if;
    end Find_Token;
 
+   -------------------
+   --  Starts_With  --
+   -------------------
 
    function Starts_With (Search      : in String;
                          Pattern     : in String;
@@ -51,7 +58,9 @@ package body Util.Strings is
          return False;
    end Starts_With; --  GCOV_IGNORE
 
-
+   ---------------------
+   --  Trimed_Suffix  --
+   ---------------------
 
    function Trimed_Suffix (Source      : in Unbounded_String;
                            Start_Index : in Natural) return Unbounded_String
@@ -75,5 +84,37 @@ package body Util.Strings is
       when Constraint_Error =>
          return "";
    end Trimed_Suffix;
+
+   ---------------------
+   --  To_Identifier  --
+   ---------------------
+
+   function To_Identifier (Source : in String) return String is
+      Buffer : Unbounded_String;
+      Start  : Boolean := True;
+      Char   : Character;
+      Last   : Character;
+   begin
+      for i in Source'Range loop
+         Char := Source (i);
+         case Char is
+            when 'a' .. 'z' | 'A' .. 'Z' =>
+               Last := Char;
+               Append (Buffer, Last);
+               Start := False;
+            when '0' .. '9' =>
+               if not Start then
+                  Last := Char;
+                  Append (Buffer, Last);
+               end if;
+            when others =>
+               if not Start and Last /= '_' then
+                  Last := '_';
+                  Append (Buffer, Last);
+               end if;
+         end case;
+      end loop;
+      return To_String (Buffer);
+   end To_Identifier;
 
 end Util.Strings;

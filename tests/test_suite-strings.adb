@@ -21,6 +21,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Starts_With);
       Ret.Add_Test (new Test_Find_Token);
       Ret.Add_Test (new Test_Trimed_Suffix);
+      Ret.Add_Test (new Test_To_Identifier);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -135,6 +136,32 @@ package body Test_Suite.Strings is
       when Error : others =>
          Put_Line (Exception_Information (Error));
          Reraise_Occurrence (Error);
+
+   end Run_Test;
+
+   --  Test_To_Identifier  ----------------------------------------------------
+
+   function  Name (T : in Test_To_Identifier) return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("Util.Strings.To_Identifier");
+   end Name;
+
+   procedure Run_Test (T : in out Test_To_Identifier) is
+      pragma Unreferenced (T);
+   begin
+
+      Assert (To_Identifier ("This is a title ") = "This_is_a_title_",
+              "Error1");
+
+      Assert (To_Identifier ("999 title ") = "title_",
+              "Error2");
+
+      Assert (To_Identifier ("Test 7") = "Test_7",
+              "Error3");
+
+      Assert (To_Identifier ("!  Test & ( 8") = "Test_8",
+              "Error4");
 
    end Run_Test;
 

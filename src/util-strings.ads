@@ -25,7 +25,9 @@ package Util.Strings is
    function Trimed_Suffix (Source      : in Unbounded_String;
                            Start_Index : in Natural) return Unbounded_String;
 
-   function Trimed_Suffix (Source      : in String;  --  GCOV_IGNORE
+   function Trimed_Suffix (Source      : in String;
                            Start_Index : in Natural) return String;
+
+   function To_Identifier (Source : in String) return String;  --  GCOV_IGNORE
 
 end Util.Strings;
