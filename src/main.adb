@@ -19,6 +19,7 @@ use AdaSpec.Job;
 
 procedure Main is
 
+   Env       : Job_Environment;
    Job       : Job_Type;
    Quit      : Boolean := False;
    Options   : constant String := "help h -help " &
@@ -42,14 +43,14 @@ begin
          exit Getopt_Loop;
 
       elsif Full_Switch = "s" or Full_Switch = "-step" then
-         if Length (Job.Step_Dir) /= 0 then
+         if Length (Env.Step_Dir) /= 0 then
             raise Not_Yet_Implemented with "multiple --step";
          end if;
-         Job.Step_Dir := To_Unbounded_String (Parameter);
+         Env.Step_Dir := To_Unbounded_String (Parameter);
          --  Put_Line ("--step=" & Parameter);
 
       elsif Full_Switch = "o" or Full_Switch = "-output" then
-         Job.Out_Dir  := To_Unbounded_String (Parameter);
+         Env.Out_Dir  := To_Unbounded_String (Parameter);
          --  Put_Line ("--output=" & Parameter);
 
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
@@ -72,7 +73,7 @@ begin
       declare
          Arg : constant String := Get_Argument;
       begin
-         Job.Feature := To_Unbounded_String (Arg);
+         Make (Job, Arg);
          if Arg'Length = 0 then
             Put_Line (Standard_Error, "Missing feature filename");
             AdaSpec.CLI.Help;
@@ -93,9 +94,9 @@ begin
          raise Not_Yet_Implemented with "more FEATUREs";
       end if;
 
-      Fill_Missing (Job);
+      Fill_Missing (Env, Feature_File (Job));
 
-      Put_Line (Describe (Job));
+      Put_Line (Describe (Job, Env));
 
    end if;
 

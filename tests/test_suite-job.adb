@@ -3,12 +3,10 @@
 with Ada.Strings.Unbounded;
 with AUnit.Assertions;
 with AdaSpec.Job;
-with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
 use AUnit.Assertions;
 use AdaSpec.Job;
-use AdaSpec.Result;
 
 package body Test_Suite.Job is
 
@@ -18,7 +16,7 @@ package body Test_Suite.Job is
    begin
       Ret.Add_Test (new Test_Describe);
       Ret.Add_Test (new Test_Fill_Missing);
-      Ret.Add_Test (new Test_Fill_Missing_2);
+      Ret.Add_Test (new Test_Job_Environment);
       Ret.Add_Test (new Test_Run);
    end Add_Tests;
 
@@ -33,16 +31,16 @@ package body Test_Suite.Job is
    procedure Run_Test (T : in out Test_Describe) is
       pragma Unreferenced (T);
       CRLF : constant String := ASCII.CR & ASCII.LF;
-      Job  : constant Job_Type := (
-         Feature  => To_Unbounded_String ("F"),
-         Step_Dir => To_Unbounded_String ("S"),
-         Out_Dir  => To_Unbounded_String ("O"));
+      Job  : Job_Type;
+      Env  : Job_Environment;
       Expected_Result : constant String :=
          "Feature:     F" & CRLF &
          "Steps in:    S" & CRLF &
          "Generate in: O" & CRLF;
    begin
-      Assert (Describe (Job) = Expected_Result, "Incorrect description");
+      Make (Env, "S", "O");
+      Make (Job, "F");
+      Assert (Describe (Job, Env) = Expected_Result, "Incorrect description");
    end Run_Test;
 
 
@@ -56,40 +54,33 @@ package body Test_Suite.Job is
 
    procedure Run_Test (T : in out Test_Fill_Missing) is
       pragma Unreferenced (T);
-      Job  : Job_Type;
+      Env  : Job_Environment;
    begin
-      Job.Feature := To_Unbounded_String ("A/B/spec.feature");
-      Fill_Missing (Job);
-      Assert (To_String (Job.Step_Dir) = "A/B/steps", "Incorrect step dir");
-      Assert (To_String (Job.Out_Dir)  = "A/B/tests", "Incorrect out dir");
+      Fill_Missing (Env, "A/B/spec.feature");
+      Assert (Env.Step_Dir = "A/B/step_definitions", "Incorrect step dir");
+      Assert (Env.Out_Dir  = "A/B/tests", "Incorrect out dir");
    end Run_Test;
 
-   --  Fill_Missing (2) -------------------------------------------------------
+   --  Job_Environment  -------------------------------------------------------
 
-   function  Name (T : in Test_Fill_Missing_2) return AUnit.Message_String is
+   function  Name (T : in Test_Job_Environment) return AUnit.Message_String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Job.Fill_Missing (invalid job)");
+      return AUnit.Format ("AsaSpec.Job.Job_Environment");
    end Name;
 
-   procedure Run_Test (T : in out Test_Fill_Missing_2) is
+   procedure Run_Test (T : in out Test_Job_Environment) is
       pragma Unreferenced (T);
-      Job  : Job_Type;
+      Env  : Job_Environment;
    begin
 
-      declare
-         procedure P;
-         procedure P is begin
-            Fill_Missing (Job);
-         end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
-      begin
-         Assert_Exception_Raised ("Invalid Job");
-      end;
+      Make (Env, "steps", "out");
+      Assert (Env.Step_Dir = "steps", "Invalid step dir");
+      Assert (Env.Out_Dir = "out", "Invalid out dir");
 
    end Run_Test;
 
-   --  Fill_Missing (2) -------------------------------------------------------
+   --  Run  -------------------------------------------------------------------
 
    function  Name (T : in Test_Run) return AUnit.Message_String is
       pragma Unreferenced (T);
@@ -99,14 +90,19 @@ package body Test_Suite.Job is
 
    procedure Run_Test (T : in out Test_Run) is
       pragma Unreferenced (T);
-      Job  : constant Job_Type := (
-         Feature  => To_Unbounded_String ("tests/features/simplest.feature"),
-         Step_Dir => To_Unbounded_String ("tests/features/step_definitions"),
-         Out_Dir  => To_Unbounded_String ("tests/features/tests"));
-      Res  : Result_Feature_Type;
-      pragma Unreferenced (Res);
+      Env  : Job_Environment;
+      Job  : Job_Type;
    begin
-      Run (Job, Res);
+      Make (Job, "tests/features/simplest.feature");
+      Fill_Missing (Env, Feature_File (Job));
+
+      Assert (Step_Dir (Env) = "tests/features/step_definitions",
+              "incorrect step dir");
+
+      Assert (Out_Dir (Env) = "tests/features/tests",
+              "incorrect out dir");
+
+      Run (Job, Env);
    end Run_Test;
 
 end Test_Suite.Job;

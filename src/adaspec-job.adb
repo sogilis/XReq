@@ -6,52 +6,102 @@ use Ada.Directories;
 
 package body AdaSpec.Job is
 
-   ----------------
-   --  Describe  --
-   ----------------
+   ---------------------------------
+   --  Job_Environment  -- Make   --
+   ---------------------------------
 
-   function Describe (Job : in Job_Type) return String is
-      CRLF : constant String := ASCII.CR & ASCII.LF;
+   procedure Make         (Env      : out    Job_Environment;
+                           Step_Dir : in     String := "";
+                           Out_Dir  : in     String := "") is
    begin
-      return "Feature:     " & To_String (Job.Feature)  & CRLF &
-             "Steps in:    " & To_String (Job.Step_Dir) & CRLF &
-             "Generate in: " & To_String (Job.Out_Dir)  & CRLF;
-   end Describe;
+      Env := (
+         Step_Dir => To_Unbounded_String (Step_Dir),
+         Out_Dir  => To_Unbounded_String (Out_Dir),
+         others   => <>);
+   end Make;
 
-   --------------------
-   --  Fill_Missing  --
-   --------------------
+   -------------------------------------
+   --  Job_Environment  --  Step_Dir  --
+   -------------------------------------
 
-   procedure Fill_Missing (Job : in out Job_Type) is
+   function  Step_Dir     (Env      : in     Job_Environment) return String is
+   begin
+      return To_String (Env.Step_Dir);
+   end Step_Dir;
+
+   ------------------------------------
+   --  Job_Environment  --  Out_Dir  --
+   ------------------------------------
+
+   function  Out_Dir      (Env      : in     Job_Environment) return String is
+   begin
+      return To_String (Env.Out_Dir);
+   end Out_Dir;
+
+   -----------------------------------------
+   --  Job_Environment  --  Fill_Missing  --
+   -----------------------------------------
+
+   procedure Fill_Missing (Env : in out Job_Environment;
+                           Feature : in String) is
    begin
 
-      if Length (Job.Feature) = 0 then
-         raise Invalid_Job;
+      if Length (Env.Step_Dir) = 0 then
+         Env.Step_Dir := To_Unbounded_String (Compose (
+            Containing_Directory (Feature), "step_definitions"));
       end if;
 
-      if Length (Job.Step_Dir) = 0 then
-         Job.Step_Dir := To_Unbounded_String (Compose (
-            Containing_Directory (To_String (Job.Feature)), "steps"));
-      end if;
-
-      if Length (Job.Out_Dir) = 0 then
-         Job.Out_Dir  := To_Unbounded_String (Compose (
-            Containing_Directory (To_String (Job.Feature)), "tests"));
+      if Length (Env.Out_Dir) = 0 then
+         Env.Out_Dir  := To_Unbounded_String (Compose (
+            Containing_Directory (Feature), "tests"));
       end if;
 
    end Fill_Missing;
 
-   -----------
-   --  Run  --
-   -----------
+   --------------------------
+   --  Job_Type  --  Make  --
+   --------------------------
 
-   procedure Run (Job    : in  Job_Type;
-                  Result : out Result_Feature_Type)
+   procedure Make (Job          : out    Job_Type;
+                   Feature_File : in     String) is
+   begin
+      Job := (
+         Feature_File => To_Unbounded_String (Feature_File),
+         others   => <>);
+   end Make;
+
+   ----------------------------------
+   --  Job_Type  --  Feature_File  --
+   ----------------------------------
+
+   function  Feature_File (Job : in Job_Type) return String is begin
+      return To_String (Job.Feature_File);
+   end Feature_File;
+
+   ------------------------------
+   --  Job_Type  --  Describe  --
+   ------------------------------
+
+   function Describe (Job : in Job_Type;
+                      Env : in Job_Environment) return String is
+      CRLF : constant String := ASCII.CR & ASCII.LF;
+   begin
+      return "Feature:     " & Feature_File (Job) & CRLF &
+             "Steps in:    " & Step_Dir (Env)     & CRLF &
+             "Generate in: " & Out_Dir (Env)      & CRLF;
+   end Describe;
+
+   -------------------------
+   --  Job_Type  --  Run  --
+   -------------------------
+
+   procedure Run (Job : in out Job_Type;
+                  Env : in     Job_Environment)
    is
       pragma Unreferenced (Job);
-      Res : Result_Feature_Type;
+      pragma Unreferenced (Env);
    begin
-      Result := Res;
+      null;
    end Run;
 
 
