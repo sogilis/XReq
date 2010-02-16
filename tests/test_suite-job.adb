@@ -3,10 +3,12 @@
 with Ada.Strings.Unbounded;
 with AUnit.Assertions;
 with AdaSpec.Job;
+with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
 use AUnit.Assertions;
 use AdaSpec.Job;
+use AdaSpec.Result;
 
 package body Test_Suite.Job is
 
@@ -101,7 +103,7 @@ package body Test_Suite.Job is
          Feature  => To_Unbounded_String ("tests/features/simplest.feature"),
          Step_Dir => To_Unbounded_String ("tests/features/step_definitions"),
          Out_Dir  => To_Unbounded_String ("tests/features/tests"));
-      Res  : Job_Result_Type;
+      Res  : Result_Feature_Type;
       pragma Unreferenced (Res);
    begin
       Run (Job, Res);

@@ -46,10 +46,10 @@ package body AdaSpec.Job is
    -----------
 
    procedure Run (Job    : in  Job_Type;
-                  Result : out Job_Result_Type)
+                  Result : out Result_Feature_Type)
    is
       pragma Unreferenced (Job);
-      Res : Job_Result_Type;
+      Res : Result_Feature_Type;
    begin
       Result := Res;
    end Run;
