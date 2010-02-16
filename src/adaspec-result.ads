@@ -31,8 +31,9 @@ package AdaSpec.Result is
    procedure Make   (S              : out Result_Step_Type;
                      Procedure_Name : in  String);
 
-   function Procedure_Name (S : in Result_Step_Type) return String;
-   function To_String      (S : in Result_Step_Type) return String;
+   function Procedure_Name (S      : in Result_Step_Type) return String;
+   function To_String      (S      : in Result_Step_Type;
+                            Indent : in String := "") return String;
 
    ----------------------------
    --  Result_Scenario_Type  --
@@ -49,10 +50,15 @@ package AdaSpec.Result is
    package Result_Scenarios is
       new Ada.Containers.Vectors (Natural, Result_Scenario_Type, "=");
 
-   procedure Process_Scenario (Res      : out Result_Scenario_Type;
-                               Scenario : in  Scenario_Type;
-                               Steps    : in  Steps_Type;
-                               Errors   : out Boolean);
+   function  To_String        (Res      : in     Result_Scenario_Type;
+                               Indent   : in     String := "")
+                                          return String;
+   procedure Append           (Res      : in out Result_Scenario_Type;
+                               Step     : in     Result_Step_Type);
+   procedure Process_Scenario (Res      : out    Result_Scenario_Type;
+                               Scenario : in     Scenario_Type;
+                               Steps    : in     Steps_Type;
+                               Errors   : out    Boolean);
 
    ---------------------------
    --  Result_Feature_Type  --
@@ -68,5 +74,14 @@ package AdaSpec.Result is
          Background : Result_Scenario_Type;
          Scenarios  : Result_Scenarios.Vector;
       end record;
+
+   function  To_String       (Res      : in     Result_Feature_Type;
+                              Indent   : in     String := "")
+                                         return String;
+   procedure Append          (Res      : in out Result_Feature_Type;
+                              Scenario : in     Result_Scenario_Type);
+   procedure Process_Feature (Res      : out    Result_Feature_Type;
+                              Feature  : in     Feature_Ptr;
+                              Steps    : in     Steps_Type);
 
 end AdaSpec.Result;

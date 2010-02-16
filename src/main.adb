@@ -95,9 +95,9 @@ begin
       end if;
 
       Fill_Missing (Env, Feature_File (Job));
-      Load         (Env);
-
+      Load (Env);
       Put_Line (Describe (Job, Env));
+      Run (Job, Env);
 
    end if;
 

@@ -128,7 +128,10 @@ package body AdaSpec.Job is
       end if;
 
       Make (F.all, Feature_File (Job));
+      Parse (F.all);
       Job.Feature := Feature_Ptr (F);
+
+      Process_Feature (Job.Result, Job.Feature, Env.Steps);
    end Run;
 
 

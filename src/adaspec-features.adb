@@ -95,6 +95,18 @@ package body AdaSpec.Features is
       F := Feature;
    end Make;
 
+   -------------------------------------
+   --  Feature_File_Type  --  Create  --
+   -------------------------------------
+
+   function  Create    (File_Name : in     String) return Feature_File_Type is
+      F : Feature_File_Type;
+   begin
+      Make (F, File_Name);
+      return F;
+   end Create;
+
+
    ------------------------------------
    --  Feature_File_Type  --  Parse  --
    ------------------------------------

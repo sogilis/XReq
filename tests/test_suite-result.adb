@@ -21,6 +21,8 @@ package body Test_Suite.Result is
    begin
       Ret.Add_Test (new Test_Result_Step_Type);
       Ret.Add_Test (new Test_Result_Scenario_Type);
+      Ret.Add_Test (new Test_Result_Feature_Type);
+      Ret.Add_Test (new Test_To_String);
    end Add_Tests;
 
    --  Result_Step_Type  ------------------------------------------------------
@@ -100,6 +102,93 @@ package body Test_Suite.Result is
 
       Assert (Result.Steps = Ideal_Result,
               "Wrong scenario result (2)");
+
+   end Run_Test;
+
+   --  Test_Result_Feature_Type  ----------------------------------------------
+
+   function  Name (T : in Test_Result_Feature_Type)
+                   return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AdaSpec.Result.Result_Feature_Type");
+   end Name;
+
+   procedure Run_Test (T : in out Test_Result_Feature_Type) is
+      pragma Unreferenced (T);
+      use Result_Steps;
+      use Result_Scenarios;
+      CRLF     : constant String := ASCII.CR & ASCII.LF;
+      R_Scen   : Result_Scenario_Type;
+      Expected : Result_Feature_Type;
+      Result   : Result_Feature_Type;
+      Feature  : Feature_File_Ptr;
+      Steps    : Steps_Type;
+   begin
+
+      Steps   := Load   ("tests/features/step_definitions");
+      Feature := new Feature_File_Type'(Create
+            ("tests/features/simplest.feature"));
+
+      declare
+         procedure P;
+         procedure P is
+         begin
+            Process_Feature (Result, Feature_Ptr (Feature), Steps);
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Process_Feature should raise " &
+                                  "Unparsed_Feature");
+      end;
+
+      Parse (Feature.all);
+
+      Process_Feature (Result, Feature_Ptr (Feature), Steps);
+
+      Append (R_Scen, Create ("Steps.This_Step_Works"));
+      Expected.Background := R_Scen;
+      Append (Expected, R_Scen);
+
+      Assert (Result = Expected,
+              "Result not expected. Found:" & CRLF &
+              To_String (Result) & "Expected:" & CRLF &
+              To_String (Expected) & "With feature:" & CRLF &
+              To_String (Feature.all));
+
+   end Run_Test;
+
+   --  Test_To_String  --------------------------------------------------
+
+   function  Name (T : in Test_To_String)
+                   return AUnit.Message_String is
+      pragma Unreferenced (T);
+   begin
+      return AUnit.Format ("AdaSpec.Result.To_String");
+   end Name;
+
+   procedure Run_Test (T : in out Test_To_String) is
+      pragma Unreferenced (T);
+      use Result_Steps;
+      use Result_Scenarios;
+      CRLF     : constant String := ASCII.CR & ASCII.LF;
+      Expected : constant String
+               := "Background"                  & CRLF &
+                  "   Steps.This_Step_Works"    & CRLF &
+                  "End Background"              & CRLF &
+                  "Scenario"                    & CRLF &
+                  "   Steps.This_Step_Works"    & CRLF &
+                  "End Scenario"                & CRLF;
+      R_Scen   : Result_Scenario_Type;
+      Feature  : Result_Feature_Type;
+   begin
+
+      Append (R_Scen, Create ("Steps.This_Step_Works"));
+      Feature.Background := R_Scen;
+      Append (Feature, R_Scen);
+
+      Assert (To_String (Feature) = Expected,
+              "To_String value not expected:" & CRLF & To_String (Feature));
 
    end Run_Test;
 

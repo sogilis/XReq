@@ -36,30 +36,30 @@ package body Test_Suite.Main is
       pragma Unreferenced (T);
    begin
 
-      Spawn_Assert (Argument_String => "-h");
-      Spawn_Assert (Argument_String => "tests/features/file.feature");
-      Spawn_Assert (Argument_String => "-oa --step b a/file.feature");
+      Spawn_Assert ("-h");
+      Spawn_Assert ("tests/features/simplest.feature");
+      Spawn_Assert ("-oa --step b tests/features/simplest.feature");
 
-      Spawn_Assert (Argument_String => "tests/features/file.feature " &
-                                       "tests/features/file.feature",
+      Spawn_Assert ("tests/features/simplest.feature " &
+                    "tests/features/simplest2.feature",
                     Expected_Result => False);
 
-      Spawn_Assert (Argument_String => "-o /tmp",
+      Spawn_Assert ("-o /tmp",
                     Expected_Result => False);
 
-      Spawn_Assert (Argument_String => "--step=/tmp",
+      Spawn_Assert ("--step=/tmp",
                     Expected_Result => False);
 
-      Spawn_Assert (Argument_String => "--lang fr",
+      Spawn_Assert ("--lang fr",
                     Expected_Result => False);
 
-      Spawn_Assert (Argument_String => "--step 1 --step 2",
+      Spawn_Assert ("--step 1 --step 2",
                     Expected_Result => False);
 
-      Spawn_Assert (Argument_String => "--step",
+      Spawn_Assert ("--step",
                     Expected_Result => False);
 
-      Spawn_Assert (Argument_String => "--toto",
+      Spawn_Assert ("--toto",
                     Expected_Result => False);
    end Run_Test;
 

@@ -69,6 +69,7 @@ package AdaSpec.Features is
 
    procedure Make      (F         : out    Feature_File_Type;
                         File_Name : in     String);
+   function  Create    (File_Name : in     String) return Feature_File_Type;
    function  File_Name (F         : in     Feature_File_Type) return String;
    procedure Parse     (F         : in out Feature_File_Type);
 
