@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with AdaSpec.Steps.Ada;
 
 use Ada.Directories;
 
@@ -58,6 +59,29 @@ package body AdaSpec.Job is
 
    end Fill_Missing;
 
+   ---------------------------------
+   --  Job_Environment  --  Load  --
+   ---------------------------------
+
+   procedure Load (Env : in out Job_Environment)
+   is
+   begin
+
+      if Length (Env.Step_Dir) = 0 then
+         raise Invalid_Environment with "No step_definitions directory";
+      end if;
+      if Length (Env.Out_Dir) = 0 then
+         raise Invalid_Environment with "No output directory";
+      end if;
+
+      Create_Path (Step_Dir (Env));
+      Create_Path (Out_Dir (Env));
+
+      AdaSpec.Steps.Ada.Parse_Directory (Env.Steps, Step_Dir (Env));
+      Env.Loaded := True;
+
+   end Load;
+
    --------------------------
    --  Job_Type  --  Make  --
    --------------------------
@@ -99,9 +123,10 @@ package body AdaSpec.Job is
                   Env : in     Job_Environment)
    is
       pragma Unreferenced (Job);
-      pragma Unreferenced (Env);
    begin
-      null;
+      if not Env.Loaded then
+         raise Invalid_Environment with "Must call Load (Env) first";
+      end if;
    end Run;
 
 

@@ -16,11 +16,14 @@ package AdaSpec.Job is
    --  Job_Environment  --
    -----------------------
 
+   Invalid_Environment : exception;
+
    type Job_Environment is
       record
          Step_Dir  : Unbounded_String;
          Out_Dir   : Unbounded_String;
          Steps     : Step_Vectors.Vector;
+         Loaded    : Boolean := False;
       end record;
 
    procedure Make         (Env      : out    Job_Environment;
@@ -30,6 +33,7 @@ package AdaSpec.Job is
    function  Out_Dir      (Env      : in     Job_Environment) return String;
    procedure Fill_Missing (Env      : in out Job_Environment;
                            Feature  : in     String);
+   procedure Load         (Env      : in out Job_Environment);
 
    ----------------
    --  Job_Type  --

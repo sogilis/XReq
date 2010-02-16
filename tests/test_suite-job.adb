@@ -74,9 +74,53 @@ package body Test_Suite.Job is
       Env  : Job_Environment;
    begin
 
+      Assert (not Env.Loaded, "Env should NOT be loaded");
+
       Make (Env, "steps", "out");
+
+      Assert (not Env.Loaded, "Env should NOT be loaded");
+
       Assert (Env.Step_Dir = "steps", "Invalid step dir");
       Assert (Env.Out_Dir = "out", "Invalid out dir");
+
+      Make (Env, "tests/features/step_definitions");
+
+      Assert (not Env.Loaded, "Env should NOT be loaded");
+
+      declare
+         procedure P;
+         procedure P is begin
+            Load (Env);
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Invalid_Environment has not been raised " &
+                                  "in call to Load (1)");
+      end;
+
+      Assert (not Env.Loaded, "Env should NOT be loaded");
+
+      Make (Env, Out_Dir => "tests/features/tests");
+
+      Assert (not Env.Loaded, "Env should NOT be loaded");
+
+      declare
+         procedure P;
+         procedure P is begin
+            Load (Env);
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Invalid_Environment has not been raised " &
+                                  "in call to Load (2)");
+      end;
+
+      Assert (not Env.Loaded, "Env should NOT be loaded");
+
+      Make (Env, "tests/features/step_definitions", "tests/features/tests");
+      Load (Env);
+
+      Assert (Env.Loaded, "Env should be loaded");
 
    end Run_Test;
 
@@ -95,6 +139,19 @@ package body Test_Suite.Job is
    begin
       Make (Job, "tests/features/simplest.feature");
       Fill_Missing (Env, Feature_File (Job));
+
+      declare
+         procedure P;
+         procedure P is begin
+            Run (Job, Env);
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Invalid_Environment has not been raised " &
+                                  "in call to Run");
+      end;
+
+      Load (Env);
 
       Assert (Step_Dir (Env) = "tests/features/step_definitions",
               "incorrect step dir");

@@ -37,10 +37,11 @@ package body Test_Suite.Main is
    begin
 
       Spawn_Assert (Argument_String => "-h");
-      Spawn_Assert (Argument_String => "a/file.feature");
+      Spawn_Assert (Argument_String => "tests/features/file.feature");
       Spawn_Assert (Argument_String => "-oa --step b a/file.feature");
 
-      Spawn_Assert (Argument_String => "a/file.feature b/file.feature",
+      Spawn_Assert (Argument_String => "tests/features/file.feature " &
+                                       "tests/features/file.feature",
                     Expected_Result => False);
 
       Spawn_Assert (Argument_String => "-o /tmp",
