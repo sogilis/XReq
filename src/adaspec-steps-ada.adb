@@ -139,9 +139,7 @@ package body AdaSpec.Steps.Ada is
             end if;
          elsif Found_Pkg then
             Idx       := Index_Non_Blank (Line_S, Idx_Next);
-            if Package_S /= Null_Unbounded_String then
-               Append (Package_S, '.');
-            end if;
+            Package_S := Null_Unbounded_String;
             Char := Element (Line_S, Idx);
             while
                Idx < Length (Line_S) and
