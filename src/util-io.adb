@@ -1,5 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Directories;
 with GNAT.OS_Lib;
 
 use GNAT.OS_Lib;
@@ -13,7 +14,7 @@ package body Util.IO is
    procedure Read_Whole_File (File   : in out Char_IO.File_Type;
                               Buffer : in out Unbounded_String) is
       use Char_IO;
-      Char   : Character;
+      Char : Character;
    begin
       Reset (File, In_File);
       while not End_Of_File (File) loop
@@ -76,26 +77,62 @@ package body Util.IO is
          return To_String (Content);
    end Read_Whole_File;
 
-   procedure Spawn (Program_Name  : in     String;
+   -------------
+   --  Spawn  --
+   -------------
+
+   procedure Spawn (Command_Name  : in     String;
                     Args          : in     Argument_List;
                     Output_Buffer : in out Unbounded_String;
                     Success       : out    Boolean;
                     Return_Code   : out    Integer;
                     Err_To_Out    : in     Boolean := True)
    is
+--       use Ada.Directories;
       use Char_IO;
-      Tmp_File  : File_Type;
+      Tmp_File : File_Type;
+      Cmd_Path : GNAT.OS_Lib.String_Access
+               := Locate_Exec_On_Path (Command_Name);
    begin
       Create (Tmp_File);
-      Spawn  (Program_Name,
+--       Ada.Text_IO.Put_Line ("Temp file: " & Name (Tmp_File));
+      Spawn  (Cmd_Path.all,
               Args,
               Name (Tmp_File),
               Success,
               Return_Code,
               Err_To_Out);
+--       Ada.Text_IO.Put_Line ("Result " & Command_Name & " " &
+--          Success'Img & Return_Code'Img);
       Read_Whole_File (Tmp_File, Output_Buffer);
       Delete (Tmp_File);
+      Free (Cmd_Path);
    end Spawn;
 
+   procedure Spawn (Command_Name  : in     String;
+                    Command_Line  : in     String;
+                    Output_Buffer : in out Unbounded_String;
+                    Success       : out    Boolean;
+                    Return_Code   : out    Integer;
+                    Directory     : in     String := "")
+   is
+      use Ada.Directories;
+      Curr_Dir  : constant String := Current_Directory;
+      Arguments : constant Argument_List_Access :=
+                  Argument_String_To_List (Command_Line);
+   begin
+      if Directory /= "" then
+         Set_Directory (Directory);
+      end if;
+      Util.IO.Spawn (Command_Name  => Command_Name,
+                     Args          => Arguments.all,
+                     Output_Buffer => Output_Buffer,
+                     Success       => Success,
+                     Return_Code   => Return_Code,
+                     Err_To_Out    => True);
+      if Directory /= "" then
+         Set_Directory (Curr_Dir);
+      end if;
+   end Spawn;
 
 end Util.IO;

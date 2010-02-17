@@ -44,11 +44,18 @@ package Util.IO is
    --  Spawn  --
    -------------
 
-   procedure Spawn          (Program_Name  : in     String;
+   procedure Spawn          (Command_Name  : in     String;
                              Args          : in     GNAT.OS_Lib.Argument_List;
                              Output_Buffer : in out Unbounded_String;
                              Success       : out    Boolean;
                              Return_Code   : out    Integer;
                              Err_To_Out    : in     Boolean := True);
+
+   procedure Spawn          (Command_Name  : in     String;
+                             Command_Line  : in     String;
+                             Output_Buffer : in out Unbounded_String;
+                             Success       : out    Boolean;
+                             Return_Code   : out    Integer;
+                             Directory     : in     String := "");
 
 end Util.IO;
