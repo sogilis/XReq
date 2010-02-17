@@ -62,8 +62,7 @@ package body Test_Suite is
       New_Line;
       Put_Line (Line1);
       if Text'Length > 80 then
-         Put ("** ");
-         Put_Line (Text);
+         T_Put_Line (Text);
       else
          Put ("** ");
          for I in 1 .. (80 - Text'Length) / 2 - 3 loop
@@ -78,7 +77,7 @@ package body Test_Suite is
       Line : constant String (1 .. 80) := (others => '*');
       use Ada.Text_IO;
    begin
-      Put_Line ("**");
+      T_New_Line;
       Put_Line (Line);
       New_Line;
    end End_Test;
