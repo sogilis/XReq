@@ -143,9 +143,9 @@ package body AdaSpec.Steps.Ada is
             Char := Element (Line_S, Idx);
             while
                Idx < Length (Line_S) and
-               ((Char > 'a' and Char < 'z') or
-                (Char > 'A' and Char < 'Z') or
-                (Char > '0' and Char < '9') or
+               ((Char >= 'a' and Char <= 'z') or
+                (Char >= 'A' and Char <= 'Z') or
+                (Char >= '0' and Char <= '9') or
                 Char = '.' or Char = '_')
             loop
                Append (Package_S, Char);
@@ -159,9 +159,9 @@ package body AdaSpec.Steps.Ada is
             Char := Element (Line_S, Idx);
             while
                Idx < Length (Line_S) and
-               ((Char > 'a' and Char < 'z') or
-                (Char > 'A' and Char < 'Z') or
-                (Char > '0' and Char < '9') or
+               ((Char >= 'a' and Char <= 'z') or
+                (Char >= 'A' and Char <= 'Z') or
+                (Char >= '0' and Char <= '9') or
                 Char = '_')
             loop
                Append (Procedure_S, Char);
