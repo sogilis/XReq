@@ -2,4 +2,6 @@
 
 package Util is
 
+   Not_Yet_Implemented : exception;
+
 end Util;

@@ -18,6 +18,7 @@ package body Test_Suite.IO is
       Ret.Add_Test (new Test_1);
       Ret.Add_Test (new Test_Spawn);
       Ret.Add_Test (new Test_Char_IO);
+      Ret.Add_Test (new Test_Get_Set);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
@@ -165,6 +166,45 @@ package body Test_Suite.IO is
               "<<<" & To_String (Buffer) & ">>>" & ASCII.LF &
               "Instead of:" & ASCII.LF &
               "<<<" & Content & ">>>");
+
+      Create (File, Out_File, File_Name & "-");
+      Write_Whole_File (File, Content);
+      Buffer := Null_Unbounded_String;
+      Read_Whole_File (File, Buffer);
+      Close (File);
+
+      Assert (To_String (Buffer) = Content,
+              "File content incorrect after write. Found:" & ASCII.LF &
+              "<<<" & To_String (Buffer) & ">>>" & ASCII.LF &
+              "Instead of:" & ASCII.LF &
+              "<<<" & Content & ">>>");
+
+   end Run;
+
+   --  Test_Get_Set  ----------------------------------------------------------
+
+   function  Name (T : in Test_Get_Set) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.IO.Get/Set_File");
+   end Name;
+
+   procedure Run (T : in out Test_Get_Set) is
+      pragma Unreferenced (T);
+      use Char_IO;
+      File_Name : constant String := Temp_Name;
+      Content   : constant String := "ABC" & ASCII.CR & "DEF" & ASCII.LF &
+                                     "GHI" & ASCII.CR & ASCII.LF;
+   begin
+
+      Set_File (File_Name, Content);
+
+      declare
+         S : constant String := Get_File (File_Name);
+      begin
+         Assert (S = Content,
+                 "Set_File + Get_File doesn't keep the data intact");
+      end;
 
    end Run;
 

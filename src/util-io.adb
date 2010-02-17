@@ -7,6 +7,23 @@ use GNAT.OS_Lib;
 
 package body Util.IO is
 
+   -----------------
+   --  Temp_Name  --
+   -----------------
+
+   function Temp_Name return String is
+      use Char_IO;
+      File : Char_IO.File_Type;
+   begin
+      Create (File, Out_File);
+      declare
+         N : constant String := Name (File);
+      begin
+         Delete (File);
+         return N;
+      end;
+   end Temp_Name;
+
    ---------------
    --  Char_IO  --
    ---------------
@@ -22,6 +39,41 @@ package body Util.IO is
          Append (Buffer, Char);
       end loop;
    end Read_Whole_File;
+
+   procedure Write_Whole_File (File   : in out Char_IO.File_Type;
+                               Buffer : in String)
+   is
+      use Char_IO;
+   begin
+      Reset (File, Out_File);
+      for I in Buffer'Range loop
+         Write (File, Buffer (I));
+      end loop;
+   end Write_Whole_File;
+
+
+   function  Get_File (File_Name : in String) return String
+   is
+      use Char_IO;
+      File : Char_IO.File_Type;
+      Buff : Unbounded_String;
+   begin
+      Open (File, In_File, File_Name);
+      Read_Whole_File (File, Buff);
+      Close (File);
+      return To_String (Buff);
+   end Get_File;
+
+   procedure Set_File (File_Name : in String;
+                       Content   : in String)
+   is
+      use Char_IO;
+      File : Char_IO.File_Type;
+   begin
+      Create (File, Out_File, File_Name);
+      Write_Whole_File (File, Content);
+      Close (File);
+   end Set_File;
 
    -----------------------------------
    --  Text_IO  --  Get_Whole_Line  --

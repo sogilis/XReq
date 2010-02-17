@@ -9,14 +9,27 @@ use Ada.Strings.Unbounded;
 
 package Util.IO is
 
+   -----------------
+   --  Temp_Name  --
+   -----------------
+
+   function Temp_Name return String;
+
    ---------------
    --  Char_IO  --
    ---------------
 
    package Char_IO is new Ada.Sequential_IO (Character);
 
-   procedure Read_Whole_File (File   : in out Char_IO.File_Type;
-                              Buffer : in out Unbounded_String);
+   procedure Read_Whole_File  (File   : in out Char_IO.File_Type;
+                               Buffer : in out Unbounded_String);
+
+   procedure Write_Whole_File (File   : in out Char_IO.File_Type;
+                               Buffer : in String);
+
+   function  Get_File (File_Name : in String) return String;
+   procedure Set_File (File_Name : in String;
+                       Content   : in String);
 
    -----------------------------------
    --  Text_IO  --  Get_Whole_Line  --
