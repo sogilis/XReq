@@ -1,8 +1,18 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings.Unbounded;
+with Ada.Directories;
 with AUnit.Assertions;
+with Util.IO;
+with AdaSpec.Job;
+with AdaSpec.Generator;
 
+use Ada.Strings.Unbounded;
+use Ada.Directories;
 use AUnit.Assertions;
+use Util.IO;
+use AdaSpec.Job;
+use AdaSpec.Generator;
 
 package body Test_Suite.Generator.Ada is
 
@@ -23,12 +33,33 @@ package body Test_Suite.Generator.Ada is
 
    procedure Run (T : in out Test_1) is
       pragma Unreferenced (T);
+      Env     : Job_Environment;
+      Job     : Job_Type;
+      Output  : Unbounded_String;
+      Success : Boolean;
+      Result  : Integer;
    begin
 
-      --  In directory tests/features/tests, test using the command:
-      --  gnatmake -c -aI../step_definitions generated_file.adb
+      begin
+         Delete_File ("tests/features/tests/simplest.adb");
+         Delete_File ("tests/features/tests/simplest.ads");
+      exception
+         when others => null;
+      end;
 
-      Assert (False, "Missing test for AdaSpec.Generator.Ada");
+      Init (Env, Job, "tests/features/simplest.feature");
+      Run  (Job, Env);
+      Generate (Job, Env);
+
+      Append (Output, "gnatmake -c -aI../step_definitions simplest.adb" &
+              ASCII.LF);
+      Spawn ("gnatmake", "-c -aI../step_definitions simplest.adb",
+             Output, Success, Result, "tests/features/tests");
+
+      Assert (Success, "gnatmake did not succeed" & ASCII.LF &
+              To_String (Output));
+      Assert (Result = 0, "gnatmake returned with error" & Result'Img &
+              ASCII.LF & To_String (Output));
 
    end Run;
 

@@ -58,4 +58,11 @@ package AdaSpec.Job is
    function  Describe (Job          : in     Job_Type;
                        Env          : in     Job_Environment) return String;
 
+
+   procedure Init (Env          : out    Job_Environment;
+                   Job          : out    Job_Type;
+                   Feature_File : in     String;
+                   Step_Dir     : in     String := "";
+                   Out_Dir      : in     String := "");
+
 end AdaSpec.Job;

@@ -134,5 +134,26 @@ package body AdaSpec.Job is
       Process_Feature (Job.Result, Job.Feature, Env.Steps);
    end Run;
 
+   ------------
+   --  Init  --
+   ------------
+
+   procedure Init (Env          : out    Job_Environment;
+                   Job          : out    Job_Type;
+                   Feature_File : in     String;
+                   Step_Dir     : in     String := "";
+                   Out_Dir      : in     String := "")
+   is
+      E : Job_Environment;
+      J : Job_Type;
+   begin
+      Make (J, Feature_File);
+      Make (E, Step_Dir, Out_Dir);
+      Fill_Missing (E, Feature_File);
+      Load (E);
+      Env := E;
+      Job := J;
+   end Init;
+
 
 end AdaSpec.Job;
