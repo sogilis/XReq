@@ -92,7 +92,7 @@ package body AdaSpec.Result is
             else
                Make   (Res_St, Proc_Name);
                Append (StepsV, Res_St);
-               Put_Line ("Add in step: " & Proc_Name);
+               --  Put_Line ("Add in step: " & Proc_Name);
             end if;
          end;
          Next (I);

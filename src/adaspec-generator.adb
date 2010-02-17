@@ -1,13 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with AdaSpec.Generator.Ada;
+
 package body AdaSpec.Generator is
 
    procedure Generate (Job : in Job_Type;
                        Env : in Job_Environment)
    is
-      pragma Unreferenced (Job, Env);
    begin
-      raise Not_Yet_Implemented;
+      Ada.Generate (Job, Env);
    end Generate;
 
 end AdaSpec.Generator;
