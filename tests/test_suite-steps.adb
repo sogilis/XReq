@@ -40,9 +40,9 @@ package body Test_Suite.Steps is
               Dir & " should contains `When this step works too'");
 
       Assert (Find (Steps, Stanza_When ("this step works too")) =
-              "Steps.This_Step_Works_Too",
+              "Sample1.This_Step_Works_Too",
               "`When this step works too' and link " &
-              "to procedure This_Step_Works_Too");
+              "to procedure Sample1.This_Step_Works_Too");
 
       Assert (not Contains (Steps, Stanza_Then ("this step doesn't works")),
               Dir & " should not contains `Then this step doesn't works'");

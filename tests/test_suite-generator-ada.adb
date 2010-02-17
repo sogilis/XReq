@@ -25,6 +25,9 @@ package body Test_Suite.Generator.Ada is
       pragma Unreferenced (T);
    begin
 
+      --  In directory tests/features/tests, test using the command:
+      --  gnatmake -c -aI../step_definitions generated_file.adb
+
       Assert (False, "Missing test for AdaSpec.Generator.Ada");
 
    end Run;

@@ -1,6 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-package Steps is
+package Sample1 is
 
    --  @given (this step works)
    procedure This_Step_Works;
@@ -14,4 +14,4 @@ package Steps is
 
    --  @then tata
 
-end Steps;
+end Sample1;

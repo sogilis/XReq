@@ -78,9 +78,9 @@ package body Test_Suite.Result is
 
       Assert (not Errors, "Errors happened while processing scenario (1)");
 
-      Append (Ideal_Result, AdaSpec.Result.Create ("Steps.This_Step_Works"));
+      Append (Ideal_Result, AdaSpec.Result.Create ("Sample1.This_Step_Works"));
       Append (Ideal_Result,
-              AdaSpec.Result.Create ("Steps.This_Step_Works_Too"));
+              AdaSpec.Result.Create ("Sample1.This_Step_Works_Too"));
 
       Assert (Length (Result.Steps) = 2,
               "Wrong length of result, " & Length (Result.Steps)'Img &
@@ -131,10 +131,10 @@ package body Test_Suite.Result is
       Exp_Str  : constant String :=
                "Feature Sample"                    & CRLF &
                "   Background "                    & CRLF &
-               "      Steps.This_Step_Works"       & CRLF &
+               "      Sample1.This_Step_Works"     & CRLF &
                "   End Background "                & CRLF &
                "   Scenario Run a good step"       & CRLF &
-               "      Steps.This_Step_Works"       & CRLF &
+               "      Sample1.This_Step_Works"     & CRLF &
                "   End Scenario Run a good step"   & CRLF &
                "End Feature Sample"                & CRLF;
    begin
@@ -167,7 +167,7 @@ package body Test_Suite.Result is
       Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");
 
-      Append (R_Scen, Create ("Steps.This_Step_Works"));
+      Append (R_Scen, Create ("Sample1.This_Step_Works"));
       Expected.Background := R_Scen;
       R_Scen.Name := To_Unbounded_String ("Run a good step");
       Append (Expected, R_Scen);
@@ -201,10 +201,10 @@ package body Test_Suite.Result is
       Expected : constant String :=
                "Feature simplest feature"          & CRLF &
                "   Background BG"                  & CRLF &
-               "      Steps.This_Step_Works"       & CRLF &
+               "      Sample1.This_Step_Works"     & CRLF &
                "   End Background BG"              & CRLF &
                "   Scenario Run a good step"       & CRLF &
-               "      Steps.This_Step_Works"       & CRLF &
+               "      Sample1.This_Step_Works"     & CRLF &
                "   End Scenario Run a good step"   & CRLF &
                "End Feature simplest feature"      & CRLF;
       R_Scen   : Result_Scenario_Type;
@@ -212,7 +212,7 @@ package body Test_Suite.Result is
    begin
       Title ("AdaSpec.Result.To_String");
 
-      Append (R_Scen, Create ("Steps.This_Step_Works"));
+      Append (R_Scen, Create ("Sample1.This_Step_Works"));
       Feature.Background := R_Scen;
       Feature.Background.Name := To_Unbounded_String ("BG");
       R_Scen.Name := To_Unbounded_String ("Run a good step");
