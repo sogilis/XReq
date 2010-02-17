@@ -13,7 +13,7 @@
 +RExpanded_Loop_Exit_Names
 +RGOTO_Statements
 +RImplicit_IN_Mode_Parameters
-+RLocal_Packages
+-- +RLocal_Packages
 +RMisnamed_Identifiers
 -- +RName_Clashes
 +RNon_Visible_Exceptions
