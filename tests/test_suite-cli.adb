@@ -13,17 +13,17 @@ package body Test_Suite.CLI is
       Ret.Add_Test (new Test_Help);
    end Add_Tests;
 
-   function Name (T : in Test_Help) return AUnit.Message_String is
+   function Name (T : in Test_Help) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.CLI.Help");
+      return ("AsaSpec.CLI.Help");
    end Name;
 
-   procedure Run_Test (T : in out Test_Help) is
+   procedure Run (T : in out Test_Help) is
       pragma Unreferenced (T);
    begin
       AdaSpec.CLI.Help;
       --  TODO: what can be dont to test that it is ok ?
-   end Run_Test;
+   end Run;
 
 end Test_Suite.CLI;

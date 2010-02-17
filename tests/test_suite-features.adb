@@ -2,7 +2,6 @@
 
 with Ada.Exceptions;
 with Ada.Strings.Unbounded;
-with Ada.Text_IO;
 with AUnit.Assertions;
 with AdaSpec;
 with AdaSpec.Stanzas;
@@ -32,14 +31,14 @@ package body Test_Suite.Features is
 
    --  Test_1  ----------------------------------------------------------------
 
-   function  Name (T : in Test_1) return AUnit.Message_String is
+   function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Features simplest.feature");
+      return ("AdaSpec.Features simplest.feature");
    end Name;
 
-   procedure Run_Test (T : in out Test_1) is
-      use Ada.Text_IO;
+   procedure Run (T : in out Test_1) is
+      use Text_IO;
       pragma Unreferenced (T);
       Feature  : Feature_File_Type;
       File     : constant String := "tests/features/simplest.feature";
@@ -157,19 +156,19 @@ package body Test_Suite.Features is
          Put_Line (Exception_Information (Error));
          Reraise_Occurrence (Error);
 
-   end Run_Test;
+   end Run;
 
    --  Test_2  ----------------------------------------------------------------
 
-   function  Name (T : in Test_2) return AUnit.Message_String is
+   function  Name (T : in Test_2) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Features.Same simplest2.feature");
+      return ("AdaSpec.Features.Same simplest2.feature");
    end Name;
 
-   procedure Run_Test (T : in out Test_2) is
+   procedure Run (T : in out Test_2) is
       pragma Unreferenced (T);
-      use Ada.Text_IO;
+      use Text_IO;
 
       Feature1 : Feature_Type := Null_Feature;
       Feature2 : Feature_File_Type;
@@ -213,20 +212,20 @@ package body Test_Suite.Features is
          Put_Line (Exception_Information (Error));
          Reraise_Occurrence (Error);
 
-   end Run_Test;
+   end Run;
 
 
    --  Test_3  ----------------------------------------------------------------
 
-   function  Name (T : in Test_3) return AUnit.Message_String is
+   function  Name (T : in Test_3) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Features null test");
+      return ("AdaSpec.Features null test");
    end Name;
 
-   procedure Run_Test (T : in out Test_3) is
+   procedure Run (T : in out Test_3) is
       pragma Unreferenced (T);
-      use Ada.Text_IO;
+      use Text_IO;
    begin
 
       null;
@@ -236,7 +235,7 @@ package body Test_Suite.Features is
          Put_Line (Exception_Information (Error));
          Reraise_Occurrence (Error);
 
-   end Run_Test;
+   end Run;
 
 end Test_Suite.Features;
 

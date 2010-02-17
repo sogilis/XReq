@@ -1,5 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Text_IO;
+with Ada.Exceptions;
+
 with Test_Suite.IO;
 with Test_Suite.Strings;
 with Test_Suite.Strings.Pool;
@@ -16,6 +19,10 @@ with Test_Suite.Generator;
 with Test_Suite.Generator.Ada;
 
 package body Test_Suite is
+
+   -------------
+   --  Suite  --
+   -------------
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite is
       Ret : constant AUnit.Test_Suites.Access_Test_Suite :=
@@ -40,5 +47,105 @@ package body Test_Suite is
       return Ret;
 
    end Suite;
+
+   ---------------
+   --  Banners  --
+   ---------------
+
+   procedure Title (Text : in String) is
+      use Ada.Text_IO;
+      Line1 : constant String (1 .. 80) := (others => '*');
+      Line2 : constant String (1 .. 80) := (1 | 2 => '*',
+                                            others => '-');
+   begin
+      New_Line;
+      New_Line;
+      Put_Line (Line1);
+      if Text'Length > 80 then
+         Put ("** ");
+         Put_Line (Text);
+      else
+         Put ("** ");
+         for I in 1 .. (80 - Text'Length) / 2 - 3 loop
+            Put (' ');
+         end loop;
+         Put_Line (Text);
+      end if;
+      Put_Line (Line2);
+   end Title;
+
+   procedure End_Test is
+      Line : constant String (1 .. 80) := (others => '*');
+      use Ada.Text_IO;
+   begin
+      Put_Line ("**");
+      Put_Line (Line);
+      New_Line;
+   end End_Test;
+
+   --------------
+   --  Output  --
+   --------------
+
+   procedure T_Put (Item : in String) is
+      use Ada.Text_IO;
+   begin
+      if Col (Current_Output) = 1 then
+         Put (Current_Output, "** ");
+      end if;
+      for I in Item'Range loop
+         Put (Current_Output, Item (I));
+         if Item (I) = ASCII.LF then
+            Put (Current_Output, "** ");
+         end if;
+      end loop;
+   end T_Put;
+
+   procedure T_Put_Line (Item : in String) is
+      use Ada.Text_IO;
+   begin
+      T_Put (Item);
+      T_New_Line;
+   end T_Put_Line;
+
+   procedure T_New_Line is
+      use Ada.Text_IO;
+   begin
+      if Col (Current_Output) = 1 then
+         Put (Current_Output, "** ");
+      end if;
+      New_Line (Current_Output);
+   end T_New_Line;
+
+   ------------------------
+   --  Custom_Test_Case  --
+   ------------------------
+
+   function  Name (T : in Test_Case_Type) return AUnit.Message_String is
+      Self : constant access constant Test_Case_Type'Class := T'Access;
+   begin
+      return AUnit.Format (String'(Name (Self.all)));
+   end Name;
+
+   procedure Run_Test (T : in out Test_Case_Type) is
+      use Ada.Text_IO;
+      use Ada.Exceptions;
+      Self : constant access Test_Case_Type'Class := T'Access;
+      Pref : constant String  := "** Exception: ";
+      Line : String (1 .. 80) := (others => '_');
+   begin
+      Line (Pref'Range) := Pref;
+      Title (Self.Name);
+      Self.Run;
+      End_Test;
+   exception
+      when Error : others =>
+         T_New_Line;
+         Put_Line (Line);
+         T_New_Line;
+         T_Put (Exception_Information (Error));
+         End_Test;
+         Reraise_Occurrence (Error);
+   end Run_Test;
 
 end Test_Suite;

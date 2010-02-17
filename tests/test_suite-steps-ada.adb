@@ -28,13 +28,13 @@ package body Test_Suite.Steps.Ada is
 
    --  Sample1  ---------------------------------------------------------------
 
-   function  Name (T : in Test_Sample1) return AUnit.Message_String is
+   function  Name (T : in Test_Sample1) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Steps.Ada sample1.ads");
+      return ("AsaSpec.Steps.Ada sample1.ads");
    end Name;
 
-   procedure Run_Test (T : in out Test_Sample1) is
+   procedure Run (T : in out Test_Sample1) is
       pragma Unreferenced (T);
       Step  : Ada_Step_File_Type;
       File  : constant String := "tests/features/step_definitions/sample1.ads";
@@ -83,17 +83,17 @@ package body Test_Suite.Steps.Ada is
       Assert (Find (Step, Stanza_Given (Given2)) = "",
               "`Given " & Given2 & "' should find '");
 
-   end Run_Test;
+   end Run;
 
    --  Parse_Directory  -------------------------------------------------------
 
-   function  Name (T : in Test_Parse_Dir) return AUnit.Message_String is
+   function  Name (T : in Test_Parse_Dir) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Steps.Ada.Parse_Directory");
+      return ("AsaSpec.Steps.Ada.Parse_Directory");
    end Name;
 
-   procedure Run_Test (T : in out Test_Parse_Dir) is
+   procedure Run (T : in out Test_Parse_Dir) is
       pragma Unreferenced (T);
       use Step_Vectors;
 
@@ -119,7 +119,7 @@ package body Test_Suite.Steps.Ada is
       Assert (Contains (Step.all, Stanza_Given ("this step works")),
               "The step definition should contain `Given this step works'");
 
-   end Run_Test;
+   end Run;
 
 
 end Test_Suite.Steps.Ada;

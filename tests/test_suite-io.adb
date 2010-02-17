@@ -21,16 +21,16 @@ package body Test_Suite.IO is
 
    --  Test_1  ----------------------------------------------------------------
 
-   function  Name (T : in Test_1) return AUnit.Message_String is
+   function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("Util.IO");
+      return ("Util.IO");
    end Name;
 
-   procedure Run_Test (T : in out Test_1) is
+   procedure Run (T : in out Test_1) is
       pragma Unreferenced (T);
       File_Name : constant String := "tests/test_data/file1.txt";
-      CRLF      : constant String := ASCII.CR & ASCII.LF;
+      CRLF      : constant String := "" & ASCII.LF;
       Line_1    : constant String := "First Line";
       Line_2    : constant String := "Second Line";
       File_Cnt  : constant String
@@ -40,7 +40,7 @@ package body Test_Suite.IO is
 
       Util.IO.BufferSize := 5;
 
-      Assert (Read_Whole_File (File_Name) = File_Cnt,
+      Assert (Read_Whole_File (File_Name, CRLF) = File_Cnt,
               "Content of the file " & File_Name &
               " incorrect (Read_Whole_File).");
 
@@ -80,7 +80,7 @@ package body Test_Suite.IO is
 
       Close (File);
 
-   end Run_Test;
+   end Run;
 
 end Test_Suite.IO;
 

@@ -34,20 +34,17 @@ cat >"$filename.ads" <<EOF
 
 with AUnit;
 with AUnit.Test_Suites;
-with AUnit.Simple_Test_Cases;
 
 package $test_package is
 
-   procedure Add_Tests (
-      Ret : in AUnit.Test_Suites.Access_Test_Suite);
+   procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_1 is
-      new AUnit.Simple_Test_Cases.Test_Case with null record;
+   type Test_1 is new Test_Case_Type with null record;
 
    --  Operation on Test_1
-   function  Name     (T : in     Test_1) return AUnit.Message_String;
-   procedure Run_Test (T : in out Test_1);
+   function  Name (T : in     Test_1) return String;
+   procedure Run  (T : in out Test_1);
 
 end $test_package;
 
@@ -65,28 +62,26 @@ use $tested_package;
 
 package body $test_package is
 
-   procedure Add_Tests (
-      Ret : in AUnit.Test_Suites.Access_Test_Suite)
-   is
+   procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
    begin
       Ret.Add_Test (new Test_1);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
 
-   function  Name (T : in Test_1) return AUnit.Message_String is
+   function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("$tested_package");
+      return "$tested_package";
    end Name;
 
-   procedure Run_Test (T : in out Test_1) is
+   procedure Run (T : in out Test_1) is
       pragma Unreferenced (T);
    begin
 
       Assert (False, "Missing test for $tested_package");
 
-   end Run_Test;
+   end Run;
 
 end $test_package;
 

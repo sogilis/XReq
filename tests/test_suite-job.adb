@@ -22,13 +22,13 @@ package body Test_Suite.Job is
 
    --  Describe  --------------------------------------------------------------
 
-   function  Name (T : in Test_Describe) return AUnit.Message_String is
+   function  Name (T : in Test_Describe) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Job.Describe");
+      return ("AsaSpec.Job.Describe");
    end Name;
 
-   procedure Run_Test (T : in out Test_Describe) is
+   procedure Run (T : in out Test_Describe) is
       pragma Unreferenced (T);
       CRLF : constant String := ASCII.CR & ASCII.LF;
       Job  : Job_Type;
@@ -41,35 +41,35 @@ package body Test_Suite.Job is
       Make (Env, "S", "O");
       Make (Job, "F");
       Assert (Describe (Job, Env) = Expected_Result, "Incorrect description");
-   end Run_Test;
+   end Run;
 
 
    --  Fill_Missing  ----------------------------------------------------------
 
-   function  Name (T : in Test_Fill_Missing) return AUnit.Message_String is
+   function  Name (T : in Test_Fill_Missing) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Job.Fill_Missing");
+      return ("AsaSpec.Job.Fill_Missing");
    end Name;
 
-   procedure Run_Test (T : in out Test_Fill_Missing) is
+   procedure Run (T : in out Test_Fill_Missing) is
       pragma Unreferenced (T);
       Env  : Job_Environment;
    begin
       Fill_Missing (Env, "A/B/spec.feature");
       Assert (Env.Step_Dir = "A/B/step_definitions", "Incorrect step dir");
       Assert (Env.Out_Dir  = "A/B/tests", "Incorrect out dir");
-   end Run_Test;
+   end Run;
 
    --  Job_Environment  -------------------------------------------------------
 
-   function  Name (T : in Test_Job_Environment) return AUnit.Message_String is
+   function  Name (T : in Test_Job_Environment) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Job.Job_Environment");
+      return ("AsaSpec.Job.Job_Environment");
    end Name;
 
-   procedure Run_Test (T : in out Test_Job_Environment) is
+   procedure Run (T : in out Test_Job_Environment) is
       pragma Unreferenced (T);
       Env  : Job_Environment;
    begin
@@ -122,17 +122,17 @@ package body Test_Suite.Job is
 
       Assert (Env.Loaded, "Env should be loaded");
 
-   end Run_Test;
+   end Run;
 
    --  Run  -------------------------------------------------------------------
 
-   function  Name (T : in Test_Run) return AUnit.Message_String is
+   function  Name (T : in Test_Run) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AsaSpec.Job.Run");
+      return ("AsaSpec.Job.Run");
    end Name;
 
-   procedure Run_Test (T : in out Test_Run) is
+   procedure Run (T : in out Test_Run) is
       pragma Unreferenced (T);
       Env  : Job_Environment;
       Job  : Job_Type;
@@ -160,6 +160,6 @@ package body Test_Suite.Job is
               "incorrect out dir");
 
       Run (Job, Env);
-   end Run_Test;
+   end Run;
 
 end Test_Suite.Job;

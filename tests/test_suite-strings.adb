@@ -26,13 +26,13 @@ package body Test_Suite.Strings is
 
    --  Test_Starts_With  ------------------------------------------------------
 
-   function  Name (T : in Test_Starts_With) return AUnit.Message_String is
+   function  Name (T : in Test_Starts_With) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("Util.Strings.Test_Starts_With");
+      return ("Util.Strings.Test_Starts_With");
    end Name;
 
-   procedure Run_Test (T : in out Test_Starts_With) is
+   procedure Run (T : in out Test_Starts_With) is
       pragma Unreferenced (T);
       Search : constant String := "abc 123 ABC 456";
    begin
@@ -55,17 +55,17 @@ package body Test_Suite.Strings is
       Assert (not Starts_With (Search, "4567", 13),
               "Should not start with '4567' at position 13");
 
-   end Run_Test;
+   end Run;
 
    --  Test_Find_Token  -------------------------------------------------------
 
-   function  Name (T : in Test_Find_Token) return AUnit.Message_String is
+   function  Name (T : in Test_Find_Token) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("Util.Strings.Find_Token");
+      return ("Util.Strings.Find_Token");
    end Name;
 
-   procedure Run_Test (T : in out Test_Find_Token) is
+   procedure Run (T : in out Test_Find_Token) is
       pragma Unreferenced (T);
       Search : constant String := " @tk1 A @tk2 B @tk3 C ";
       Tokens : constant String_List := (To_Unbounded_String ("@tk3"),
@@ -93,17 +93,17 @@ package body Test_Suite.Strings is
               "@tk1 not at the correct position. Found: " &
               Natural'Image (Index) & " instead of 6");
 
-   end Run_Test;
+   end Run;
 
    --  Test_Trimed_Suffix  ----------------------------------------------------
 
-   function  Name (T : in Test_Trimed_Suffix) return AUnit.Message_String is
+   function  Name (T : in Test_Trimed_Suffix) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("Util.Strings.Trimed_Suffix");
+      return ("Util.Strings.Trimed_Suffix");
    end Name;
 
-   procedure Run_Test (T : in out Test_Trimed_Suffix) is
+   procedure Run (T : in out Test_Trimed_Suffix) is
       pragma Unreferenced (T);
 
       function Call (Source : in String;
@@ -137,17 +137,17 @@ package body Test_Suite.Strings is
          Put_Line (Exception_Information (Error));
          Reraise_Occurrence (Error);
 
-   end Run_Test;
+   end Run;
 
    --  Test_To_Identifier  ----------------------------------------------------
 
-   function  Name (T : in Test_To_Identifier) return AUnit.Message_String is
+   function  Name (T : in Test_To_Identifier) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("Util.Strings.To_Identifier");
+      return ("Util.Strings.To_Identifier");
    end Name;
 
-   procedure Run_Test (T : in out Test_To_Identifier) is
+   procedure Run (T : in out Test_To_Identifier) is
       pragma Unreferenced (T);
    begin
 
@@ -163,7 +163,7 @@ package body Test_Suite.Strings is
       Assert (To_Identifier ("!  Test & ( 8") = "Test_8",
               "Error4");
 
-   end Run_Test;
+   end Run;
 
 end Test_Suite.Strings;
 

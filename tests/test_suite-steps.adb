@@ -19,13 +19,13 @@ package body Test_Suite.Steps is
 
    --  Test_1  ----------------------------------------------------------------
 
-   function  Name (T : in Test_1) return AUnit.Message_String is
+   function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Steps");
+      return ("AdaSpec.Steps");
    end Name;
 
-   procedure Run_Test (T : in out Test_1) is
+   procedure Run (T : in out Test_1) is
       pragma Unreferenced (T);
       Steps : Steps_Type;
       Dir   : constant String := "tests/features/step_definitions";
@@ -47,7 +47,7 @@ package body Test_Suite.Steps is
       Assert (not Contains (Steps, Stanza_Then ("this step doesn't works")),
               Dir & " should not contains `Then this step doesn't works'");
 
-   end Run_Test;
+   end Run;
 
 end Test_Suite.Steps;
 

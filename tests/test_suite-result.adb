@@ -29,13 +29,13 @@ package body Test_Suite.Result is
 
    --  Result_Step_Type  ------------------------------------------------------
 
-   function  Name (T : in Test_Result_Step_Type) return AUnit.Message_String is
+   function  Name (T : in Test_Result_Step_Type) return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Result.Result_Step_Type");
+      return ("AdaSpec.Result.Result_Step_Type");
    end Name;
 
-   procedure Run_Test (T : in out Test_Result_Step_Type) is
+   procedure Run (T : in out Test_Result_Step_Type) is
       pragma Unreferenced (T);
       Step : Result_Step_Type;
    begin
@@ -45,18 +45,18 @@ package body Test_Suite.Result is
       Assert (Procedure_Name (Step) = "Proc",
               "Wrong procedure name");
 
-   end Run_Test;
+   end Run;
 
    --  Result_Scenario_Type  --------------------------------------------------
 
    function  Name (T : in Test_Result_Scenario_Type)
-                   return AUnit.Message_String is
+                   return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Result.Result_Scenario_Type");
+      return ("AdaSpec.Result.Result_Scenario_Type");
    end Name;
 
-   procedure Run_Test (T : in out Test_Result_Scenario_Type) is
+   procedure Run (T : in out Test_Result_Scenario_Type) is
       pragma Unreferenced (T);
       use Result_Steps;
       use Ada.Containers;
@@ -68,6 +68,7 @@ package body Test_Suite.Result is
       A, B         : Result_Step_Type;
       Errors       : Boolean;
    begin
+      Title ("AdaSpec.Result.Result_Scenario_Type");
 
       Make   (Scenario, "Scenario");
       Append (Scenario, Stanza_Given ("this step works"));
@@ -105,18 +106,19 @@ package body Test_Suite.Result is
       Assert (Result.Steps = Ideal_Result,
               "Wrong scenario result (2)");
 
-   end Run_Test;
+      End_Test;
+   end Run;
 
    --  Test_Result_Feature_Type  ----------------------------------------------
 
    function  Name (T : in Test_Result_Feature_Type)
-                   return AUnit.Message_String is
+                   return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Result.Result_Feature_Type");
+      return ("AdaSpec.Result.Result_Feature_Type");
    end Name;
 
-   procedure Run_Test (T : in out Test_Result_Feature_Type) is
+   procedure Run (T : in out Test_Result_Feature_Type) is
       pragma Unreferenced (T);
       use Result_Steps;
       use Result_Scenarios;
@@ -136,6 +138,8 @@ package body Test_Suite.Result is
                "   End Scenario Run a good step"   & CRLF &
                "End Feature Sample"                & CRLF;
    begin
+
+      Title ("AdaSpec.Result.Result_Feature_Type");
 
       Steps   := Load   ("tests/features/step_definitions");
       Feature := new Feature_File_Type'(Create
@@ -177,18 +181,19 @@ package body Test_Suite.Result is
       Assert (To_String (Result) = Exp_Str,
               "To_String value not expected:" & CRLF & To_String (Result));
 
-   end Run_Test;
+      End_Test;
+   end Run;
 
    --  Test_To_String  --------------------------------------------------
 
    function  Name (T : in Test_To_String)
-                   return AUnit.Message_String is
+                   return String is
       pragma Unreferenced (T);
    begin
-      return AUnit.Format ("AdaSpec.Result.To_String");
+      return ("AdaSpec.Result.To_String");
    end Name;
 
-   procedure Run_Test (T : in out Test_To_String) is
+   procedure Run (T : in out Test_To_String) is
       pragma Unreferenced (T);
       use Result_Steps;
       use Result_Scenarios;
@@ -205,6 +210,7 @@ package body Test_Suite.Result is
       R_Scen   : Result_Scenario_Type;
       Feature  : Result_Feature_Type;
    begin
+      Title ("AdaSpec.Result.To_String");
 
       Append (R_Scen, Create ("Steps.This_Step_Works"));
       Feature.Background := R_Scen;
@@ -216,7 +222,8 @@ package body Test_Suite.Result is
       Assert (To_String (Feature) = Expected,
               "To_String value not expected:" & CRLF & To_String (Feature));
 
-   end Run_Test;
+      End_Test;
+   end Run;
 
 end Test_Suite.Result;
 
