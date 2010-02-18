@@ -1,7 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded.Hash;
 with Ada.Containers.Vectors;
+with Ada.Containers.Hashed_Sets;
 
 use Ada.Strings.Unbounded;
 
@@ -12,6 +14,10 @@ package Util.Strings is
 
    type String_List is  --  GCOV_IGNORE
       array (Positive range <>) of Unbounded_String;
+
+   package String_Set is
+      new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
+
 
    procedure Find_Token (Search     : in String;
                          Tokens     : in String_List;

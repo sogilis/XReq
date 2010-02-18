@@ -1,10 +1,12 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Util.Strings;
 with Util.Strings.Pool;
 with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
+use Util.Strings;
 use Util.Strings.Pool;
 use AdaSpec.Result;
 
@@ -13,30 +15,45 @@ package AdaSpec.Generator.Ada is
    procedure Generate (Job : in Job_Type;
                        Env : in Job_Environment);
 
-   procedure Generate_Step     (Buffer   : in out Unbounded_String;
-                                Pool     : in out String_Pool;
-                                Step     : in Result_Step_Type;
-                                Indent   : in String := "";
-                                CRLF     : in String := ASCII.CR & ASCII.LF);
+private
 
-   procedure Generate_Scenario (Adb_Buf  : in out Unbounded_String;
-                                Ads_Buf  : in out Unbounded_String;
-                                Pool     : in out String_Pool;
-                                Scenario : in Result_Scenario_Type;
-                                Prefix   : in String := "";
-                                Indent   : in String := "";
-                                CRLF     : in String := ASCII.CR & ASCII.LF);
+   type Generator_State is tagged
+      record
+         Feature    : Result_Feature_Type;
+         Adb_Buf    : Unbounded_String;
+         Ads_Buf    : Unbounded_String;
+         Pool       : String_Pool;
+         Ind_Ads    : Unbounded_String;
+         Ind_Adb    : Unbounded_String;
+         CRLF       : Unbounded_String := To_Unbounded_String ("" & ASCII.LF);
+         Fn_Backgnd : Unbounded_String;
+         Id_Pkgname : Unbounded_String;
+         With_Pkg   : String_Set.Set;
+      end record;
 
-   procedure Generate_Feature  (Adb_Buf  : in out Unbounded_String;
-                                Ads_Buf  : in out Unbounded_String;
-                                Pool     : in out String_Pool;
-                                Feature  : in Result_Feature_Type;
-                                Indent   : in String := "";
-                                CRLF     : in String := ASCII.CR & ASCII.LF);
+   procedure Adb_Line (State : in out Generator_State; Line : in String);
+   procedure Ads_Line (State : in out Generator_State; Line : in String);
+   procedure Adb (State : in out Generator_State; S : in String);
+   procedure Ads (State : in out Generator_State; S : in String);
 
-   procedure Generate_With     (Adb_Buf  : in out Unbounded_String;
-                                Feature  : in Result_Feature_Type;
-                                Indent   : in String := "";
-                                CRLF     : in String := ASCII.CR & ASCII.LF);
+   procedure Adb_Line (State : in out Generator_State;
+                       Line  : in Unbounded_String);
+   procedure Ads_Line (State : in out Generator_State;
+                       Line  : in Unbounded_String);
+   procedure Adb (State : in out Generator_State; S : in Unbounded_String);
+   procedure Ads (State : in out Generator_State; S : in Unbounded_String);
+
+   procedure Indent_Ads   (State : in out Generator_State;
+                           N     : in Positive := 3);
+   procedure Indent_Adb   (State : in out Generator_State;
+                           N     : in Positive := 3);
+   procedure Unindent_Ads (State : in out Generator_State;
+                           N     : in Positive := 3);
+   procedure Unindent_Adb (State : in out Generator_State;
+                           N     : in Positive := 3);
+   procedure Indent       (State : in out Generator_State;
+                           N     : in Positive := 3);
+   procedure Unindent     (State : in out Generator_State;
+                           N     : in Positive := 3);
 
 end AdaSpec.Generator.Ada;
