@@ -142,7 +142,8 @@ package body Coverage_Suite is
    end Run_Test;
 
    procedure Read_Gcov_Line (File   : in out File_Type;
-                             Status : out    Gcov_Line_Type)
+                             Status : out    Gcov_Line_Type;
+                             Ignore : in out Boolean)
    is
       use Ada.Strings.Fixed;
       use Util.IO;
@@ -153,13 +154,20 @@ package body Coverage_Suite is
          Found : Boolean := False;
       begin
 
+         if Index (Line, "BEGIN_GCOV_IGNORE") in Line'Range then
+            Ignore := True;
+         end if;
+         if Index (Line, "END_GCOV_IGNORE") in Line'Range then
+            Ignore := False;
+         end if;
+
          Loop_Characters :
          for i in Line'Range loop
             case Line (i) is
                when ' ' =>
                   null;
                when '#' =>
-                  if Index (Line, "GCOV_IGNORE") in Line'Range then
+                  if Ignore or Index (Line, "GCOV_IGNORE") in Line'Range then
                      Put_Line ("Ignore line: " & Name (File) & ": " & Line);
                      Status := Gcov_Line_Ignored;
                   else
@@ -208,12 +216,13 @@ package body Coverage_Suite is
       Line_Ignored : Natural :=  0;
       Error        : Integer := -1;
       Line_Number  : Integer :=  1;
+      Ignore       : Boolean := False;
    begin
 --       Put_Line ("File: " & Filename);
       Open (File, In_File, Filename);
 
       while Error = -1 and Status /= Gcov_End_Of_File loop
-         Read_Gcov_Line (File, Status);
+         Read_Gcov_Line (File, Status, Ignore);
 --          Put_Line ("   " & Status'Img);
          case Status is
             when Gcov_Line_Error =>

@@ -60,6 +60,10 @@ package body AdaSpec.Generator.Ada is
    --  Output adb/ads  --
    ----------------------
 
+   --  BEGIN_GCOV_IGNORE
+   --  These lines are ignored as the functions are bery simple, much more like
+   --  C macros, designed to simplify usage. Moreover, they are private to the
+   --  package and can't be tested easily.
 
    procedure Adb_Line (State : in out Generator_State; Line : in String)
    is begin
@@ -94,6 +98,8 @@ package body AdaSpec.Generator.Ada is
    is begin
       Append (State.Ads_Buf, S);
    end Ads;
+
+   --  END_GCOV_IGNORE
 
    ------------------------
    --  Indent, Unindent  --

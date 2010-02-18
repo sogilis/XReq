@@ -5,6 +5,12 @@ TEST_SUITES=test coverage
 CONFIG=debug
 
 all: bin test doc
+	@echo
+	@echo "####################################################"
+	@echo "##                                                ##"
+	@echo "##  Run 'make help' to get help on this Makefile  ##"
+	@echo "##                                                ##"
+	@echo "####################################################"
 
 dir:
 	mkdir -p obj
@@ -91,10 +97,29 @@ check: bin clean-reports coverage gnatcheck
 	  bin/tests -suite="$$t"; \
 	done
 
+show-ignored-coverage:
+	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
+
 .PHONY: all dir bin test doc clean clean-reports gcov-reset gcov-prepare gcov \
-        coverage gnatcheck check test-report run-tests
+        coverage gnatcheck check test-report run-tests show-ignored-coverage \
+        help
 
-
+help:
+	@echo "make TARGET"
+	@echo
+	@echo "Targets:"
+	@echo
+	@echo "    all:            Build everything    [bin tests doc]"
+	@echo "    bin:            Build project       [bin/adaspec]"
+	@echo "    tests:          Build tests         [bin/tests]"
+	@echo "    doc:            Build documentation [README.html]"
+	@echo "    coverage:       Run coverage tests  [reports/*.gcov]"
+	@echo "    gnatcheck:      Run gnatcheck       [reports/gnatcheck.*]"
+	@echo "    test-report:    Create test reports [reports/*.aunit.xml]"
+	@echo "    run-tests:      Run all tests"
+	@echo "    show-ignored-coverage:"
+	@echo "                    Show lines that are ignored by gcov"
+	@echo "    clean:          Clean project"
 
 
 

@@ -18,7 +18,7 @@ package AdaSpec.Generator.Ada is
 private
 
    type Generator_State is tagged
-      record
+      record            --  BEGIN_GCOV_IGNORE
          Feature    : Result_Feature_Type;
          Adb_Buf    : Unbounded_String;
          Ads_Buf    : Unbounded_String;
@@ -29,7 +29,7 @@ private
          Fn_Backgnd : Unbounded_String;
          Id_Pkgname : Unbounded_String;
          With_Pkg   : String_Set.Set;
-      end record;
+      end record;       --  END_GCOV_IGNORE
 
    procedure Adb_Line (State : in out Generator_State; Line : in String);
    procedure Ads_Line (State : in out Generator_State; Line : in String);

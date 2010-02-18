@@ -33,7 +33,8 @@ private
                            Gcov_End_Of_File);
 
    procedure Read_Gcov_Line (File   : in out Ada.Text_IO.File_Type;
-                             Status : out    Gcov_Line_Type);
+                             Status : out    Gcov_Line_Type;
+                             Ignore : in out Boolean);
    procedure Read_Gcov (Filename         : in  String;
                         Out_Line_Count   : out Natural;
                         Out_Line_Covered : out Natural;
