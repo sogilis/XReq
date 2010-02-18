@@ -1,10 +1,13 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with Ada.Containers.Hashed_Sets;
+with Ada.Strings.Unbounded.Hash;
 with Util.Strings;
 with Util.IO;
 
 use Ada.Directories;
+use Ada.Containers;
 use Util.Strings;
 use Util.IO;
 
@@ -66,6 +69,7 @@ package body AdaSpec.Generator.Ada is
                                 Ads_Buf  : in out Unbounded_String;
                                 Pool     : in out String_Pool;
                                 Scenario : in Result_Scenario_Type;
+                                Prefix   : in String := "";
                                 Indent   : in String := "";
                                 CRLF     : in String := ASCII.CR & ASCII.LF)
    is
@@ -74,7 +78,7 @@ package body AdaSpec.Generator.Ada is
       S_Name    : constant String := To_String (Scenario.Name);
       Idf_SName : Unbounded_String;
    begin
-      Get_Unique_String (Pool, To_Identifier (S_Name), Idf_SName);
+      Get_Unique_String (Pool, To_Identifier (Prefix & S_Name), Idf_SName);
 
       Append (Ads_Buf, Indent & "procedure " & Idf_SName & ";" & CRLF);
       Append (Adb_Buf, Indent & "procedure " & Idf_SName & " is" & CRLF);
@@ -100,10 +104,11 @@ package body AdaSpec.Generator.Ada is
       use Result_Scenarios;
       I      : Result_Scenarios.Cursor := First (Feature.Scenarios);
    begin
-      --  TODO: use strings pool
+      Generate_Scenario (Adb_Buf, Ads_Buf, Pool, Feature.Background,
+                         "Background_", Indent, CRLF);
       while Has_Element (I) loop
          Generate_Scenario (Adb_Buf, Ads_Buf, Pool, Element (I),
-                            Indent, CRLF);
+                            "Step_", Indent, CRLF);
          Next (I);
       end loop;
    end Generate_Feature;
@@ -117,13 +122,17 @@ package body AdaSpec.Generator.Ada is
                                 Indent   : in String := "";
                                 CRLF     : in String := ASCII.CR & ASCII.LF)
    is
-      use Result_Scenarios;
-      use Result_Steps;
-      I : Result_Scenarios.Cursor := First (Feature.Scenarios);
-      V : Result_Steps.Vector;
-   begin
-      while Has_Element (I) loop
-         V := Element (I).Steps;
+      package String_Set is new Hashed_Sets
+         (Unbounded_String, Hash, "=", "=");
+      use String_Set;
+
+      Packages : String_Set.Set;
+
+      procedure Process_Scenario (Scenario : in Result_Scenario_Type);
+      procedure Process_Scenario (Scenario : in Result_Scenario_Type) is
+         use Result_Steps;
+         V : constant Result_Steps.Vector := Scenario.Steps;
+      begin
          for J in First_Index (V) .. Last_Index (V) loop
             declare
                PN  : constant String := Procedure_Name (Element (V, J));
@@ -137,10 +146,26 @@ package body AdaSpec.Generator.Ada is
                      Cpy := True;
                   end if;
                end loop;
-               Append (Adb_Buf, Indent & "with " & PKG & ";" & CRLF);
+               if not Contains (Packages, PKG) then
+                  Insert (Packages, PKG);
+               end if;
             end;
-         end loop;  --  GCOV_IGNORE: ???
+         end loop;  --  GCOV_IGNORE ?????
+      end Process_Scenario;
+
+      use Result_Scenarios;
+      I : Result_Scenarios.Cursor := First (Feature.Scenarios);
+      J : String_Set.Cursor;
+   begin
+      Process_Scenario (Feature.Background);
+      while Has_Element (I) loop
+         Process_Scenario (Element (I));
          Next (I);
+      end loop;
+      J := First (Packages);
+      while Has_Element (J) loop
+         Append (Adb_Buf, Indent & "with " & Element (J) & ";" & CRLF);
+         Next (J);
       end loop;
    end Generate_With;
 

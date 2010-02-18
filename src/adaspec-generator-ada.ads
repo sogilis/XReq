@@ -23,6 +23,7 @@ package AdaSpec.Generator.Ada is
                                 Ads_Buf  : in out Unbounded_String;
                                 Pool     : in out String_Pool;
                                 Scenario : in Result_Scenario_Type;
+                                Prefix   : in String := "";
                                 Indent   : in String := "";
                                 CRLF     : in String := ASCII.CR & ASCII.LF);
 
