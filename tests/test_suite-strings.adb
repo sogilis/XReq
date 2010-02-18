@@ -151,17 +151,20 @@ package body Test_Suite.Strings is
       pragma Unreferenced (T);
    begin
 
-      Assert (To_Identifier ("This is a title ") = "This_is_a_title_",
+      Assert (To_Identifier ("This is a title ") = "This_is_a_title",
               "Error1");
 
-      Assert (To_Identifier ("999 title ") = "title_",
+      Assert (To_Identifier ("999 title ") = "title",
               "Error2");
 
       Assert (To_Identifier ("Test 7") = "Test_7",
               "Error3");
 
-      Assert (To_Identifier ("!  Test & ( 8") = "Test_8",
+      Assert (To_Identifier ("!  Test & ( 8 ") = "Test_8",
               "Error4");
+
+      Assert (To_Identifier ("toto_") = "toto",
+              "Error5");
 
    end Run;
 

@@ -114,6 +114,9 @@ package body Util.Strings is
                end if;
          end case;
       end loop;
+      if Last = '_' then
+         Head (Buffer, Length (Buffer) - 1);
+      end if;
       return To_String (Buffer);
    end To_Identifier;
 
