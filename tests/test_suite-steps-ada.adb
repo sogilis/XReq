@@ -100,19 +100,24 @@ package body Test_Suite.Steps.Ada is
       Directory : constant String := "tests/features/step_definitions";
       Steps     : Step_Vectors.Vector;
       Step      : Step_File_Ptr;
+      Found     : Boolean := False;
+      I         : Integer := 0;
    begin
 
       Parse_Directory (Steps, Directory);
 
-      Assert (Length (Steps) = 1,
+      Assert (Length (Steps) >= 1,
               "Detected " & Length (Steps)'Img &
-              " steps instead of 1");
+              " steps instead of >= 1");
 
-      Step := Element (Steps, 0);
+      while I < Integer (Length (Steps)) and not Found loop
+         Step  := Element (Steps, 0);
+         Found := Simple_Name (File_Name (Step.all)) = "sample1.ads";
+         I     := I + 1;
+      end loop;
 
-      Assert (Simple_Name (File_Name (Step.all)) = "sample1.ads",
-              "Should have detected step sample1.ads instead of " &
-              File_Name (Step.all));
+      Assert (Found,
+              "Should have detected step sample1.ads");
 
       Assert (Parsed (Step.all), "Should have parsed the step definition");
 

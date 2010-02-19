@@ -26,6 +26,9 @@ procedure Main is
    Quit      : Boolean := False;
    Options   : constant String := "help h -help " &
              "s: -step= o: -output= l: -lang=";
+   Arg       : Unbounded_String;
+   Step_Dir  : Unbounded_String;
+   Out_Dir   : Unbounded_String;
 
 begin
 
@@ -45,14 +48,14 @@ begin
          exit Getopt_Loop;
 
       elsif Full_Switch = "s" or Full_Switch = "-step" then
-         if Length (Env.Step_Dir) /= 0 then
+         if Length (Step_Dir) /= 0 then
             raise Not_Yet_Implemented with "multiple --step";
          end if;
-         Env.Step_Dir := To_Unbounded_String (Parameter);
+         Step_Dir := To_Unbounded_String (Parameter);
          --  Put_Line ("--step=" & Parameter);
 
       elsif Full_Switch = "o" or Full_Switch = "-output" then
-         Env.Out_Dir  := To_Unbounded_String (Parameter);
+         Out_Dir  := To_Unbounded_String (Parameter);
          --  Put_Line ("--output=" & Parameter);
 
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
@@ -72,41 +75,45 @@ begin
 
    if not Quit then
 
-      declare
-         Arg : constant String := Get_Argument;
-      begin
-         Make (Job, Arg);
-         if Arg'Length = 0 then
-            Put_Line (Standard_Error, "Missing feature filename");
-            AdaSpec.CLI.Help;
-            Set_Exit_Status (Failure);
-            Quit := True;
-         end if;
-      end;
+      Arg := To_Unbounded_String (Get_Argument);
+      if Length (Arg) = 0 then
+         Put_Line (Standard_Error, "Missing feature filename");
+         AdaSpec.CLI.Help;
+         Set_Exit_Status (Failure);
+         Quit := True;
+      end if;
 
    end if;
 
-   ------------------------
-   --  Convert Features  --
-   ------------------------
+   while not Quit and Length (Arg) > 0 loop
 
-   if not Quit then
+      ---------------------
+      --  Get Parameter  --
+      ---------------------
 
-      if Get_Argument'Length /= 0 then
-         raise Not_Yet_Implemented with "more FEATUREs";
-      end if;
-
+      Make (Env, To_String (Step_Dir), To_String (Out_Dir));
+      Make (Job, To_String (Arg));
       Fill_Missing (Env, Feature_File (Job));
       Load (Env);
+
       Put_Line (Describe (Job, Env));
+
+      ------------------------
+      --  Compile Features  --
+      ------------------------
+
       Run (Job, Env);
       if Job.Result.Fail then
+         Put_Line (Standard_Error, "Failure to compile " & Feature_File (Job));
          Set_Exit_Status (Failure);
+         Quit := True;
       else
          Generate (Job, Env);
       end if;
 
-   end if;
+      Arg := To_Unbounded_String (Get_Argument);
+
+   end loop;
 
 exception
 

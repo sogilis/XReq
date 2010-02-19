@@ -69,6 +69,14 @@ package body Test_Suite.Main is
       Spawn_Assert ("--step",
                     Expected_Result => False);
 
+      Spawn_Assert ("--step tests/features/step_definitions " &
+                    "tests/features/simplest.feature",
+                    Expected_Result => True);
+
+      Spawn_Assert ("--step a --step tests/features/step_definitions " &
+                    "tests/features/simplest.feature",
+                    Expected_Result => False);
+
       Spawn_Assert ("--toto",
                     Expected_Result => False);
 
