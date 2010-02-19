@@ -48,11 +48,11 @@ package body Test_Suite.Main is
 
       Spawn_Assert ("-h");
       Spawn_Assert ("tests/features/simplest.feature");
-      Spawn_Assert ("-otmp --step b tests/features/simplest.feature");
+      Spawn_Assert ("-otmp --step b tests/features/simplest.feature",
+                    Expected_Result => False);
 
       Spawn_Assert ("tests/features/simplest.feature " &
-                    "tests/features/simplest2.feature",
-                    Expected_Result => False);
+                    "tests/features/simplest2.feature");
 
       Spawn_Assert ("-o /tmp",
                     Expected_Result => False);
