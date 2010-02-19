@@ -23,4 +23,8 @@ package AdaSpec.Generator is
    package Generator_Vectors is new
       Ada.Containers.Vectors (Natural, Generator_Ptr, "=");
 
+   procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
+                             Name : in String;
+                             Env  : in Job_Environment);
+
 end AdaSpec.Generator;

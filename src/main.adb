@@ -36,8 +36,6 @@ procedure Main is
    Generators : Generator_Vectors.Vector;
    Generator  : Generator_Ptr;
 
-   pragma Unreferenced (Executable);
-
 begin
 
    -------------------
@@ -135,6 +133,10 @@ begin
       Arg := To_Unbounded_String (Get_Argument);
 
    end loop;
+
+   if not Quit and Executable /= Null_Unbounded_String then
+      Generate_Suite (Generators, To_String (Executable), Env);
+   end if;
 
 exception
 

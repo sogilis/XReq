@@ -1,6 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Text_IO;
 with AdaSpec.Generator.Ada;
+
+use Ada.Text_IO;
 
 package body AdaSpec.Generator is
 
@@ -14,5 +17,14 @@ package body AdaSpec.Generator is
       Ada_Gen.Generate;
       Gen := Generator_Ptr (Ada_Gen);
    end Generate;
+
+   procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
+                             Name : in String;
+                             Env  : in Job_Environment)
+   is
+      pragma Unreferenced (Gens, Env);
+   begin
+      Put_Line ("TODO: Generate suite " & Name);
+   end Generate_Suite;
 
 end AdaSpec.Generator;
