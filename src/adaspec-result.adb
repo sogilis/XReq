@@ -120,8 +120,14 @@ package body AdaSpec.Result is
       end if;
       Process_Scenario (Result.Background, Feature.all.Background,
                         Steps, Errors);
+      if Errors then
+         Result.Fail := True;
+      end if;
       while Has_Element (I) loop
          Process_Scenario (R_Scen, Element (I), Steps, Errors);
+         if Errors then
+            Result.Fail := True;
+         end if;
          Append (Result, R_Scen);
          Next (I);
       end loop;

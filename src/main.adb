@@ -100,7 +100,11 @@ begin
       Load (Env);
       Put_Line (Describe (Job, Env));
       Run (Job, Env);
-      Generate (Job, Env);
+      if Job.Result.Fail then
+         Set_Exit_Status (Failure);
+      else
+         Generate (Job, Env);
+      end if;
 
    end if;
 

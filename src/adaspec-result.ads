@@ -75,6 +75,7 @@ package AdaSpec.Result is
          Name       : Unbounded_String;
          Background : Result_Scenario_Type;
          Scenarios  : Result_Scenarios.Vector;
+         Fail       : Boolean := False;
       end record;
 
    function  To_String       (Res      : in     Result_Feature_Type;
