@@ -21,14 +21,18 @@ use AdaSpec.Generator;
 
 procedure Main is
 
-   Env       : Job_Environment;
-   Job       : Job_Type;
-   Quit      : Boolean := False;
-   Options   : constant String := "help h -help " &
-             "s: -step= o: -output= l: -lang=";
-   Arg       : Unbounded_String;
-   Step_Dir  : Unbounded_String;
-   Out_Dir   : Unbounded_String;
+   Env        : Job_Environment;
+   Job        : Job_Type;
+   Quit       : Boolean := False;
+   Options    : constant String := "help h -help k -keep-going " &
+              "s: -step= o: -output= x: -executable= l: -lang=";
+   Arg        : Unbounded_String;
+   Step_Dir   : Unbounded_String;
+   Out_Dir    : Unbounded_String;
+   Executable : Unbounded_String;
+   Keep_Going : Boolean := False;
+
+   pragma Unreferenced (Executable);
 
 begin
 
@@ -46,6 +50,16 @@ begin
          AdaSpec.CLI.Help;
          Quit := True;
          exit Getopt_Loop;
+
+      elsif Full_Switch = "k" or
+         Full_Switch = "-keep-going"
+      then
+         Keep_Going := True;
+
+      elsif Full_Switch = "x" or
+         Full_Switch = "-executable"
+      then
+         Executable := To_Unbounded_String (Parameter);
 
       elsif Full_Switch = "s" or Full_Switch = "-step" then
          if Length (Step_Dir) /= 0 then
@@ -106,7 +120,9 @@ begin
       if Job.Result.Fail then
          Put_Line (Standard_Error, "Failure to compile " & Feature_File (Job));
          Set_Exit_Status (Failure);
-         Quit := True;
+         if not Keep_Going then
+            Quit := True;
+         end if;
       else
          Generate (Job, Env);
       end if;
