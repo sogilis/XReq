@@ -60,25 +60,20 @@ package body AdaSpec.Generator.Ada is
    --  Output adb/ads  --
    ----------------------
 
-   --  BEGIN_GCOV_IGNORE
-   --  These lines are ignored as the functions are bery simple, much more like
-   --  C macros, designed to simplify usage. Moreover, they are private to the
-   --  package and can't be tested easily.
-
    procedure Adb_Line (State : in out Generator_State; Line : in String)
    is begin
       Append (State.Adb_Buf, State.Ind_Adb & Line & State.CRLF);
    end Adb_Line;
-   procedure Ads_Line (State : in out Generator_State; Line : in String)
-   is begin
-      Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
-   end Ads_Line;
-   procedure Adb (State : in out Generator_State; S : in String) is begin
-      Append (State.Ads_Buf, S);
-   end Adb;
-   procedure Ads (State : in out Generator_State; S : in String) is begin
-      Append (State.Ads_Buf, S);
-   end Ads;
+--    procedure Ads_Line (State : in out Generator_State; Line : in String)
+--    is begin
+--       Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
+--    end Ads_Line;
+--    procedure Adb (State : in out Generator_State; S : in String) is begin
+--       Append (State.Ads_Buf, S);
+--    end Adb;
+--    procedure Ads (State : in out Generator_State; S : in String) is begin
+--       Append (State.Ads_Buf, S);
+--    end Ads;
 
    procedure Adb_Line (State : in out Generator_State;
                        Line  : in Unbounded_String)
@@ -90,16 +85,14 @@ package body AdaSpec.Generator.Ada is
    is begin
       Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
    end Ads_Line;
-   procedure Adb (State : in out Generator_State; S : in Unbounded_String)
-   is begin
-      Append (State.Ads_Buf, S);
-   end Adb;
-   procedure Ads (State : in out Generator_State; S : in Unbounded_String)
-   is begin
-      Append (State.Ads_Buf, S);
-   end Ads;
-
-   --  END_GCOV_IGNORE
+--    procedure Adb (State : in out Generator_State; S : in Unbounded_String)
+--    is begin
+--       Append (State.Ads_Buf, S);
+--    end Adb;
+--    procedure Ads (State : in out Generator_State; S : in Unbounded_String)
+--    is begin
+--       Append (State.Ads_Buf, S);
+--    end Ads;
 
    ------------------------
    --  Indent, Unindent  --

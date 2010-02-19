@@ -3,3 +3,4 @@
 *.ali
 *.gcno
 *.html
+/tmp/

@@ -18,7 +18,8 @@ package AdaSpec.Generator.Ada is
 private
 
    type Generator_State is tagged
-      record            --  BEGIN_GCOV_IGNORE
+      record
+         --  BEGIN_GCOV_IGNORE
          Feature    : Result_Feature_Type;
          Adb_Buf    : Unbounded_String;
          Ads_Buf    : Unbounded_String;
@@ -29,19 +30,20 @@ private
          Fn_Backgnd : Unbounded_String;
          Id_Pkgname : Unbounded_String;
          With_Pkg   : String_Set.Set;
-      end record;       --  END_GCOV_IGNORE
+         --  END_GCOV_IGNORE
+      end record;
 
    procedure Adb_Line (State : in out Generator_State; Line : in String);
-   procedure Ads_Line (State : in out Generator_State; Line : in String);
-   procedure Adb (State : in out Generator_State; S : in String);
-   procedure Ads (State : in out Generator_State; S : in String);
+--    procedure Ads_Line (State : in out Generator_State; Line : in String);
+--    procedure Adb (State : in out Generator_State; S : in String);
+--    procedure Ads (State : in out Generator_State; S : in String);
 
    procedure Adb_Line (State : in out Generator_State;
                        Line  : in Unbounded_String);
    procedure Ads_Line (State : in out Generator_State;
                        Line  : in Unbounded_String);
-   procedure Adb (State : in out Generator_State; S : in Unbounded_String);
-   procedure Ads (State : in out Generator_State; S : in Unbounded_String);
+--    procedure Adb (State : in out Generator_State; S : in Unbounded_String);
+--    procedure Ads (State : in out Generator_State; S : in Unbounded_String);
 
    procedure Indent_Ads   (State : in out Generator_State;
                            N     : in Positive := 3);

@@ -27,6 +27,7 @@ test: dir
 doc: dir README.html src/README.html
 	
 clean:
+	-$(RM) -rf tmp
 	-$(RM) obj/*
 	-$(RM) bin/*
 	-$(RM) README.html
