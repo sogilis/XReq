@@ -9,100 +9,106 @@ use Util.IO;
 package body AdaSpec.Generator.Ada is
 
 
-   procedure Generate_Step     (S        : in out Generator_State;
+   procedure Generate_Step     (S        : in out Ada_Generator_Type;
                                 Step     : in     Result_Step_Type);
-   procedure Generate_Scenario (S        : in out Generator_State;
+   procedure Generate_Scenario (S        : in out Ada_Generator_Type;
                                 Scenario : in     Result_Scenario_Type;
                                 Name     : in     Unbounded_String);
-   procedure Generate_Feature  (S        : in out Generator_State);
-   procedure Generate_With     (S        : in out Generator_State);
+   procedure Generate_Feature  (S        : in out Ada_Generator_Type);
+   procedure Generate_With     (S        : in out Ada_Generator_Type);
+
+   ------------
+   --  Make  --
+   ------------
+
+   procedure Make     (Gen : out    Ada_Generator_Type;
+                       Job : in     Job_Type;
+                       Env : in     Job_Environment)
+   is
+
+      Pkgname     : constant String := Base_Name (Feature_File (Job));
+      Basename    : constant String := Compose (Out_Dir (Env), Pkgname);
+      Generator   : Ada_Generator_Type := (
+                     Feature  => Job.Result,
+                     Ads_File => To_Unbounded_String (Basename & ".ads"),
+                     Adb_File => To_Unbounded_String (Basename & ".adb"),
+                     others   => <>);
+   begin
+      Get_Unique_String (
+         Gen.Pool, To_Identifier (Pkgname),      Generator.Id_Pkgname);
+      Get_Unique_String (
+         Gen.Pool, To_Identifier ("Background"), Generator.Fn_Backgnd);
+      Gen := Generator;
+   end Make;
 
    ----------------
    --  Generate  --
    ----------------
 
-   procedure Generate (Job : in Job_Type;
-                       Env : in Job_Environment)
-   is
-
+   procedure Generate (Gen : in out Ada_Generator_Type) is
       use Util.Strings.Vectors;
-
-      State : Generator_State := (
-         Feature => Job.Result,
-         others  => <>);
-
-      Pkgname     : constant String := Base_Name (Feature_File (Job));
-      Basename    : constant String := Compose (Out_Dir (Env), Pkgname);
-      Ads_File    : constant String := Basename & ".ads";
-      Adb_File    : constant String := Basename & ".adb";
-
    begin
-      Get_Unique_String (State.Pool,
-                         To_Identifier (Pkgname),
-                         State.Id_Pkgname);
-      Get_Unique_String (State.Pool,
-                         To_Identifier ("Background_" &
-                           To_String (State.Feature.Background.Name)),
-                         State.Fn_Backgnd);
-
-      State.Ads_Line ("package " & State.Id_Pkgname & " is");
-      State.Adb_Line ("package body " & State.Id_Pkgname & " is");
-      State.Indent;
-      Generate_Feature (State);
-      State.Ads_Line ("procedure Run;");
-      State.Adb_Line ("procedure Run is");
-      State.Adb_Line ("begin");
-      State.Indent;
-      for I in 0 .. Integer (Length (State.Fn_Steps)) - 1 loop
-         State.Adb_Line (State.Fn_Backgnd & ";");
-         State.Adb_Line (Element (State.Fn_Steps, I) & ";");
+      Gen.Ads_Line ("package " & Gen.Id_Pkgname & " is");
+      Gen.Adb_Line ("package body " & Gen.Id_Pkgname & " is");
+      Gen.Indent;
+      Generate_Feature (Gen);
+      Gen.Ads_Line ("procedure Run;");
+      Gen.Adb_Line ("procedure Run is");
+      Gen.Adb_Line ("begin");
+      Gen.Indent;
+      for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
+         Gen.Adb_Line (Gen.Fn_Backgnd & ";");
+         Gen.Adb_Line (Element (Gen.Fn_Steps, I) & ";");
       end loop;
-      State.Unindent;
-      State.Adb_Line ("end Run;");
-      State.Unindent;
-      State.Ads_Line ("end " & State.Id_Pkgname & ";");
-      State.Adb_Line ("end " & State.Id_Pkgname & ";");
-      Generate_With (State);
+      Gen.Unindent;
+      Gen.Adb_Line ("end Run;");
+      Gen.Unindent;
+      Gen.Ads_Line ("end " & Gen.Id_Pkgname & ";");
+      Gen.Adb_Line ("end " & Gen.Id_Pkgname & ";");
+      Generate_With (Gen);
 
-      Set_File (Ads_File, To_String (State.Ads_Buf));
-      Set_File (Adb_File, To_String (State.Adb_Buf));
+      Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads_Buf));
+      Set_File (To_String (Gen.Adb_File), To_String (Gen.Adb_Buf));
    end Generate;
+
 
    ----------------------
    --  Output adb/ads  --
    ----------------------
 
-   procedure Adb_Line (State : in out Generator_State; Line : in String)
+   procedure Adb_Line (State : in out Ada_Generator_Type; Line : in String)
    is begin
       Append (State.Adb_Buf, State.Ind_Adb & Line & State.CRLF);
    end Adb_Line;
-   procedure Ads_Line (State : in out Generator_State; Line : in String)
+   procedure Ads_Line (State : in out Ada_Generator_Type; Line : in String)
    is begin
       Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
    end Ads_Line;
---    procedure Adb (State : in out Generator_State; S : in String) is begin
+--    procedure Adb (State : in out Ada_Generator_Type; S : in String) is begin
 --       Append (State.Ads_Buf, S);
 --    end Adb;
---    procedure Ads (State : in out Generator_State; S : in String) is begin
+--    procedure Ads (State : in out Ada_Generator_Type; S : in String) is begin
 --       Append (State.Ads_Buf, S);
 --    end Ads;
 
-   procedure Adb_Line (State : in out Generator_State;
-                       Line  : in Unbounded_String)
+   procedure Adb_Line (State : in out Ada_Generator_Type;
+                       Line  : in     Unbounded_String)
    is begin
       Append (State.Adb_Buf, State.Ind_Adb & Line & State.CRLF);
    end Adb_Line;
-   procedure Ads_Line (State : in out Generator_State;
-                       Line  : in Unbounded_String)
+   procedure Ads_Line (State : in out Ada_Generator_Type;
+                       Line  : in     Unbounded_String)
    is begin
       Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
    end Ads_Line;
---    procedure Adb (State : in out Generator_State; S : in Unbounded_String)
---    is begin
+--    procedure Adb (State : in out Ada_Generator_Type;
+--                   S     : in     Unbounded_String) is
+--    begin
 --       Append (State.Ads_Buf, S);
 --    end Adb;
---    procedure Ads (State : in out Generator_State; S : in Unbounded_String)
---    is begin
+--    procedure Ads (State : in out Ada_Generator_Type;
+--                   S     : in     Unbounded_String) is
+--    begin
 --       Append (State.Ads_Buf, S);
 --    end Ads;
 
@@ -110,37 +116,39 @@ package body AdaSpec.Generator.Ada is
    --  Indent, Unindent  --
    ------------------------
 
-   procedure Indent_Ads (State : in out Generator_State; N : in Positive := 3)
-   is
+   procedure Indent_Ads (State : in out Ada_Generator_Type;
+                         N     : in     Positive := 3) is
    begin
       Append (State.Ind_Ads, N * " ");
    end Indent_Ads;
 
-   procedure Indent_Adb (State : in out Generator_State; N : in Positive := 3)
-   is
+   procedure Indent_Adb (State : in out Ada_Generator_Type;
+                         N     : in     Positive := 3) is
    begin
       Append (State.Ind_Adb, N * " ");
    end Indent_Adb;
 
-   procedure Unindent_Ads (State : in out Generator_State;
+   procedure Unindent_Ads (State : in out Ada_Generator_Type;
                            N     : in Positive := 3) is
    begin
       Head (State.Ind_Ads, Length (State.Ind_Ads) - N);
    end Unindent_Ads;
 
-   procedure Unindent_Adb (State : in out Generator_State;
+   procedure Unindent_Adb (State : in out Ada_Generator_Type;
                            N     : in Positive := 3) is
    begin
       Head (State.Ind_Adb, Length (State.Ind_Adb) - N);
    end Unindent_Adb;
 
-   procedure Indent (State : in out Generator_State; N : in Positive := 3) is
+   procedure Indent (State : in out Ada_Generator_Type;
+                     N     : in     Positive := 3) is
    begin
       Indent_Ads (State, N);
       Indent_Adb (State, N);
    end Indent;
 
-   procedure Unindent (State : in out Generator_State; N : in Positive := 3) is
+   procedure Unindent (State : in out Ada_Generator_Type;
+                       N     : in     Positive := 3) is
    begin
       Unindent_Ads (State, N);
       Unindent_Adb (State, N);
@@ -150,7 +158,7 @@ package body AdaSpec.Generator.Ada is
    --  Generate_Step  --
    ---------------------
 
-   procedure Generate_Step     (S        : in out Generator_State;
+   procedure Generate_Step     (S        : in out Ada_Generator_Type;
                                 Step     : in Result_Step_Type)
    is
       use String_Set;
@@ -175,7 +183,7 @@ package body AdaSpec.Generator.Ada is
    --  Generate_Scenario  --
    -------------------------
 
-   procedure Generate_Scenario (S        : in out Generator_State;
+   procedure Generate_Scenario (S        : in out Ada_Generator_Type;
                                 Scenario : in Result_Scenario_Type;
                                 Name     : in Unbounded_String)
    is
@@ -198,7 +206,7 @@ package body AdaSpec.Generator.Ada is
    --  Generate_Feature  --
    ------------------------
 
-   procedure Generate_Feature  (S : in out Generator_State)
+   procedure Generate_Feature  (S : in out Ada_Generator_Type)
    is
       use Util.Strings.Vectors;
       use Result_Scenarios;
@@ -220,7 +228,7 @@ package body AdaSpec.Generator.Ada is
    --  Generate_With  --
    ---------------------
 
-   procedure Generate_With (S : in out Generator_State)
+   procedure Generate_With (S : in out Ada_Generator_Type)
    is
       use String_Set;
       J   : String_Set.Cursor := First (S.With_Pkg);

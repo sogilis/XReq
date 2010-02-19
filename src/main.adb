@@ -21,6 +21,8 @@ use AdaSpec.Generator;
 
 procedure Main is
 
+   use Generator_Vectors;
+
    Env        : Job_Environment;
    Job        : Job_Type;
    Quit       : Boolean := False;
@@ -31,6 +33,8 @@ procedure Main is
    Out_Dir    : Unbounded_String;
    Executable : Unbounded_String;
    Keep_Going : Boolean := False;
+   Generators : Generator_Vectors.Vector;
+   Generator  : Generator_Ptr;
 
    pragma Unreferenced (Executable);
 
@@ -124,7 +128,8 @@ begin
             Quit := True;
          end if;
       else
-         Generate (Job, Env);
+         Generate (Job, Env, Generator);
+         Append (Generators, Generator);
       end if;
 
       Arg := To_Unbounded_String (Get_Argument);

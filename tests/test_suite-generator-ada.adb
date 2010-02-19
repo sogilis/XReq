@@ -35,11 +35,13 @@ package body Test_Suite.Generator.Ada is
       pragma Unreferenced (T);
       Env     : Job_Environment;
       Job     : Job_Type;
+      Gen     : Generator_Ptr;
       Output  : Unbounded_String;
       Success : Boolean;
       Result  : Integer;
       Flags   : constant String
               := "-c -aI../step_definitions -aI../../../lib";
+      pragma Unreferenced (Gen);
    begin
 
       begin
@@ -51,7 +53,7 @@ package body Test_Suite.Generator.Ada is
 
       Init (Env, Job, "tests/features/simplest.feature");
       Run  (Job, Env);
-      Generate (Job, Env);
+      Generate (Job, Env, Gen);
 
       Append (Output, "gnatmake " & Flags & " simplest.adb" &
               ASCII.LF);
