@@ -25,6 +25,8 @@ package body AdaSpec.Generator.Ada is
                        Env : in Job_Environment)
    is
 
+      use Util.Strings.Vectors;
+
       State : Generator_State := (
          Feature => Job.Result,
          others  => <>);
@@ -47,6 +49,16 @@ package body AdaSpec.Generator.Ada is
       State.Adb_Line ("package body " & State.Id_Pkgname & " is");
       State.Indent;
       Generate_Feature (State);
+      State.Ads_Line ("procedure Run;");
+      State.Adb_Line ("procedure Run is");
+      State.Adb_Line ("begin");
+      State.Indent;
+      for I in 0 .. Integer (Length (State.Fn_Steps)) - 1 loop
+         State.Adb_Line (State.Fn_Backgnd & ";");
+         State.Adb_Line (Element (State.Fn_Steps, I) & ";");
+      end loop;
+      State.Unindent;
+      State.Adb_Line ("end Run;");
       State.Unindent;
       State.Ads_Line ("end " & State.Id_Pkgname & ";");
       State.Adb_Line ("end " & State.Id_Pkgname & ";");
@@ -64,10 +76,10 @@ package body AdaSpec.Generator.Ada is
    is begin
       Append (State.Adb_Buf, State.Ind_Adb & Line & State.CRLF);
    end Adb_Line;
---    procedure Ads_Line (State : in out Generator_State; Line : in String)
---    is begin
---       Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
---    end Ads_Line;
+   procedure Ads_Line (State : in out Generator_State; Line : in String)
+   is begin
+      Append (State.Ads_Buf, State.Ind_Ads & Line & State.CRLF);
+   end Ads_Line;
 --    procedure Adb (State : in out Generator_State; S : in String) is begin
 --       Append (State.Ads_Buf, S);
 --    end Adb;
@@ -188,6 +200,7 @@ package body AdaSpec.Generator.Ada is
 
    procedure Generate_Feature  (S : in out Generator_State)
    is
+      use Util.Strings.Vectors;
       use Result_Scenarios;
       I   : Result_Scenarios.Cursor := First (S.Feature.Scenarios);
       Str : Unbounded_String;
@@ -195,8 +208,9 @@ package body AdaSpec.Generator.Ada is
       Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd);
       while Has_Element (I) loop
          Get_Unique_String (S.Pool,
-            To_Identifier ("Step_" & To_String (Element (I).Name)),
+            To_Identifier ("Scenario_" & To_String (Element (I).Name)),
             Str);
+         Append (S.Fn_Steps, Str);
          Generate_Scenario (S, Element (I), Str);
          Next (I);
       end loop;

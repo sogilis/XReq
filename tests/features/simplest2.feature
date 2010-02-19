@@ -11,3 +11,6 @@ Scenario: Run a good step
 
 Background: Background
   Given this step works
+
+Scenario: Another good step
+  Given this step works

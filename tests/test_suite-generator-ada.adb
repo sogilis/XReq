@@ -38,6 +38,8 @@ package body Test_Suite.Generator.Ada is
       Output  : Unbounded_String;
       Success : Boolean;
       Result  : Integer;
+      Flags   : constant String
+              := "-c -aI../step_definitions -aI../../../lib";
    begin
 
       begin
@@ -51,9 +53,9 @@ package body Test_Suite.Generator.Ada is
       Run  (Job, Env);
       Generate (Job, Env);
 
-      Append (Output, "gnatmake -c -aI../step_definitions simplest.adb" &
+      Append (Output, "gnatmake " & Flags & " simplest.adb" &
               ASCII.LF);
-      Spawn ("gnatmake", "-c -aI../step_definitions simplest.adb",
+      Spawn ("gnatmake", Flags & " simplest.adb",
              Output, Success, Result, "tests/features/tests");
 
       Assert (Success, "gnatmake did not succeed" & ASCII.LF &

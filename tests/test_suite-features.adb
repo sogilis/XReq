@@ -182,6 +182,10 @@ package body Test_Suite.Features is
       Assert (Name   (Feature1) = "Sample2", "Incorrect feature name");
       Assert (Parsed (Feature1), "Feature_Type is always parsed");
 
+      Make   (Scenario, "Background");
+      Append (Scenario, Stanza_Given ("this step works"));
+      Set_Background (Feature1, Scenario);
+
       Make   (Scenario, "Run a good step");
       Append (Scenario, Stanza_Given ("this step works"));
       Append (Scenario, Stanza_Given ("I am in front of a cake machine"));
@@ -190,9 +194,9 @@ package body Test_Suite.Features is
       Append (Scenario, Stanza_Then  ("I get a cake"));
       Append (Feature1, Scenario);
 
-      Make   (Scenario, "Background");
+      Make   (Scenario, "Another good step");
       Append (Scenario, Stanza_Given ("this step works"));
-      Set_Background (Feature1, Scenario);
+      Append (Feature1, Scenario);
 
       Make  (Feature2, File);
       Parse (Feature2);

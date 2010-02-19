@@ -30,11 +30,12 @@ private
          Fn_Backgnd : Unbounded_String;
          Id_Pkgname : Unbounded_String;
          With_Pkg   : String_Set.Set;
+         Fn_Steps   : Util.Strings.Vectors.Vector;
          --  END_GCOV_IGNORE
       end record;
 
    procedure Adb_Line (State : in out Generator_State; Line : in String);
---    procedure Ads_Line (State : in out Generator_State; Line : in String);
+   procedure Ads_Line (State : in out Generator_State; Line : in String);
 --    procedure Adb (State : in out Generator_State; S : in String);
 --    procedure Ads (State : in out Generator_State; S : in String);
 
