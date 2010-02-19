@@ -13,6 +13,7 @@ all: bin test doc
 	@echo "####################################################"
 
 dir:
+	mkdir -p lib
 	mkdir -p obj
 	mkdir -p bin
 	mkdir -p doc
