@@ -66,6 +66,7 @@ Feature: Process
 
         Background:
       This step works
+          Given this step works
 
         Scenario: Run a good step
       This step works

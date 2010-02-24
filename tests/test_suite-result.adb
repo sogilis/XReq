@@ -40,7 +40,7 @@ package body Test_Suite.Result is
       Step : Result_Step_Type;
    begin
 
-      Make (Step, "Proc");
+      Make (Step, "Proc", Stanza_Given (""));
 
       Assert (Procedure_Name (Step) = "Proc",
               "Wrong procedure name");
@@ -78,9 +78,12 @@ package body Test_Suite.Result is
 
       Assert (not Errors, "Errors happened while processing scenario (1)");
 
-      Append (Ideal_Result, AdaSpec.Result.Create ("Sample1.This_Step_Works"));
       Append (Ideal_Result,
-              AdaSpec.Result.Create ("Sample1.This_Step_Works_Too"));
+              AdaSpec.Result.Create ("Sample1.This_Step_Works",
+                                     Stanza_Given ("this step works")));
+      Append (Ideal_Result,
+              AdaSpec.Result.Create ("Sample1.This_Step_Works_Too",
+                                     Stanza_When  ("this step works too")));
 
       Assert (Length (Result.Steps) = 2,
               "Wrong length of result, " & Length (Result.Steps)'Img &
@@ -167,7 +170,8 @@ package body Test_Suite.Result is
       Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");
 
-      Append (R_Scen, Create ("Sample1.This_Step_Works"));
+      Append (R_Scen, Create ("Sample1.This_Step_Works",
+                              Stanza_Given ("this step works")));
       Expected.Background := R_Scen;
       R_Scen.Name := To_Unbounded_String ("Run a good step");
       Append (Expected, R_Scen);
@@ -212,7 +216,8 @@ package body Test_Suite.Result is
    begin
       Title ("AdaSpec.Result.To_String");
 
-      Append (R_Scen, Create ("Sample1.This_Step_Works"));
+      Append (R_Scen, Create ("Sample1.This_Step_Works",
+                              Stanza_Given ("this step works")));
       Feature.Background := R_Scen;
       Feature.Background.Name := To_Unbounded_String ("BG");
       R_Scen.Name := To_Unbounded_String ("Run a good step");

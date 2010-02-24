@@ -9,13 +9,14 @@ use Util.IO;
 package body AdaSpec.Generator.Ada is
 
 
-   procedure Generate_Step     (S        : in out Ada_Generator_Type;
-                                Step     : in     Result_Step_Type);
-   procedure Generate_Scenario (S        : in out Ada_Generator_Type;
-                                Scenario : in     Result_Scenario_Type;
-                                Name     : in     Unbounded_String);
-   procedure Generate_Feature  (S        : in out Ada_Generator_Type);
-   procedure Generate_With     (S        : in out Ada_Generator_Type);
+   procedure Generate_Step     (S          : in out Ada_Generator_Type;
+                                Step       : in     Result_Step_Type);
+   procedure Generate_Scenario (S          : in out Ada_Generator_Type;
+                                Scenario   : in     Result_Scenario_Type;
+                                Name       : in     Unbounded_String;
+                                Background : in Boolean := False);
+   procedure Generate_Feature  (S          : in out Ada_Generator_Type);
+   procedure Generate_With     (S          : in out Ada_Generator_Type);
 
    ------------
    --  Make  --
@@ -48,6 +49,10 @@ package body AdaSpec.Generator.Ada is
    procedure Generate (Gen : in out Ada_Generator_Type) is
       use Util.Strings.Vectors;
    begin
+      Gen.Adb.Put_Line ("with AdaSpecLib;");
+      Gen.Adb.Put_Line ("with AdaSpecLib.Format.Text;");
+      Gen.Adb.Put_Line ("use  AdaSpecLib;");
+      Gen.Adb.Put_Line ("use  AdaSpecLib.Format.Text;");
       Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
       Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
       Indent (Gen.Ads);
@@ -58,6 +63,8 @@ package body AdaSpec.Generator.Ada is
       Gen.Adb.Put_Line ("begin");
       Indent (Gen.Ads);
       Indent (Gen.Adb);
+      Gen.Adb.Put_Line ("Put_Feature (" &
+                        Ada_String (To_String (Gen.Feature.Name)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          Gen.Adb.Put_Line (Gen.Fn_Backgnd & ";");
          Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) & ";");
@@ -98,15 +105,25 @@ package body AdaSpec.Generator.Ada is
       if not Contains (S.With_Pkg, Pkgname) then
          Insert (S.With_Pkg, Pkgname);
       end if;
+      S.Adb.Put_Indent;
+      S.Adb.Put ("Put_Step (");
+      case Step.Step.Prefix is
+         when Prefix_Given => S.Adb.Put ("Step_Given");
+         when Prefix_When  => S.Adb.Put ("Step_When");
+         when Prefix_Then  => S.Adb.Put ("Step_Then");
+      end case;
+      S.Adb.Put (", " & Ada_String (To_String (Step.Step.Stanza)) & ");");
+      S.Adb.New_Line;
    end Generate_Step;
 
    -------------------------
    --  Generate_Scenario  --
    -------------------------
 
-   procedure Generate_Scenario (S        : in out Ada_Generator_Type;
-                                Scenario : in Result_Scenario_Type;
-                                Name     : in Unbounded_String)
+   procedure Generate_Scenario (S          : in out Ada_Generator_Type;
+                                Scenario   : in Result_Scenario_Type;
+                                Name       : in Unbounded_String;
+                                Background : in Boolean := False)
    is
       use Result_Steps;
       I : Result_Steps.Cursor := First (Scenario.Steps);
@@ -115,6 +132,14 @@ package body AdaSpec.Generator.Ada is
       S.Adb.Put_Line ("procedure " & Name & " is");
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
+      S.Adb.Put_Indent;
+      if Background then
+         S.Adb.Put ("Put_Background ");
+      else
+         S.Adb.Put ("Put_Scenario ");
+      end if;
+      S.Adb.Put ("(" & Ada_String (To_String (Scenario.Name)) & ");");
+      S.Adb.New_Line;
       while Has_Element (I) loop
          Generate_Step (S, Element (I));
          Next (I);
@@ -134,7 +159,7 @@ package body AdaSpec.Generator.Ada is
       I   : Result_Scenarios.Cursor := First (S.Feature.Scenarios);
       Str : Unbounded_String;
    begin
-      Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd);
+      Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd, True);
       while Has_Element (I) loop
          Get_Unique_String (S.Pool,
             To_Identifier ("Scenario_" & To_String (Element (I).Name)),

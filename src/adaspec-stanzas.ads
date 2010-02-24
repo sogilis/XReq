@@ -16,6 +16,7 @@ package AdaSpec.Stanzas is
          Prefix : Prefix_Type;
          Stanza : Unbounded_String;
       end record;
+   type Stanza_Ptr is access all Stanza_Type;
    Null_Stanza : Stanza_Type;
 
    package Stanza_Container is

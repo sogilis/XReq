@@ -2,7 +2,12 @@
 
 Given /^adaspec is in the PATH$/ do
   #system("make bin/adaspec");
-  ENV['PATH'] = FileUtils::pwd() + "/bin" + ":" + ENV['PATH']
+  ENV['PATH'] = FileUtils::pwd() + "/bin" + ":" + ENV['PATH'];
+  if ENV['ADA_INCLUDE_PATH'] then
+    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
+  else
+    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/lib";
+  end
 end
 
 Given /^I am in an empty directory$/ do

@@ -1,9 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
-with AdaSpec.Stanzas;
-
-use AdaSpec.Stanzas;
 
 package body AdaSpec.Result is
 
@@ -12,21 +9,26 @@ package body AdaSpec.Result is
    ----------------------------------
 
    procedure Make (S              : out Result_Step_Type;
-                   Procedure_Name : in  String)
+                   Procedure_Name : in  String;
+                   Step           : in  Stanza_Type)
    is
    begin
       S := (
-         Procedure_Name => To_Unbounded_String (Procedure_Name));
+         Procedure_Name => To_Unbounded_String (Procedure_Name),
+         Step           => Step);
    end Make;
 
    ------------------------------------
    --  Result_Step_Type  --  Create  --
    ------------------------------------
 
-   function  Create (Procedure_Name : in  String) return Result_Step_Type is
+   function  Create (Procedure_Name : in  String;
+                     Step           : in  Stanza_Type)
+                                   return Result_Step_Type
+   is
       Res : Result_Step_Type;
    begin
-      Make (Res, Procedure_Name);
+      Make (Res, Procedure_Name, Step);
       return Res;
    end Create;
 
@@ -90,7 +92,7 @@ package body AdaSpec.Result is
                Put_Line ("Error: Missing step for " & To_String (Stanza));
                Errors := True;
             else
-               Make   (Res_St, Proc_Name);
+               Make   (Res_St, Proc_Name, Stanza);
                Append (StepsV, Res_St);
                --  Put_Line ("Add in step: " & Proc_Name);
             end if;
