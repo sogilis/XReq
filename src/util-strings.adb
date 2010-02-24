@@ -208,12 +208,12 @@ package body Util.Strings is
       Append (Buffer.Buffer, Buffer.CRLF);
    end New_Line;
 
-   procedure Indent   (Buffer : in out Buffer_Type; N : Natural := 3) is
+   procedure Indent   (Buffer : in out Buffer_Type; N : in Natural := 3) is
    begin
       Append (Buffer.Ind, To_String (N * " "));
    end Indent;
 
-   procedure UnIndent (Buffer : in out Buffer_Type; N : Natural := 3) is
+   procedure UnIndent (Buffer : in out Buffer_Type; N : in Natural := 3) is
    begin
       Head (Buffer.Ind, Length (Buffer.Ind) - N);
    end UnIndent;

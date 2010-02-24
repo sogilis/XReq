@@ -55,8 +55,8 @@ package Util.Strings is
    procedure Put        (Buffer : in out Buffer_Type; S : in Unbounded_String);
    procedure Put_Indent (Buffer : in out Buffer_Type);
    procedure New_Line   (Buffer : in out Buffer_Type);
-   procedure Indent     (Buffer : in out Buffer_Type; N : Natural := 3);
-   procedure UnIndent   (Buffer : in out Buffer_Type; N : Natural := 3);
+   procedure Indent     (Buffer : in out Buffer_Type; N : in Natural := 3);
+   procedure UnIndent   (Buffer : in out Buffer_Type; N : in Natural := 3);
    procedure Clear      (Buffer : in out Buffer_Type);
    function  --  GCOV_IGNORE
              Value      (Buffer : in     Buffer_Type) return String;

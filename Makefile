@@ -63,8 +63,8 @@ gcov:
 
 coverage: test bin
 	$(MAKE) gcov-reset
-	bin/tests >/dev/null 2>/dev/null
-	cucumber features/*.feature >/dev/null 2>/dev/null
+	-bin/tests >/dev/null 2>/dev/null
+	-cucumber features/*.feature >/dev/null 2>/dev/null
 	$(MAKE) gcov
 
 gnatcheck: dir
@@ -81,8 +81,8 @@ test-report: dir bin test
 	  cat "reports/$$t.aunit.xml"; \
 	done
 	mkdir reports/features.junit
-	#cucumber -f junit -o reports/features.junit features/*.feature
-	cucumber -f html -o reports/features.html features/*.feature
+	-cucumber -f junit -o reports/features.junit features/*.feature
+	-cucumber -f html -o reports/features.html features/*.feature
 
 run-cucumber-tests: bin
 	cucumber features/*.feature

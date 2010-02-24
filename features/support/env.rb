@@ -3,4 +3,10 @@ require 'spec/expectations'
 require 'cucumber/formatter/unicode'
 require 'tempfile'
 
-$adaspec_dir = FileUtils::pwd();
+Before do
+  $adaspec_dir = FileUtils::pwd();
+end
+
+After do |scenario|
+  FileUtils::cd($adaspec_dir);
+end
