@@ -70,6 +70,10 @@ When /^I run '(.*)' silently$/ do |command|
   @last_exit_code = $?.to_i;
 end
 
+When /^I print (.*)$/ do |str|
+  puts str;
+end
+
 Then /^it should (fail|pass)$/ do |success|
   if success == 'fail'
     @last_exit_code.should_not == 0

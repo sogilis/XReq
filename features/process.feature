@@ -56,5 +56,12 @@ Feature: Process
     When  I run "gnatmake -aI../step_definitions simplest_test" in features/tests
     Then  it should pass
     And   "features/tests/simplest_test" should exist
+    When  I run "./simplest_test" in features/tests
+    Then  it should pass with
+      """
+      This step works
+      This step works
+
+      """
 
 
