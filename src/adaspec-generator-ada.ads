@@ -25,7 +25,6 @@ private
 
    type Ada_Generator_Type is new Generator_Type with
       record
-         --  BEGIN_GCOV_IGNORE
          Feature    : Result_Feature_Type;
          Ads_File   : Unbounded_String;
          Adb_File   : Unbounded_String;
@@ -39,7 +38,6 @@ private
          Id_Pkgname : Unbounded_String;
          With_Pkg   : String_Set.Set;
          Fn_Steps   : Util.Strings.Vectors.Vector;
-         --  END_GCOV_IGNORE
       end record;
 
    procedure Adb_Line (State : in out Ada_Generator_Type; Line : in String);
