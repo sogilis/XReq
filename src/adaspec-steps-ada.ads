@@ -1,10 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Containers.Vectors;
-with GNAT.Regexp;
+with GNAT.Regpat;
 
 use Ada.Containers;
-use GNAT.Regexp;
 
 package AdaSpec.Steps.Ada is
 
@@ -37,7 +36,7 @@ private
    type Step_Type is
       record
          Prefix    : Prefix_Type;
-         Pattern_R : Regexp;
+         Pattern_R : access GNAT.Regpat.Pattern_Matcher;
          Pattern_S : Unbounded_String;
          Proc_Name : Unbounded_String;
       end record;

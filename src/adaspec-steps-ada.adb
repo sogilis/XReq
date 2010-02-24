@@ -3,6 +3,7 @@
 with Ada.Strings.Unbounded;
 with Ada.Directories;
 with Ada.Text_IO;
+with GNAT.Regpat;
 with Util.IO;
 with Util.Strings;
 with AdaSpec;
@@ -10,6 +11,7 @@ with AdaSpec;
 use Ada.Strings.Unbounded;
 use Ada.Directories;
 use Ada.Text_IO;
+use GNAT.Regpat;
 use Util.IO;
 use Util.Strings;
 use AdaSpec;
@@ -126,7 +128,8 @@ package body AdaSpec.Steps.Ada is
                end if;
                Current_Step := Step_Type'(
                   Prefix    => Prefix,
-                  Pattern_R => Compile (To_String (Pattern)),
+                  Pattern_R => new Pattern_Matcher'(
+                               Compile (To_String (Pattern))),
                   Pattern_S => Pattern,
                   others    => <>);
                Pending_Step := True;
@@ -214,7 +217,7 @@ package body AdaSpec.Steps.Ada is
       for i in S.Steps.First_Index .. S.Steps.Last_Index loop
          Step  := S.Steps.Element (i);
          if Step.Prefix = Stanza.Prefix and
-            Match (To_String (Stanza.Stanza), Step.Pattern_R)
+            Match (Step.Pattern_R.all, To_String (Stanza.Stanza))
          then
 --             Put_Line ("Found: " & To_String (Step.Proc_Name));
             return To_String (Step.Proc_Name);
