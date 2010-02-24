@@ -10,13 +10,15 @@ package AdaSpec.Generator is
    type Generator_Type is interface;
    type Generator_Ptr is access all Generator_Type'Class;
 
-   procedure Generate (Job : in  Job_Type;
-                       Env : in  Job_Environment;
-                       Gen : out Generator_Ptr);
+   procedure Generate  (Job : in  Job_Type;
+                        Env : in  Job_Environment;
+                        Gen : out Generator_Ptr);
 
-   procedure Make     (Gen : out    Generator_Type;
-                       Job : in     Job_Type;
-                       Env : in     Job_Environment) is abstract;
+   procedure Make      (Gen : out Generator_Type;
+                        Job : in  Job_Type;
+                        Env : in  Job_Environment) is abstract;
+
+   function  Full_Name (Gen : in  Generator_Type) return String is abstract;
 
    procedure Generate (Gen : in out Generator_Type) is abstract;
 

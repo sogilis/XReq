@@ -1,9 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Text_IO;
 with AdaSpec.Generator.Ada;
-
-use Ada.Text_IO;
 
 package body AdaSpec.Generator is
 
@@ -22,9 +19,8 @@ package body AdaSpec.Generator is
                              Name : in String;
                              Env  : in Job_Environment)
    is
-      pragma Unreferenced (Gens, Env);
    begin
-      Put_Line ("TODO: Generate suite " & Name);
+      Ada.Generate_Suite (Gens, Name, Env);
    end Generate_Suite;
 
 end AdaSpec.Generator;
