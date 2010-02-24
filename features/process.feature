@@ -43,4 +43,18 @@ Feature: Process
   Scenario: simple
     When I run adaspec features/simplest.feature
     Then it should pass
+    And  "features/tests/simplest.ads" should exist
+    And  "features/tests/simplest.adb" should exist
+
+
+  Scenario: simple
+    When  I run adaspec -x simplest-test features/simplest.feature
+    Then  it should pass
+    And   "features/tests/simplest.ads" should exist
+    And   "features/tests/simplest.adb" should exist
+    And   "features/tests/simplest-test.adb" should exist
+    When  I run "gnatmake -aI../step_definitions simplest-test" in features/tests
+    Then  it should pass
+    And   "features/tests/simplest-test" should exist
+
 

@@ -52,7 +52,7 @@ package body AdaSpec.CLI is
       Put_Line ("        the  specified  features  called TEST_NAME.  If not");
       Put_Line ("        present, only test packages are created.");
       Put_Line ("        The TEST_NAME  is relative  to the output directory");
-      Put_Line ("        specified with the -d (--output-dir) option.");
+      Put_Line ("        specified with the -o (--output-dir) option.");
       Put_Line ("");
       Put_Line ("    -o, --output DIR");
       Put_Line ("        Choose  in  which directory  to generate  the files");

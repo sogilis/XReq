@@ -84,9 +84,13 @@ test-report: dir bin test
 	#cucumber -f junit -o reports/features.junit features/*.feature
 	cucumber -f html -o reports/features.html features/*.feature
 
+run-cucumber-tests:
+	cucumber features/*.feature
+	
+
 run-tests: dir bin test
 	$(MAKE) gcov-reset
-	-cucumber features/*.feature
+	-$(MAKE) run-cucumber-tests
 	@for t in $(TEST_SUITES); do \
 	  [ coverage = "$$t" ] && continue; \
 	  echo "========== RUN TEST SUITE $$t =========="; \
@@ -110,8 +114,8 @@ show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
 
 .PHONY: all dir bin test doc clean clean-reports gcov-reset gcov-prepare gcov \
-        coverage gnatcheck check test-report run-tests show-ignored-coverage \
-        help
+        coverage gnatcheck check test-report run-tests run-cucumber-tests \
+        show-ignored-coverage help
 
 help:
 	@echo "make TARGET"
