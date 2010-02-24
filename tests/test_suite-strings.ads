@@ -15,10 +15,10 @@ package Test_Suite.Strings is
    type Test_Trimed_Suffix is new Test_Case_Type with null record;
    type Test_To_Identifier is new Test_Case_Type with null record;
    type Test_Buffer is new Test_Case_Type with null record;
+   type Test_Ada_string is new Test_Case_Type with null record;
 
    --  Operation on Test_Starts_With
-   function  Name (T : in     Test_Starts_With)
-                      return String;
+   function  Name (T : in     Test_Starts_With) return String;
    procedure Run  (T : in out Test_Starts_With);
 
    --  Operation on Test_Find_Token
@@ -26,19 +26,20 @@ package Test_Suite.Strings is
    procedure Run  (T : in out Test_Find_Token);
 
    --  Operation on Test_Trimed_Suffix
-   function  Name (T : in     Test_Trimed_Suffix)
-                      return String;
+   function  Name (T : in     Test_Trimed_Suffix) return String;
    procedure Run  (T : in out Test_Trimed_Suffix);
 
    --  Operation on Test_To_Identifier
-   function  Name (T : in     Test_To_Identifier)
-                      return String;
+   function  Name (T : in     Test_To_Identifier) return String;
    procedure Run  (T : in out Test_To_Identifier);
 
    --  Operation on Test_Buffer
-   function  Name (T : in     Test_Buffer)
-                      return String;
+   function  Name (T : in     Test_Buffer) return String;
    procedure Run  (T : in out Test_Buffer);
+
+   --  Operation on Test_Ada_string
+   function  Name (T : in     Test_Ada_string) return String;
+   procedure Run  (T : in out Test_Ada_string);
 
 end Test_Suite.Strings;
 

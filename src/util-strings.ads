@@ -19,14 +19,14 @@ package Util.Strings is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
 
-   procedure Find_Token (Search     : in String;
-                         Tokens     : in String_List;
-                         Index_Next : out Natural;
-                         Token      : out Natural);
+   procedure Find_Token   (Search     : in String;
+                           Tokens     : in String_List;
+                           Index_Next : out Natural;
+                           Token      : out Natural);
 
-   function Starts_With (Search      : in String;
-                         Pattern     : in String;
-                         Start_Index : in Natural := 1) return Boolean;
+   function Starts_With   (Search      : in String;
+                           Pattern     : in String;
+                           Start_Index : in Natural := 1) return Boolean;
 
    function Trimed_Suffix (Source      : in Unbounded_String;
                            Start_Index : in Natural) return Unbounded_String;
@@ -35,6 +35,8 @@ package Util.Strings is
                            Start_Index : in Natural) return String;
 
    function To_Identifier (Source : in String) return String;  --  GCOV_IGNORE
+
+   function Ada_String    (Source : in String) return String;
 
    --------------
    --  Buffer  --

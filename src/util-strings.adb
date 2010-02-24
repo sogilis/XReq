@@ -120,6 +120,60 @@ package body Util.Strings is
       return To_String (Buffer);
    end To_Identifier;
 
+   ------------------
+   --  Ada_String  --
+   ------------------
+
+   function Ada_String    (Source : in String) return String is
+
+      use Ada.Strings;
+      procedure Start_String;
+      procedure End_String;
+
+      In_String : Boolean := True;
+      Buffer    : Unbounded_String := To_Unbounded_String ("""");
+      C         : Character;
+
+      procedure Start_String is begin
+         if not In_String then
+            if Length (Buffer) /= 0 then
+               Append (Buffer, " & ");
+            end if;
+            Append (Buffer, """");
+            In_String := True;
+         end if;
+      end Start_String;
+
+      procedure End_String is begin
+         if In_String then
+            Append (Buffer, """");
+            In_String := False;
+         end if;
+      end End_String;
+   begin
+      for I in Source'Range loop
+         C := Source (I);
+         case C is
+            when '"' =>
+               Start_String;
+               Append (Buffer, """""");
+            when Character'Val (32) .. Character'Val (33)  |
+                 Character'Val (35) .. Character'Val (126) =>
+               Start_String;
+               Append (Buffer, C);
+            when others =>
+               End_String;
+               if Length (Buffer) /= 0 then
+                  Append (Buffer, " & ");
+               end if;
+               Append (Buffer, "Character'Val (" &
+                               Trim (Character'Pos (C)'Img, Left) & ")");
+         end case;
+      end loop;
+      End_String;
+      return To_String (Buffer);
+   end Ada_String;
+
    --------------
    --  Buffer  --
    --------------
