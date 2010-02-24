@@ -4,7 +4,8 @@ Feature: Process
   I want to be able to generate the ads and adb files for a test
 
   Background:
-    Given an empty directory
+    Given adaspec is in the PATH
+    And I am in an empty directory
     And a file "features/simplest.feature":
       """
       Feature: Sample
@@ -40,6 +41,6 @@ Feature: Process
       """
 
   Scenario: simple
-    When I run adaspec with "features/simplest.feature"
-    Then it run successfully
+    When I run adaspec features/simplest.feature
+    Then it should pass
 

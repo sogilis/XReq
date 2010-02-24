@@ -40,6 +40,8 @@ clean:
 	-$(RM) reports/gnatcheck.*.out
 	-$(RM) reports/gnatcheck.*.log
 	-$(RM) reports/*.aunit.gcov
+	-$(RM) reports/features.html
+	-$(RM) reports/features.junit/*
 
 gcov-reset: dir
 	-$(RM) reports/*.gcov
@@ -62,6 +64,7 @@ gcov:
 coverage: test bin
 	$(MAKE) gcov-reset
 	bin/tests >/dev/null 2>/dev/null
+	cucumber features/*.feature >/dev/null 2>/dev/null
 	$(MAKE) gcov
 
 gnatcheck: dir
@@ -77,9 +80,13 @@ test-report: dir bin test
 	  bin/tests -xml -suite="$$t" -o"reports/$$t.aunit.xml"; \
 	  cat "reports/$$t.aunit.xml"; \
 	done
+	mkdir reports/features.junit
+	#cucumber -f junit -o reports/features.junit features/*.feature
+	cucumber -f html -o reports/features.html features/*.feature
 
 run-tests: dir bin test
 	$(MAKE) gcov-reset
+	-cucumber features/*.feature
 	@for t in $(TEST_SUITES); do \
 	  [ coverage = "$$t" ] && continue; \
 	  echo "========== RUN TEST SUITE $$t =========="; \
