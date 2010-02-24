@@ -79,6 +79,10 @@ When /^I print (.*)$/ do |str|
   puts str;
 end
 
+When /^I compile "(.*)" in (.*)$/ do |name, dir|
+  When("I run \"gnatmake -aI../step_definitions #{name}\" in #{dir}")
+end
+
 Then /^it should (fail|pass)$/ do |success|
   if success == 'fail'
     @last_exit_code.should_not == 0
