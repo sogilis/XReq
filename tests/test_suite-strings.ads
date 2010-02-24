@@ -10,14 +10,11 @@ package Test_Suite.Strings is
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_Starts_With is
-      new Test_Case_Type with null record;
-   type Test_Find_Token is
-      new Test_Case_Type with null record;
-   type Test_Trimed_Suffix is
-      new Test_Case_Type with null record;
-   type Test_To_Identifier is
-      new Test_Case_Type with null record;
+   type Test_Starts_With is new Test_Case_Type with null record;
+   type Test_Find_Token is new Test_Case_Type with null record;
+   type Test_Trimed_Suffix is new Test_Case_Type with null record;
+   type Test_To_Identifier is new Test_Case_Type with null record;
+   type Test_Buffer is new Test_Case_Type with null record;
 
    --  Operation on Test_Starts_With
    function  Name (T : in     Test_Starts_With)
@@ -37,6 +34,11 @@ package Test_Suite.Strings is
    function  Name (T : in     Test_To_Identifier)
                       return String;
    procedure Run  (T : in out Test_To_Identifier);
+
+   --  Operation on Test_Buffer
+   function  Name (T : in     Test_Buffer)
+                      return String;
+   procedure Run  (T : in out Test_Buffer);
 
 end Test_Suite.Strings;
 

@@ -75,6 +75,19 @@ package body Util.IO is
       Close (File);
    end Set_File;
 
+   procedure Append_File (File_Name : in String;
+                          Content   : in String)
+   is
+      use Char_IO;
+      File : Char_IO.File_Type;
+   begin
+      Open (File, Append_File, File_Name);
+      for I in Content'Range loop
+         Write (File, Content (I));
+      end loop;
+      Close (File);
+   end Append_File;
+
    -----------------------------------
    --  Text_IO  --  Get_Whole_Line  --
    -----------------------------------

@@ -195,6 +195,7 @@ package body Test_Suite.IO is
       File_Name : constant String := Temp_Name;
       Content   : constant String := "ABC" & ASCII.CR & "DEF" & ASCII.LF &
                                      "GHI" & ASCII.CR & ASCII.LF;
+      Content2  : constant String := "JKL" & ASCII.CR & ASCII.LF;
    begin
 
       Set_File (File_Name, Content);
@@ -204,6 +205,18 @@ package body Test_Suite.IO is
       begin
          Assert (S = Content,
                  "Set_File + Get_File doesn't keep the data intact");
+      end;
+
+      Append_File (File_Name, Content2);
+
+      declare
+         S : constant String := Get_File (File_Name);
+      begin
+         Assert (S = Content & Content2,
+                 "Append_File not OK. Found:" & ASCII.LF &
+              "<<<" & S & ">>>" & ASCII.LF &
+              "Instead of:" & ASCII.LF &
+              "<<<" & Content & Content2 & ">>>");
       end;
 
    end Run;

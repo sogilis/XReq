@@ -120,4 +120,59 @@ package body Util.Strings is
       return To_String (Buffer);
    end To_Identifier;
 
+   --------------
+   --  Buffer  --
+   --------------
+
+   procedure Put_Line (Buffer : in out Buffer_Type; S : in String) is
+   begin
+      Append (Buffer.Buffer, Buffer.Ind & S & Buffer.CRLF);
+   end Put_Line;
+
+   procedure Put_Line (Buffer : in out Buffer_Type; S : in Unbounded_String) is
+   begin
+      Append (Buffer.Buffer, Buffer.Ind & S & Buffer.CRLF);
+   end Put_Line;
+
+   procedure Put      (Buffer : in out Buffer_Type; S : in String) is
+   begin
+      Append (Buffer.Buffer, S);
+   end Put;
+
+   procedure Put      (Buffer : in out Buffer_Type; S : in Unbounded_String) is
+   begin
+      Append (Buffer.Buffer, S);
+   end Put;
+
+   procedure Put_Indent (Buffer : in out Buffer_Type) is
+   begin
+      Append (Buffer.Buffer, Buffer.Ind);
+   end Put_Indent;
+
+   procedure New_Line   (Buffer : in out Buffer_Type) is
+   begin
+      Append (Buffer.Buffer, Buffer.CRLF);
+   end New_Line;
+
+   procedure Indent   (Buffer : in out Buffer_Type; N : Natural := 3) is
+   begin
+      Append (Buffer.Ind, To_String (N * " "));
+   end Indent;
+
+   procedure UnIndent (Buffer : in out Buffer_Type; N : Natural := 3) is
+   begin
+      Head (Buffer.Ind, Length (Buffer.Ind) - N);
+   end UnIndent;
+
+   procedure Clear      (Buffer : in out Buffer_Type) is
+   begin
+      Buffer.Buffer := Null_Unbounded_String;
+   end Clear;
+
+   function  Value      (Buffer : in     Buffer_Type) return String is
+   begin
+      return To_String (Buffer.Buffer);
+   end Value;
+
+
 end Util.Strings;

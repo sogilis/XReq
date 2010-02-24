@@ -36,4 +36,27 @@ package Util.Strings is
 
    function To_Identifier (Source : in String) return String;  --  GCOV_IGNORE
 
+   --------------
+   --  Buffer  --
+   --------------
+
+   type Buffer_Type is tagged
+      record
+         Buffer : Unbounded_String;
+         Ind    : Unbounded_String;
+         CRLF   : Unbounded_String := To_Unbounded_String ("" & ASCII.LF);
+      end record;
+
+   procedure Put_Line   (Buffer : in out Buffer_Type; S : in String);
+   procedure Put_Line   (Buffer : in out Buffer_Type; S : in Unbounded_String);
+   procedure Put        (Buffer : in out Buffer_Type; S : in String);
+   procedure Put        (Buffer : in out Buffer_Type; S : in Unbounded_String);
+   procedure Put_Indent (Buffer : in out Buffer_Type);
+   procedure New_Line   (Buffer : in out Buffer_Type);
+   procedure Indent     (Buffer : in out Buffer_Type; N : Natural := 3);
+   procedure UnIndent   (Buffer : in out Buffer_Type; N : Natural := 3);
+   procedure Clear      (Buffer : in out Buffer_Type);
+   function  --  GCOV_IGNORE
+             Value      (Buffer : in     Buffer_Type) return String;
+
 end Util.Strings;

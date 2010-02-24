@@ -22,6 +22,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Find_Token);
       Ret.Add_Test (new Test_Trimed_Suffix);
       Ret.Add_Test (new Test_To_Identifier);
+      Ret.Add_Test (new Test_Buffer);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -165,6 +166,41 @@ package body Test_Suite.Strings is
 
       Assert (To_Identifier ("toto_") = "toto",
               "Error5");
+
+   end Run;
+
+   --  Test_Buffer  -----------------------------------------------------------
+
+   function  Name (T : in Test_Buffer) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Buffer_Type");
+   end Name;
+
+   procedure Run (T : in out Test_Buffer) is
+      pragma Unreferenced (T);
+      B : Buffer_Type;
+   begin
+
+      Assert (B.Value = "", "Buffer should be empty when initialized");
+      B.Put_Line ("first line");
+      Assert (B.Value = "first line" & B.CRLF, "Put_Line not OK");
+      B.Indent (5);
+      B.Put_Indent;
+      B.Put ("toto");
+      B.New_Line;
+      Assert (B.Value = "first line" & B.CRLF & "     toto" & B.CRLF,
+              "(Indent (5); Put_Indent; Put; New_Line) not OK");
+      B.Clear;
+      Assert (B.Value = "", "Clear not OK");
+      B.UnIndent (2);
+      B.Put_Line (To_Unbounded_String ("tata"));
+      Assert (B.Value = "   tata" & B.CRLF, "(UnIndent (2); Put_Line) not OK");
+      B.UnIndent (3);
+      B.Put_Indent;
+      B.Put (To_Unbounded_String ("titi"));
+      Assert (B.Value = "   tata" & B.CRLF & "titi",
+              "(UnIndent (3); Put) not OK");
 
    end Run;
 

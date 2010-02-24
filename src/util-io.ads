@@ -27,9 +27,11 @@ package Util.IO is
    procedure Write_Whole_File (File   : in out Char_IO.File_Type;
                                Buffer : in String);
 
-   function  Get_File (File_Name : in String) return String;
-   procedure Set_File (File_Name : in String;
-                       Content   : in String);
+   function  Get_File    (File_Name : in String) return String;
+   procedure Set_File    (File_Name : in String;
+                          Content   : in String);
+   procedure Append_File (File_Name : in String;
+                          Content   : in String);
 
    -----------------------------------
    --  Text_IO  --  Get_Whole_Line  --
