@@ -84,7 +84,7 @@ test-report: dir bin test
 	#cucumber -f junit -o reports/features.junit features/*.feature
 	cucumber -f html -o reports/features.html features/*.feature
 
-run-cucumber-tests:
+run-cucumber-tests: bin
 	cucumber features/*.feature
 	
 
