@@ -1,7 +1,8 @@
 Feature: Process
   In order to use AdaSpec
   As an AsaSpec user
-  I want to be able to generate the ads and adb files for a test
+  I want to be able to generate the ads and adb files for a test and the test
+  suite
 
   Background:
     Given adaspec is in the PATH
@@ -45,6 +46,8 @@ Feature: Process
     Then it should pass
     And  "features/tests/simplest.ads" should exist
     And  "features/tests/simplest.adb" should exist
+    When I run "gnatmake -c -aI../step_definitions simplest" in features/tests
+    Then it should pass
 
 
   Scenario: simple
@@ -59,9 +62,14 @@ Feature: Process
     When  I run "./simplest_test" in features/tests
     Then  it should pass with
       """
+      Feature: Sample
+
+        Background:
       This step works
+
+        Scenario: Run a good step
       This step works
+          Given this step works
 
       """
-
 
