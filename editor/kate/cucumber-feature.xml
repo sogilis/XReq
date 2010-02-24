@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE language SYSTEM "language.dtd">
+<language name="Cucumber feature"
+          version="0.1"
+          kateversion="2.3"
+          section="Other"
+          extensions="*.feature"
+          mimetype="text/x-feature">
+  <highlighting>
+    <contexts>
+      <context name="Global" attribue="Error">
+        <IncludeRules context="Comment" />
+        <StringDetect attribute="Feature" context="Feature1" String="Feature" firstNonSpace="true"/>
+        <RegExpr      attribute="Error" String="."/>
+      </context>
+      <context name="Feature1" fallthroughContext="Error">
+        <DetectSpaces/>
+        <DetectChar attribute="Operator" context="Feature2" char=":"/>
+        <RegExpr    attribute="Error"    String="."/>
+      </context>
+      <context name="Feature2" attribute="Title" lineEndContext="Feature3">
+        <IncludeRules context="Comment" />
+      </context>
+      <context name="Feature3" attribute="Title">
+        <IncludeRules context="Comment" />
+        <StringDetect attribute="Scenario" context="Scenario1"  String="Background" firstNonSpace="true"/>
+        <StringDetect attribute="Scenario" context="Scenario1"  String="Scenario"   firstNonSpace="true"/>
+      </context>
+      <context name="Scenario1" fallthroughContext="Error">
+        <DetectSpaces/>
+        <DetectChar attribute="Operator" context="Scenario2" char=":"/>
+        <RegExpr    attribute="Error"    String="."/>
+      </context>
+      <context name="Scenario2" attribute="Title" lineEndContext="Scenario3">
+        <IncludeRules context="Comment" />
+      </context>
+      <context name="Scenario3">
+        <DetectSpaces/>
+        <IncludeRules context="Comment" />
+        <StringDetect lookAhead="true"   context="#pop#pop#pop" String="Background" firstNonSpace="true"/>
+        <StringDetect lookAhead="true"   context="#pop#pop#pop" String="Scenario"   firstNonSpace="true"/>
+        <StringDetect attribute="Step"   context="Step"         String="Given"      firstNonSpace="true"/>
+        <StringDetect attribute="Step"   context="Step"         String="When"       firstNonSpace="true"/>
+        <StringDetect attribute="Step"   context="Step"         String="Then"       firstNonSpace="true"/>
+        <StringDetect attribute="Step"   context="Step"         String="And"        firstNonSpace="true"/>
+        <StringDetect attribute="String" context="LongString"   String="&quot;&quot;&quot;" firstNonSpace="true"/>
+        <RegExpr      attribute="Error"  String="."/>
+      </context>
+      <context name="Step" lineEndContext="#pop">
+        <DetectChar   attribute="SString" context="String"     char="&quot;"/>
+      </context>
+      <context name="LongString" attribute="String">
+        <StringDetect attribute="String" context="#pop" String="&quot;&quot;&quot;" firstNonSpace="true"/>
+      </context>
+      <context name="String" attribute="SString" lineEndContext="#pop">
+        <DetectChar attribute="SString" context="#pop" char="&quot;"/>
+      </context>
+      <context name="Title_Line" attribue="Title" lineEndContext="#pop"/>
+      <context name="Comment">
+        <DetectChar attribute="Comment" context="Comment_Line" char="#"/>
+      </context>
+      <context name="Comment_Line" attribue="Comment" lineEndContext="#pop"/>
+      <context name="Error" attribute="error">
+        <!--RegExpr String="." context="#pop" attribute="error"/-->
+      </context>
+    </contexts>
+    <itemDatas>
+      <itemData name="Normal Text" defStyleNum="dsNormal"/>
+      <itemData name="Comment"     defStyleNum="dsComment"/>
+      <itemData name="String"      defStyleNum="dsString"/>
+      <itemData name="SString"     defStyleNum="dsString"  color="darkred"/>
+      <itemData name="Title"       defStyleNum="dsNormal"  color="darkgreen" bold="true"/>
+      <itemData name="Feature"     defStyleNum="dsKeyword"/>
+      <itemData name="Scenario"    defStyleNum="dsKeyword"/>
+      <itemData name="Step"        defStyleNum="dsKeyword" color="darkblue"/>
+      <itemData name="Operator"    defStyleNum="dsKeyword" color="darkblue"/>
+      <itemData name="Error"       defStyleNum="dsError"/>
+    </itemDatas>
+  </highlighting>
+  <general>
+    <comments>
+      <comment name="singleLine" start="#" />
+    </comments>
+  </general>
+</language>
