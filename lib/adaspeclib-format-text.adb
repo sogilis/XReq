@@ -45,9 +45,21 @@ package body AdaSpecLib.Format.Text is
    end Put_Step;
 
    procedure Put_Error      (Err        : in Exception_Occurrence) is
+--       Info : constant String := Exception_Information (Err);
+--       Line : Positive := 1;
    begin
       Put_Line ("      " & Exception_Name (Err) &
                 ": " & Exception_Message (Err));
+--       Put ("      ");
+--       for I in Info'Range loop
+--          if Line > 1 then
+--             Put (Info (I));
+--          end if;
+--          if Info (I) = ASCII.LF and I /= info'Last then
+--             Put ("      ");
+--             Line := Line + 1;
+--          end if;
+--       end loop;
    end Put_Error;
 
 end AdaSpecLib.Format.Text;

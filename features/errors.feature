@@ -71,7 +71,7 @@ Feature: Error handling in steps
 
         Scenario: Run a bad step
           Given this step doesn't work
-            ADASPECLIB.ERROR: adaspeclib.adb:15
+            ADASPECLIB.ERROR: Assertion failed
           Given this step works
 
         Scenario: Run a good step
