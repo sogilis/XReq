@@ -54,4 +54,5 @@ Feature: Run steps with arguments
         Scenario: A
           When I concatenate "abc" and "cde"
           Then I get "abccde"
+
       """

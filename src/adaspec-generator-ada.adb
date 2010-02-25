@@ -1,10 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with Ada.Containers;
 with Util.IO;
+with AdaSpec.Steps;
 
 use Ada.Directories;
+use Ada.Containers;
 use Util.IO;
+use AdaSpec.Steps;
 
 package body AdaSpec.Generator.Ada is
 
@@ -48,6 +52,7 @@ package body AdaSpec.Generator.Ada is
 
    procedure Generate (Gen : in out Ada_Generator_Type) is
       use Util.Strings.Vectors;
+      First : Boolean := True;
    begin
       Gen.Adb.Put_Line ("with AdaSpecLib;");
       Gen.Adb.Put_Line ("with AdaSpecLib.Format.Text;");
@@ -66,7 +71,12 @@ package body AdaSpec.Generator.Ada is
       Gen.Adb.Put_Line ("Put_Feature (" &
                         Ada_String (To_String (Gen.Feature.Name)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
-         Gen.Adb.Put_Line (Gen.Fn_Backgnd & ";");
+         if First then
+            Gen.Adb.Put_Line (Gen.Fn_Backgnd & " (True);");
+            First := False;
+         else
+            Gen.Adb.Put_Line (Gen.Fn_Backgnd & " (False);");
+         end if;
          Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) & ";");
       end loop;
       Gen.Ads.UnIndent;
@@ -90,9 +100,12 @@ package body AdaSpec.Generator.Ada is
                                 Step     : in Result_Step_Type)
    is
       use String_Set;
+      use Match_Vectors;
       Procname : constant String := Procedure_Name (Step);
       Pkgname  : Unbounded_String;
       Copy     : Boolean := False;
+      I        : Match_Vectors.Cursor := First (Step.Matches);
+      E        : Match_Location;
    begin
       --  Declare
       S.Adb.Put_Line ("declare");
@@ -103,7 +116,13 @@ package body AdaSpec.Generator.Ada is
       S.Adb.Indent;
       --  Generate arguments
       S.Adb.Put_Line ("Make (Args, " &
-                      Ada_String (To_String (Step.Step.Stanza)) & ");");
+                     Ada_String (To_String (Step.Step.Stanza)) & ");");
+      while Has_Element (I) loop
+         E := Element (I);
+         S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
+                                     E.Last'Img & ");");
+         Next (I);
+      end loop;
       --  Generate with clause
       for K in reverse Procname'Range loop
          if Copy then
@@ -144,22 +163,42 @@ package body AdaSpec.Generator.Ada is
       use Result_Steps;
       I : Result_Steps.Cursor := First (Scenario.Steps);
    begin
-      S.Ads.Put_Line ("procedure " & Name & ";");
-      S.Adb.Put_Line ("procedure " & Name & " is");
+      --  declaration
+      if Background then
+         S.Ads.Put_Line ("procedure " & Name & " (First : Boolean);");
+         S.Adb.Put_Line ("procedure " & Name & " (First : Boolean) is");
+      else
+         S.Ads.Put_Line ("procedure " & Name & ";");
+         S.Adb.Put_Line ("procedure " & Name & " is");
+      end if;
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
-      S.Adb.Put_Indent;
-      if Background then
-         S.Adb.Put ("Put_Background ");
+      --  body
+      if Length (Scenario.Steps) = 0 then
+         S.Adb.Put_Line ("null;");
       else
-         S.Adb.Put ("Put_Scenario ");
+         if Background then
+            S.Adb.Put_Line ("if First then");
+            S.Adb.Indent;
+         end if;
+         S.Adb.Put_Indent;
+         if Background then
+            S.Adb.Put ("Put_Background ");
+         else
+            S.Adb.Put ("Put_Scenario ");
+         end if;
+         S.Adb.Put ("(" & Ada_String (To_String (Scenario.Name)) & ");");
+         S.Adb.New_Line;
+         if Background then
+            S.Adb.UnIndent;
+            S.Adb.Put_Line ("end if;");
+         end if;
+         while Has_Element (I) loop
+            Generate_Step (S, Element (I));
+            Next (I);
+         end loop;
       end if;
-      S.Adb.Put ("(" & Ada_String (To_String (Scenario.Name)) & ");");
-      S.Adb.New_Line;
-      while Has_Element (I) loop
-         Generate_Step (S, Element (I));
-         Next (I);
-      end loop;
+      --  end
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end " & Name & ";");
    end Generate_Scenario;
