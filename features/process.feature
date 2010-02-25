@@ -75,5 +75,8 @@ Feature: The simplest works
       This step works
           Given this step works
 
+      1 scenarios (1 passed)
+      2 steps (2 passed)
+
       """
 
