@@ -45,19 +45,6 @@ package AdaSpecLib is
                           First  : in     Natural;
                           Last   : in     Natural);
 
-   -------------------
-   --  Report_Type  --
-   -------------------
-
-   type Report_Type is
-      record
-         Count_Scenario_Failed : Natural := 0;
-         Count_Scenario_Passed : Natural := 0;
-         Count_Steps_Failed    : Natural := 0;
-         Count_Steps_Skipped   : Natural := 0;
-         Count_Steps_Passed    : Natural := 0;
-      end record;
-
 private
 
    type Match_Type is

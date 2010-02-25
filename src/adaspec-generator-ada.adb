@@ -56,8 +56,10 @@ package body AdaSpec.Generator.Ada is
       First : Boolean := True;
    begin
       Gen.Ads.Put_Line ("with AdaSpecLib;");
+      Gen.Ads.Put_Line ("with AdaSpecLib.Report;");
       Gen.Adb.Put_Line ("with AdaSpecLib.Format.Text;");
       Gen.Ads.Put_Line ("use  AdaSpecLib;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib.Report;");
       Gen.Adb.Put_Line ("use  AdaSpecLib.Format.Text;");
       Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
       Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
@@ -331,9 +333,12 @@ package body AdaSpec.Generator.Ada is
       Prc_Name : constant String := To_Identifier (Name);
    begin
       With_B.Put_Line ("--  File: " & Filename);
+      With_B.Put_Line ("with Ada.Command_Line;");
       With_B.Put_Line ("with AdaSpecLib;");
+      With_B.Put_Line ("with AdaSpecLib.Report;");
       With_B.Put_Line ("with AdaSpecLib.Format.Text;");
       With_B.Put_Line ("use  AdaSpecLib;");
+      With_B.Put_Line ("use  AdaSpecLib.Report;");
       With_B.Put_Line ("use  AdaSpecLib.Format.Text;");
       Body_B.Put_Line ("procedure " & Prc_Name & " is");
       Body_B.Indent;
@@ -348,6 +353,12 @@ package body AdaSpec.Generator.Ada is
          Next (I);
       end loop;
       Body_B.Put_Line ("Put_Summary (Report);");
+      Body_B.Put_Line ("if not Status (Report) then");
+      Body_B.Indent;
+      Body_B.Put_Line ("Ada.Command_Line.Set_Exit_Status " &
+                       "(Ada.Command_Line.Failure);");
+      Body_B.UnIndent;
+      Body_B.Put_Line ("end if;");
       Body_B.UnIndent;
       Body_B.Put_Line ("end " & Prc_Name & ";");
 

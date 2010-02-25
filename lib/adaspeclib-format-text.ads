@@ -1,8 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Exceptions;
+with AdaSpecLib.Report;
 
-use Ada.Exceptions;
+use  Ada.Exceptions;
+use  AdaSpecLib.Report;
 
 package AdaSpecLib.Format.Text is
 
