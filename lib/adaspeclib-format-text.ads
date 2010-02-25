@@ -12,5 +12,6 @@ package AdaSpecLib.Format.Text is
    procedure Put_Step       (Step       : in Step_Type;
                              Name       : in String);
    procedure Put_Error      (Err        : in Exception_Occurrence);
+   procedure Put_Summary    (Report     : in Report_Type);
 
 end AdaSpecLib.Format.Text;

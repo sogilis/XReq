@@ -1,8 +1,12 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
+with Ada.Strings;
+with Ada.Strings.Fixed;
 
 use Ada.Text_IO;
+use Ada.Strings;
+use Ada.Strings.Fixed;
 
 package body AdaSpecLib.Format.Text is
 
@@ -61,5 +65,47 @@ package body AdaSpecLib.Format.Text is
 --          end if;
 --       end loop;
    end Put_Error;
+
+   procedure Put_Summary    (Report     : in Report_Type) is
+      Count_Scenarios : Natural := Report.Count_Scenario_Failed +
+                                   Report.Count_Scenario_Passed;
+      Count_Steps     : Natural := Report.Count_Steps_Failed +
+                                   Report.Count_Steps_Skipped +
+                                   Report.Count_Steps_Passed;
+      Need_Comma : Boolean;
+   begin
+      New_Line;
+      Put (Trim (Count_Scenarios'Img, Left) & " scenarios (");
+      Need_Comma := False;
+      if Report.Count_Scenario_Failed /= 0 then
+         Put (Trim (Report.Count_Scenario_Failed'Img, Left) & " failed");
+         Need_Comma := True;
+      end if;
+      if Report.Count_Scenario_Passed /= 0 then
+         if Need_Comma then Put (", "); end if;
+         Put (Trim (Report.Count_Scenario_Passed'Img, Left) & " passed");
+         Need_Comma := True;
+      end if;
+      Put (")");
+      new_Line;
+      Put (Trim (Count_Steps'Img, Left) & " steps (");
+      Need_Comma := False;
+      if Report.Count_Steps_Failed /= 0 then
+         Put (Trim (Report.Count_Steps_Failed'Img, Left) & " failed");
+         Need_Comma := True;
+      end if;
+      if Report.Count_Steps_Skipped /= 0 then
+         if Need_Comma then Put (", "); end if;
+         Put (Trim (Report.Count_Steps_Skipped'Img, Left) & " skipped");
+         Need_Comma := True;
+      end if;
+      if Report.Count_Steps_Passed /= 0 then
+         if Need_Comma then Put (", "); end if;
+         Put (Trim (Report.Count_Steps_Passed'Img, Left) & " passed");
+         Need_Comma := True;
+      end if;
+      Put (")");
+      new_Line;
+   end Put_Summary;
 
 end AdaSpecLib.Format.Text;
