@@ -104,7 +104,7 @@ clean-reports: gcov-reset
 	-$(RM) reports/gnatcheck.out
 	-$(RM) reports/*.aunit.gcov
 
-check: bin clean-reports coverage gnatcheck
+check: bin clean-reports coverage gnatcheck run-cucumber-tests
 	for t in $(TEST_SUITES); do \
 	  echo bin/tests -suite="$$t"; \
 	  bin/tests -suite="$$t"; \
