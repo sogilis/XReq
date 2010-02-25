@@ -81,10 +81,11 @@ test-report: dir bin test
 	  cat "reports/$$t.aunit.xml"; \
 	done
 	-mkdir -p reports/features.junit
+	-mkdir -p reports/features-wip.junit
 	-cucumber -t "~@wip" -f junit -o reports/features.junit features/*.feature
 	-cucumber -t "~@wip" -f html -o reports/features.html features/*.feature
-	-cucumber -w -t "@wip" -f junit -o reports/features.junit features/*.feature
-	-cucumber -w -t "@wip" -f html -o reports/features.html features/*.feature
+	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
+	-cucumber -w -t "@wip" -f html -o reports/features-wip.html features/*.feature
 
 run-cucumber-tests: bin
 	cucumber -t "~@wip" features/*.feature
