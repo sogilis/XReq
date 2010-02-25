@@ -1,4 +1,4 @@
-Feature: Process
+Feature: The simplest works
   In order to use AdaSpec
   As an AsaSpec user
   I want to be able to generate the ads and adb files for a test and the test
@@ -44,7 +44,7 @@ Feature: Process
       end Steps;
       """
 
-  Scenario: simple
+  Scenario: Test the generation of test packages
     When I run adaspec features/simplest.feature
     Then it should pass
     And  "features/tests/simplest.ads" should exist
@@ -53,7 +53,7 @@ Feature: Process
     Then it should pass
 
 
-  Scenario: simple
+  Scenario: Test the generation of the test suite
     When  I run adaspec -x simplest_test features/simplest.feature
     Then  it should pass
     And   "features/tests/simplest.ads" should exist

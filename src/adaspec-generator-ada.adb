@@ -14,7 +14,8 @@ package body AdaSpec.Generator.Ada is
 
 
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
-                                Step       : in     Result_Step_Type);
+                                Step       : in     Result_Step_Type;
+                                Background : in     Boolean := False);
    procedure Generate_Scenario (S          : in out Ada_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
                                 Name       : in     Unbounded_String;
@@ -96,8 +97,9 @@ package body AdaSpec.Generator.Ada is
    --  Generate_Step  --
    ---------------------
 
-   procedure Generate_Step     (S        : in out Ada_Generator_Type;
-                                Step     : in Result_Step_Type)
+   procedure Generate_Step     (S          : in out Ada_Generator_Type;
+                                Step       : in     Result_Step_Type;
+                                Background : in     Boolean := False)
    is
       use String_Set;
       use Match_Vectors;
@@ -110,7 +112,17 @@ package body AdaSpec.Generator.Ada is
       --  Declare
       S.Adb.Put_Line ("declare");
       S.Adb.Indent;
-      S.Adb.Put_Line ("Args : Arg_Type;");
+      S.Adb.Put_Line ("Args   : Arg_Type;");
+      S.Adb.Put_Indent;
+      S.Adb.Put      ("Prefix : constant Step_Type := ");
+      case Step.Step.Prefix is
+         when Prefix_Given => S.Adb.Put ("Step_Given;");
+         when Prefix_When  => S.Adb.Put ("Step_When;");
+         when Prefix_Then  => S.Adb.Put ("Step_Then;");
+      end case;
+      S.Adb.New_Line;
+      S.Adb.Put_Line ("Stanza : constant String    := " &
+                      Ada_String (To_String (Step.Step.Stanza)) & ";");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("begin");
       S.Adb.Indent;
@@ -137,15 +149,24 @@ package body AdaSpec.Generator.Ada is
       --  Call to step
       S.Adb.Put_Line (Procname & " (Args);");
       --  Print the step
-      S.Adb.Put_Indent;
-      S.Adb.Put ("Put_Step (");
-      case Step.Step.Prefix is
-         when Prefix_Given => S.Adb.Put ("Step_Given");
-         when Prefix_When  => S.Adb.Put ("Step_When");
-         when Prefix_Then  => S.Adb.Put ("Step_Then");
-      end case;
-      S.Adb.Put (", " & Ada_String (To_String (Step.Step.Stanza)) & ");");
-      S.Adb.New_Line;
+      if Background then
+         S.Adb.Put_Line ("if First then");
+         S.Adb.Indent;
+      end if;
+      S.Adb.Put_Line ("Put_Step (Prefix, Stanza);");
+      if Background then
+         S.Adb.UnIndent;
+         S.Adb.Put_Line ("end if;");
+      end if;
+      --  Exception
+      S.Adb.UnIndent;
+      S.Adb.Put_Line ("exception");
+      S.Adb.Indent;
+      S.Adb.Put_Line ("when Err : others =>");
+      S.Adb.Indent;
+      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza);");
+      S.Adb.Put_Line ("Put_Error (Err);");
+      S.Adb.UnIndent;
       --  End block
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end;");
@@ -194,7 +215,7 @@ package body AdaSpec.Generator.Ada is
             S.Adb.Put_Line ("end if;");
          end if;
          while Has_Element (I) loop
-            Generate_Step (S, Element (I));
+            Generate_Step (S, Element (I), Background);
             Next (I);
          end loop;
       end if;

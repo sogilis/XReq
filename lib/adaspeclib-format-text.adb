@@ -44,4 +44,10 @@ package body AdaSpecLib.Format.Text is
       New_Line;
    end Put_Step;
 
+   procedure Put_Error      (Err        : in Exception_Occurrence) is
+   begin
+      Put_Line ("      " & Exception_Name (Err) &
+                ": " & Exception_Message (Err));
+   end Put_Error;
+
 end AdaSpecLib.Format.Text;

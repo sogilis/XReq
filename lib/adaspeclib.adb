@@ -12,7 +12,7 @@ package body AdaSpecLib is
          if Reason /= "" then
             raise Error with Reason;
          else
-            raise Error;
+            raise Error with "Assertion failed";
          end if;
       end if;
    end Assert;

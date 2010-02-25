@@ -1,5 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Exceptions;
+
+use Ada.Exceptions;
+
 package AdaSpecLib.Format.Text is
 
    procedure Put_Feature    (Feature    : in String);
@@ -7,5 +11,6 @@ package AdaSpecLib.Format.Text is
    procedure Put_Scenario   (Scenario   : in String);
    procedure Put_Step       (Step       : in Step_Type;
                              Name       : in String);
+   procedure Put_Error      (Err        : in Exception_Occurrence);
 
 end AdaSpecLib.Format.Text;

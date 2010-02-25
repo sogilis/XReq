@@ -1,4 +1,4 @@
-Feature: Run steps with arguments
+Feature: Run steps with arguments (captures)
   In order to write more useful steps
   As an step writer
   I want to be able to capture the matches of the regular expressions
@@ -41,7 +41,7 @@ Feature: Run steps with arguments
       end Steps;
       """
 
-  Scenario:
+  Scenario: Test concatenation using string captures
     When I run adaspec -x suite features/test.feature
     Then it should pass
     When I compile "suite" in features/tests
