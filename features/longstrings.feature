@@ -91,6 +91,7 @@ Feature: Long strings
       end Steps;
       """
 
+  @wip
   Scenario: Test long strings
     When I run adaspec -x suite features/test.feature
     Then it should pass
