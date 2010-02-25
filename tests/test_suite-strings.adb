@@ -24,6 +24,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_To_Identifier);
       Ret.Add_Test (new Test_Buffer);
       Ret.Add_Test (new Test_Ada_string);
+      Ret.Add_Test (new Test_Decode_Python);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -236,6 +237,50 @@ package body Test_Suite.Strings is
       Assert (Ada_String (Test3) = Res3,
               "Failed: " & Res3 & ASCII.LF &
               "Got: " & Ada_String (Test3));
+
+   end Run;
+
+   --  Test_Decode_Python  ----------------------------------------------------
+
+   function  Name (T : in Test_Decode_Python) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Decode_Python");
+   end Name;
+
+   procedure Run (T : in out Test_Decode_Python) is
+      pragma Unreferenced (T);
+
+      procedure Compare (Python : in String; Original : in String);
+      procedure Compare (Python : in String; Original : in String) is
+         Str : constant String := Decode_Python (Python);
+      begin
+         Assert (Str = Original, "Decode_Python error." & ASCII.LF &
+                 "Expected       """ & Original & """" & ASCII.LF &
+                 "Got            """ & Str & """" & ASCII.LF &
+                 "While decoding """ & Python & """");
+      end Compare;
+   begin
+
+      Compare ("abc\" & ASCII.LF & "\\d\'e\""f", "abc\d'e""f");
+      Compare ("a\ab\bf\fn\nn",     "a" & ASCII.BEL & "b" & ASCII.BS  &
+                                    "f" & ASCII.FF  & "n" & ASCII.LF  & "n");
+      Compare ("r\rt\tv\vv\222end", "r" & ASCII.CR  & "t" & ASCII.HT &
+                                    "v" & ASCII.VT  & "v" &
+                                    Character'Val (8#222#) & "end");
+      Compare ("a\x56a\xfaa", "a" & Character'Val (16#56#) &
+                              "a" & Character'Val (16#FA#) & "a");
+      Assert (Decode_Python ("h\hh", True) = "h\hh", "Liberal not OK");
+      declare
+         procedure P;
+         procedure P is begin
+            Assert (Decode_Python ("h\hh") = "h\hh", "...");
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Decode_Python should raise " &
+                                  "Constraint_Error");
+      end;
 
    end Run;
 

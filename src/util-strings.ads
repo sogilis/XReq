@@ -34,9 +34,12 @@ package Util.Strings is
    function Trimed_Suffix (Source      : in String;
                            Start_Index : in Natural) return String;
 
-   function To_Identifier (Source : in String) return String;  --  GCOV_IGNORE
+   function To_Identifier (Source  : in String) return String;  --  GCOV_IGNORE
 
-   function Ada_String    (Source : in String) return String;
+   function Ada_String    (Source  : in String) return String;
+
+   function Decode_Python (Source  : in String;
+                           Liberal : in Boolean := False) return String;
 
    --------------
    --  Buffer  --

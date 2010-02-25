@@ -174,6 +174,65 @@ package body Util.Strings is
       return To_String (Buffer);
    end Ada_String;
 
+   ---------------------
+   --  Decode_Python  --
+   ---------------------
+
+   function Decode_Python (Source  : in String;
+                           Liberal : in Boolean := False) return String is
+      Buffer : Unbounded_String;
+      I      : Natural := Source'First;
+      Oct    : String (1 .. 3);
+      Hex    : String (1 .. 2);
+      N      : Integer;
+      function C return Character;
+      function C return Character is
+      begin
+         return Source (I);
+      end C;
+   begin
+      while I <= Source'Last loop
+         if C /= '\' then
+            Append (Buffer, C);
+         else
+            I := I + 1;
+            case C is
+               when ASCII.LF => null;
+               when '\' =>      Append (Buffer, '\');
+               when ''' =>      Append (Buffer, ''');
+               when '"' =>      Append (Buffer, '"');
+               when 'a' =>      Append (Buffer, ASCII.BEL);
+               when 'b' =>      Append (Buffer, ASCII.BS);
+               when 'f' =>      Append (Buffer, ASCII.FF);
+               when 'n' =>      Append (Buffer, ASCII.LF);
+               when 'r' =>      Append (Buffer, ASCII.CR);
+               when 't' =>      Append (Buffer, ASCII.HT);
+               when 'v' =>      Append (Buffer, ASCII.VT);
+               when 'x' =>
+                  I := I + 1;   Hex (1) := C;
+                  I := I + 1;   Hex (2) := C;
+                  N := Integer'Value ("16#" & Hex & "#");
+                  Append (Buffer, Character'Val (N));
+               when '0' .. '9' =>
+                  Oct (1) := C; I := I + 1;
+                  Oct (2) := C; I := I + 1;
+                  Oct (3) := C;
+                  N := Integer'Value ("8#" & Oct & "#");
+                  Append (Buffer, Character'Val (N));
+               when others =>
+                  Append (Buffer, "\" & C);
+                  if not Liberal then
+                     raise Constraint_Error
+                        with "Error in python string: \" & C;
+                  end if;
+            end case;
+         end if;
+         I := I + 1;
+      end loop;
+      return To_String (Buffer);
+   end Decode_Python;
+
+
    --------------
    --  Buffer  --
    --------------
