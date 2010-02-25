@@ -30,4 +30,9 @@ package body Sample2 is
       Put_Line ("I get a cake");
    end I_get_a_cake;
 
+   procedure When_I_Match (Args : in out Arg_Type) is
+   begin
+      Put_Line ("When I match """ & Args.Match (1) & """");
+   end When_I_Match;
+
 end Sample2;

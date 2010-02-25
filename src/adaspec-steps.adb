@@ -66,4 +66,31 @@ package body AdaSpec.Steps is
       return "";
    end Find;
 
+   ------------
+   --  Find  --
+   ------------
+
+   procedure Find      (Steps     : in  Steps_Type;
+                        Stanza    : in  Stanza_Type;
+                        Proc      : out Unbounded_String;
+                        Matches   : out Match_Vectors.Vector;
+                        Found     : out Boolean)
+   is
+      use Step_Vectors;
+      I    : Step_Vectors.Cursor := First (Steps);
+      Step : Step_File_Ptr;
+      Found2 : Boolean := False;
+   begin
+      while Has_Element (I) loop
+         Step := Element (I);
+         Find (Step.all, Stanza, Proc, Matches, Found2);
+         if Found2 then
+            Found := True;
+            return;
+         end if;
+         Next (I);
+      end loop;
+      Found := False;
+   end Find;
+
 end AdaSpec.Steps;

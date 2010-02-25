@@ -1,5 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Ada.Directories;
 with AUnit.Assertions;
@@ -8,6 +9,7 @@ with AdaSpec.Stanzas;
 with AdaSpec.Steps;
 with AdaSpec.Steps.Ada;
 
+use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Ada.Directories;
 use AUnit.Assertions;
@@ -61,6 +63,21 @@ package body Test_Suite.Steps.Ada is
       begin
          Assert_Exception_Raised ("Unparsed_Step has not been raised in call" &
                                   " to Contains");
+      end;
+
+      declare
+         Match_V : Match_Vectors.Vector;
+         Proc_N  : Unbounded_String;
+         Found   : Boolean;
+         procedure P;
+         procedure P is begin
+            Find (Step, Stanza_Given (Given1), Proc_N, Match_V, Found);
+            Assert (False, "Should never reach here");
+         end P;
+         procedure Assert_Exception_Raised is new Assert_Exception (P);
+      begin
+         Assert_Exception_Raised ("Unparsed_Step has not been raised in call" &
+                                  " to Find");
       end;
 
       Parse (Step);

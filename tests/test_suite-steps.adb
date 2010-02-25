@@ -1,9 +1,13 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings.Unbounded;
+with Ada.Containers;
 with AUnit.Assertions;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 
+use Ada.Strings.Unbounded;
+use Ada.Containers;
 use AUnit.Assertions;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
@@ -27,8 +31,15 @@ package body Test_Suite.Steps is
 
    procedure Run (T : in out Test_1) is
       pragma Unreferenced (T);
-      Steps : Steps_Type;
-      Dir   : constant String := "tests/features/step_definitions";
+      use Match_Vectors;
+      Steps   : Steps_Type;
+      Dir     : constant String := "tests/features/step_definitions";
+      Match_V : Match_Vectors.Vector;
+      Proc_N  : Unbounded_String;
+      StanzaS : constant String := "I match ""abc""";
+      Stanza  : constant Stanza_Type := Stanza_When (StanzaS);
+      Found   : Boolean;
+      Loc     : Match_Location;
    begin
 
       Load (Steps, Dir);
@@ -46,6 +57,34 @@ package body Test_Suite.Steps is
 
       Assert (not Contains (Steps, Stanza_Then ("this step doesn't works")),
               Dir & " should not contains `Then this step doesn't works'");
+
+      Find (Steps, Stanza_When ("I match nothing"), Proc_N, Match_V, Found);
+      Assert (not Found, "Found");
+
+      Find (Steps, Stanza, Proc_N, Match_V, Found);
+
+      Assert (Found, "Not found");
+      Assert (To_String (Proc_N) = "Sample2.When_I_Match",
+              "Find should find Sample2.When_I_Match");
+      Assert (Length (Match_V) = 1,
+              "Find should get two captures");
+
+--       Loc := Element (Match_V, 0);
+--       Assert (Loc.First = StanzaS'First,
+--               "Find: match 0 should start at" & StanzaS'First'Img &
+--               " instead of" & Loc.First'Img);
+--       Assert (Loc.Last = StanzaS'Last,
+--               "Find: match 0 should end at" & StanzaS'Last'Img &
+--               " instead of" & Loc.Last'Img);
+--       Loc := Element (Match_V, 1);
+
+      Loc := Element (Match_V, 0);
+      Assert (Loc.First = 10,
+              "Find: match 1 should start at 10" &
+              " instead of" & Loc.First'Img);
+      Assert (Loc.Last = 12,
+              "Find: match 1 should end at 12" &
+              " instead of" & Loc.Last'Img);
 
    end Run;
 

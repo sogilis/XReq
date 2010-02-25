@@ -20,16 +20,21 @@ package AdaSpec.Steps.Ada is
                    File_Name : in  String);
 
    overriding function  Parsed    (S       : in     Ada_Step_File_Type)
-                                            return Boolean;
-   overriding procedure Parse     (S      : in out Ada_Step_File_Type);
+                                             return Boolean;
+   overriding procedure Parse     (S       : in out Ada_Step_File_Type);
 
-   overriding function  Contains  (S      : in     Ada_Step_File_Type;
-                                   Stanza : in     Stanza_Type)
-                                            return Boolean;
+   overriding function  Contains  (S       : in     Ada_Step_File_Type;
+                                   Stanza  : in     Stanza_Type)
+                                             return Boolean;
 
-   overriding function  Find      (S      : in     Ada_Step_File_Type;
-                                   Stanza : in     Stanza_Type)
-                                            return String;
+   overriding function  Find      (S       : in     Ada_Step_File_Type;
+                                   Stanza  : in     Stanza_Type)
+                                             return String;
+   overriding procedure Find      (S       : in     Ada_Step_File_Type;
+                                   Stanza  : in     Stanza_Type;
+                                   Proc    : out    Unbounded_String;
+                                   Matches : out    Match_Vectors.Vector;
+                                   Found   : out    Boolean);
 
 private
 

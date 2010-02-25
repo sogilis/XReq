@@ -228,4 +228,71 @@ package body AdaSpec.Steps.Ada is
       return "";
    end Find;
 
+   ------------
+   --  Find  --
+   ------------
+
+   procedure Find      (S       : in     Ada_Step_File_Type;
+                        Stanza  : in     Stanza_Type;
+                        Proc    : out    Unbounded_String;
+                        Matches : out    Match_Vectors.Vector;
+                        Found   : out    Boolean)
+   is
+      use Match_Vectors;
+      Step     : Step_Type;
+      Matches2 : Match_Vectors.Vector;
+   begin
+      --  Error if not parsed
+      if not S.Parsed then
+         raise Unparsed_Step;
+      end if;
+
+      --  Look for the phrase
+      for i in S.Steps.First_Index .. S.Steps.Last_Index loop
+         Step  := S.Steps.Element (i);
+         if Step.Prefix = Stanza.Prefix then
+            declare
+               Matched  : Match_Array (0 .. Paren_Count (Step.Pattern_R.all));
+            begin
+--                Put_Line ("AdaSpec.Steps.Ada.Find: Match """ &
+--                          To_String (Stanza.Stanza) & """ against |" &
+--                          To_String (Step.Pattern_S) & "|");
+               Match (Step.Pattern_R.all, To_String (Stanza.Stanza), Matched);
+               if Matched (0) /= No_Match then
+--                   Put_Line ("Matched (0) = " &
+--                             Slice (Stanza.Stanza,
+--                                    Matched (0).First,
+--                                    Matched (0).Last));
+                  Proc  := Step.Proc_Name;
+                  Found := True;
+                  for J in Matched'First + 1 .. Matched'Last loop
+--                      Put_Line ("Matched (" & J'Img & ") = " &
+--                               Slice (Stanza.Stanza,
+--                                     Matched (J).First,
+--                                     Matched (J).Last));
+                     if Matched (J) /= No_Match then
+                        Append (Matches2, Match_Location'(Matched (J).First,
+                                                          Matched (J).Last));
+                     end if;
+                  end loop;  --  GCOV_IGNORE
+                  Matches := Matches2;
+                  return;
+--                else
+--                   Put_Line ("Matched (0) = No_Match");
+               end if;
+            end;  --  GCOV_IGNORE
+--          else
+--             Put_Line ("AdaSpec.Steps.Ada.Find: Don't Match " &
+--                       Stanza.Prefix'Img & " """ &
+--                       To_String (Stanza.Stanza) & """ against " &
+--                       Step.Prefix'Img & " |" &
+--                       To_String (Step.Pattern_S) & "|");
+         end if;
+      end loop;
+
+      --  No match
+--       Put_Line ("AdaSpec.Steps.Ada.Find: Not found");
+      Found := False;
+   end Find;
+
 end AdaSpec.Steps.Ada;
