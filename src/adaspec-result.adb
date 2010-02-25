@@ -1,6 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
+with Util.Strings;
+
+use Util.Strings;
 
 package body AdaSpec.Result is
 
@@ -10,12 +13,15 @@ package body AdaSpec.Result is
 
    procedure Make (S              : out Result_Step_Type;
                    Procedure_Name : in  String;
-                   Step           : in  Stanza_Type)
+                   Step           : in  Stanza_Type;
+                   Matches        : in  Match_Vectors.Vector
+                                  := Match_Vectors.Empty_Vector)
    is
    begin
       S := (
          Procedure_Name => To_Unbounded_String (Procedure_Name),
-         Step           => Step);
+         Step           => Step,
+         Matches        => Matches);
    end Make;
 
    ------------------------------------
@@ -23,12 +29,14 @@ package body AdaSpec.Result is
    ------------------------------------
 
    function  Create (Procedure_Name : in  String;
-                     Step           : in  Stanza_Type)
+                     Step           : in  Stanza_Type;
+                     Matches        : in  Match_Vectors.Vector
+                                    := Match_Vectors.Empty_Vector)
                                    return Result_Step_Type
    is
       Res : Result_Step_Type;
    begin
-      Make (Res, Procedure_Name, Step);
+      Make (Res, Procedure_Name, Step, Matches);
       return Res;
    end Create;
 
@@ -47,9 +55,24 @@ package body AdaSpec.Result is
    ---------------------------------------
 
    function To_String (S : in Result_Step_Type;
-                       Indent : in String := "") return String is
+                       Indent : in String := "") return String
+   is
+      use Match_Vectors;
+      Buffer : Unbounded_String;
+      I : Cursor := First (S.Matches);
    begin
-      return Indent & Procedure_Name (S);
+      Append (Buffer, Indent & Procedure_Name (S) & " (");
+      while Has_Element (I) loop
+         Append (Buffer, "(" &
+                 Ada_String (Slice (S.Step.Stanza,
+                                    Element (I).First,
+                                    Element (I).Last)) &
+                 Element (I).First'Img &
+                 Element (I).Last'Img & ")");
+         Next (I);
+      end loop;
+      Append (Buffer, " );");
+      return To_String (Buffer);
    end To_String;
 
    ----------------------------------------
@@ -76,27 +99,27 @@ package body AdaSpec.Result is
       use Ada.Text_IO;
       use Stanza_Container;
       use Result_Steps;
-      I      : Stanza_Container.Cursor := First (Scenario.Stanzas);
-      Stanza : Stanza_Type;
-      Res_St : Result_Step_Type;
-      StepsV : Result_Steps.Vector;
+      I         : Stanza_Container.Cursor := First (Scenario.Stanzas);
+      Stanza    : Stanza_Type;
+      Res_St    : Result_Step_Type;
+      StepsV    : Result_Steps.Vector;
+      Proc_Name : Unbounded_String;
+      Matches   : Match_Vectors.Vector;
+      Found     : Boolean;
    begin
       Errors := False;
       while Has_Element (I) loop
          Stanza := Element (I);
-         declare
-            Proc_Name : constant String := Find (Steps, Stanza);
-         begin
-            if Proc_Name = "" then
-               --  TODO: better error reporting
-               Put_Line ("Error: Missing step for " & To_String (Stanza));
-               Errors := True;
-            else
-               Make   (Res_St, Proc_Name, Stanza);
-               Append (StepsV, Res_St);
-               --  Put_Line ("Add in step: " & Proc_Name);
-            end if;
-         end;
+         Find (Steps, Stanza, Proc_Name, Matches, Found);
+         if not Found then
+            --  TODO: better error reporting
+            Put_Line ("Error: Missing step for " & To_String (Stanza));
+            Errors := True;
+         else
+            Make   (Res_St, To_String (Proc_Name), Stanza, Matches);
+            Append (StepsV, Res_St);
+            --  Put_Line ("Add in step: " & Proc_Name);
+         end if;
          Next (I);
       end loop;
       Res := (Name  => Scenario.Name,

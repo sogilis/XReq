@@ -132,14 +132,14 @@ package body Test_Suite.Result is
       Feature  : Feature_File_Ptr;
       Steps    : Steps_Type;
       Exp_Str  : constant String :=
-               "Feature Sample"                    & CRLF &
-               "   Background "                    & CRLF &
-               "      Sample1.This_Step_Works"     & CRLF &
-               "   End Background "                & CRLF &
-               "   Scenario Run a good step"       & CRLF &
-               "      Sample1.This_Step_Works"     & CRLF &
-               "   End Scenario Run a good step"   & CRLF &
-               "End Feature Sample"                & CRLF;
+               "Feature Sample"                     & CRLF &
+               "   Background "                     & CRLF &
+               "      Sample1.This_Step_Works ( );" & CRLF &
+               "   End Background "                 & CRLF &
+               "   Scenario Run a good step"        & CRLF &
+               "      Sample1.This_Step_Works ( );" & CRLF &
+               "   End Scenario Run a good step"    & CRLF &
+               "End Feature Sample"                 & CRLF;
    begin
 
       Title ("AdaSpec.Result.Result_Feature_Type");
@@ -201,23 +201,29 @@ package body Test_Suite.Result is
       pragma Unreferenced (T);
       use Result_Steps;
       use Result_Scenarios;
+      use Match_Vectors;
       CRLF     : constant String := ASCII.CR & ASCII.LF;
       Expected : constant String :=
-               "Feature simplest feature"          & CRLF &
-               "   Background BG"                  & CRLF &
-               "      Sample1.This_Step_Works"     & CRLF &
-               "   End Background BG"              & CRLF &
-               "   Scenario Run a good step"       & CRLF &
-               "      Sample1.This_Step_Works"     & CRLF &
-               "   End Scenario Run a good step"   & CRLF &
-               "End Feature simplest feature"      & CRLF;
+               "Feature simplest feature"           & CRLF &
+               "   Background BG"                   & CRLF &
+               "      Sample1.This_Step_Works ((""this step works"" 1 15) );"
+                                                    & CRLF &
+               "   End Background BG"               & CRLF &
+               "   Scenario Run a good step"        & CRLF &
+               "      Sample1.This_Step_Works ((""this step works"" 1 15) );"
+                                                    & CRLF &
+               "   End Scenario Run a good step"    & CRLF &
+               "End Feature simplest feature"       & CRLF;
       R_Scen   : Result_Scenario_Type;
       Feature  : Result_Feature_Type;
+      Matches  : Match_Vectors.Vector;
    begin
       Title ("AdaSpec.Result.To_String");
 
+      Append (Matches, (1, 15));
       Append (R_Scen, Create ("Sample1.This_Step_Works",
-                              Stanza_Given ("this step works")));
+                              Stanza_Given ("this step works"),
+                              Matches));
       Feature.Background := R_Scen;
       Feature.Background.Name := To_Unbounded_String ("BG");
       R_Scen.Name := To_Unbounded_String ("Run a good step");

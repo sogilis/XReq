@@ -23,6 +23,7 @@ package AdaSpec.Result is
       record
          Procedure_Name : Unbounded_String;
          Step           : Stanza_Type;
+         Matches        : Match_Vectors.Vector;
       end record;
       --  TODO: I can't make this a private type, or else I get the error
       --  "premature use of private type" for the Result_Steps vector package
@@ -31,11 +32,15 @@ package AdaSpec.Result is
       new Ada.Containers.Vectors (Natural, Result_Step_Type, "=");
 
    function  Create (Procedure_Name : in  String;
-                     Step           : in  Stanza_Type)
+                     Step           : in  Stanza_Type;
+                     Matches        : in  Match_Vectors.Vector
+                                    := Match_Vectors.Empty_Vector)
                                    return Result_Step_Type;
    procedure Make   (S              : out Result_Step_Type;
                      Procedure_Name : in  String;
-                     Step           : in  Stanza_Type);
+                     Step           : in  Stanza_Type;
+                     Matches        : in  Match_Vectors.Vector
+                                    := Match_Vectors.Empty_Vector);
 
    function Procedure_Name (S      : in Result_Step_Type) return String;
    function To_String      (S      : in Result_Step_Type;
