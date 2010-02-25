@@ -18,6 +18,8 @@ with Test_Suite.Features;
 with Test_Suite.Generator;
 with Test_Suite.Generator.Ada;
 
+with Test_Suite.Lib;
+
 package body Test_Suite is
 
    -------------
@@ -43,6 +45,8 @@ package body Test_Suite is
       Test_Suite.Features     .Add_Tests (Ret);
       Test_Suite.Generator    .Add_Tests (Ret);
       Test_Suite.Generator.Ada.Add_Tests (Ret);
+
+      Test_Suite.Lib          .Add_Tests (Ret);
 
       return Ret;
 

@@ -80,7 +80,7 @@ When /^I print (.*)$/ do |str|
 end
 
 When /^I compile "(.*)" in (.*)$/ do |name, dir|
-  When("I run \"gnatmake -aI../step_definitions #{name}\" in #{dir}")
+  When("I run \"gnatmake -gnat05 -aI../step_definitions #{name}\" in #{dir}")
 end
 
 Then /^it should (fail|pass)$/ do |success|

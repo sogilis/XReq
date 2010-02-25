@@ -32,7 +32,7 @@ Feature: Run steps with arguments
       package body Steps is
         procedure Concat (Args : in out Arg_Type) is
         begin
-          Result := To_Unbounded_String (Args.Match (1) & Args.Match (2))
+          Result := To_Unbounded_String (Args.Match (1) & Args.Match (2));
         end Concat;
         procedure I_Get (Args : in out Arg_Type) is
         begin

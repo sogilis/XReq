@@ -6,7 +6,8 @@ use Ada.Text_IO;
 
 package body Steps is
 
-   procedure This_Step_Works is
+   procedure This_Step_Works (Args : in out Arg_Type) is
+      pragma Unreferenced (Args);
    begin
       Put_Line ("This step works");
    end This_Step_Works;

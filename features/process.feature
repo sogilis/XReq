@@ -20,10 +20,12 @@ Feature: Process
       """
     And a file "features/step_definitions/steps.ads":
       """
+      with AdaSpecLib;
+      use  AdaSpecLib;
       package Steps is
 
         --  @given ^this step works$
-        procedure This_Step_Works;
+        procedure This_Step_Works (Args : in out Arg_Type);
 
       end Steps;
       """
@@ -33,7 +35,8 @@ Feature: Process
       use Ada.Text_IO;
       package body Steps is
 
-        procedure This_Step_Works is
+        procedure This_Step_Works (Args : in out Arg_Type) is
+          pragma Unreferenced (Args);
         begin
           Put_Line ("This step works");
         end This_Step_Works;
@@ -46,7 +49,7 @@ Feature: Process
     Then it should pass
     And  "features/tests/simplest.ads" should exist
     And  "features/tests/simplest.adb" should exist
-    When I run "gnatmake -c -aI../step_definitions simplest" in features/tests
+    When I compile "simplest" in features/tests
     Then it should pass
 
 
@@ -56,7 +59,7 @@ Feature: Process
     And   "features/tests/simplest.ads" should exist
     And   "features/tests/simplest.adb" should exist
     And   "features/tests/simplest_test.adb" should exist
-    When  I run "gnatmake -aI../step_definitions simplest_test" in features/tests
+    When  I compile "simplest_test" in features/tests
     Then  it should pass
     And   "features/tests/simplest_test" should exist
     When  I run "./simplest_test" in features/tests

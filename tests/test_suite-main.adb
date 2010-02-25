@@ -89,7 +89,7 @@ package body Test_Suite.Main is
                     "tests/features/simplest.feature " &
                     "tests/features/simplest2.feature");
 
-      Spawn_Assert ("-aI../step_definitions -aI../../../lib result1",
+      Spawn_Assert ("-gnat05 -aI../step_definitions -aI../../../lib result1",
                     Directory       => "tests/features/tests",
                     Executable_Name => "gnatmake");
    end Run;

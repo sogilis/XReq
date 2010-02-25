@@ -94,7 +94,17 @@ package body AdaSpec.Generator.Ada is
       Pkgname  : Unbounded_String;
       Copy     : Boolean := False;
    begin
-      S.Adb.Put_Line (Procname & ";");
+      --  Declare
+      S.Adb.Put_Line ("declare");
+      S.Adb.Indent;
+      S.Adb.Put_Line ("Args : Arg_Type;");
+      S.Adb.UnIndent;
+      S.Adb.Put_Line ("begin");
+      S.Adb.Indent;
+      --  Generate arguments
+      S.Adb.Put_Line ("Make (Args, " &
+                      Ada_String (To_String (Step.Step.Stanza)) & ");");
+      --  Generate with clause
       for K in reverse Procname'Range loop
          if Copy then
             Pkgname := Procname (K) & Pkgname;
@@ -105,6 +115,9 @@ package body AdaSpec.Generator.Ada is
       if not Contains (S.With_Pkg, Pkgname) then
          Insert (S.With_Pkg, Pkgname);
       end if;
+      --  Call to step
+      S.Adb.Put_Line (Procname & " (Args);");
+      --  Print the step
       S.Adb.Put_Indent;
       S.Adb.Put ("Put_Step (");
       case Step.Step.Prefix is
@@ -114,6 +127,9 @@ package body AdaSpec.Generator.Ada is
       end case;
       S.Adb.Put (", " & Ada_String (To_String (Step.Step.Stanza)) & ");");
       S.Adb.New_Line;
+      --  End block
+      S.Adb.UnIndent;
+      S.Adb.Put_Line ("end;");
    end Generate_Step;
 
    -------------------------

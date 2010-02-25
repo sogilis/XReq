@@ -16,7 +16,8 @@ tested_package="$1"
 test_package="$2"
 
 if [ -z "$test_package" ]; then
-  test_package="$(sed -r "s/(AdaSpec|Util)/Test_Suite/" <<<"$tested_package")"
+  test_package="$(sed -r "s/AdaSpecLib/Test_Suite.Lib/" <<<"$tested_package" | \
+                  sed -r "s/(AdaSpec|Util)/Test_Suite/")"
   echo "Test package: $test_package"
 fi
 
