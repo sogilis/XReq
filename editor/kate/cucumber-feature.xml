@@ -44,16 +44,26 @@
         <StringDetect attribute="Step"   context="Step"         String="Then"       firstNonSpace="true"/>
         <StringDetect attribute="Step"   context="Step"         String="And"        firstNonSpace="true"/>
         <StringDetect attribute="String" context="LongString"   String="&quot;&quot;&quot;" firstNonSpace="true"/>
+        <StringDetect attribute="String" context="LongStringSimple" String="'''"    firstNonSpace="true"/>
         <RegExpr      attribute="Error"  String="."/>
       </context>
       <context name="Step" lineEndContext="#pop">
-        <DetectChar   attribute="SString" context="String"     char="&quot;"/>
+        <DetectChar   attribute="SString" context="String"       char="&quot;"/>
+        <DetectChar   attribute="SString" context="StringSimple" char="'"/>
       </context>
       <context name="LongString" attribute="String">
+        <HlCStringChar attribute="String Char" context="#stay"/>
         <StringDetect attribute="String" context="#pop" String="&quot;&quot;&quot;" firstNonSpace="true"/>
+      </context>
+      <context name="LongStringSimple" attribute="String">
+        <HlCStringChar attribute="String Char" context="#stay"/>
+        <StringDetect attribute="String" context="#pop" String="'''" firstNonSpace="true"/>
       </context>
       <context name="String" attribute="SString" lineEndContext="#pop">
         <DetectChar attribute="SString" context="#pop" char="&quot;"/>
+      </context>
+      <context name="StringSimple" attribute="SString" lineEndContext="#pop">
+        <DetectChar attribute="SString" context="#pop" char="'"/>
       </context>
       <context name="Title_Line" attribue="Title" lineEndContext="#pop"/>
       <context name="Comment">
@@ -69,6 +79,7 @@
       <itemData name="Comment"     defStyleNum="dsComment"/>
       <itemData name="String"      defStyleNum="dsString"/>
       <itemData name="SString"     defStyleNum="dsString"  color="darkred"/>
+      <itemData name="String Char" defStyleNum="dsChar"/>
       <itemData name="Title"       defStyleNum="dsNormal"  color="darkgreen" bold="true"/>
       <itemData name="Feature"     defStyleNum="dsKeyword"/>
       <itemData name="Scenario"    defStyleNum="dsKeyword"/>
