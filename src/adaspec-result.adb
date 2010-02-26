@@ -113,7 +113,8 @@ package body AdaSpec.Result is
          Find (Steps, Stanza, Proc_Name, Matches, Found);
          if not Found then
             --  TODO: better error reporting
-            Put_Line ("Error: Missing step for " & To_String (Stanza));
+            Put_Line ("Error: Missing step definition for " &
+                      To_String (Stanza));
             Errors := True;
          else
             Make   (Res_St, To_String (Proc_Name), Stanza, Matches);

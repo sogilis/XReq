@@ -8,7 +8,8 @@ package body AdaSpec.Stanzas is
 
    function Stanza_Given (S : in String) return Stanza_Type is begin
       return Stanza_Type'(Prefix => Prefix_Given,
-                          Stanza => To_Unbounded_String (S));
+                          Stanza => To_Unbounded_String (S),
+                          others => <>);
    end Stanza_Given;
 
    ------------------------------------
@@ -17,7 +18,8 @@ package body AdaSpec.Stanzas is
 
    function Stanza_When  (S : in String) return Stanza_Type is begin
       return Stanza_Type'(Prefix => Prefix_When,
-                          Stanza => To_Unbounded_String (S));
+                          Stanza => To_Unbounded_String (S),
+                          others => <>);
    end Stanza_When;
 
    ------------------------------------
@@ -26,7 +28,8 @@ package body AdaSpec.Stanzas is
 
    function Stanza_Then  (S : in String) return Stanza_Type is begin
       return Stanza_Type'(Prefix => Prefix_Then,
-                          Stanza => To_Unbounded_String (S));
+                          Stanza => To_Unbounded_String (S),
+                          others => <>);
    end Stanza_Then;
 
 

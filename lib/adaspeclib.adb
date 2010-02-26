@@ -105,4 +105,60 @@ package body AdaSpecLib is
       Append (Self.Matches, Match_Type'(First, Last));
    end Add_Match;
 
+   --------------------------
+   --  Arg_Type  --  Text  --
+   --------------------------
+
+   function  Text        (Self   : in     Arg_Type;
+                          N      : in     Natural := 0) return String
+   is
+      use String_Vectors;
+   begin
+      return To_String (Element (Self.Texts, N));
+   end Text;
+
+   ------------------------------
+   --  Arg_Type  --  Add_Text  --
+   ------------------------------
+
+   procedure Add_Text    (Self   : in out Arg_Type;
+                          Text   : in     String)
+   is
+      use String_Vectors;
+   begin
+      Append (Self.Texts, To_Unbounded_String (Text));
+   end Add_Text;
+
+   --------------------------------
+   --  Arg_Type  --  First_Text  --
+   --------------------------------
+
+   function  First_Text  (Self   : in     Arg_Type) return Natural is
+      pragma Unreferenced (Self);
+   begin
+      return 0;
+   end First_Text;
+
+   -------------------------------
+   --  Arg_Type  --  Last_Text  --
+   -------------------------------
+
+   function  Last_Text   (Self   : in     Arg_Type) return Integer is
+      use String_Vectors;
+   begin
+      return Natural (Length (Self.Texts)) - 1;
+   end Last_Text;
+
+   ------------------------------
+   --  Arg_Type  --  Num_Text  --
+   ------------------------------
+
+   function  Num_Text    (Self   : in     Arg_Type) return Natural is
+      use String_Vectors;
+   begin
+      return Natural (Length (Self.Texts));
+   end Num_Text;
+
+
+
 end AdaSpecLib;

@@ -118,10 +118,11 @@ package body AdaSpec.Features is
       use Ada.Text_IO;
       use Util.IO;
       use Util.Strings;
+      use Util.Strings.Vectors;
       use Scenario_Container;
       use Stanza_Container;
 
-      type Mode_Type   is (M_Begin, M_Feature, M_Background, M_Scenario);
+      type Mode_Type is (M_Begin, M_Feature, M_Background, M_Scenario, M_Str);
 
       K_Feature    : constant String := "Feature:";
       K_Background : constant String := "Background:";
@@ -130,11 +131,16 @@ package body AdaSpec.Features is
       K_When       : constant String := "When ";
       K_Then       : constant String := "Then ";
       K_And        : constant String := "And ";
+      K_StrDouble  : constant String := """""""";
+      K_StrSimple  : constant String := "'''";
+      CurrentStr   : String (1 .. 3);
       State        : Mode_Type         := M_Begin;
+      State_Saved  : Mode_Type;
       Stanza_State : Prefix_Type_Maybe := Prefix_None;
       File         : File_Type;
       Line_S       : Unbounded_String;
       Suffix       : Unbounded_String;
+      Long_String  : Unbounded_String;
       Idx_Start    : Natural;
 
       Current_Scenario : Scenario_Type;
@@ -148,6 +154,7 @@ package body AdaSpec.Features is
 
       procedure Add_Scenario;
       procedure Add_Stanza;
+      procedure Add_Text;
 
       procedure Add_Scenario is
       begin
@@ -165,9 +172,18 @@ package body AdaSpec.Features is
       begin
          if Stanza_State /= Prefix_None then
             Append (Current_Scenario.Stanzas, Current_Stanza);
-            Current_Stanza.Stanza := Null_Unbounded_String;
+            Current_Stanza := Null_Stanza;
          end if;
       end Add_Stanza;
+
+      procedure Add_Text is
+      begin
+         Long_String := Decode_Python (To_String (Long_String));
+--          Put_Line ("Found String " & CurrentStr &
+--                    To_String (Long_String) & CurrentStr);
+         Append (Current_Stanza.Texts, Long_String);
+         Long_String := Null_Unbounded_String;
+      end Add_Text;
 
    begin
       Open (File, In_File, To_String (Self.File_Name));
@@ -252,10 +268,30 @@ package body AdaSpec.Features is
                elsif Starts_With_K (K_And) then
                   Add_Stanza;
                   Idx_Start := Idx_Start + K_And'Length;
+
+               --  Found """
+               elsif Starts_With_K (K_StrDouble) then
+                  State_Saved := State;
+                  State       := M_Str;
+                  CurrentStr  := K_StrDouble;
+
+               --  Found '''
+               elsif Starts_With_K (K_StrSimple) then
+                  State_Saved := State;
+                  State       := M_Str;
+                  CurrentStr  := K_StrSimple;
                end if;
 
-               --  Record stanza
-               if Stanza_State /= Prefix_None then
+               --  Record first line of long string
+               if State = M_Str then
+                  Long_String := Unbounded_Slice (Line_S, Idx_Start + 3,
+                                                  Length (Line_S));
+                  if Long_String /= Null_Unbounded_String then
+                     Append (Long_String, ASCII.LF);
+                  end if;
+
+               --  Continue the stanza on the next line
+               elsif Stanza_State /= Prefix_None then
                   Current_Stanza.Prefix := Stanza_State;
                   Suffix := Trimed_Suffix (Line_S, Idx_Start);
                   if Current_Stanza.Stanza /= Null_Unbounded_String and
@@ -265,6 +301,37 @@ package body AdaSpec.Features is
                   end if;
                   Append (Current_Stanza.Stanza, Suffix);
                end if;
+
+            when M_Str =>
+
+               declare
+                  Line_First  : constant Natural
+                              := Natural'Min (Index_Non_Blank (Line_S),
+                                              Idx_Start);
+                  Line_End    : Natural
+                              := Index (Line_S, CurrentStr, Line_First);
+               begin
+                  --  Look if there is the end of string marker
+                  if Line_End = 0 then
+                     --  Still in the string, slice till the end of line
+                     Line_End := Length (Line_S);
+                     Append (Long_String,
+                             Slice (Line_S, Line_First, Line_End) & ASCII.LF);
+                  else
+                     State := State_Saved;
+                     if Line_End > Line_First then
+                        --  There is text before the end of string marker
+                        Append (Long_String,
+                                Slice (Line_S, Line_First, Line_End - 1));
+                     else
+                        --  End of string in a line by itself, remove the last
+                        --  line feed.
+                        Head (Long_String, Length (Long_String) - 1);
+                     end if;
+                     Add_Text;
+                  end if;
+               end;
+
          end case;
 --          Put_Line ("STATE: " & State'Img & " " & Stanza_State'Img);
       end loop;

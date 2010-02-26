@@ -25,6 +25,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Buffer);
       Ret.Add_Test (new Test_Ada_string);
       Ret.Add_Test (new Test_Decode_Python);
+      Ret.Add_Test (new Test_Decode_String);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -270,17 +271,46 @@ package body Test_Suite.Strings is
                                     Character'Val (8#222#) & "end");
       Compare ("a\x56a\xfaa", "a" & Character'Val (16#56#) &
                               "a" & Character'Val (16#FA#) & "a");
-      Assert (Decode_Python ("h\hh", True) = "h\hh", "Liberal not OK");
+      Assert (String'(Decode_Python ("h\hh", True)) = "h\hh",
+              "Liberal not OK");
       declare
          procedure P;
          procedure P is begin
-            Assert (Decode_Python ("h\hh") = "h\hh", "...");
+            Assert (String'(Decode_Python ("h\hh")) = "h\hh", "...");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
       begin
          Assert_Exception_Raised ("Decode_Python should raise " &
                                   "Constraint_Error");
       end;
+
+   end Run;
+
+   --  Test_Decode_String  ----------------------------------------------------
+
+   function  Name (T : in Test_Decode_String) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Decode_String");
+   end Name;
+
+   procedure Run (T : in out Test_Decode_String) is
+      pragma Unreferenced (T);
+
+      procedure Compare (Python : in String; Original : in String);
+      procedure Compare (Python : in String; Original : in String) is
+         Str : constant String := Decode_String (Python);
+      begin
+         Assert (Str = Original, "Decode_String error." & ASCII.LF &
+                 "Expected       " & Ada_String (Original) & ASCII.LF &
+                 "Got            " & Ada_String (Str) & ASCII.LF &
+                 "While decoding """ & Python & """");
+      end Compare;
+   begin
+
+      Compare ("abc\ndef", "abc" & ASCII.LF & "def");
+      Compare ("abc\def",  "abc\def");
+      Compare ("abcdef\",  "abcdef\");
 
    end Run;
 

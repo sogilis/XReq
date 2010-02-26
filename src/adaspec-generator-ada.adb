@@ -102,6 +102,7 @@ package body AdaSpec.Generator.Ada is
                                 Step       : in     Result_Step_Type;
                                 Background : in     Boolean := False)
    is
+      use Util.Strings.Vectors;
       use String_Set;
       use Match_Vectors;
       Procname : constant String := Procedure_Name (Step);
@@ -109,6 +110,8 @@ package body AdaSpec.Generator.Ada is
       Copy     : Boolean := False;
       I        : Match_Vectors.Cursor := First (Step.Matches);
       E        : Match_Location;
+      I2       : Util.Strings.Vectors.Cursor := First (Step.Step.Texts);
+      E2       : Unbounded_String;
    begin
       --  Declare
       S.Adb.Put_Line ("declare");
@@ -132,7 +135,7 @@ package body AdaSpec.Generator.Ada is
       S.Adb.Indent;
       S.Adb.Put_Line ("Report.Count_Steps_Skipped := " &
                       "Report.Count_Steps_Skipped + 1;");
-      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza);");
+      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza, Args);");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("else");
       S.Adb.Indent;
@@ -144,6 +147,12 @@ package body AdaSpec.Generator.Ada is
          S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
                                      E.Last'Img & ");");
          Next (I);
+      end loop;
+      while Has_Element (I2) loop
+         E2 := Element (I2);
+         S.Adb.Put_Line ("Add_Text  (Args, " &
+                         Ada_String (To_String (E2)) & ");");
+         Next (I2);
       end loop;
       --  Generate with clause
       for K in reverse Procname'Range loop
@@ -166,7 +175,7 @@ package body AdaSpec.Generator.Ada is
          S.Adb.Put_Line ("if First then");
          S.Adb.Indent;
       end if;
-      S.Adb.Put_Line ("Put_Step (Prefix, Stanza);");
+      S.Adb.Put_Line ("Put_Step (Prefix, Stanza, Args);");
       if Background then
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
@@ -183,7 +192,7 @@ package body AdaSpec.Generator.Ada is
       S.Adb.Put_Line ("Report.Count_Steps_Failed := " &
                       "Report.Count_Steps_Failed + 1;");
       S.Adb.Put_Line ("Fail := True;");
-      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza);");
+      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza, Args);");
       S.Adb.Put_Line ("Put_Error (Err);");
       S.Adb.UnIndent;
       --  End block

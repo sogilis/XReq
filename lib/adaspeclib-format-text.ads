@@ -12,7 +12,8 @@ package AdaSpecLib.Format.Text is
    procedure Put_Background (Background : in String);
    procedure Put_Scenario   (Scenario   : in String);
    procedure Put_Step       (Step       : in Step_Type;
-                             Name       : in String);
+                             Name       : in String;
+                             Args       : in Arg_Type);
    procedure Put_Error      (Err        : in Exception_Occurrence);
    procedure Put_Summary    (Report     : in Report_Type);
 

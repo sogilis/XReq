@@ -10,6 +10,14 @@ Given /^adaspec is in the PATH$/ do
   end
 end
 
+Given /^the sources of adaspec are in ADA_INCLUDE_PATH$/ do
+  if ENV['ADA_INCLUDE_PATH'] then
+    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/src" + ":" + ENV['ADA_INCLUDE_PATH'];
+  else
+    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/src";
+  end
+end
+
 Given /^I am in an empty directory$/ do
   @oldcwd = FileUtils.pwd();
   dir = "#{$adaspec_dir}/tmp";

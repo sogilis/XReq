@@ -44,6 +44,13 @@ package AdaSpecLib is
    procedure Add_Match   (Self   : in out Arg_Type;
                           First  : in     Natural;
                           Last   : in     Natural);
+   function  Text        (Self   : in     Arg_Type;
+                          N      : in     Natural := 0) return String;
+   procedure Add_Text    (Self   : in out Arg_Type;
+                          Text   : in     String);
+   function  First_Text  (Self   : in     Arg_Type) return Natural;
+   function  Last_Text   (Self   : in     Arg_Type) return Integer;
+   function  Num_Text    (Self   : in     Arg_Type) return Natural;
 
 private
 
@@ -53,12 +60,14 @@ private
          Last  : Natural;
       end record;
 
-   package Match_Vectors is new Vectors (Positive, Match_Type, "=");
+   package Match_Vectors is new Vectors  (Positive, Match_Type, "=");
+   package String_Vectors is new Vectors (Natural, Unbounded_String, "=");
 
    type Arg_Type is tagged
       record
          Stanza  : Unbounded_String;
          Matches : Match_Vectors.Vector;
+         Texts   : String_Vectors.Vector;
       end record;
 
    Null_Arg : constant Arg_Type := (others => <>);

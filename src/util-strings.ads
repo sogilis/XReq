@@ -39,7 +39,15 @@ package Util.Strings is
    function Ada_String    (Source  : in String) return String;
 
    function Decode_Python (Source  : in String;
+                           Liberal : in Boolean := False)
+                                 return Unbounded_String;
+
+   function Decode_Python (Source  : in String;
                            Liberal : in Boolean := False) return String;
+
+   function Decode_String (Source  : in String) return Unbounded_String;
+   function Decode_String (Source  : in String) return String;
+
 
    --------------
    --  Buffer  --

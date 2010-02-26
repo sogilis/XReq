@@ -36,7 +36,8 @@ package body AdaSpecLib.Format.Text is
    end Put_Scenario;
 
    procedure Put_Step       (Step       : in Step_Type;
-                             Name       : in String) is
+                             Name       : in String;
+                             Args       : in Arg_Type) is
    begin
       Put ("    ");
       case Step is
@@ -46,6 +47,31 @@ package body AdaSpecLib.Format.Text is
       end case;
       Put (Name);
       New_Line;
+      for I in Args.First_Text .. Args.Last_Text loop
+         Put_Line ("      """"""");
+         Put ("      ");
+         declare
+            Text : constant String := Args.Text (I);
+            J    : Natural := Text'First;
+         begin
+            while J <= Text'Last loop
+               if J + 2 <= Text'Last and then
+                  Text (J .. J + 2) = """"""""
+               then
+                  Put ("\""\""\""");
+                  J := J + 3;
+               else
+                  Put (Text (J));
+                  if Text (J) = ASCII.LF then
+                     Put ("      ");
+                  end if;
+                  J := J + 1;
+               end if;
+            end loop;
+         end;
+         New_Line;
+         Put_Line ("      """"""");
+      end loop;
    end Put_Step;
 
    procedure Put_Error      (Err        : in Exception_Occurrence) is

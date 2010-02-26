@@ -179,7 +179,8 @@ package body Util.Strings is
    ---------------------
 
    function Decode_Python (Source  : in String;
-                           Liberal : in Boolean := False) return String is
+                           Liberal : in Boolean := False)
+                                 return Unbounded_String is
       Buffer : Unbounded_String;
       I      : Natural := Source'First;
       Oct    : String (1 .. 3);
@@ -229,9 +230,42 @@ package body Util.Strings is
          end if;
          I := I + 1;
       end loop;
-      return To_String (Buffer);
+      return Buffer;
    end Decode_Python;
 
+   function Decode_Python (Source  : in String;
+                           Liberal : in Boolean := False) return String is
+   begin
+      return To_String (Decode_Python (Source, Liberal));
+   end Decode_Python;
+
+   ---------------------
+   --  Decode_String  --
+   ---------------------
+
+   function Decode_String (Source  : in String) return Unbounded_String is
+      Buffer : Unbounded_String;
+      I      : Natural := Source'First;
+   begin
+      while I <= Source'Last loop
+         if Source (I) = '\' and then
+            I < Source'Last  and then
+            Source (I + 1) = 'n'
+         then
+            Append (Buffer, ASCII.LF);
+            I := I + 2;
+         else
+            Append (Buffer, Source (I));
+            I := I + 1;
+         end if;
+      end loop;
+      return Buffer;
+   end Decode_String;
+
+   function Decode_String (Source  : in String) return String is
+   begin
+      return To_String (Decode_String (Source));
+   end Decode_String;
 
    --------------
    --  Buffer  --

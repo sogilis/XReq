@@ -2,6 +2,7 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
+with Util.Strings;
 
 use Ada.Strings.Unbounded;
 
@@ -15,6 +16,7 @@ package AdaSpec.Stanzas is
       record
          Prefix : Prefix_Type;
          Stanza : Unbounded_String;
+         Texts  : Util.Strings.Vectors.Vector;
       end record;
    type Stanza_Ptr is access all Stanza_Type;
    Null_Stanza : Stanza_Type;
