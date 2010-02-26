@@ -22,7 +22,7 @@ package AdaSpec.Job is
       record
          Step_Dir  : Unbounded_String;
          Out_Dir   : Unbounded_String;
-         Steps     : Steps_Type; --  TODO: free memory
+         Steps     : Steps_Type;
          Loaded    : Boolean := False;
       end record;
    Null_Job_Environment : constant Job_Environment := (others => <>);
