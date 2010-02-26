@@ -1,7 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
-with Ada.Exceptions;
 
 with Test_Suite.IO;
 with Test_Suite.Strings;
@@ -132,7 +131,6 @@ package body Test_Suite is
 
    procedure Run_Test (T : in out Test_Case_Type) is
       use Ada.Text_IO;
-      use Ada.Exceptions;
       Self : constant access Test_Case_Type'Class := T'Access;
       Pref : constant String  := "** Exception: ";
       Line : String (1 .. 80) := (others => '_');
@@ -150,5 +148,20 @@ package body Test_Suite is
          End_Test;
          Reraise_Occurrence (Error);
    end Run_Test;
+
+   procedure Assert_Except (T       : in Test_Case_Generic_Type;
+                            Message : in String;
+                            Err     : in Exception_Id := Null_Id)
+   is
+   begin
+      Proc;
+      Assert (T, False, "Exception " & Exception_Name (Err) &
+              " should have been raised: " & Message);
+   exception
+      when E : others =>
+         if Err /= Null_Id and Exception_Identity (E) /= Err then
+            Reraise_Occurrence (E);
+         end if;
+   end Assert_Except;
 
 end Test_Suite;

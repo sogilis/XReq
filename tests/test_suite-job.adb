@@ -37,7 +37,8 @@ package body Test_Suite.Job is
    begin
       Make (Env, "S", "O");
       Make (Job, "F");
-      T.Assert (Describe (Job, Env) = Expected_Result, "Incorrect description");
+      T.Assert (Describe (Job, Env) = Expected_Result,
+                "Incorrect description");
    end Run;
 
 
@@ -87,10 +88,10 @@ package body Test_Suite.Job is
          procedure P is begin
             Load (Env);
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
-         Assert_Exception_Raised ("Invalid_Environment has not been raised " &
-                                  "in call to Load (1)");
+         A (T, "Invalid_Environment has not been raised in call to Load (1)",
+            Invalid_Environment'Identity);
       end;
 
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
@@ -104,10 +105,10 @@ package body Test_Suite.Job is
          procedure P is begin
             Load (Env);
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
-         Assert_Exception_Raised ("Invalid_Environment has not been raised " &
-                                  "in call to Load (2)");
+         A (T, "Invalid_Environment has not been raised in call to Load (2)",
+            Invalid_Environment'Identity);
       end;
 
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
@@ -139,10 +140,10 @@ package body Test_Suite.Job is
          procedure P is begin
             Run (Job, Env);
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Run, P);
       begin
-         Assert_Exception_Raised ("Invalid_Environment has not been raised " &
-                                  "in call to Run");
+         A (T, "Invalid_Environment has not been raised in call to Run",
+            Invalid_Environment'Identity);
       end;
 
       Load (Env);

@@ -1,7 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Exceptions;
 with AUnit.Test_Suites;
 with AUnit.Simple_Test_Cases;
+
+use Ada.Exceptions;
 
 package Test_Suite is
 
@@ -47,5 +50,13 @@ package Test_Suite is
    procedure Run      (T : in out Test_Case_Type) is abstract;
    function  Name     (T : in     Test_Case_Type) return AUnit.Message_String;
    procedure Run_Test (T : in out Test_Case_Type);
+
+   generic
+      type Test_Case_Generic_Type (<>) is
+         abstract new Test_Case_Type with private;
+      with procedure Proc;
+   procedure Assert_Except (T       : in Test_Case_Generic_Type;
+                            Message : in String;
+                            Err     : in Exception_Id := Null_Id);
 
 end Test_Suite;

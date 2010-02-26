@@ -23,7 +23,11 @@ package Test_Suite.Main is
 
 private
 
-   procedure Spawn_Assert  (Argument_String : in String;
+   generic
+      type Test_Case_Generic_Type (<>) is
+         abstract new Test_Case_Type with private;
+   procedure Spawn_Assert  (T               : in Test_Case_Generic_Type;
+                            Argument_String : in String;
                             Expected_Result : in Boolean := True;
                             Directory       : in String := "";
                             Executable_Name : in String := "bin/adaspec");

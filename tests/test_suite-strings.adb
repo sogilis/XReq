@@ -1,11 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Exceptions;
 with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with Util.Strings;
 
-use Ada.Exceptions;
 use Ada.Strings.Unbounded;
 use Ada.Text_IO;
 use Util.Strings;
@@ -191,7 +189,8 @@ package body Test_Suite.Strings is
       T.Assert (B.Value = "", "Clear not OK");
       B.UnIndent (2);
       B.Put_Line (To_Unbounded_String ("tata"));
-      T.Assert (B.Value = "   tata" & B.CRLF, "(UnIndent (2); Put_Line) not OK");
+      T.Assert (B.Value = "   tata" & B.CRLF,
+                "(UnIndent (2); Put_Line) not OK");
       B.UnIndent (3);
       B.Put_Indent;
       B.Put (To_Unbounded_String ("titi"));
@@ -236,12 +235,12 @@ package body Test_Suite.Strings is
    --  Test_Decode_Python  ----------------------------------------------------
 
    function  Name (T : in Test_Decode_Python) return String is
+      pragma Unreferenced (T);
    begin
       return ("Util.Strings.Decode_Python");
    end Name;
 
    procedure Run (T : in out Test_Decode_Python) is
-      pragma Unreferenced (T);
 
       procedure Compare (Python : in String; Original : in String);
       procedure Compare (Python : in String; Original : in String) is
@@ -269,10 +268,10 @@ package body Test_Suite.Strings is
          procedure P is begin
             T.Assert (String'(Decode_Python ("h\hh")) = "h\hh", "...");
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Decode_Python, P);
       begin
-         Assert_Exception_Raised ("Decode_Python should raise " &
-                                  "Constraint_Error");
+         A (T, "Decode_Python should raise Constraint_Error",
+            Constraint_Error'Identity);
       end;
 
    end Run;

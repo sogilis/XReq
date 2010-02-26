@@ -2,6 +2,7 @@
 
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
+with Ada.IO_Exceptions;
 with Util.IO;
 
 use Ada.Strings.Unbounded;
@@ -69,13 +70,15 @@ package body Test_Suite.IO is
       declare
          procedure P;
          procedure P is begin
-            T.Assert (To_String (Get_Whole_Line (File)) = Null_Unbounded_String,
-                  "Get_Line shouldn't return a string when end of file");
+            T.Assert (To_String (Get_Whole_Line (File)) =
+                      Null_Unbounded_String,
+                      "Get_Line shouldn't return a string when end of file");
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure Assert_Exception_Raised is new Assert_Except (Test_1, P);
       begin
-         Assert_Exception_Raised ("Get_Line should raise " &
-                                  "Ada.IO_Exceptions.End_Error at EOF");
+         Assert_Exception_Raised (T, "Get_Line should raise " &
+                                  "Ada.IO_Exceptions.End_Error at EOF",
+                                  Ada.IO_Exceptions.End_Error'Identity);
       end;
 
       Close (File);

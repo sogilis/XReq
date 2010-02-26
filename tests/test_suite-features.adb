@@ -1,16 +1,12 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Exceptions;
 with Ada.Strings.Unbounded;
-with AUnit.Assertions;
 with AdaSpec;
 with AdaSpec.Stanzas;
 with AdaSpec.Features;
 with Util.Strings;
 
-use Ada.Exceptions;
 use Ada.Strings.Unbounded;
-use AUnit.Assertions;
 use AdaSpec;
 use AdaSpec.Stanzas;
 use AdaSpec.Stanzas.Stanza_Container;
@@ -69,10 +65,11 @@ package body Test_Suite.Features is
          begin
             null;
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure Assert_Exception_Raised is new Assert_Except (Test_1, P);
       begin
-         T.Assert_Exception (P'Access,
-            "1:To_String should raise Unparsed_Feature");
+         Assert_Exception_Raised (T,
+            "1:To_String should raise Unparsed_Feature",
+            Unparsed_Feature'Identity);
       end;
 
       Make (Feature, File);
@@ -91,10 +88,11 @@ package body Test_Suite.Features is
          begin
             null;
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure Assert_Exception_Raised is new Assert_Except (Test_1, P);
       begin
          Assert_Exception_Raised (T,
-            "2:To_String should raise Unparsed_Feature");
+            "2:To_String should raise Unparsed_Feature",
+            Unparsed_Feature'Identity);
       end;
 
       Parse (Feature);
@@ -201,9 +199,10 @@ package body Test_Suite.Features is
       Put_Line (To_String (Feature2));
 
       T.Assert (To_String (Feature1) = To_String (Feature_Type (Feature2)),
-              "The two features text representation must be the same");
+                "The two features text representation must be the same");
 
-      T.Assert (Same (Feature1, Feature2), "The two features must be the same");
+      T.Assert (Same (Feature1, Feature2),
+                "The two features must be the same");
 
    exception
       when Error : others =>

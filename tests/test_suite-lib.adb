@@ -6,8 +6,6 @@ use AdaSpecLib;
 
 package body Test_Suite.Lib is
 
-   package AU renames AUnit.Assertions;
-
    procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
    begin
       Ret.Add_Test (new Test_1);

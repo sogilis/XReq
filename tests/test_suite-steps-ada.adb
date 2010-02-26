@@ -56,10 +56,10 @@ package body Test_Suite.Steps.Ada is
             Foo := Contains (Step, Stanza_Given (Given1));
             T.Assert (Foo and not Foo, "Should never reach here");
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Sample1, P);
       begin
-         Assert_Exception_Raised ("Unparsed_Step has not been raised in call" &
-                                  " to Contains");
+         A (T, "Unparsed_Step has not been raised in call to Contains",
+               Unparsed_Step'Identity);
       end;
 
       declare
@@ -71,10 +71,10 @@ package body Test_Suite.Steps.Ada is
             Find (Step, Stanza_Given (Given1), Proc_N, Match_V, Found);
             T.Assert (False, "Should never reach here");
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Sample1, P);
       begin
-         Assert_Exception_Raised ("Unparsed_Step has not been raised in call" &
-                                  " to Find");
+         A (T, "Unparsed_Step has not been raised in call to Find",
+            Unparsed_Step'Identity);
       end;
 
       Parse (Step);

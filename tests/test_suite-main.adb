@@ -32,40 +32,41 @@ package body Test_Suite.Main is
    end Name;
 
    procedure Run (T : in out Test_1) is
+      procedure SpawnAssert2 is new Spawn_Assert (Test_1);
    begin
 
-      Spawn_Assert ("-h");
-      Spawn_Assert ("tests/features/simplest.feature");
-      Spawn_Assert ("-otmp --step b tests/features/simplest.feature",
+      SpawnAssert2 (T, "-h");
+      SpawnAssert2 (T, "tests/features/simplest.feature");
+      SpawnAssert2 (T, "-otmp --step b tests/features/simplest.feature",
                     Expected_Result => False);
 
-      Spawn_Assert ("tests/features/simplest.feature " &
+      SpawnAssert2 (T, "tests/features/simplest.feature " &
                     "tests/features/simplest2.feature");
 
-      Spawn_Assert ("-o /tmp",
+      SpawnAssert2 (T, "-o /tmp",
                     Expected_Result => False);
 
-      Spawn_Assert ("--step=/tmp",
+      SpawnAssert2 (T, "--step=/tmp",
                     Expected_Result => False);
 
-      Spawn_Assert ("--lang fr",
+      SpawnAssert2 (T, "--lang fr",
                     Expected_Result => False);
 
-      Spawn_Assert ("--step 1 --step 2",
+      SpawnAssert2 (T, "--step 1 --step 2",
                     Expected_Result => False);
 
-      Spawn_Assert ("--step",
+      SpawnAssert2 (T, "--step",
                     Expected_Result => False);
 
-      Spawn_Assert ("--step tests/features/step_definitions " &
+      SpawnAssert2 (T, "--step tests/features/step_definitions " &
                     "tests/features/simplest.feature",
                     Expected_Result => True);
 
-      Spawn_Assert ("--step a --step tests/features/step_definitions " &
+      SpawnAssert2 (T, "--step a --step tests/features/step_definitions " &
                     "tests/features/simplest.feature",
                     Expected_Result => False);
 
-      Spawn_Assert ("--toto",
+      SpawnAssert2 (T, "--toto",
                     Expected_Result => False);
 
    end Run;
@@ -79,13 +80,15 @@ package body Test_Suite.Main is
    end Name;
 
    procedure Run (T : in out Test_2) is
+      procedure SpawnAssert2 is new Spawn_Assert (Test_2);
    begin
 
-      Spawn_Assert ("-x result1 -k " &
+      SpawnAssert2 (T, "-x result1 -k " &
                     "tests/features/simplest.feature " &
                     "tests/features/simplest2.feature");
 
-      Spawn_Assert ("-gnat05 -aI../step_definitions -aI../../../lib result1",
+      SpawnAssert2 (T,
+                    "-gnat05 -aI../step_definitions -aI../../../lib result1",
                     Directory       => "tests/features/tests",
                     Executable_Name => "gnatmake");
    end Run;
@@ -93,7 +96,8 @@ package body Test_Suite.Main is
    --  Private  ---------------------------------------------------------------
    --  See <http://www.adacore.com/2008/11/24/gem-54/>
 
-   procedure Spawn_Assert  (Argument_String : in String;
+   procedure Spawn_Assert  (T               : in Test_Case_Generic_Type;
+                            Argument_String : in String;
                             Expected_Result : in Boolean := True;
                             Directory       : in String := "";
                             Executable_Name : in String := "bin/adaspec")
@@ -120,11 +124,11 @@ package body Test_Suite.Main is
       Append (Buffer, To_Unbounded_String ("): " & Cmd_Line & LF));
       Success := Ret_Code = 0;
       if Expected_Result then
-         T.Assert (Success, "Failed: " & Cmd_Line & " (expected success):" & LF &
-                 To_String (Buffer));
+         T.Assert (Success, "Failed: " & Cmd_Line & " (expected success):" &
+                   LF & To_String (Buffer));
       else
          T.Assert (not Success, "Succeeded: " & Cmd_Line &
-                 " (expected failure)" & LF & To_String (Buffer));
+                   " (expected failure)" & LF & To_String (Buffer));
       end if;
    end Spawn_Assert;
 

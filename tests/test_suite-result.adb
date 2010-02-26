@@ -149,10 +149,10 @@ package body Test_Suite.Result is
          begin
             Process_Feature (Result, Feature_Ptr (Feature), Steps);
          end P;
-         procedure Assert_Exception_Raised is new Assert_Exception (P);
+         procedure A is new Assert_Except (Test_Result_Feature_Type, P);
       begin
-         Assert_Exception_Raised ("Process_Feature should raise " &
-                                  "Unparsed_Feature");
+         A (T, "Process_Feature should raise Unparsed_Feature",
+            Unparsed_Feature'Identity);
       end;
 
       Parse (Feature.all);
