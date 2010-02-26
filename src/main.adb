@@ -138,6 +138,8 @@ begin
       Generate_Suite (Generators, To_String (Executable), Env);
    end if;
 
+   UnLoad (Env);
+
 exception
 
    when Invalid_Switch =>

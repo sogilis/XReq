@@ -83,6 +83,8 @@ package body Test_Suite.Steps is
               "Find: match 1 should end at 12" &
               " instead of" & Loc.Last'Img);
 
+      Free (Steps);
+
    end Run;
 
 end Test_Suite.Steps;

@@ -118,6 +118,8 @@ package body Test_Suite.Job is
 
       T.Assert (Env.Loaded, "Env should be loaded");
 
+      UnLoad (Env);
+
    end Run;
 
    --  Run  -------------------------------------------------------------------
@@ -155,6 +157,8 @@ package body Test_Suite.Job is
               "incorrect out dir");
 
       Run (Job, Env);
+
+      UnLoad (Env);
    end Run;
 
 end Test_Suite.Job;
