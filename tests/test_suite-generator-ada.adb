@@ -50,7 +50,7 @@ package body Test_Suite.Generator.Ada is
 
       Init (Env, Job, "tests/features/simplest.feature");
       Run  (Job, Env);
-      Generate (Job, Env, Gen);
+      Generate (Job, Env);
 
       Append (Output, "gnatmake " & Flags & " simplest.adb" &
               ASCII.LF);

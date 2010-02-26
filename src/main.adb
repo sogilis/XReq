@@ -138,7 +138,23 @@ begin
       Generate_Suite (Generators, To_String (Executable), Env);
    end if;
 
+   -------------------
+   --  Free memory  --
+   -------------------
+
    UnLoad (Env);
+
+   declare
+      I : Generator_Vectors.Cursor := First (Generators);
+      E : Generator_Ptr;
+   begin
+      while Has_Element (I) loop
+         E := Element (I);
+         Free (E);
+         Next (I);
+      end loop;
+      Clear (Generators);
+   end;
 
 exception
 
