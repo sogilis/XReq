@@ -1,5 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with AdaSpec.Stanzas;
@@ -22,7 +23,14 @@ package AdaSpec.Steps is
    --  Step_File_Type  --
    ----------------------
 
-   type Step_File_Type is abstract tagged private;
+
+
+   type Step_File_Type is abstract tagged
+      record
+         File_Name : Unbounded_String;
+      end record;
+      --  I would like this private but I can't
+      --  premature use of type with private component
    type Step_File_Ptr  is access all Step_File_Type'Class;
 
    package Step_Vectors is
@@ -45,6 +53,9 @@ package AdaSpec.Steps is
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean) is abstract;
 
+   procedure Free is new Ada.Unchecked_Deallocation
+      (Step_File_Type'Class, Step_File_Ptr);
+
 
    ------------------
    --  Steps_Type  --
@@ -53,9 +64,11 @@ package AdaSpec.Steps is
    subtype Steps_Type is Step_Vectors.Vector;
 
    function  Load      (Directory : in     String) return Steps_Type;
+   --  IMPORTANT: deallocate Steps_Type
 
    procedure Load      (Steps     : in out Steps_Type;
                         Directory : in     String);
+   --  IMPORTANT: deallocate Steps_Type
 
    function  Contains  (Steps     : in  Steps_Type;
                         Stanza    : in  Stanza_Type) return Boolean;
@@ -68,11 +81,6 @@ package AdaSpec.Steps is
                         Matches   : out Match_Vectors.Vector;
                         Found     : out Boolean);
 
-private
-
-   type Step_File_Type is abstract tagged
-      record
-         File_Name : Unbounded_String;
-      end record;
+   procedure Free      (Steps     : in out Steps_Type);
 
 end AdaSpec.Steps;

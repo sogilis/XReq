@@ -8,6 +8,7 @@ package body AdaSpec.Generator is
                        Env : in  Job_Environment;
                        Gen : out Generator_Ptr)
    is
+      --  TODO: free memory
       Ada_Gen : constant Ada.Ada_Generator_Ptr := new Ada.Ada_Generator_Type;
    begin
       Ada_Gen.Make (Job, Env);

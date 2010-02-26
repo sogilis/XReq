@@ -369,24 +369,24 @@ package body AdaSpec.Generator.Ada is
       Body_B.Put_Line ("procedure " & Prc_Name & " is");
       Body_B.Indent;
       Body_B.Put_Line ("Report : Report_Type;");
-      Body_B.Put_Line ("Format : Text_Format_Ptr := new Text_Format_Type;");
-      Body_B.Put_Line ("F      : Format_Ptr := Format_Ptr (Format);");
+      Body_B.Put_Line ("Format : Format_Ptr := Format_Ptr (New_Text_Format);");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
       Body_B.Indent;
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & E.Full_Name & ";");
-         Body_B.Put_Line (E.Full_Name & ".Run (F, Report);");
+         Body_B.Put_Line (E.Full_Name & ".Run (Format, Report);");
          Next (I);
       end loop;
-      Body_B.Put_Line ("F.Put_Summary (Report);");
+      Body_B.Put_Line ("Format.Put_Summary (Report);");
       Body_B.Put_Line ("if not Status (Report) then");
       Body_B.Indent;
       Body_B.Put_Line ("Ada.Command_Line.Set_Exit_Status " &
                        "(Ada.Command_Line.Failure);");
       Body_B.UnIndent;
       Body_B.Put_Line ("end if;");
+      Body_B.Put_Line ("Free (Format);");
       Body_B.UnIndent;
       Body_B.Put_Line ("end " & Prc_Name & ";");
 

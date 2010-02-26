@@ -93,4 +93,22 @@ package body AdaSpec.Steps is
       Found := False;
    end Find;
 
+   ------------
+   --  Free  --
+   ------------
+
+   procedure Free (Steps : in out Steps_Type) is
+      use Step_Vectors;
+      I : Step_Vectors.Cursor := First (Steps);
+      E : Step_File_Ptr;
+   begin
+      while Has_Element (I) loop
+         E := Element (I);
+         Free (E);
+         Next (I);
+      end loop;
+      Clear (Steps);
+   end Free;
+
+
 end AdaSpec.Steps;

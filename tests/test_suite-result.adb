@@ -58,13 +58,12 @@ package body Test_Suite.Result is
       use Ada.Containers;
       Result       : Result_Scenario_Type;
       Scenario     : Scenario_Type;
-      Steps        : constant Steps_Type
+      Steps        : Steps_Type
                    := Load ("tests/features/step_definitions");
       Ideal_Result : Result_Steps.Vector;
       A, B         : Result_Step_Type;
       Errors       : Boolean;
    begin
-      Title ("AdaSpec.Result.Result_Scenario_Type");
 
       Make   (Scenario, "Scenario");
       Append (Scenario, Stanza_Given ("this step works"));
@@ -105,7 +104,7 @@ package body Test_Suite.Result is
       T.Assert (Result.Steps = Ideal_Result,
               "Wrong scenario result (2)");
 
-      End_Test;
+      Free (Steps);
    end Run;
 
    --  Test_Result_Feature_Type  ----------------------------------------------
@@ -136,8 +135,6 @@ package body Test_Suite.Result is
                "   End Scenario Run a good step"    & CRLF &
                "End Feature Sample"                 & CRLF;
    begin
-
-      Title ("AdaSpec.Result.Result_Feature_Type");
 
       Steps   := Load   ("tests/features/step_definitions");
       Feature := new Feature_File_Type'(Create
@@ -180,7 +177,7 @@ package body Test_Suite.Result is
       T.Assert (To_String (Result) = Exp_Str,
               "To_String value not expected:" & CRLF & To_String (Result));
 
-      End_Test;
+      Free (Steps);
    end Run;
 
    --  Test_To_String  --------------------------------------------------
@@ -212,7 +209,6 @@ package body Test_Suite.Result is
       Feature  : Result_Feature_Type;
       Matches  : Match_Vectors.Vector;
    begin
-      Title ("AdaSpec.Result.To_String");
 
       Append (Matches, (1, 15));
       Append (R_Scen, Create ("Sample1.This_Step_Works",
@@ -227,7 +223,6 @@ package body Test_Suite.Result is
       T.Assert (To_String (Feature) = Expected,
               "To_String value not expected:" & CRLF & To_String (Feature));
 
-      End_Test;
    end Run;
 
 end Test_Suite.Result;

@@ -11,6 +11,7 @@ package AdaSpec.Steps.Ada is
    --  Called in AdaSpec.Steps.Load
    procedure Parse_Directory (Steps     : in out Steps_Type;
                               Directory : in     String);
+   --  IMPORTANT: deallocate Steps_Type
 
 
    type Ada_Step_File_Type is new Step_File_Type with private;

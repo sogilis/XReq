@@ -137,6 +137,8 @@ package body Test_Suite.Steps.Ada is
       T.Assert (Contains (Step.all, Stanza_Given ("this step works")),
               "The step definition should contain `Given this step works'");
 
+      Free (Steps);
+
    end Run;
 
 

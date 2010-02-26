@@ -1,5 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Unchecked_Deallocation;
 with Ada.Exceptions;
 with AdaSpecLib.Report;
 
@@ -34,5 +35,8 @@ package AdaSpecLib.Format is
    procedure Put_Summary    (Format     : in out Format_Type;
                              Report     : in     Report_Type)
                              is abstract;
+
+   procedure Free is new Ada.Unchecked_Deallocation
+      (Format_Type'Class, Format_Ptr);
 
 end AdaSpecLib.Format;

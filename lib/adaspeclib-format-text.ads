@@ -1,10 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-
 package AdaSpecLib.Format.Text is
 
    type Text_Format_Type is new Format_Type with null record;
-   type Text_Format_Ptr  is access all Text_Format_Type'Class;
+   type Text_Format_Ptr  is access all Text_Format_Type;
 
    overriding
    procedure Put_Feature    (Format     : in out Text_Format_Type;
@@ -27,5 +26,7 @@ package AdaSpecLib.Format.Text is
    overriding
    procedure Put_Summary    (Format     : in out Text_Format_Type;
                              Report     : in     Report_Type);
+
+   function  New_Text_Format return Text_Format_Ptr;
 
 end AdaSpecLib.Format.Text;

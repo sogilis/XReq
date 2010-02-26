@@ -132,7 +132,7 @@ package body AdaSpecLib.Format.Text is
          Need_Comma := True;
       end if;
       Put (")");
-      new_Line;
+      New_Line;
       Put (Trim (Count_Steps'Img, Left) & " steps (");
       Need_Comma := False;
       if Report.Count_Steps_Failed /= 0 then
@@ -150,7 +150,16 @@ package body AdaSpecLib.Format.Text is
          Need_Comma := True;
       end if;
       Put (")");
-      new_Line;
+      New_Line;
    end Put_Summary;
+
+   -----------------------
+   --  New_Text_Format  --
+   -----------------------
+
+   function New_Text_Format return Text_Format_Ptr is
+   begin
+      return new Text_Format_Type;
+   end New_Text_Format;
 
 end AdaSpecLib.Format.Text;

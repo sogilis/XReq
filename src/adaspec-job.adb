@@ -81,6 +81,16 @@ package body AdaSpec.Job is
 
    end Load;
 
+   -----------------------------------
+   --  Job_Environment  --  UnLoad  --
+   -----------------------------------
+
+   procedure UnLoad (Env : in out Job_Environment) is
+   begin
+      Free (Env.Steps);
+      Env := Null_Job_Environment;
+   end UnLoad;
+
    --------------------------
    --  Job_Type  --  Make  --
    --------------------------
@@ -121,6 +131,7 @@ package body AdaSpec.Job is
    procedure Run (Job : in out Job_Type;
                   Env : in     Job_Environment)
    is
+      --  TODO: free memory
       F : constant Feature_File_Ptr := new Feature_File_Type;
    begin
       if not Env.Loaded then

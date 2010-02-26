@@ -128,6 +128,7 @@ package body AdaSpec.Steps.Ada is
                end if;
                Current_Step := Step_Type'(
                   Prefix    => Prefix,
+                  --  TODO: free memory
                   Pattern_R => new Pattern_Matcher'(
                                Compile (To_String (Pattern))),
                   Pattern_S => Pattern,

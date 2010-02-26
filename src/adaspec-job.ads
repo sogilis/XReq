@@ -22,9 +22,10 @@ package AdaSpec.Job is
       record
          Step_Dir  : Unbounded_String;
          Out_Dir   : Unbounded_String;
-         Steps     : Steps_Type;
+         Steps     : Steps_Type; --  TODO: free memory
          Loaded    : Boolean := False;
       end record;
+   Null_Job_Environment : constant Job_Environment := (others => <>);
 
    procedure Make         (Env      : out    Job_Environment;
                            Step_Dir : in     String := "";
@@ -34,6 +35,8 @@ package AdaSpec.Job is
    procedure Fill_Missing (Env      : in out Job_Environment;
                            Feature  : in     String);
    procedure Load         (Env      : in out Job_Environment);
+   --  IMPORTANT: don't forget to call UnLoad
+   procedure UnLoad       (Env      : in out Job_Environment);
 
    ----------------
    --  Job_Type  --

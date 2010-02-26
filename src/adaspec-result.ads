@@ -25,7 +25,7 @@ package AdaSpec.Result is
          Step           : Stanza_Type;
          Matches        : Match_Vectors.Vector;
       end record;
-      --  TODO: I can't make this a private type, or else I get the error
+      --  LIMITATION: I can't make this a private type, or else I get the error
       --  "premature use of private type" for the Result_Steps vector package
 
    package Result_Steps is
