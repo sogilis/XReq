@@ -58,6 +58,8 @@ package AdaSpec.Job is
                        Feature_File : in     String);
    procedure Run      (Job          : in out Job_Type;
                        Env          : in     Job_Environment);
+   --  IMPORTANT: call Cleanup afterwards
+   procedure Cleanup  (Job          : in out Job_Type);
    function  Describe (Job          : in     Job_Type;
                        Env          : in     Job_Environment) return String;
 
@@ -67,5 +69,6 @@ package AdaSpec.Job is
                    Feature_File : in     String;
                    Step_Dir     : in     String := "";
                    Out_Dir      : in     String := "");
+   --  IMPORTANT: run UnLoad in Env
 
 end AdaSpec.Job;

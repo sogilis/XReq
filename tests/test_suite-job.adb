@@ -158,6 +158,7 @@ package body Test_Suite.Job is
 
       Run (Job, Env);
 
+      Cleanup (Job);
       UnLoad (Env);
    end Run;
 

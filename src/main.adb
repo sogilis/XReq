@@ -132,6 +132,12 @@ begin
 
       Arg := To_Unbounded_String (Get_Argument);
 
+      -------------------
+      --  Cleanup Job  --
+      -------------------
+
+      Cleanup (Job);
+
    end loop;
 
    if not Quit and Executable /= Null_Unbounded_String then

@@ -131,7 +131,6 @@ package body AdaSpec.Job is
    procedure Run (Job : in out Job_Type;
                   Env : in     Job_Environment)
    is
-      --  TODO: free memory
       F : constant Feature_File_Ptr := new Feature_File_Type;
    begin
       if not Env.Loaded then
@@ -144,6 +143,15 @@ package body AdaSpec.Job is
 
       Process_Feature (Job.Result, Job.Feature, Env.Steps);
    end Run;
+
+   -----------------------------
+   --  Job_Type  --  Cleanup  --
+   -----------------------------
+
+   procedure Cleanup (Job : in out Job_Type) is
+   begin
+      Free (Job.Feature);
+   end Cleanup;
 
    ------------
    --  Init  --

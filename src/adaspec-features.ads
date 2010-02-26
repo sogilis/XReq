@@ -1,5 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Unchecked_Deallocation;
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.Strings;
@@ -54,7 +55,10 @@ package AdaSpec.Features is
    procedure Set_Background (F      : in out Feature_Type;
                              Bg     : in     Scenario_Type);
 
-   Null_Feature : Feature_Type;
+   procedure Free is new Ada.Unchecked_Deallocation
+      (Feature_Type'Class, Feature_Ptr);
+
+   Null_Feature : constant Feature_Type := (others => <>);
 
    function  Same           (F1, F2 : in Feature_Type'Class) return Boolean;
 
