@@ -37,12 +37,21 @@ package AdaSpec.Steps.Ada is
                                    Matches : out    Match_Vectors.Vector;
                                    Found   : out    Boolean);
 
+   overriding procedure Finalize  (S       : in out Ada_Step_File_Type);
+
 private
+
+   type Pattern_Matcher_Ptr is access all GNAT.Regpat.Pattern_Matcher;
+
+--    procedure Free is new Ada.Unchecked_Deallocation
+--       (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
+   procedure Free (P : in out Pattern_Matcher_Ptr) is null;  --  GCOV_IGNORE
+   --  TODO: make the Unchecked_Deallocation work.
 
    type Step_Type is
       record
          Prefix    : Prefix_Type;
-         Pattern_R : access GNAT.Regpat.Pattern_Matcher;
+         Pattern_R : Pattern_Matcher_Ptr;
          Pattern_S : Unbounded_String;
          Proc_Name : Unbounded_String;
       end record;

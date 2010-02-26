@@ -23,8 +23,6 @@ package AdaSpec.Steps is
    --  Step_File_Type  --
    ----------------------
 
-
-
    type Step_File_Type is abstract tagged
       record
          File_Name : Unbounded_String;
@@ -52,6 +50,8 @@ package AdaSpec.Steps is
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean) is abstract;
+   procedure Finalize  (S       : in out Step_File_Type)  --  GCOV_IGNORE
+                        is null;
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Step_File_Type'Class, Step_File_Ptr);

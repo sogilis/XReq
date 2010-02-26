@@ -104,6 +104,7 @@ package body AdaSpec.Steps is
    begin
       while Has_Element (I) loop
          E := Element (I);
+         E.Finalize;
          Free (E);
          Next (I);
       end loop;

@@ -296,4 +296,23 @@ package body AdaSpec.Steps.Ada is
       Found := False;
    end Find;
 
+
+   ----------------
+   --  Finalize  --
+   ----------------
+
+   overriding procedure Finalize  (S : in out Ada_Step_File_Type) is
+      use Step_Container;
+      I : Step_Container.Cursor := First (S.Steps);
+      E : Step_Type;
+   begin
+      while Has_Element (I) loop
+         E := Element (I);
+         Free (E.Pattern_R);
+         Next (I);
+      end loop;
+   end Finalize;
+
+
+
 end AdaSpec.Steps.Ada;
