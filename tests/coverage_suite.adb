@@ -6,12 +6,11 @@ with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with Ada.IO_Exceptions;
 with Util.IO;
-with AUnit.Assertions;
 
 use Ada.Text_IO;
 use Ada.Directories;
 use Ada.Strings.Unbounded;
-use AUnit.Assertions;
+
 
 package body Coverage_Suite is
 
@@ -116,7 +115,7 @@ package body Coverage_Suite is
 
       Read_Gcov (File_Path, Count, Covered, Ignored, Error);
 
-      Assert (Count /= 0 or Ignored /= 0,
+      T.Assert (Count /= 0 or Ignored /= 0,
               "File: reports/" & To_String (T.File) & " " &
               "error, non executable file" &
               CRLF & Read_Whole_File (File_Path));
@@ -128,12 +127,12 @@ package body Coverage_Suite is
          Ratio   := Percent (Ratio_F);
       end if;
 
-      Assert (Error <= 0,
+      T.Assert (Error <= 0,
               "File: reports/" & To_String (T.File) & " error line" &
               Integer'Image (Error) &
               CRLF & Read_Whole_File (File_Path));
 
-      Assert (Covered = Count,
+      T.Assert (Covered = Count,
               "File: reports/" & To_String (T.File) & Percent'Image (Ratio) &
               "% covered (" & Trim (Natural'Image (Covered), Left) & "/" &
               Trim (Natural'Image (Count), Left) & ")" &

@@ -3,7 +3,6 @@
 with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Ada.Directories;
-with AUnit.Assertions;
 with AdaSpec;
 with AdaSpec.Stanzas;
 with AdaSpec.Steps;
@@ -12,7 +11,6 @@ with AdaSpec.Steps.Ada;
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Ada.Directories;
-use AUnit.Assertions;
 use AdaSpec;
 use AdaSpec.Stanzas;
 use AdaSpec.Steps;
@@ -37,7 +35,6 @@ package body Test_Suite.Steps.Ada is
    end Name;
 
    procedure Run (T : in out Test_Sample1) is
-      pragma Unreferenced (T);
       Step  : Ada_Step_File_Type;
       File  : constant String := "tests/features/step_definitions/sample1.ads";
       Given1 : constant String := "this step works";
@@ -46,10 +43,10 @@ package body Test_Suite.Steps.Ada is
 
       Make (Step, File);
 
-      Assert (File_Name (Step) = File,
+      T.Assert (File_Name (Step) = File,
               "Step filename (" & File_Name (Step) & ") is incorrect");
 
-      Assert (not Parsed (Step),
+      T.Assert (not Parsed (Step),
               "Step has been parsed without invoking Parse");
 
       declare
@@ -57,7 +54,7 @@ package body Test_Suite.Steps.Ada is
          procedure P;
          procedure P is begin
             Foo := Contains (Step, Stanza_Given (Given1));
-            Assert (Foo and not Foo, "Should never reach here");
+            T.Assert (Foo and not Foo, "Should never reach here");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
       begin
@@ -72,7 +69,7 @@ package body Test_Suite.Steps.Ada is
          procedure P;
          procedure P is begin
             Find (Step, Stanza_Given (Given1), Proc_N, Match_V, Found);
-            Assert (False, "Should never reach here");
+            T.Assert (False, "Should never reach here");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
       begin
@@ -82,22 +79,22 @@ package body Test_Suite.Steps.Ada is
 
       Parse (Step);
 
-      Assert (Parsed (Step),
+      T.Assert (Parsed (Step),
               "Step has not been parsed after invoking Parse");
 
-      Assert (Contains (Step, Stanza_Given (Given1)),
+      T.Assert (Contains (Step, Stanza_Given (Given1)),
               "Step should contain """ & Given1 & """");
 
-      Assert (Contains (Step, Stanza_When ("this step works too")),
+      T.Assert (Contains (Step, Stanza_When ("this step works too")),
               "Step should contains `When this step works too'");
 
-      Assert (not Contains (Step, Stanza_Given (Given2)),
+      T.Assert (not Contains (Step, Stanza_Given (Given2)),
               "Step should not contain """ & Given2 & """");
 
-      Assert (Find (Step, Stanza_Given (Given1)) = "Sample1.This_Step_Works",
+      T.Assert (Find (Step, Stanza_Given (Given1)) = "Sample1.This_Step_Works",
               "`Given " & Given1 & "' should find `Sample1.This_Step_Works'");
 
-      Assert (Find (Step, Stanza_Given (Given2)) = "",
+      T.Assert (Find (Step, Stanza_Given (Given2)) = "",
               "`Given " & Given2 & "' should find '");
 
    end Run;
@@ -111,7 +108,6 @@ package body Test_Suite.Steps.Ada is
    end Name;
 
    procedure Run (T : in out Test_Parse_Dir) is
-      pragma Unreferenced (T);
       use Step_Vectors;
 
       Directory : constant String := "tests/features/step_definitions";
@@ -123,7 +119,7 @@ package body Test_Suite.Steps.Ada is
 
       Parse_Directory (Steps, Directory);
 
-      Assert (Length (Steps) >= 1,
+      T.Assert (Length (Steps) >= 1,
               "Detected " & Length (Steps)'Img &
               " steps instead of >= 1");
 
@@ -133,12 +129,12 @@ package body Test_Suite.Steps.Ada is
          I     := I + 1;
       end loop;
 
-      Assert (Found,
+      T.Assert (Found,
               "Should have detected step sample1.ads");
 
-      Assert (Parsed (Step.all), "Should have parsed the step definition");
+      T.Assert (Parsed (Step.all), "Should have parsed the step definition");
 
-      Assert (Contains (Step.all, Stanza_Given ("this step works")),
+      T.Assert (Contains (Step.all, Stanza_Given ("this step works")),
               "The step definition should contain `Given this step works'");
 
    end Run;

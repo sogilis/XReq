@@ -24,28 +24,11 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
-with AUnit.Reporter;
-
-use Ada.Strings.Unbounded;
-use AUnit.Reporter;
-
 --  Very simple reporter to console
 package AUnit.Reporter.XML2 is
 
-   String_Result : aliased Unbounded_String;
-
    type XML_Reporter is new Reporter with null record;
 
-   overriding procedure Report (Engine : in XML_Reporter;
-                                R      : in out Result);
-
-private
-
-   CRLF : constant String := ASCII.CR & ASCII.LF;
-   procedure Put_Line (S : in String);
-   procedure Put (S : in String);
-   procedure Put (I : in Integer);
-   procedure New_Line;
-
+   procedure Report (Engine : XML_Reporter;
+                     R      : in out Result'Class);
 end AUnit.Reporter.XML2;

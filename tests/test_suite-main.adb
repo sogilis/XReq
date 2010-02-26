@@ -4,14 +4,12 @@ with Ada.Strings.Unbounded;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Directories;
-with AUnit.Assertions;
 with Util.IO;
 
 use Ada.Strings.Unbounded;
 use Ada.Strings;
 use Ada.Strings.Fixed;
 use Ada.Directories;
-use AUnit.Assertions;
 use Util.IO;
 
 package body Test_Suite.Main is
@@ -34,7 +32,6 @@ package body Test_Suite.Main is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
    begin
 
       Spawn_Assert ("-h");
@@ -82,7 +79,6 @@ package body Test_Suite.Main is
    end Name;
 
    procedure Run (T : in out Test_2) is
-      pragma Unreferenced (T);
    begin
 
       Spawn_Assert ("-x result1 -k " &
@@ -124,10 +120,10 @@ package body Test_Suite.Main is
       Append (Buffer, To_Unbounded_String ("): " & Cmd_Line & LF));
       Success := Ret_Code = 0;
       if Expected_Result then
-         Assert (Success, "Failed: " & Cmd_Line & " (expected success):" & LF &
+         T.Assert (Success, "Failed: " & Cmd_Line & " (expected success):" & LF &
                  To_String (Buffer));
       else
-         Assert (not Success, "Succeeded: " & Cmd_Line &
+         T.Assert (not Success, "Succeeded: " & Cmd_Line &
                  " (expected failure)" & LF & To_String (Buffer));
       end if;
    end Spawn_Assert;

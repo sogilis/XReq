@@ -1,8 +1,5 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AUnit.Assertions;
-
-use AUnit.Assertions;
 
 package body Test_Suite.Generator is
 
@@ -22,10 +19,9 @@ package body Test_Suite.Generator is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
    begin
 
-      Assert (True, "Missing test for AdaSpec.Generator");
+      T.Assert (True, "Missing test for AdaSpec.Generator");
 
    end Run;
 

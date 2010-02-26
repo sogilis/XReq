@@ -2,14 +2,12 @@
 
 with Ada.Strings.Unbounded;
 with Ada.Directories;
-with AUnit.Assertions;
 with Util.IO;
 with AdaSpec.Job;
 with AdaSpec.Generator;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
-use AUnit.Assertions;
 use Util.IO;
 use AdaSpec.Job;
 use AdaSpec.Generator;
@@ -32,7 +30,6 @@ package body Test_Suite.Generator.Ada is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
       Env     : Job_Environment;
       Job     : Job_Type;
       Gen     : Generator_Ptr;
@@ -60,9 +57,9 @@ package body Test_Suite.Generator.Ada is
       Spawn ("gnatmake", Flags & " simplest.adb",
              Output, Success, Result, "tests/features/tests");
 
-      Assert (Success, "gnatmake did not succeed" & ASCII.LF &
+      T.Assert (Success, "gnatmake did not succeed" & ASCII.LF &
               To_String (Output));
-      Assert (Result = 0, "gnatmake returned with error" & Result'Img &
+      T.Assert (Result = 0, "gnatmake returned with error" & Result'Img &
               ASCII.LF & To_String (Output));
 
    end Run;

@@ -1,9 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AUnit.Assertions;
 with AdaSpec.Stanzas;
 
-use AUnit.Assertions;
 use AdaSpec.Stanzas;
 
 package body Test_Suite.Stanzas is
@@ -24,16 +22,15 @@ package body Test_Suite.Stanzas is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
    begin
 
-      Assert (To_String (Stanza_Given ("A")) = "Given A",
+      T.Assert (To_String (Stanza_Given ("A")) = "Given A",
               "Wrong stanza Given A");
 
-      Assert (To_String (Stanza_When  ("B")) = "When B",
+      T.Assert (To_String (Stanza_When  ("B")) = "When B",
               "Wrong stanza When B");
 
-      Assert (To_String (Stanza_Then  ("C")) = "Then C",
+      T.Assert (To_String (Stanza_Then  ("C")) = "Then C",
               "Wrong stanza Then C");
 
    end Run;

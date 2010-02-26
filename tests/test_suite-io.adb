@@ -2,11 +2,9 @@
 
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
-with AUnit.Assertions;
 with Util.IO;
 
 use Ada.Strings.Unbounded;
-use AUnit.Assertions;
 use Util.IO;
 
 package body Test_Suite.IO is
@@ -30,7 +28,6 @@ package body Test_Suite.IO is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
       use Ada.Text_IO;
       File_Name : constant String := "tests/test_data/file1.txt";
       CRLF      : constant String := "" & ASCII.LF;
@@ -43,36 +40,36 @@ package body Test_Suite.IO is
 
       Util.IO.BufferSize := 5;
 
-      Assert (Read_Whole_File (File_Name, CRLF) = File_Cnt,
+      T.Assert (Read_Whole_File (File_Name, CRLF) = File_Cnt,
               "Content of the file " & File_Name &
               " incorrect (Read_Whole_File).");
 
       Open (File, In_File, File_Name);
 
-      Assert (not End_Of_File (File),
+      T.Assert (not End_Of_File (File),
               "Missing 1st line of " & File_Name);
 
-      Assert (To_String (Get_Whole_Line (File)) = Line_1,
+      T.Assert (To_String (Get_Whole_Line (File)) = Line_1,
               "First line of " & File_Name & " incorrect (Get_Whole_Line)");
 
-      Assert (not End_Of_File (File),
+      T.Assert (not End_Of_File (File),
               "Missing 2nd line of " & File_Name);
 
       declare
          s : constant String := Get_Whole_Line (File);
       begin
-         Assert (s = Line_2,
+         T.Assert (s = Line_2,
                  "Second line of " & File_Name &
                  " incorrect (Get_Whole_Line)");
       end;
 
-      Assert (End_Of_File (File),
+      T.Assert (End_Of_File (File),
               "No 3rd line expected in " & File_Name);
 
       declare
          procedure P;
          procedure P is begin
-            Assert (To_String (Get_Whole_Line (File)) = Null_Unbounded_String,
+            T.Assert (To_String (Get_Whole_Line (File)) = Null_Unbounded_String,
                   "Get_Line shouldn't return a string when end of file");
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
@@ -94,36 +91,35 @@ package body Test_Suite.IO is
    end Name;
 
    procedure Run (T : in out Test_Spawn) is
-      pragma Unreferenced (T);
       Output  : Unbounded_String;
       Success : Boolean;
       Result  : Integer;
    begin
 
       Spawn ("true", "", Output, Success, Result);
-      Assert (Success, "Failure running `true`");
-      Assert (Result = 0, "`true` returned error status"& Result'Img);
+      T.Assert (Success, "Failure running `true`");
+      T.Assert (Result = 0, "`true` returned error status"& Result'Img);
 
       Spawn ("false", "", Output, Success, Result);
-      Assert (Success, "Failure running `false`");
-      Assert (Result = 1, "`false` returned error status"& Result'Img);
+      T.Assert (Success, "Failure running `false`");
+      T.Assert (Result = 1, "`false` returned error status"& Result'Img);
 
       Output := Null_Unbounded_String;
       Spawn ("pwd", "", Output, Success, Result, "/tmp");
 
-      Assert (Success, "Failure running `pwd`");
-      Assert (Result = 0, "`pwd` returned error status" & Result'Img);
-      Assert (To_String (Output) = "/tmp" & ASCII.LF,
+      T.Assert (Success, "Failure running `pwd`");
+      T.Assert (Result = 0, "`pwd` returned error status" & Result'Img);
+      T.Assert (To_String (Output) = "/tmp" & ASCII.LF,
               "Command output for `pwd` should be ""/tmp\n"" " &
               "instead of """ & To_String (Output) & """");
 
       Output := Null_Unbounded_String;
       Spawn ("printf", "%s-%s a b", Output, Success, Result);
 
-      Assert (Success, "Failure running `printf %s-%s a b`");
-      Assert (Result = 0,
+      T.Assert (Success, "Failure running `printf %s-%s a b`");
+      T.Assert (Result = 0,
               "`printf %s-%s a b` returned error status"& Result'Img);
-      Assert (To_String (Output) = "a-b",
+      T.Assert (To_String (Output) = "a-b",
               "Command output for `printf %s-%s a b` should be ""a-b"" " &
               "instead of """ & To_String (Output) & """");
 
@@ -138,7 +134,6 @@ package body Test_Suite.IO is
    end Name;
 
    procedure Run (T : in out Test_Char_IO) is
-      pragma Unreferenced (T);
       use Char_IO;
       File_Name : constant String := "tests/test_data/file1.txt";
       Content   : constant String
@@ -151,7 +146,7 @@ package body Test_Suite.IO is
       Buffer := Null_Unbounded_String;
       Read_Whole_File (File, Buffer);
 
-      Assert (To_String (Buffer) = Content,
+      T.Assert (To_String (Buffer) = Content,
               "File content incorrect. Found:" & ASCII.LF &
               "<<<" & To_String (Buffer) & ">>>" & ASCII.LF &
               "Instead of:" & ASCII.LF &
@@ -161,7 +156,7 @@ package body Test_Suite.IO is
       Read_Whole_File (File, Buffer);
       Close (File);
 
-      Assert (To_String (Buffer) = Content,
+      T.Assert (To_String (Buffer) = Content,
               "File content incorrect the second time. Found:" & ASCII.LF &
               "<<<" & To_String (Buffer) & ">>>" & ASCII.LF &
               "Instead of:" & ASCII.LF &
@@ -173,7 +168,7 @@ package body Test_Suite.IO is
       Read_Whole_File (File, Buffer);
       Close (File);
 
-      Assert (To_String (Buffer) = Content,
+      T.Assert (To_String (Buffer) = Content,
               "File content incorrect after write. Found:" & ASCII.LF &
               "<<<" & To_String (Buffer) & ">>>" & ASCII.LF &
               "Instead of:" & ASCII.LF &
@@ -190,7 +185,6 @@ package body Test_Suite.IO is
    end Name;
 
    procedure Run (T : in out Test_Get_Set) is
-      pragma Unreferenced (T);
       use Char_IO;
       File_Name : constant String := Temp_Name;
       Content   : constant String := "ABC" & ASCII.CR & "DEF" & ASCII.LF &
@@ -203,7 +197,7 @@ package body Test_Suite.IO is
       declare
          S : constant String := Get_File (File_Name);
       begin
-         Assert (S = Content,
+         T.Assert (S = Content,
                  "Set_File + Get_File doesn't keep the data intact");
       end;
 
@@ -212,7 +206,7 @@ package body Test_Suite.IO is
       declare
          S : constant String := Get_File (File_Name);
       begin
-         Assert (S = Content & Content2,
+         T.Assert (S = Content & Content2,
                  "Append_File not OK. Found:" & ASCII.LF &
               "<<<" & S & ">>>" & ASCII.LF &
               "Instead of:" & ASCII.LF &

@@ -7,7 +7,7 @@
 --                                 B o d y                                  --
 --                                                                          --
 --                                                                          --
---                       Copyright (C) 2000-2008, AdaCore                   --
+--                       Copyright (C) 2000-2009, AdaCore                   --
 --                                                                          --
 -- GNAT is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,47 +24,86 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Text_IO;        use Ada.Text_IO;
+with Ada.Unchecked_Conversion;
 with AUnit.Time_Measure; use AUnit.Time_Measure;
 
 --  Very simple reporter to console
 package body AUnit.Reporter.XML2 is
 
-   procedure Put_Line (S : in String) is
-   begin
-      Append (String_Result, S & CRLF);
-   end Put_Line;
+   package Integer_IO is new Ada.Text_IO.Integer_IO (Integer);
+   use     Integer_IO;
 
-   procedure Put (S : in String) is
-   begin
-      Append (String_Result, S);
-   end Put;
-
-   procedure Put (I : in Integer) is
-      S : constant String := Integer'Image (I);
-   begin
-      if S (S'First) = ' ' then
-         Append (String_Result, S (S'First + 1 .. S'Last));
-      else
-         Append (String_Result, S);
-      end if;
-   end Put;
-
-   procedure New_Line is
-   begin
-      Append (String_Result, CRLF);
-   end New_Line;
-
-   procedure Dump_Result_List (L : in Result_Lists.List);
+   procedure Dump_Result_List (L : Result_Lists.List);
    --  List failed assertions
 
-   procedure Report_Test (Test : in Test_Result);
+   --  procedure Put_Measure is new Gen_Put_Measure;
+   procedure Put_Measure (Measure : AUnit_Duration);
+   --  Output elapsed time
+
+   procedure Put_Measure (Measure : AUnit_Duration) is
+      function Conv is new Ada.Unchecked_Conversion (AUnit_Duration, Duration);
+      H, M, S  : Integer := 0;
+      T        : Duration := Conv (Measure);
+      Force    : Boolean;
+   begin
+      --  Calculate the number of hours, minutes and seconds
+      while T >= 3600.0 loop
+         H := H + 1;
+         T := T - 3600.0;
+      end loop;
+
+      while T >= 60.0 loop
+         M := M + 1;
+         T := T - 60.0;
+      end loop;
+
+      while T >= 1.0 loop
+         S := S + 1;
+         T := T - 1.0;
+      end loop;
+
+      --  Now display the result
+      Force := False;
+
+      if H > 0 then
+         Put (H);
+         Put ("h");
+         Force := True;
+      end if;
+
+      if M > 0 or else Force then
+         if not Force then
+            Put (M);
+         else
+            --  In case some output is already done, then we force a 2 digits
+            --  output so that the output is normalized.
+            Put (M, 2);
+         end if;
+
+         Put ("min. ");
+         Force := True;
+      end if;
+
+      if not Force then
+         Put (S);
+      else
+         Put (S, 2);
+      end if;
+
+      Put (".");
+      Put (Integer (T * 1_000_000.0), 6);
+      Put (" sec.");
+   end Put_Measure;
+
+   procedure Report_Test (Test : Test_Result);
    --  Report a single assertion failure or unexpected exception
 
    ----------------------
    -- Dump_Result_List --
    ----------------------
 
-   procedure Dump_Result_List (L : in Result_Lists.List) is
+   procedure Dump_Result_List (L : Result_Lists.List) is
 
       use Result_Lists;
 
@@ -85,12 +124,11 @@ package body AUnit.Reporter.XML2 is
    -- Report --
    ------------
 
-   procedure Report (Engine : in XML_Reporter;
-                     R      : in out Result)
+   procedure Report (Engine : XML_Reporter;
+                     R      : in out Result'Class)
    is
       pragma Unreferenced (Engine);
       T   : AUnit_Duration;
-      procedure Put_Measure is new Gen_Put_Measure;
    begin
       Put_Line ("<?xml version='1.0' encoding='utf-8' ?>");
       Put      ("<TestRun");
@@ -152,9 +190,9 @@ package body AUnit.Reporter.XML2 is
    -- Report_Error --
    ------------------
 
-   procedure Report_Test (Test : in Test_Result) is
-      Error     : Test_Failure_Access;
+   procedure Report_Test (Test : Test_Result) is
       Is_Assert : Boolean;
+      T : AUnit_Duration;
    begin
       Put_Line ("    <Test>");
       Put      ("      <Name>");
@@ -170,10 +208,8 @@ package body AUnit.Reporter.XML2 is
       if Test.Failure /= null or else Test.Error /= null then
          if Test.Failure /= null then
             Is_Assert := True;
-            Error := Test.Failure;
          else
             Is_Assert := False;
-            Error := Test.Error;
          end if;
 
          Put      ("      <FailureType>");
@@ -186,21 +222,54 @@ package body AUnit.Reporter.XML2 is
 
          Put_Line ("</FailureType>");
          Put      ("      <Message>");
-         Put      (Error.Message.all);
+         if Is_Assert then
+            Put   (Test.Failure.Message.all);
+         else
+            Put   (Test.Error.Exception_Name.all);
+         end if;
          Put_Line ("</Message>");
 
-         if Error.Source_Name /= null then
+         if Is_Assert then
             Put_Line ("      <Location>");
             Put      ("        <File>");
-            Put      (Error.Source_Name.all);
+            Put      (Test.Failure.Source_Name.all);
             Put_Line ("</File>");
             Put      ("        <Line>");
-            Put      (Error.Line);
+            Put      (Test.Failure.Line);
             Put_Line ("</Line>");
             Put_Line ("      </Location>");
+
+         else
+            Put_Line ("      <Exception>");
+            Put      ("      <Message>");
+            Put      (Test.Error.Exception_Name.all);
+            Put_Line ("</Message>");
+
+            if Test.Error.Exception_Message /= null then
+               Put      ("      <Information>");
+               Put      (Test.Error.Exception_Message.all);
+               Put_Line ("</Information>");
+            end if;
+
+            if Test.Error.Traceback /= null then
+               Put      ("      <Traceback>");
+               Put      (Test.Error.Traceback.all);
+               Put_Line ("</Traceback>");
+            end if;
+
+            Put_Line ("      </Exception>");
          end if;
       end if;
 
+      if Test.Elapsed /= Time_Measure.Null_Time then
+         T := Get_Measure (Test.Elapsed);
+
+         Put (" elapsed='");
+         Put_Measure (T);
+         Put_Line ("'>");
+      else
+         Put_Line (">");
+      end if;
       Put_Line ("    </Test>");
    end Report_Test;
 

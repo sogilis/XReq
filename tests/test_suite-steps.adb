@@ -2,13 +2,11 @@
 
 with Ada.Strings.Unbounded;
 with Ada.Containers;
-with AUnit.Assertions;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
-use AUnit.Assertions;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
 
@@ -30,7 +28,6 @@ package body Test_Suite.Steps is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
       use Match_Vectors;
       Steps   : Steps_Type;
       Dir     : constant String := "tests/features/step_definitions";
@@ -44,45 +41,45 @@ package body Test_Suite.Steps is
 
       Load (Steps, Dir);
 
-      Assert (Contains (Steps, Stanza_Given ("this step works")),
+      T.Assert (Contains (Steps, Stanza_Given ("this step works")),
               Dir & " should contains `Given this step works'");
 
-      Assert (Contains (Steps, Stanza_When ("this step works too")),
+      T.Assert (Contains (Steps, Stanza_When ("this step works too")),
               Dir & " should contains `When this step works too'");
 
-      Assert (Find (Steps, Stanza_When ("this step works too")) =
+      T.Assert (Find (Steps, Stanza_When ("this step works too")) =
               "Sample1.This_Step_Works_Too",
               "`When this step works too' and link " &
               "to procedure Sample1.This_Step_Works_Too");
 
-      Assert (not Contains (Steps, Stanza_Then ("this step doesn't works")),
+      T.Assert (not Contains (Steps, Stanza_Then ("this step doesn't works")),
               Dir & " should not contains `Then this step doesn't works'");
 
       Find (Steps, Stanza_When ("I match nothing"), Proc_N, Match_V, Found);
-      Assert (not Found, "Found");
+      T.Assert (not Found, "Found");
 
       Find (Steps, Stanza, Proc_N, Match_V, Found);
 
-      Assert (Found, "Not found");
-      Assert (To_String (Proc_N) = "Sample2.When_I_Match",
+      T.Assert (Found, "Not found");
+      T.Assert (To_String (Proc_N) = "Sample2.When_I_Match",
               "Find should find Sample2.When_I_Match");
-      Assert (Length (Match_V) = 1,
+      T.Assert (Length (Match_V) = 1,
               "Find should get two captures");
 
 --       Loc := Element (Match_V, 0);
---       Assert (Loc.First = StanzaS'First,
+--       T.Assert (Loc.First = StanzaS'First,
 --               "Find: match 0 should start at" & StanzaS'First'Img &
 --               " instead of" & Loc.First'Img);
---       Assert (Loc.Last = StanzaS'Last,
+--       T.Assert (Loc.Last = StanzaS'Last,
 --               "Find: match 0 should end at" & StanzaS'Last'Img &
 --               " instead of" & Loc.Last'Img);
 --       Loc := Element (Match_V, 1);
 
       Loc := Element (Match_V, 0);
-      Assert (Loc.First = 10,
+      T.Assert (Loc.First = 10,
               "Find: match 1 should start at 10" &
               " instead of" & Loc.First'Img);
-      Assert (Loc.Last = 12,
+      T.Assert (Loc.Last = 12,
               "Find: match 1 should end at 12" &
               " instead of" & Loc.Last'Img);
 

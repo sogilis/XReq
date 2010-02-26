@@ -1,11 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
-with AUnit.Assertions;
 with AdaSpec.Job;
 
 use Ada.Strings.Unbounded;
-use AUnit.Assertions;
 use AdaSpec.Job;
 
 package body Test_Suite.Job is
@@ -29,7 +27,6 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Describe) is
-      pragma Unreferenced (T);
       CRLF : constant String := ASCII.CR & ASCII.LF;
       Job  : Job_Type;
       Env  : Job_Environment;
@@ -40,7 +37,7 @@ package body Test_Suite.Job is
    begin
       Make (Env, "S", "O");
       Make (Job, "F");
-      Assert (Describe (Job, Env) = Expected_Result, "Incorrect description");
+      T.Assert (Describe (Job, Env) = Expected_Result, "Incorrect description");
    end Run;
 
 
@@ -53,12 +50,11 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Fill_Missing) is
-      pragma Unreferenced (T);
       Env  : Job_Environment;
    begin
       Fill_Missing (Env, "A/B/spec.feature");
-      Assert (Env.Step_Dir = "A/B/step_definitions", "Incorrect step dir");
-      Assert (Env.Out_Dir  = "A/B/tests", "Incorrect out dir");
+      T.Assert (Env.Step_Dir = "A/B/step_definitions", "Incorrect step dir");
+      T.Assert (Env.Out_Dir  = "A/B/tests", "Incorrect out dir");
    end Run;
 
    --  Job_Environment  -------------------------------------------------------
@@ -70,22 +66,21 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Job_Environment) is
-      pragma Unreferenced (T);
       Env  : Job_Environment;
    begin
 
-      Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       Make (Env, "steps", "out");
 
-      Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
-      Assert (Env.Step_Dir = "steps", "Invalid step dir");
-      Assert (Env.Out_Dir = "out", "Invalid out dir");
+      T.Assert (Env.Step_Dir = "steps", "Invalid step dir");
+      T.Assert (Env.Out_Dir = "out", "Invalid out dir");
 
       Make (Env, "tests/features/step_definitions");
 
-      Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       declare
          procedure P;
@@ -98,11 +93,11 @@ package body Test_Suite.Job is
                                   "in call to Load (1)");
       end;
 
-      Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       Make (Env, Out_Dir => "tests/features/tests");
 
-      Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       declare
          procedure P;
@@ -115,12 +110,12 @@ package body Test_Suite.Job is
                                   "in call to Load (2)");
       end;
 
-      Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       Make (Env, "tests/features/step_definitions", "tests/features/tests");
       Load (Env);
 
-      Assert (Env.Loaded, "Env should be loaded");
+      T.Assert (Env.Loaded, "Env should be loaded");
 
    end Run;
 
@@ -133,7 +128,6 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Run) is
-      pragma Unreferenced (T);
       Env  : Job_Environment;
       Job  : Job_Type;
    begin
@@ -153,10 +147,10 @@ package body Test_Suite.Job is
 
       Load (Env);
 
-      Assert (Step_Dir (Env) = "tests/features/step_definitions",
+      T.Assert (Step_Dir (Env) = "tests/features/step_definitions",
               "incorrect step dir");
 
-      Assert (Out_Dir (Env) = "tests/features/tests",
+      T.Assert (Out_Dir (Env) = "tests/features/tests",
               "incorrect out dir");
 
       Run (Job, Env);

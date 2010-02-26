@@ -7,7 +7,7 @@
 --                                 S p e c                                  --
 --                                                                          --
 --                                                                          --
---                       Copyright (C) 2000-2008, AdaCore                   --
+--                       Copyright (C) 2000-2010, AdaCore                   --
 --                                                                          --
 -- GNAT is free software;  you can  redistribute it  and/or modify it under --
 -- terms of the  GNU General Public License as published  by the Free Soft- --
@@ -24,28 +24,37 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
-with AUnit.Reporter;
-
-use Ada.Strings.Unbounded;
-use AUnit.Reporter;
-
 --  Very simple reporter to console
 package AUnit.Reporter.Text2 is
 
-   String_Result : aliased Unbounded_String;
+   type Text_Reporter is new Reporter with private;
 
-   type Text_Reporter is new Reporter with null record;
+   procedure Set_Use_ANSI_Colors
+     (Engine : in out Text_Reporter;
+      Value  : Boolean);
+   --  Setting this value will enable colors output on an ANSI compatible
+   --  terminal.
+   --  By default, no color is used.
 
-   overriding procedure Report (Engine : in Text_Reporter;
-                                R      : in out Result);
+   procedure Report (Engine : Text_Reporter;
+                     R      : in out Result'Class);
+
+   procedure Report_OK_Tests (Engine : Text_Reporter;
+                              R      : in out Result'Class);
+   procedure Report_Fail_Tests (Engine : Text_Reporter;
+                                R      : in out Result'Class);
+   procedure Report_Error_Tests (Engine : Text_Reporter;
+                                 R      : in out Result'Class);
+   --  These subprograms implement the various parts of the Report. You
+   --  can therefore chose in which order to report the various categories,
+   --  and whether or not to report them.
+   --  After calling any of these, the list of results has been modified in
+   --  R, so you should get the counts first.
 
 private
 
-   CRLF : constant String := ASCII.CR & ASCII.LF;
-   procedure Put_Line (S : in String);
-   procedure Put (S : in String);
-   procedure Put (I : in Integer);
-   procedure New_Line;
+   type Text_Reporter is new Reporter with record
+      Use_ANSI : Boolean := False;
+   end record;
 
 end AUnit.Reporter.Text2;

@@ -39,7 +39,6 @@ package body Test_Suite.Features is
 
    procedure Run (T : in out Test_1) is
       use Text_IO;
-      pragma Unreferenced (T);
       Feature  : Feature_File_Type;
       File     : constant String := "tests/features/simplest.feature";
       Scenario : Scenario_Type;
@@ -59,7 +58,7 @@ package body Test_Suite.Features is
 
    begin
 
-      Assert (not Parsed (Feature),
+      T.Assert (not Parsed (Feature),
               "Feature has been parsed without invoking Make");
 
       declare
@@ -72,15 +71,16 @@ package body Test_Suite.Features is
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
       begin
-         Assert_Exception_Raised ("1:To_String should raise Unparsed_Feature");
+         T.Assert_Exception (P'Access,
+            "1:To_String should raise Unparsed_Feature");
       end;
 
       Make (Feature, File);
 
-      Assert (File_Name (Feature) = File,
+      T.Assert (File_Name (Feature) = File,
               "Feature filename (" & File_Name (Feature) & ") is incorrect");
 
-      Assert (not Parsed (Feature),
+      T.Assert (not Parsed (Feature),
               "Feature has been parsed without invoking Parse");
 
       declare
@@ -93,69 +93,64 @@ package body Test_Suite.Features is
          end P;
          procedure Assert_Exception_Raised is new Assert_Exception (P);
       begin
-         Assert_Exception_Raised ("2:To_String should raise Unparsed_Feature");
+         Assert_Exception_Raised (T,
+            "2:To_String should raise Unparsed_Feature");
       end;
 
       Parse (Feature);
 
-      Assert (Parsed (Feature),
+      T.Assert (Parsed (Feature),
               "Feature has not been parsed after invoking Parse");
 
       Put_Line (To_String (Feature));
 
-      Assert (Feature.Name = "Sample",
+      T.Assert (Feature.Name = "Sample",
               "Feature name incorrect");
 
-      Assert (Integer (Length (Feature.Description)) = 0,
+      T.Assert (Integer (Length (Feature.Description)) = 0,
               "Feature description while there is none");
 
-      Assert (To_String (Feature.Background.Name) = "",
+      T.Assert (To_String (Feature.Background.Name) = "",
               "Background name while there is none");
 
-      Assert (Integer (Length (Feature.Background.Stanzas)) /= 0,
+      T.Assert (Integer (Length (Feature.Background.Stanzas)) /= 0,
               "No background stanzas");
 
-      Assert (Integer (Length (Feature.Background.Stanzas)) = 1,
+      T.Assert (Integer (Length (Feature.Background.Stanzas)) = 1,
               "More than one line of background");
 
       Stanza := Feature.Background.Stanzas.Element (0);
 
-      Assert (Stanza.Prefix = Prefix_Given,
+      T.Assert (Stanza.Prefix = Prefix_Given,
               "The first step of the background is not a Given");
 
-      Assert (To_String (Stanza.Stanza) = "this step works",
+      T.Assert (To_String (Stanza.Stanza) = "this step works",
               "Text of the first given of background incorrect");
 
-      Assert (Integer (Length (Feature.Scenarios)) /= 0,
+      T.Assert (Integer (Length (Feature.Scenarios)) /= 0,
               "No scenario");
 
-      Assert (Integer (Length (Feature.Scenarios)) = 1,
+      T.Assert (Integer (Length (Feature.Scenarios)) = 1,
               "More than one scenario");
 
       Scenario := Feature.Scenarios.Element (0);
 
-      Assert (To_String (Scenario.Name) = "Run a good step",
+      T.Assert (To_String (Scenario.Name) = "Run a good step",
               "Name of the scenario incorrect");
 
-      Assert (Integer (Length (Scenario.Stanzas)) = 1,
+      T.Assert (Integer (Length (Scenario.Stanzas)) = 1,
               "No or more than one stanza in the scenario");
 
       Stanza := Scenario.Stanzas.Element (0);
 
-      Assert (Stanza.Prefix = Prefix_Given,
+      T.Assert (Stanza.Prefix = Prefix_Given,
               "The first step of the scenario is not a Given");
 
-      Assert (To_String (Stanza.Stanza) = "this step works",
+      T.Assert (To_String (Stanza.Stanza) = "this step works",
               "Text of the first given of scenario incorrect");
 
-      Assert (To_String (Feature) = Canonical_Feature_Text,
+      T.Assert (To_String (Feature) = Canonical_Feature_Text,
               "To_String do not match the canonical text");
-
-   exception
-      when Error : others =>
-         Put_Line (Exception_Information (Error));
-         Reraise_Occurrence (Error);
-
    end Run;
 
    --  Test_2  ----------------------------------------------------------------
@@ -167,7 +162,6 @@ package body Test_Suite.Features is
    end Name;
 
    procedure Run (T : in out Test_2) is
-      pragma Unreferenced (T);
       use Text_IO;
 
       Feature1 : Feature_Type := Null_Feature;
@@ -179,8 +173,8 @@ package body Test_Suite.Features is
 
       Make (Feature1, "Sample2");
 
-      Assert (Name   (Feature1) = "Sample2", "Incorrect feature name");
-      Assert (Parsed (Feature1), "Feature_Type is always parsed");
+      T.Assert (Name   (Feature1) = "Sample2", "Incorrect feature name");
+      T.Assert (Parsed (Feature1), "Feature_Type is always parsed");
 
       Make   (Scenario, "Background");
       Append (Scenario, Stanza_Given ("this step works"));
@@ -206,10 +200,10 @@ package body Test_Suite.Features is
       Put_Line ("Feature2:");
       Put_Line (To_String (Feature2));
 
-      Assert (To_String (Feature1) = To_String (Feature_Type (Feature2)),
+      T.Assert (To_String (Feature1) = To_String (Feature_Type (Feature2)),
               "The two features text representation must be the same");
 
-      Assert (Same (Feature1, Feature2), "The two features must be the same");
+      T.Assert (Same (Feature1, Feature2), "The two features must be the same");
 
    exception
       when Error : others =>
@@ -228,7 +222,6 @@ package body Test_Suite.Features is
    end Name;
 
    procedure Run (T : in out Test_3) is
-      pragma Unreferenced (T);
       use Text_IO;
    begin
 

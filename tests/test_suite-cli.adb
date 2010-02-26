@@ -2,8 +2,6 @@
 
 with AdaSpec.CLI;
 
---  with AUnit.Assertions; use AUnit.Assertions;
-
 package body Test_Suite.CLI is
 
    procedure Add_Tests (

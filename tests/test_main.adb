@@ -1,7 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
-with Ada.Strings.Unbounded;
 with Ada.Command_Line;
 with GNAT.Command_Line;
 with AUnit.Run;
@@ -12,7 +11,6 @@ with Test_Suite;
 with Coverage_Suite;
 
 use Ada.Text_IO;
-use Ada.Strings.Unbounded;
 use Ada.Command_Line;
 use GNAT.Command_Line;
 
@@ -36,10 +34,6 @@ procedure Test_Main is
    Reporter_Text   : aliased AUnit.Reporter.Text2.Text_Reporter;
    Reporter        : access  AUnit.Reporter.Reporter'Class :=
                      Reporter_Text'Access;
-
-   Reporter_String : access Unbounded_String :=
-                     AUnit.Reporter.Text2.String_Result'Access;
-
 
    --  CLI  -------------------------------------------------------------------
 
@@ -88,11 +82,9 @@ begin
 
       elsif Full_Switch = "xml" then
          Reporter := Reporter_XML'Access;
-         Reporter_String := AUnit.Reporter.XML2.String_Result'Access;
 
       elsif Full_Switch = "text" then
          Reporter := Reporter_Text'Access;
-         Reporter_String := AUnit.Reporter.Text2.String_Result'Access;
 
       elsif Full_Switch = "o" then
          Create (File, Out_File, Parameter);
@@ -104,6 +96,13 @@ begin
 
       --  AUnit
 
+      if Is_Open (File) then
+         Set_Output (File);
+         Set_Error  (File);
+      else
+         Reporter_Text.Set_Use_ANSI_Colors (True);
+      end if;
+
       case Choosen_Suite is
          when Test =>
             Runner_Test (Reporter.all);
@@ -114,12 +113,6 @@ begin
 --                       Suite'Image (Choosen_Suite) & " not implemented");
 --             Set_Exit_Status (Failure);
       end case;
-
-      if Is_Open (File) then
-         Put (File, To_String (Reporter_String.all));
-      else
-         Put (To_String (Reporter_String.all));
-      end if;
 
    end if;
 

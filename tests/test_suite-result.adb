@@ -2,13 +2,11 @@
 
 with Ada.Containers;
 with Ada.Strings.Unbounded;
-with AUnit.Assertions;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 with AdaSpec.Result;
 
-use AUnit.Assertions;
 use Ada.Strings.Unbounded;
 use AdaSpec.Features;
 use AdaSpec.Steps;
@@ -36,13 +34,12 @@ package body Test_Suite.Result is
    end Name;
 
    procedure Run (T : in out Test_Result_Step_Type) is
-      pragma Unreferenced (T);
       Step : Result_Step_Type;
    begin
 
       Make (Step, "Proc", Stanza_Given (""));
 
-      Assert (Procedure_Name (Step) = "Proc",
+      T.Assert (Procedure_Name (Step) = "Proc",
               "Wrong procedure name");
 
    end Run;
@@ -57,7 +54,6 @@ package body Test_Suite.Result is
    end Name;
 
    procedure Run (T : in out Test_Result_Scenario_Type) is
-      pragma Unreferenced (T);
       use Result_Steps;
       use Ada.Containers;
       Result       : Result_Scenario_Type;
@@ -76,7 +72,7 @@ package body Test_Suite.Result is
 
       Process_Scenario (Result, Scenario, Steps, Errors);
 
-      Assert (not Errors, "Errors happened while processing scenario (1)");
+      T.Assert (not Errors, "Errors happened while processing scenario (1)");
 
       Append (Ideal_Result,
               AdaSpec.Result.Create ("Sample1.This_Step_Works",
@@ -85,28 +81,28 @@ package body Test_Suite.Result is
               AdaSpec.Result.Create ("Sample1.This_Step_Works_Too",
                                      Stanza_When  ("this step works too")));
 
-      Assert (Length (Result.Steps) = 2,
+      T.Assert (Length (Result.Steps) = 2,
               "Wrong length of result, " & Length (Result.Steps)'Img &
               " instead of 2");
 
       A := Element (Result.Steps, 0);
       B := Element (Ideal_Result, 0);
-      Assert (A = B,
+      T.Assert (A = B,
               "Wrong Step #0: " & To_String (A) & " /= " & To_String (B));
 
       A := Element (Result.Steps, 1);
       B := Element (Ideal_Result, 1);
-      Assert (A = B,
+      T.Assert (A = B,
               "Wrong Step #1: " & To_String (A) & " /= " & To_String (B));
 
-      Assert (Result.Steps = Ideal_Result,
+      T.Assert (Result.Steps = Ideal_Result,
               "Wrong scenario result (1)");
 
       Append (Scenario, Stanza_When  ("this step doesn't work"));
       Process_Scenario (Result, Scenario, Steps, Errors);
-      Assert (Errors, "No error while processing scenario (2)");
+      T.Assert (Errors, "No error while processing scenario (2)");
 
-      Assert (Result.Steps = Ideal_Result,
+      T.Assert (Result.Steps = Ideal_Result,
               "Wrong scenario result (2)");
 
       End_Test;
@@ -122,7 +118,6 @@ package body Test_Suite.Result is
    end Name;
 
    procedure Run (T : in out Test_Result_Feature_Type) is
-      pragma Unreferenced (T);
       use Result_Steps;
       use Result_Scenarios;
       CRLF     : constant String := ASCII.CR & ASCII.LF;
@@ -162,12 +157,12 @@ package body Test_Suite.Result is
 
       Parse (Feature.all);
 
-      Assert (Feature_Ptr (Feature).all.Name = "Sample",
+      T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
               "Feature name incorrect");
 
       Process_Feature (Result, Feature_Ptr (Feature), Steps);
 
-      Assert (Result.Name = "Sample",
+      T.Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");
 
       Append (R_Scen, Create ("Sample1.This_Step_Works",
@@ -177,12 +172,12 @@ package body Test_Suite.Result is
       Append (Expected, R_Scen);
       Expected.Name := To_Unbounded_String ("Sample");
 
-      Assert (Result = Expected,
+      T.Assert (Result = Expected,
               "Result not expected. Found:" & CRLF &
               To_String (Result) & "Expected:" & CRLF &
               To_String (Expected) & "---");
 
-      Assert (To_String (Result) = Exp_Str,
+      T.Assert (To_String (Result) = Exp_Str,
               "To_String value not expected:" & CRLF & To_String (Result));
 
       End_Test;
@@ -198,7 +193,6 @@ package body Test_Suite.Result is
    end Name;
 
    procedure Run (T : in out Test_To_String) is
-      pragma Unreferenced (T);
       use Result_Steps;
       use Result_Scenarios;
       use Match_Vectors;
@@ -230,7 +224,7 @@ package body Test_Suite.Result is
       Append (Feature, R_Scen);
       Feature.Name := To_Unbounded_String ("simplest feature");
 
-      Assert (To_String (Feature) = Expected,
+      T.Assert (To_String (Feature) = Expected,
               "To_String value not expected:" & CRLF & To_String (Feature));
 
       End_Test;
