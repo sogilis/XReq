@@ -1,20 +1,31 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Exceptions;
-with AdaSpecLib.Report;
-
-use  Ada.Exceptions;
-use  AdaSpecLib.Report;
 
 package AdaSpecLib.Format.Text is
 
-   procedure Put_Feature    (Feature    : in String);
-   procedure Put_Background (Background : in String);
-   procedure Put_Scenario   (Scenario   : in String);
-   procedure Put_Step       (Step       : in Step_Type;
-                             Name       : in String;
-                             Args       : in Arg_Type);
-   procedure Put_Error      (Err        : in Exception_Occurrence);
-   procedure Put_Summary    (Report     : in Report_Type);
+   type Text_Format_Type is new Format_Type with null record;
+   type Text_Format_Ptr  is access all Text_Format_Type'Class;
+
+   overriding
+   procedure Put_Feature    (Format     : in out Text_Format_Type;
+                             Feature    : in     String);
+   overriding
+   procedure Put_Background (Format     : in out Text_Format_Type;
+                             Background : in     String);
+   overriding
+   procedure Put_Scenario   (Format     : in out Text_Format_Type;
+                             Scenario   : in     String);
+   overriding
+   procedure Put_Step       (Format     : in out Text_Format_Type;
+                             Step       : in     Step_Type;
+                             Name       : in     String;
+                             Args       : in     Arg_Type;
+                             Success    : in     Status_Type);
+   overriding
+   procedure Put_Error      (Format     : in out Text_Format_Type;
+                             Err        : in     Exception_Occurrence);
+   overriding
+   procedure Put_Summary    (Format     : in out Text_Format_Type;
+                             Report     : in     Report_Type);
 
 end AdaSpecLib.Format.Text;

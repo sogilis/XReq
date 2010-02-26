@@ -57,28 +57,32 @@ package body AdaSpec.Generator.Ada is
    begin
       Gen.Ads.Put_Line ("with AdaSpecLib;");
       Gen.Ads.Put_Line ("with AdaSpecLib.Report;");
-      Gen.Adb.Put_Line ("with AdaSpecLib.Format.Text;");
+      Gen.Ads.Put_Line ("with AdaSpecLib.Format;");
       Gen.Ads.Put_Line ("use  AdaSpecLib;");
       Gen.Ads.Put_Line ("use  AdaSpecLib.Report;");
-      Gen.Adb.Put_Line ("use  AdaSpecLib.Format.Text;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib.Format;");
       Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
       Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
       Indent (Gen.Ads);
       Indent (Gen.Adb);
       Generate_Feature (Gen);
-      Gen.Ads.Put_Line ("procedure Run (Report : in out Report_Type);");
-      Gen.Adb.Put_Line ("procedure Run (Report : in out Report_Type) is");
+      Gen.Ads.Put_Line ("procedure Run (Format : in out Format_Ptr;");
+      Gen.Ads.Put_Line ("               Report : in out Report_Type);");
+      Gen.Adb.Put_Line ("procedure Run (Format : in out Format_Ptr;");
+      Gen.Adb.Put_Line ("               Report : in out Report_Type) is");
       Gen.Adb.Put_Line ("begin");
       Indent (Gen.Ads);
       Indent (Gen.Adb);
-      Gen.Adb.Put_Line ("Put_Feature (" &
+      Gen.Adb.Put_Line ("Format.Put_Feature (" &
                         Ada_String (To_String (Gen.Feature.Name)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          if First then
-            Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) & " (Report, True);");
+            Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
+                              " (Format, Report, True);");
             First := False;
          else
-            Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) & " (Report, False);");
+            Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
+                              " (Format, Report, False);");
          end if;
       end loop;
       Gen.Ads.UnIndent;
@@ -135,7 +139,8 @@ package body AdaSpec.Generator.Ada is
       S.Adb.Indent;
       S.Adb.Put_Line ("Report.Count_Steps_Skipped := " &
                       "Report.Count_Steps_Skipped + 1;");
-      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza, Args);");
+      S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Args, " &
+                      "Status_Skipped);");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("else");
       S.Adb.Indent;
@@ -175,7 +180,8 @@ package body AdaSpec.Generator.Ada is
          S.Adb.Put_Line ("if First then");
          S.Adb.Indent;
       end if;
-      S.Adb.Put_Line ("Put_Step (Prefix, Stanza, Args);");
+      S.Adb.Put_Line ("Format.Put_Step (Prefix, Stanza, Args, " &
+                      "Status_Passed);");
       if Background then
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
@@ -192,8 +198,9 @@ package body AdaSpec.Generator.Ada is
       S.Adb.Put_Line ("Report.Count_Steps_Failed := " &
                       "Report.Count_Steps_Failed + 1;");
       S.Adb.Put_Line ("Fail := True;");
-      S.Adb.Put_Line ("Put_Step  (Prefix, Stanza, Args);");
-      S.Adb.Put_Line ("Put_Error (Err);");
+      S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Args, " &
+                      "Status_Failed);");
+      S.Adb.Put_Line ("Format.Put_Error (Err);");
       S.Adb.UnIndent;
       --  End block
       S.Adb.UnIndent;
@@ -214,8 +221,16 @@ package body AdaSpec.Generator.Ada is
       Proc : constant String := "procedure " & To_String (Name) & " ";
    begin
       --  declaration
-      S.Ads.Put_Line (Proc & "(Report : in out Report_Type;");
-      S.Adb.Put_Line (Proc & "(Report : in out Report_Type;");
+      S.Ads.Put_Line (Proc & "(Format : in out Format_Ptr;");
+      S.Adb.Put_Line (Proc & "(Format : in out Format_Ptr;");
+      S.Ads.Put_Indent;
+      S.Adb.Put_Indent;
+      S.Ads.Put (Proc'Length * " ");
+      S.Adb.Put (Proc'Length * " ");
+      S.Ads.Put             (" Report : in out Report_Type;");
+      S.Adb.Put             (" Report : in out Report_Type;");
+      S.Ads.New_Line;
+      S.Adb.New_Line;
       S.Ads.Put_Indent;
       S.Adb.Put_Indent;
       S.Ads.Put (Proc'Length * " ");
@@ -232,7 +247,7 @@ package body AdaSpec.Generator.Ada is
       Indent (S.Adb);
       --  body
       if not Background then
-         S.Adb.Put_Line (S.Fn_Backgnd & " (Report, First);");
+         S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First);");
       end if;
       if Length (Scenario.Steps) = 0 then
          S.Adb.Put_Line ("null;");
@@ -243,9 +258,9 @@ package body AdaSpec.Generator.Ada is
          end if;
          S.Adb.Put_Indent;
          if Background then
-            S.Adb.Put ("Put_Background ");
+            S.Adb.Put ("Format.Put_Background ");
          else
-            S.Adb.Put ("Put_Scenario ");
+            S.Adb.Put ("Format.Put_Scenario ");
          end if;
          S.Adb.Put ("(" & Ada_String (To_String (Scenario.Name)) & ");");
          S.Adb.New_Line;
@@ -345,23 +360,27 @@ package body AdaSpec.Generator.Ada is
       With_B.Put_Line ("with Ada.Command_Line;");
       With_B.Put_Line ("with AdaSpecLib;");
       With_B.Put_Line ("with AdaSpecLib.Report;");
+      With_B.Put_Line ("with AdaSpecLib.Format;");
       With_B.Put_Line ("with AdaSpecLib.Format.Text;");
       With_B.Put_Line ("use  AdaSpecLib;");
       With_B.Put_Line ("use  AdaSpecLib.Report;");
+      With_B.Put_Line ("use  AdaSpecLib.Format;");
       With_B.Put_Line ("use  AdaSpecLib.Format.Text;");
       Body_B.Put_Line ("procedure " & Prc_Name & " is");
       Body_B.Indent;
       Body_B.Put_Line ("Report : Report_Type;");
+      Body_B.Put_Line ("Format : Text_Format_Ptr := new Text_Format_Type;");
+      Body_B.Put_Line ("F      : Format_Ptr := Format_Ptr (Format);");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
       Body_B.Indent;
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & E.Full_Name & ";");
-         Body_B.Put_Line (E.Full_Name & ".Run (Report);");
+         Body_B.Put_Line (E.Full_Name & ".Run (F, Report);");
          Next (I);
       end loop;
-      Body_B.Put_Line ("Put_Summary (Report);");
+      Body_B.Put_Line ("F.Put_Summary (Report);");
       Body_B.Put_Line ("if not Status (Report) then");
       Body_B.Indent;
       Body_B.Put_Line ("Ada.Command_Line.Set_Exit_Status " &

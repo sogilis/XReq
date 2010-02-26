@@ -10,12 +10,18 @@ use Ada.Strings.Fixed;
 
 package body AdaSpecLib.Format.Text is
 
-   procedure Put_Feature (Feature : in String) is
+   procedure Put_Feature (Format     : in out Text_Format_Type;
+                          Feature : in String)
+   is
+      pragma Unreferenced (Format);
    begin
       Put_Line ("Feature: " & Feature);
    end Put_Feature;
 
-   procedure Put_Background (Background : in String) is
+   procedure Put_Background (Format     : in out Text_Format_Type;
+                             Background : in String)
+   is
+      pragma Unreferenced (Format);
    begin
       New_line;
       Put ("  Background:");
@@ -25,7 +31,10 @@ package body AdaSpecLib.Format.Text is
       New_line;
    end Put_Background;
 
-   procedure Put_Scenario (Scenario : in String) is
+   procedure Put_Scenario (Format     : in out Text_Format_Type;
+                           Scenario : in String)
+   is
+      pragma Unreferenced (Format);
    begin
       New_line;
       Put ("  Scenario:");
@@ -35,9 +44,13 @@ package body AdaSpecLib.Format.Text is
       New_line;
    end Put_Scenario;
 
-   procedure Put_Step       (Step       : in Step_Type;
-                             Name       : in String;
-                             Args       : in Arg_Type) is
+   procedure Put_Step       (Format     : in out Text_Format_Type;
+                             Step       : in     Step_Type;
+                             Name       : in     String;
+                             Args       : in     Arg_Type;
+                             Success    : in     Status_Type)
+   is
+      pragma Unreferenced (Format, Success);
    begin
       Put ("    ");
       case Step is
@@ -74,7 +87,10 @@ package body AdaSpecLib.Format.Text is
       end loop;
    end Put_Step;
 
-   procedure Put_Error      (Err        : in Exception_Occurrence) is
+   procedure Put_Error      (Format     : in out Text_Format_Type;
+                             Err        : in Exception_Occurrence)
+   is
+      pragma Unreferenced (Format);
 --       Info : constant String := Exception_Information (Err);
 --       Line : Positive := 1;
    begin
@@ -92,7 +108,10 @@ package body AdaSpecLib.Format.Text is
 --       end loop;
    end Put_Error;
 
-   procedure Put_Summary    (Report     : in Report_Type) is
+   procedure Put_Summary    (Format     : in out Text_Format_Type;
+                             Report     : in Report_Type)
+   is
+      pragma Unreferenced (Format);
       Count_Scenarios : Natural := Report.Count_Scenario_Failed +
                                    Report.Count_Scenario_Passed;
       Count_Steps     : Natural := Report.Count_Steps_Failed +
