@@ -110,7 +110,14 @@ package body AdaSpec.Result is
       Errors := False;
       while Has_Element (I) loop
          Stanza := Element (I);
-         Find (Steps, Stanza, Proc_Name, Matches, Found);
+         begin
+            Find (Steps, Stanza, Proc_Name, Matches, Found);
+         exception
+            when Ambiguous_Match =>
+               Put_Line ("Error: Ambiguous match for " &
+                         To_String (Stanza));
+               Errors := True;
+         end;
          if not Found then
             --  TODO: better error reporting
             Put_Line ("Error: Missing step definition for " &
