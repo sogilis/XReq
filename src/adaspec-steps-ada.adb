@@ -189,46 +189,6 @@ package body AdaSpec.Steps.Ada is
       S.Parsed := True;
    end Parse;
 
-   ----------------
-   --  Contains  --
-   ----------------
-
-   function  Contains  (S      : in Ada_Step_File_Type;
-                        Stanza : in Stanza_Type) return Boolean
-   is
-   begin
-      return Find (S, Stanza) /= "";
-   end Contains;
-
-   ------------
-   --  Find  --
-   ------------
-
-   function  Find      (S      : in     Ada_Step_File_Type;
-                        Stanza : in     Stanza_Type) return String
-   is
-      Step  : Step_Type;
-   begin
-      --  Error if not parsed
-      if not S.Parsed then
-         raise Unparsed_Step;
-      end if;
-
-      --  Look for the phrase
-      for i in S.Steps.First_Index .. S.Steps.Last_Index loop
-         Step  := S.Steps.Element (i);
-         if Step.Prefix = Stanza.Prefix and
-            Match (Step.Pattern_R.all, To_String (Stanza.Stanza))
-         then
---             Put_Line ("Found: " & To_String (Step.Proc_Name));
-            return To_String (Step.Proc_Name);
-         end if;
-      end loop;
-
-      --  No match
-      return "";
-   end Find;
-
    ------------
    --  Find  --
    ------------
@@ -243,6 +203,8 @@ package body AdaSpec.Steps.Ada is
       Step     : Step_Type;
       Matches2 : Match_Vectors.Vector;
    begin
+      Found := False;
+
       --  Error if not parsed
       if not S.Parsed then
          raise Unparsed_Step;
@@ -260,6 +222,9 @@ package body AdaSpec.Steps.Ada is
 --                          To_String (Step.Pattern_S) & "|");
                Match (Step.Pattern_R.all, To_String (Stanza.Stanza), Matched);
                if Matched (0) /= No_Match then
+                  if Found then
+                     raise Ambiguous_Match;
+                  end if;
 --                   Put_Line ("Matched (0) = " &
 --                             Slice (Stanza.Stanza,
 --                                    Matched (0).First,
@@ -277,7 +242,6 @@ package body AdaSpec.Steps.Ada is
                      end if;
                   end loop;  --  GCOV_IGNORE
                   Matches := Matches2;
-                  return;
 --                else
 --                   Put_Line ("Matched (0) = No_Match");
                end if;
@@ -293,7 +257,6 @@ package body AdaSpec.Steps.Ada is
 
       --  No match
 --       Put_Line ("AdaSpec.Steps.Ada.Find: Not found");
-      Found := False;
    end Find;
 
 

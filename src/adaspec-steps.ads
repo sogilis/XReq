@@ -12,6 +12,8 @@ use AdaSpec.Stanzas;
 
 package AdaSpec.Steps is
 
+   Ambiguous_Match : exception;
+
    type Match_Location is  --  GCOV_IGNORE
       record
          First : Natural;
@@ -43,10 +45,10 @@ package AdaSpec.Steps is
    procedure Parse     (S : in out Step_File_Type) is abstract;
 
    function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type) return Boolean is abstract;
+                        Stanza  : in  Stanza_Type) return Boolean;
 
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type) return String is abstract;
+                        Stanza  : in  Stanza_Type) return String;
    procedure Find      (S       : in  Step_File_Type;
                         Stanza  : in  Stanza_Type;
                         Proc    : out Unbounded_String;
@@ -76,7 +78,6 @@ package AdaSpec.Steps is
 
    function  Contains  (Steps     : in  Steps_Type;
                         Stanza    : in  Stanza_Type) return Boolean;
-
    function  Find      (Steps     : in  Steps_Type;
                         Stanza    : in  Stanza_Type) return String;
    procedure Find      (Steps     : in  Steps_Type;

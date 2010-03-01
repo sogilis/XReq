@@ -4,6 +4,38 @@ with AdaSpec.Steps.Ada;
 
 package body AdaSpec.Steps is
 
+   ----------------
+   --  Contains  --
+   ----------------
+
+   function  Contains  (S       : in  Step_File_Type;
+                        Stanza  : in  Stanza_Type) return Boolean
+   is
+      This : constant access constant Step_File_Type'Class := S'Access;
+   begin
+      return This.Find (Stanza) /= "";
+   end Contains;
+
+   ------------
+   --  Find  --
+   ------------
+
+   function  Find      (S       : in  Step_File_Type;
+                        Stanza  : in  Stanza_Type) return String
+   is
+      This    : constant access constant Step_File_Type'Class := S'Access;
+      Proc    : Unbounded_String;
+      Matches : Match_Vectors.Vector;
+      Found   : Boolean;
+   begin
+      This.Find (Stanza, Proc, Matches, Found);
+      if Found then
+         return To_String (Proc);
+      else
+         return "";
+      end if;
+   end Find;
+
    -----------------
    --  File_Name  --
    -----------------
@@ -53,23 +85,17 @@ package body AdaSpec.Steps is
    function  Find      (Steps     : in Steps_Type;
                         Stanza    : in Stanza_Type) return String
    is
-      use Step_Vectors;
-      I    : Step_Vectors.Cursor := First (Steps);
-      Step : Step_File_Ptr;
+      Proc    : Unbounded_String;
+      Matches : Match_Vectors.Vector;
+      Found   : Boolean;
    begin
-      while Has_Element (I) loop
-         Step := Element (I);
-         declare
-            Result : constant String := Find (Step.all, Stanza);
-         begin
-            if Result /= "" then
-               return Result;
-            end if;
-         end;
-         Next (I);
-      end loop;
-      return "";
-   end Find;
+      Find (Steps, Stanza, Proc, Matches, Found);
+      if Found then
+         return To_String (Proc);
+      else
+         return "";
+      end if;
+   end Find;  --  GCOV_IGNORE
 
    ------------
    --  Find  --
@@ -86,16 +112,19 @@ package body AdaSpec.Steps is
       Step : Step_File_Ptr;
       Found2 : Boolean := False;
    begin
+      Found := False;
       while Has_Element (I) loop
          Step := Element (I);
          Find (Step.all, Stanza, Proc, Matches, Found2);
          if Found2 then
-            Found := True;
-            return;
+            if Found then
+               raise Ambiguous_Match;
+            else
+               Found := True;
+            end if;
          end if;
          Next (I);
       end loop;
-      Found := False;
    end Find;
 
    ------------

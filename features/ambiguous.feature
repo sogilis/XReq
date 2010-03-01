@@ -22,6 +22,14 @@ Feature: ambiguous step definition error reporting
           Given this step works
 
       """
+    And a file "features/ambiguous2.feature":
+      """
+      Feature: Sample
+
+        Scenario: Run an ambiguous step
+          Given this is ambiguous
+
+      """
     And a file "features/step_definitions/steps.ads":
       """
       with AdaSpecLib;
@@ -31,6 +39,12 @@ Feature: ambiguous step definition error reporting
         --  @given ^this step works$
         procedure This_Step_Works (Args : in out Arg_Type);
 
+        --  @given ^this is ambiguous$
+        procedure Ambiguous (Args : in out Arg_Type);
+
+        --  @given ^this is( not)? ambiguous$
+        procedure Not_Ambiguous (Args : in out Arg_Type);
+
       end Steps;
       """
     And a file "features/step_definitions/steps2.ads":
@@ -39,14 +53,17 @@ Feature: ambiguous step definition error reporting
       use  AdaSpecLib;
       package Steps2 is
 
-        --  @given ^this step .*work$
+        --  @given ^this step .*works$
         procedure This_Step_Doest_Work (Args : in out Arg_Type);
 
       end Steps2;
       """
 
-  @wip
   Scenario:
     When I run adaspec features/ambiguous.feature
+    Then it should fail
+
+  Scenario:
+    When I run adaspec features/ambiguous2.feature
     Then it should fail
 
