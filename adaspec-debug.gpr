@@ -1,0 +1,15 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config.gpr";
+with "adaspeclib-debug.gpr";
+
+project AdaSpec.Debug extends "adaspec.gpr" is
+
+   for Object_Dir  use "obj/debug";
+
+   package Compiler is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
+   end Compiler;
+
+end AdaSpec.Debug;

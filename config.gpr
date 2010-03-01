@@ -5,22 +5,37 @@ abstract project Config is
 
    --  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
 
-   Ada_Default_Switches_Common := (
+   Ada_Switches := (
       "-gnat05",        --  Ada 2005
       "-gnata",         --  Assertions enabled
       "-gnatwa",        --  All warnings
       "-gnatf",         --  Full errors
       "-gnato",         --  Check numeric overflow
+      "-gnatwe",        --  Warnings as error
       "-gnaty"          --  Style checking
       );
 
-   Ada_Default_Switches_Release := Ada_Default_Switches_Common & (
-      "-gnatwe"         --  Warnings as error
+   Ada_Switches_Release := Ada_Switches & (
+      "-O2"             --  Optimization
       );
 
-   Ada_Default_Switches_Debug := Ada_Default_Switches_Common & (
-      "-gnatwe",        --  Warnings as error
+   Ada_Switches_Debug := Ada_Switches & (
       "-g"              --  Debug
       );
+
+   Ada_Switches_Coverage := Ada_Switches & (
+      "-fprofile-arcs", -- to use gcov
+      "-ftest-coverage" -- to use gcov
+      );
+
+   Ada_Switches_Linker_Coverage :=  (
+      "-fprofile-arcs"  -- to use gcov
+      );
+
+   package Builder is
+   end Builder;
+
+   package Compiler is
+   end Compiler;
 
 end Config;

@@ -1,0 +1,20 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config.gpr";
+with "adaspeclib-release.gpr";
+
+project AdaSpec.Release extends "adaspec.gpr" is
+
+   for Object_Dir  use "obj/release";
+   for Exec_Dir    use "bin";
+
+   package Builder is
+      for Executable ("main") use "adaspec.rel";
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Release;
+   end Compiler;
+
+end AdaSpec.Release;

@@ -25,10 +25,10 @@ package body Coverage_Suite is
    begin
 
       Put_Line ("The coverage test expect the .gcov files to be in the");
-      Put_Line ("subdirectory `reports' of the current directory.");
+      Put_Line ("subdirectory `coverage' of the current directory.");
 
       Start_Search (Search,
-                    Directory => Compose (Current_Directory, "reports"),
+                    Directory => Compose (Current_Directory, "coverage"),
                     Pattern   => "*.gcov",
                     Filter    => (Ordinary_File => True, others => False));
 

@@ -23,12 +23,12 @@ package body AdaSpecLib.Format.Text is
    is
       pragma Unreferenced (Format);
    begin
-      New_line;
+      New_Line;
       Put ("  Background:");
       if Background /= "" then
          Put (" " & Background);
       end if;
-      New_line;
+      New_Line;
    end Put_Background;
 
    procedure Put_Scenario (Format     : in out Text_Format_Type;
@@ -36,12 +36,12 @@ package body AdaSpecLib.Format.Text is
    is
       pragma Unreferenced (Format);
    begin
-      New_line;
+      New_Line;
       Put ("  Scenario:");
       if Scenario /= "" then
          Put (" " & Scenario);
       end if;
-      New_line;
+      New_Line;
    end Put_Scenario;
 
    procedure Put_Step       (Format     : in out Text_Format_Type;
@@ -112,11 +112,11 @@ package body AdaSpecLib.Format.Text is
                              Report     : in Report_Type)
    is
       pragma Unreferenced (Format);
-      Count_Scenarios : Natural := Report.Count_Scenario_Failed +
-                                   Report.Count_Scenario_Passed;
-      Count_Steps     : Natural := Report.Count_Steps_Failed +
-                                   Report.Count_Steps_Skipped +
-                                   Report.Count_Steps_Passed;
+      Count_Scenarios : constant Natural := Report.Count_Scenario_Failed +
+                                            Report.Count_Scenario_Passed;
+      Count_Steps     : constant Natural := Report.Count_Steps_Failed +
+                                            Report.Count_Steps_Skipped +
+                                            Report.Count_Steps_Passed;
       Need_Comma : Boolean;
    begin
       New_Line;

@@ -1,0 +1,32 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "aunit";
+with "config.gpr";
+with "adaspec-coverage.gpr";
+
+project Unit_Tests is
+
+   for Languages   use ("Ada");
+   for Main        use ("test_main");
+   for Source_Dirs use ("tests");
+   for Object_Dir  use "obj";
+   for Exec_Dir    use "bin";
+
+   Ada_Switches := Config.Ada_Switches_Coverage & (
+      "-gnatQ"
+      );
+
+   package Builder is
+      for Executable ("test_main") use "unit_tests";
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Ada_Switches;
+   end Compiler;
+
+   package Linker is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
+   end Linker;
+
+end Unit_Tests;

@@ -14,112 +14,136 @@ all: bin test doc
 
 dir:
 	mkdir -p lib
+	mkdir -p lib/release
+	mkdir -p lib/debug
+	mkdir -p lib/coverage
 	mkdir -p obj
+	mkdir -p obj/release
+	mkdir -p obj/debug
+	mkdir -p obj/coverage
 	mkdir -p bin
 	mkdir -p doc
 	mkdir -p reports
+	mkdir -p coverage
 
 bin: dir
-	$(GNATMAKE) -P $(CONFIG).gpr
+	$(GNATMAKE) -P adaspec-$(CONFIG).gpr
 
 test: dir
-	$(GNATMAKE) -P tests.gpr
+	$(GNATMAKE) -P unit_tests.gpr
 
 doc: dir README.html src/README.html
 	
-clean:
+clean: clean-gcov
 	-$(RM) -rf tmp
-	-$(RM) obj/*
+	-$(RM) -rf obj/*
+	-$(RM) -rf lib/*
 	-$(RM) bin/*
 	-$(RM) README.html
 	-$(RM) src/README.html
-	-$(RM) reports/*.gcov
-	-$(RM) reports/gcov.summary.txt
-	-$(RM) reports/gnatcheck.out
-	-$(RM) reports/gnatcheck.log
-	-$(RM) reports/gnatcheck.*.out
-	-$(RM) reports/gnatcheck.*.log
-	-$(RM) reports/*.aunit.gcov
-	-$(RM) reports/features.html
-	-$(RM) reports/features.junit/*
+	-$(RM) reports/*.aunit.xml
+	-$(RM) reports/gnatcheck*.out
+	-$(RM) reports/gnatcheck*.log
+# 	-$(RM) reports/*.aunit.gcov
+# 	-$(RM) reports/features.html
+# 	-$(RM) reports/features.junit/*
 
-gcov-reset: dir
-	-$(RM) reports/*.gcov
-	-$(RM) reports/gcov.summary.txt
-	-$(RM) obj/*.gcda
+.PHONY: all dir bin test doc clean
 
-gcov-prepare: bin
-	cd reports && gcov -o ../obj ../src/*.adb > gcov.summary.txt
-	for gcov in reports/*.gcov; do \
+
+
+clean-gcov:
+	-$(RM) coverage/*.gcov
+	-$(RM) coverage/gcov.summary.txt
+	-find obj -name "*.gcda" -print0 | xargs -0 rm -f
+
+gcov-report: dir
+	cd coverage && gcov -o ../obj/coverage ../src/*.adb ../src/lib/*.adb > gcov.summary.txt
+	for gcov in coverage/*.gcov; do \
 		base="`basename "$$gcov"`"; \
-		if [ ! -e "src/$${base%.gcov}" ]; then \
+		if [ ! -e "src/$${base%.gcov}" ] && [ ! -e "src/lib/$${base%.gcov}" ]; then \
 			rm "$$gcov"; \
 		fi; \
 	done
+	-bin/unit_tests -suite=coverage -text
+	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
 
-gcov:
-	@$(MAKE) gcov-prepare >/dev/null 2>&1
-	bin/tests -suite=coverage -text
+coverage: test
+	@echo
+	@echo "##########################"
+	@echo "##  Run coverage tests  ##"
+	@echo "##########################"
+	@echo
+	gnatmake -P adaspec-coverage.gpr
+	-$(RM) -f bin/adaspec
+	cp bin/adaspec.cov bin/adaspec
+	$(MAKE) clean-gcov
+	-bin/unit_tests >/dev/null 2>&1
+	-$(MAKE) run-cucumber >/dev/null 2>&1
+	$(MAKE) gcov-report
+	-$(RM) -f bin/adaspec
 
-coverage: test bin
-	$(MAKE) gcov-reset
-	-bin/tests >/dev/null 2>/dev/null
-	-cucumber features/*.feature >/dev/null 2>/dev/null
-	$(MAKE) gcov
+.PHONY: clean-gcov gcov-report coverage
 
-gnatcheck: dir
-	cd reports && gnat check -P ../$(CONFIG).gpr -rules -from=../gnatcheck.rules
-	cd reports && mv gnatcheck.out gnatcheck.main.out
-	cd reports && gnat check -P ../tests.gpr -rules -from=../gnatcheck.rules
-	cd reports && mv gnatcheck.out gnatcheck.tests.out
 
-test-report: dir bin test
-	for t in $(TEST_SUITES); do \
-	  echo "========== RUN TEST SUITE $$t =========="; \
-	  echo bin/tests -xml -suite="$$t" -o"reports/$$t.aunit.xml"; \
-	  bin/tests -xml -suite="$$t" -o"reports/$$t.aunit.xml"; \
-	  cat "reports/$$t.aunit.xml"; \
-	done
-	-mkdir -p reports/features.junit
-	-mkdir -p reports/features-wip.junit
-	-cucumber -t "~@wip" -f junit -o reports/features.junit features/*.feature
-	-cucumber -t "~@wip" -f html -o reports/features.html features/*.feature
-	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
-	-cucumber -w -t "@wip" -f html -o reports/features-wip.html features/*.feature
-
-run-cucumber-tests: bin
+run-cucumber: bin
+	@echo
+	@echo "####################"
+	@echo "##  Run cucumber  ##"
+	@echo "####################"
+	@echo
 	cucumber -t "~@wip" features/*.feature
 	cucumber -w -t "@wip" features/*.feature
-	
 
-run-tests: dir bin test
-	$(MAKE) gcov-reset
-	-$(MAKE) run-cucumber-tests
-	@for t in $(TEST_SUITES); do \
-	  [ coverage = "$$t" ] && continue; \
-	  echo "========== RUN TEST SUITE $$t =========="; \
-	  echo bin/tests -suite="$$t"; \
-	  bin/tests -suite="$$t"; \
-	done
-	@echo "========== RUN COVERAGE TESTS =========="
-	$(MAKE) gcov
+run-tests: test
+	@echo
+	@echo "######################"
+	@echo "##  Run unit tests  ##"
+	@echo "######################"
+	@echo
+	bin/unit_tests
 
-clean-reports: gcov-reset
-	-$(RM) reports/gnatcheck.out
-	-$(RM) reports/*.aunit.gcov
+.PHONY: run-cucumber run-tests
 
-check: bin clean-reports coverage gnatcheck run-cucumber-tests
-	for t in $(TEST_SUITES); do \
-	  echo bin/tests -suite="$$t"; \
-	  bin/tests -suite="$$t"; \
-	done
+gnatcheck: dir
+	@echo
+	@echo "######################"
+	@echo "##  Run GNAT-Check  ##"
+	@echo "######################"
+	@echo
+	cd reports && gnat check -P ../adaspec.gpr -rules -from=../gnatcheck.rules
+	cd reports && mv gnatcheck.out gnatcheck.adaspec.out
+	cd reports && gnat check -P ../adaspeclib.gpr -rules -from=../gnatcheck.rules
+	cd reports && mv gnatcheck.out gnatcheck.adaspeclib.out
+	cd reports && gnat check -P ../unit_tests.gpr -rules -from=../gnatcheck.rules
+	cd reports && mv gnatcheck.out gnatcheck.tests.out
+
+test-report:
+	@echo
+	@echo "##################################"
+	@echo "##  Generate unit test reports  ##"
+	@echo "##################################"
+	@echo
+	-$(MAKE) coverage
+	-bin/unit_tests -o reports/test.aunit.xml
+	-mkdir -p reports/features.junit
+	-mkdir -p reports/features-wip.junit
+	@echo
+	@echo "######################################"
+	@echo "##  Generate cucumber test reports  ##"
+	@echo "######################################"
+	@echo
+	-cucumber -t "~@wip"   -f junit -o reports/features.junit     features/*.feature
+	-cucumber -t "~@wip"   -f html  -o reports/features.html      features/*.feature
+	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
+	-cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature
+
+check: gnatcheck coverage run-cucumber run-tests
+
+.PHONY: gnatcheck test-report check
 
 show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
-
-.PHONY: all dir bin test doc clean clean-reports gcov-reset gcov-prepare gcov \
-        coverage gnatcheck check test-report run-tests run-cucumber-tests \
-        show-ignored-coverage help
 
 help:
 	@echo "make TARGET"
@@ -128,17 +152,18 @@ help:
 	@echo
 	@echo "    all:            Build everything    [bin tests doc]"
 	@echo "    bin:            Build project       [bin/adaspec]"
-	@echo "    tests:          Build tests         [bin/tests]"
+	@echo "    test:           Build tests         [bin/unit_tests]"
 	@echo "    doc:            Build documentation [README.html]"
-	@echo "    coverage:       Run coverage tests  [reports/*.gcov]"
-	@echo "    gnatcheck:      Run gnatcheck       [reports/gnatcheck.*]"
-	@echo "    test-report:    Create test reports [reports/*.aunit.xml]"
-	@echo "    run-tests:      Run all tests"
+	@echo "    coverage:       Run coverage tests  [coverage/]"
+	@echo "    gnatcheck:      Run gnatcheck       [reports/gnatcheck*]"
+	@echo "    test-report:    Create test reports [reports/]"
+	@echo "    run-tests:      Run all unit tests"
+	@echo "    run-cucumber:   Run all cucumber tests"
+	@echo "    clean:          Clean project"
 	@echo "    show-ignored-coverage:"
 	@echo "                    Show lines that are ignored by gcov"
-	@echo "    clean:          Clean project"
 
-
+.PHONY: help show-ignored-coverage
 
 ### Markdown ###
 

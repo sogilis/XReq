@@ -1,0 +1,19 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config.gpr";
+
+library project AdaSpecLib.Coverage extends "adaspeclib.gpr" is
+
+   for Object_Dir       use "obj/coverage";
+   for Library_Dir      use "lib/coverage";
+
+   package Builder is
+      for Executable ("main") use "adaspec.cov";
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Coverage;
+   end Compiler;
+
+end AdaSpecLib.Coverage;
