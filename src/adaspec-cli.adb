@@ -61,7 +61,7 @@ package body AdaSpec.CLI is
       Put_Line ("        By  default,  they  are  generated  in  the  tests/");
       Put_Line ("        directory relative to the feature file.");
       Put_Line ("");
-      Put_Line ("    -l, --lang LANG              (NOT IMPLEMENTED)");
+      Put_Line ("    -l, --lang LANG");
       Put_Line ("        Choose wich language to generate.");
       Put_Line ("        Available values: Ada");
       Put_Line ("");

@@ -58,7 +58,7 @@ package body Test_Suite.Main is
       SpawnAssert2 (T, "--step",
                     Expected_Result => False);
 
-      SpawnAssert2 (T, "--step tests/features/step_definitions " &
+      SpawnAssert2 (T, "--lang=ada --step tests/features/step_definitions " &
                     "tests/features/simplest.feature",
                     Expected_Result => True);
 

@@ -1,11 +1,13 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
+use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Result;
@@ -24,12 +26,14 @@ package AdaSpec.Job is
          Out_Dir   : Unbounded_String;
          Steps     : Steps_Type;
          Loaded    : Boolean := False;
+         Language  : Language_Type := Lang_Ada;
       end record;
    Null_Job_Environment : constant Job_Environment := (others => <>);
 
    procedure Make         (Env      : out    Job_Environment;
                            Step_Dir : in     String := "";
-                           Out_Dir  : in     String := "");
+                           Out_Dir  : in     String := "";
+                           Language : in     Language_Type := Lang_Ada);
    function  Step_Dir     (Env      : in     Job_Environment) return String;
    function  Out_Dir      (Env      : in     Job_Environment) return String;
    procedure Fill_Missing (Env      : in out Job_Environment;

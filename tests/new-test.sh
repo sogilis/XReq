@@ -55,10 +55,8 @@ EOF
 cat >"$filename.adb" <<EOF
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AUnit.Assertions;
 with $tested_package;
 
-use AUnit.Assertions;
 use $tested_package;
 
 package body $test_package is
@@ -71,7 +69,6 @@ package body $test_package is
    --  Test_1  ----------------------------------------------------------------
 
    function  Name (T : in Test_1) return String is
-      pragma Unreferenced (T);
    begin
       return "$tested_package";
    end Name;
@@ -80,7 +77,7 @@ package body $test_package is
       pragma Unreferenced (T);
    begin
 
-      Assert (False, "Missing test for $tested_package");
+      T.Assert (False, "Missing test for $tested_package");
 
    end Run;
 

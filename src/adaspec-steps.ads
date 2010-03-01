@@ -3,9 +3,11 @@
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
+with AdaSpec.Lang;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use AdaSpec.Lang;
 use AdaSpec.Stanzas;
 
 package AdaSpec.Steps is
@@ -63,11 +65,13 @@ package AdaSpec.Steps is
 
    subtype Steps_Type is Step_Vectors.Vector;
 
-   function  Load      (Directory : in     String) return Steps_Type;
+   function  Load      (Directory : in     String;
+                        Language  : in     Language_Type) return Steps_Type;
    --  IMPORTANT: deallocate Steps_Type
 
    procedure Load      (Steps     : in out Steps_Type;
-                        Directory : in     String);
+                        Directory : in     String;
+                        Language  : in     Language_Type);
    --  IMPORTANT: deallocate Steps_Type
 
    function  Contains  (Steps     : in  Steps_Type;

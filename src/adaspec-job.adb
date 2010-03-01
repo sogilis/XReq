@@ -12,11 +12,13 @@ package body AdaSpec.Job is
 
    procedure Make         (Env      : out    Job_Environment;
                            Step_Dir : in     String := "";
-                           Out_Dir  : in     String := "") is
+                           Out_Dir  : in     String := "";
+                           Language : in     Language_Type := Lang_Ada) is
    begin
       Env := (
          Step_Dir => To_Unbounded_String (Step_Dir),
          Out_Dir  => To_Unbounded_String (Out_Dir),
+         Language => Language,
          others   => <>);
    end Make;
 
@@ -76,7 +78,7 @@ package body AdaSpec.Job is
       Create_Path (Step_Dir (Env));
       Create_Path (Out_Dir (Env));
 
-      Load (Env.Steps, Step_Dir (Env));
+      Load (Env.Steps, Step_Dir (Env), Env.Language);
       Env.Loaded := True;
 
    end Load;

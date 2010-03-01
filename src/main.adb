@@ -7,6 +7,7 @@ with Ada.Command_Line;
 with GNAT.Command_Line;
 with AdaSpec;
 with AdaSpec.CLI;
+with AdaSpec.Lang;
 with AdaSpec.Job;
 with AdaSpec.Generator;
 
@@ -16,6 +17,7 @@ use Ada.Exceptions;
 use Ada.Command_Line;
 use GNAT.Command_Line;
 use AdaSpec;
+use AdaSpec.Lang;
 use AdaSpec.Job;
 use AdaSpec.Generator;
 
@@ -31,6 +33,7 @@ procedure Main is
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
+   Language   : Language_Type := Language_Type'First;
    Executable : Unbounded_String;
    Keep_Going : Boolean := False;
    Generators : Generator_Vectors.Vector;
@@ -75,11 +78,10 @@ begin
          --  Put_Line ("--output=" & Parameter);
 
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
-         raise Not_Yet_Implemented with "--lang";
+         Language := Get_Language (Parameter);
 
-      --  Never happen unless a bug in Getopt   --  GCOV_IGNORE
-      else                                      --  GCOV_IGNORE
-         raise Invalid_Switch;                  --  GCOV_IGNORE
+      else  --  Never happen unless a bug in Getopt     --  GCOV_IGNORE
+         raise Invalid_Switch;                          --  GCOV_IGNORE
 
       end if;
 
@@ -107,7 +109,7 @@ begin
       --  Get Parameter  --
       ---------------------
 
-      Make (Env, To_String (Step_Dir), To_String (Out_Dir));
+      Make (Env, To_String (Step_Dir), To_String (Out_Dir), Language);
       Make (Job, To_String (Arg));
       Fill_Missing (Env, Feature_File (Job));
       Load (Env);
@@ -173,6 +175,11 @@ exception
    when Invalid_Parameter =>
       Put_Line (Standard_Error, "Missing parameter for switch -" &
                 Full_Switch);
+      AdaSpec.CLI.Help;
+      Set_Exit_Status (Failure);
+
+   when Invalid_Language =>
+      Put_Line (Standard_Error, "Unknown language " & Parameter);
       AdaSpec.CLI.Help;
       Set_Exit_Status (Failure);
 

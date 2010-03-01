@@ -18,15 +18,20 @@ package body AdaSpec.Steps is
    ------------
 
    procedure Load (Steps     : in out Steps_Type;
-                   Directory : in     String) is
+                   Directory : in     String;
+                   Language  : in     Language_Type) is
    begin
-      AdaSpec.Steps.Ada.Parse_Directory (Steps, Directory);
+      case Language is
+         when Lang_Ada =>
+            AdaSpec.Steps.Ada.Parse_Directory (Steps, Directory);
+      end case;
    end Load;
 
-   function  Load      (Directory : in     String) return Steps_Type is
+   function  Load (Directory : in     String;
+                   Language  : in     Language_Type) return Steps_Type is
       Result : Steps_Type;
    begin
-      Load (Result, Directory);
+      Load (Result, Directory, Language);
       return Result;
    end Load;
 

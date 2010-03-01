@@ -7,6 +7,7 @@ with Test_Suite.Strings;
 with Test_Suite.Strings.Pool;
 
 with Test_Suite.Main;
+with Test_Suite.Lang;
 with Test_Suite.CLI;
 with Test_Suite.Job;
 with Test_Suite.Result;
@@ -35,6 +36,7 @@ package body Test_Suite is
       Test_Suite.Strings.Pool .Add_Tests (Ret);
 
       Test_Suite.Main         .Add_Tests (Ret);
+      Test_Suite.Lang         .Add_Tests (Ret);
       Test_Suite.CLI          .Add_Tests (Ret);
       Test_Suite.Job          .Add_Tests (Ret);
       Test_Suite.Stanzas      .Add_Tests (Ret);

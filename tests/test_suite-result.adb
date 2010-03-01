@@ -2,12 +2,14 @@
 
 with Ada.Containers;
 with Ada.Strings.Unbounded;
+with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
+use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
@@ -59,7 +61,7 @@ package body Test_Suite.Result is
       Result       : Result_Scenario_Type;
       Scenario     : Scenario_Type;
       Steps        : Steps_Type
-                   := Load ("tests/features/step_definitions");
+                   := Load ("tests/features/step_definitions", Lang_Ada);
       Ideal_Result : Result_Steps.Vector;
       A, B         : Result_Step_Type;
       Errors       : Boolean;
@@ -136,7 +138,7 @@ package body Test_Suite.Result is
                "End Feature Sample"                 & CRLF;
    begin
 
-      Steps   := Load   ("tests/features/step_definitions");
+      Steps   := Load   ("tests/features/step_definitions", Lang_Ada);
       Feature := new Feature_File_Type'(Create
             ("tests/features/simplest.feature"));
 
