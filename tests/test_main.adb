@@ -4,9 +4,10 @@ with Ada.Text_IO;
 with Ada.Command_Line;
 with GNAT.Command_Line;
 with AUnit.Run;
-with AUnit.Reporter;
-with AUnit.Reporter.XML2;
-with AUnit.Reporter.Text2;
+--  with AUnit.Reporter;
+--  with AUnit.Reporter.XML2;
+--  with AUnit.Reporter.Text2;
+with AUnit_Reporter;
 with Test_Suite;
 with Coverage_Suite;
 
@@ -21,8 +22,7 @@ procedure Test_Main is
    Suite_Error   : exception;
 
    Quit   : Boolean := False;
-   File   : File_Type;
-
+--    File   : File_Type;
 
    --  AUnit  -----------------------------------------------------------------
 
@@ -30,10 +30,11 @@ procedure Test_Main is
    procedure Runner_Coverage is new
       AUnit.Run.Test_Runner (Coverage_Suite.Suite);
 
-   Reporter_XML    : aliased AUnit.Reporter.XML2.XML_Reporter;
-   Reporter_Text   : aliased AUnit.Reporter.Text2.Text_Reporter;
-   Reporter        : access  AUnit.Reporter.Reporter'Class :=
-                     Reporter_Text'Access;
+--    Reporter_XML    : aliased AUnit.Reporter.XML2.XML_Reporter;
+--    Reporter_Text   : aliased AUnit.Reporter.Text2.Text_Reporter;
+--    Reporter        : access  AUnit.Reporter.Reporter'Class :=
+--                      Reporter_Text'Access;
+   Reporter : AUnit_Reporter.Reporter;
 
    --  CLI  -------------------------------------------------------------------
 
@@ -81,13 +82,16 @@ begin
          end;
 
       elsif Full_Switch = "xml" then
-         Reporter := Reporter_XML'Access;
+--          Reporter := Reporter_XML'Access;
+         Reporter.Reporter := AUnit_Reporter.Reporter_XML'Access;
 
       elsif Full_Switch = "text" then
-         Reporter := Reporter_Text'Access;
+--          Reporter := Reporter_Text'Access;
+         Reporter.Reporter := AUnit_Reporter.Reporter_Text'Access;
 
       elsif Full_Switch = "o" then
-         Create (File, Out_File, Parameter);
+--          Create (File, Out_File, Parameter);
+         Create (AUnit_Reporter.Output_File, Out_File, Parameter);
 
       end if;
    end loop Getopt_Loop;
@@ -96,18 +100,17 @@ begin
 
       --  AUnit
 
-      if Is_Open (File) then
-         Set_Output (File);
-         Set_Error  (File);
+      if Is_Open (AUnit_Reporter.Output_File) then
+         Reporter.File := AUnit_Reporter.Output_File'Access;
       else
-         Reporter_Text.Set_Use_ANSI_Colors (True);
+         AUnit_Reporter.Reporter_Text.Set_Use_ANSI_Colors (True);
       end if;
 
       case Choosen_Suite is
          when Test =>
-            Runner_Test (Reporter.all);
+            Runner_Test (Reporter);
          when Coverage =>
-            Runner_Coverage (Reporter.all);
+            Runner_Coverage (Reporter);
 --          when others =>
 --             Put_Line (Standard_Error, "Suite " &
 --                       Suite'Image (Choosen_Suite) & " not implemented");

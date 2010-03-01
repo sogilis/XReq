@@ -24,6 +24,8 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+with Ada.Strings.Fixed;  use Ada.Strings.Fixed;
+with Ada.Strings;        use Ada.Strings;
 with Ada.Text_IO;        use Ada.Text_IO;
 with Ada.Unchecked_Conversion;
 with AUnit.Time_Measure; use AUnit.Time_Measure;
@@ -148,16 +150,17 @@ package body AUnit.Reporter.XML2 is
 
       Put_Line ("  <Statistics>");
       Put      ("    <Tests>");
-      Put (Integer (Test_Count (R)));
+      Put (Trim (Integer'Image (Integer (Test_Count (R))), Left));
       Put_Line ("</Tests>");
       Put      ("    <FailuresTotal>");
-      Put (Integer (Failure_Count (R)) + Integer (Error_Count (R)));
+      Put (Trim (Integer'Image (Integer (Failure_Count (R)) +
+                                Integer (Error_Count   (R))), Left));
       Put_Line ("</FailuresTotal>");
       Put      ("    <Failures>");
-      Put (Integer (Failure_Count (R)));
+      Put (Trim (Integer'Image (Integer (Failure_Count (R))), Left));
       Put_Line ("</Failures>");
       Put      ("    <Errors>");
-      Put (Integer (Error_Count (R)));
+      Put (Trim (Integer'Image (Integer (Error_Count (R))), Left));
       Put_Line ("</Errors>");
       Put_Line ("  </Statistics>");
 
@@ -197,7 +200,18 @@ package body AUnit.Reporter.XML2 is
       Is_Assert : Boolean;
       T : AUnit_Duration;
    begin
-      Put_Line ("    <Test>");
+      Put ("    <Test");
+
+      if Test.Elapsed /= Time_Measure.Null_Time then
+         T := Get_Measure (Test.Elapsed);
+
+         Put (" elapsed='");
+         Put_Measure (T);
+         Put_Line ("'>");
+      else
+         Put_Line (">");
+      end if;
+
       Put      ("      <Name>");
       Put      (Test.Test_Name.all);
 
@@ -262,16 +276,6 @@ package body AUnit.Reporter.XML2 is
 
             Put_Line ("      </Exception>");
          end if;
-      end if;
-
-      if Test.Elapsed /= Time_Measure.Null_Time then
-         T := Get_Measure (Test.Elapsed);
-
-         Put (" elapsed='");
-         Put_Measure (T);
-         Put_Line ("'>");
-      else
-         Put_Line (">");
       end if;
       Put_Line ("    </Test>");
    end Report_Test;
