@@ -28,6 +28,9 @@ with Ada.Text_IO;        use Ada.Text_IO;
 with Ada.Unchecked_Conversion;
 with AUnit.Time_Measure; use AUnit.Time_Measure;
 
+pragma Annotate (gnatcheck, Exempt_On, "Implicit_IN_Mode_Parameters",
+                 "Code from AUnit");
+
 --  Very simple reporter to console
 package body AUnit.Reporter.Text2 is
 
@@ -326,3 +329,5 @@ package body AUnit.Reporter.Text2 is
    end Report_Test;
 
 end AUnit.Reporter.Text2;
+
+pragma Annotate (gnatcheck, Exempt_Off, "Implicit_IN_Mode_Parameters");

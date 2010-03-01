@@ -24,6 +24,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+pragma Annotate (gnatcheck, Exempt_On, "Implicit_IN_Mode_Parameters",
+                 "Code from AUnit");
+
 --  Very simple reporter to console
 package AUnit.Reporter.XML2 is
 
@@ -32,3 +35,5 @@ package AUnit.Reporter.XML2 is
    procedure Report (Engine : XML_Reporter;
                      R      : in out Result'Class);
 end AUnit.Reporter.XML2;
+
+pragma Annotate (gnatcheck, Exempt_Off, "Implicit_IN_Mode_Parameters");

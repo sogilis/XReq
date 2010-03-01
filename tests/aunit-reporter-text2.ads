@@ -24,6 +24,9 @@
 --                                                                          --
 ------------------------------------------------------------------------------
 
+pragma Annotate (gnatcheck, Exempt_On, "Implicit_IN_Mode_Parameters",
+                 "Code from AUnit");
+
 --  Very simple reporter to console
 package AUnit.Reporter.Text2 is
 
@@ -58,3 +61,5 @@ private
    end record;
 
 end AUnit.Reporter.Text2;
+
+pragma Annotate (gnatcheck, Exempt_Off, "Implicit_IN_Mode_Parameters");
