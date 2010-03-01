@@ -2,19 +2,19 @@
 
 Given /^adaspec is in the PATH$/ do
   #system("make bin/adaspec");
-  ENV['PATH'] = FileUtils::pwd() + "/bin" + ":" + ENV['PATH'];
+  ENV['PATH'] = $adaspec_dir + "/bin" + ":" + ENV['PATH'];
   if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
   else
-    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/lib";
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/lib";
   end
 end
 
 Given /^the sources of adaspec are in ADA_INCLUDE_PATH$/ do
   if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/src" + ":" + ENV['ADA_INCLUDE_PATH'];
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src" + ":" + ENV['ADA_INCLUDE_PATH'];
   else
-    ENV['ADA_INCLUDE_PATH'] = FileUtils::pwd() + "/src";
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src";
   end
 end
 
@@ -43,6 +43,7 @@ end
 When /^I run adaspec (.*)$/ do |args|
   cmd = "adaspec " + args + " 2>&1";
   #puts cmd;
+  #puts FileUtils.pwd();
   @last_command_output = `#{cmd}`;
   @last_exit_code = $?.to_i;
 end
@@ -67,6 +68,7 @@ end
 
 When /^I run "(.*)" in (.*)$/ do |command, dir|
   olddir = FileUtils.pwd();
+  #puts olddir
   FileUtils.cd(dir);
   @last_command_output = `#{command}`;
   @last_exit_code = $?.to_i;

@@ -3,10 +3,12 @@ require 'spec/expectations'
 require 'cucumber/formatter/unicode'
 require 'tempfile'
 
+$adaspec_dir = File.expand_path(File.dirname(File.dirname(File.dirname(__FILE__))))
+
 Before do
-  $adaspec_dir = FileUtils::pwd();
+  $saved_dir = FileUtils::pwd();
 end
 
 After do |scenario|
-  FileUtils::cd($adaspec_dir);
+  FileUtils::cd($saved_dir);
 end

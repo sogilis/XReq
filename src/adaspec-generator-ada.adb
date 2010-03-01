@@ -2,11 +2,13 @@
 
 with Ada.Directories;
 with Ada.Containers;
+with Ada.Text_IO;
 with Util.IO;
 with AdaSpec.Steps;
 
 use Ada.Directories;
 use Ada.Containers;
+use Ada.Text_IO;
 use Util.IO;
 use AdaSpec.Steps;
 
@@ -96,6 +98,8 @@ package body AdaSpec.Generator.Ada is
 
       Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
       Set_File (To_String (Gen.Adb_File), To_String (Gen.Adb.Buffer));
+      Put_Line ("Generate: " & To_String (Gen.Ads.Buffer));
+      Put_Line ("Generate: " & To_String (Gen.Adb.Buffer));
    end Generate;
 
    ---------------------
@@ -392,6 +396,7 @@ package body AdaSpec.Generator.Ada is
 
       Set_File    (Filename, To_String (With_B.Buffer));
       Append_File (Filename, To_String (Body_B.Buffer));
+      Put_Line ("Generate: " & Filename);
    end Generate_Suite;
 
 end AdaSpec.Generator.Ada;
