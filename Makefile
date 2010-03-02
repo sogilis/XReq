@@ -150,7 +150,7 @@ test-report-unit: tests
 	@echo "##  Generate unit test reports  ##"
 	@echo "##################################"
 	@echo
-	-bin/unit_tests -o reports/test.aunit.xml
+	-bin/unit_tests -xml -o reports/test.aunit.xml
 
 test-report-cucumber: bin
 	@echo

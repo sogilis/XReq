@@ -137,7 +137,9 @@ package body Coverage_Suite is
               "File: reports/" & To_String (T.File) & Percent'Image (Ratio) &
               "% covered (" & Trim (Natural'Image (Covered), Left) & "/" &
               Trim (Natural'Image (Count), Left) & ")" &
-              CRLF & Read_Whole_File (File_Path));
+              --  CRLF & Read_Whole_File (File_Path));
+              --  The file content can contain invalid XML
+              "");
 
    end Run_Test;
 
