@@ -4,28 +4,153 @@ with Ada.Text_IO;
 with Ada.Directories;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
+with Ada.Strings.Unbounded.Hash;
 with Ada.IO_Exceptions;
+with Ada.Exceptions;
+with Ada.Containers.Hashed_Maps;
 with Util.IO;
 
 use Ada.Text_IO;
 use Ada.Directories;
 use Ada.Strings.Unbounded;
+use Ada.Exceptions;
+use Ada.Containers;
 
 
 package body Coverage_Suite is
 
-   function Suite return AUnit.Test_Suites.Access_Test_Suite is
+   function  Pkg_Name (File : in String) return String;
+   procedure Add_LCov_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite);
+   function  Different (Left, Right : in LCov_Matches_Maps.Map) return Boolean;
 
+   type Percent is delta 0.01 range 0.00 .. 100.00;
+
+   package LCov_Maps is new Hashed_Maps (
+      Unbounded_String, LCov_Matches_Maps.Map, Hash, "=", Different);
+
+   ----------------------------------------------------------------------------
+
+   function Different (Left, Right : in LCov_Matches_Maps.Map) return Boolean
+   is
+      pragma Unreferenced (Left, Right);
+   begin
+      return False;
+   end Different;
+
+
+   function Pkg_Name (File : in String) return String is
+      Name : String := File;
+   begin
+      for i in Name'Range loop
+         if Name (i) = '-' then
+            Name (i) := '.';
+         end if;
+      end loop;
+      return Name;
+   end Pkg_Name;
+
+   procedure Add_LCov_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
+      use LCov_Maps;
+      use LCov_Matches_Maps;
+
+      LCov_File     : File_Type;
+      LCov_Map      : LCov_Maps.Map;
+      File_Name     : Unbounded_String := Null_Unbounded_String;
+      Lines         : LCov_Matches_Maps.Map;
+      Comma         : Natural;
+      DA_Line       : Natural;
+      DA_Count      : Natural;
+      I             : LCov_Maps.Cursor;
+      Current_Test  : LCov_Test_Ptr := null;
+
+      procedure Put_Lines;
+      procedure Put_Lines is
+      begin
+         if File_Name /= Null_Unbounded_String then
+            if Contains (LCov_Map, File_Name) then
+               Replace (LCov_Map, File_Name, Lines);
+            else
+               Insert  (LCov_Map, File_Name, Lines);
+            end if;
+         end if;
+      end Put_Lines;
+
+   begin
+      Open (LCov_File, In_File, "coverage/lcov.info");
+      while not End_Of_File (LCov_File) loop
+         declare
+            Line : constant String := Get_Line (LCov_File);
+         begin
+            if Line (1 .. 3) = "SF:" then
+               Put_Lines;
+               File_Name := To_Unbounded_String (Line (4 .. Line'Last));
+               if Contains (LCov_Map, File_Name) then
+                  Lines := Element (LCov_Map, File_Name);
+               else
+                  Lines := LCov_Matches_Maps.Empty_Map;
+               end if;
+            elsif Line (1 .. 3) = "DA:" then
+               Comma    := Index (Line, ",");
+               DA_Line  := Natural'Value (Line (4 .. Comma - 1));
+               DA_Count := Natural'Value (Line (Comma + 1 .. Line'Last));
+               if Contains (Lines, DA_Line) then
+                  if not Element (Lines, DA_Line) then
+                     Replace (Lines, DA_Line, DA_Count > 0);
+                  end if;
+               else
+                  Insert  (Lines, DA_Line, DA_Count > 0);
+               end if;
+            end if;
+         end;
+      end loop;
+      Close (LCov_File);
+      Put_Lines;
+
+      I := First (LCov_Map);
+      while Has_Element (I) loop
+         Current_Test := new LCov_Test;
+         Current_Test.all.File_Name :=
+            To_Unbounded_String (Simple_Name (To_String (Key (I))));
+         Current_Test.all.Lines     := Element (I);
+         Ret.Add_Test (Current_Test);
+         Next (I);
+      end loop;
+
+   exception
+      when Error : Ada.IO_Exceptions.Name_Error =>
+         Put_Line ("Could not locate LCov info file");
+         Put_Line (Exception_Message (Error));
+         null;
+   end Add_LCov_Tests;
+
+   ----------------------------------------------------------------------------
+
+   function Suite return AUnit.Test_Suites.Access_Test_Suite is
       Ret : constant AUnit.Test_Suites.Access_Test_Suite :=
             new AUnit.Test_Suites.Test_Suite;
-      Search       : Search_Type;
-      Item         : Directory_Entry_Type;
-      Current_Test : access Test;
+      Search        : Search_Type;
+      Item          : Directory_Entry_Type;
+      Current_Test  : access Test;
 
    begin
 
-      Put_Line ("The coverage test expect the .gcov files to be in the");
-      Put_Line ("subdirectory `coverage' of the current directory.");
+      New_Line;
+      Put_Line ("-----------------------------------------" &
+                "-----------------------------------------");
+      Put_Line ("The coverage test suite expect a file in " &
+                "`coverage/lcov.info' and can additionally");
+      Put_Line ("read .gcov files in the coverage directory.");
+      Put_Line ("-----------------------------------------" &
+                "-----------------------------------------");
+      New_Line;
+
+      --  LCov  -------------------------------------------
+
+      Add_LCov_Tests (Ret);
+
+      --  GCov  -------------------------------------------
 
       Start_Search (Search,
                     Directory => Compose (Current_Directory, "coverage"),
@@ -61,36 +186,66 @@ package body Coverage_Suite is
 
       return Ret;
 
+   exception
+      when Error : others =>
+         Put_Line ("Error in procedure Suite");
+         Put_Line (Exception_Information (Error));
+         Reraise_Occurrence (Error);
    end Suite;
 
+   --  LCov_Test  -------------------------------------------------------------
 
+   function Name (T : in LCov_Test) return AUnit.Message_String is
+   begin
+      return AUnit.Format ("LCoverage " &
+                           Pkg_Name (To_String (T.File_Name)));
+   end Name;
+
+   procedure Run_Test (T : in out LCov_Test) is
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
+      use LCov_Matches_Maps;
+      Covered : Natural := 0;
+      Total   : Natural := 0;
+      I       : LCov_Matches_Maps.Cursor := First (T.Lines);
+      Ratio   : Percent;
+   begin
+   --   Put_Line ("File " & To_String (T.File_Name));
+      while Has_Element (I) loop
+         Total := Total + 1;
+         if Element (I) then
+            Covered := Covered + 1;
+   --         Put_Line ("Line" & Key (I)'Img & " covered");
+   --      else
+   --         Put_Line ("Line" & Key (I)'Img & " not covered");
+         end if;
+         Next (I);
+      end loop;
+      Ratio := Percent (100 * Covered / Total);
+      T.Assert (Covered = Total,
+                "File: " & To_String (T.File_Name) & " " &
+                Trim (Percent'Image (Ratio), Left) & "% covered (" &
+                Trim (Natural'Image (Covered), Left) & "/" &
+                Trim (Natural'Image (Total), Left) & ")");
+   end Run_Test;
+
+   --  GCov_Test  -------------------------------------------------------------
 
    function PkgName (T : in Test) return String is
       File : constant String := To_String (T.File);
-      Name : Unbounded_String;
    begin
       if File (File'Length - 4 .. File'Length) = ".gcov" then
-         Name := To_Unbounded_String (File (File'First .. File'Length - 5));
+         return Pkg_Name (File (File'First .. File'Length - 5));
       else
-         Name := To_Unbounded_String (File);
+         return Pkg_Name (File);
       end if;
-      declare
-         Name2 : String := To_String (Name);
-      begin
-         for i in Name2'Range loop
-            if Name2 (i) = '-' then
-               Name2 (i) := '.';
-            end if;
-         end loop;
-         return Name2;
-      end;
    end PkgName;
 
 
 
    function Name (T : in Test) return AUnit.Message_String is
    begin
-      return AUnit.Format ("Coverage " & PkgName (T));
+      return AUnit.Format ("GCoverage " & PkgName (T));
    end Name;
 
 
@@ -100,8 +255,6 @@ package body Coverage_Suite is
       use Ada.Strings;
       use Ada.Strings.Fixed;
       use Util.IO;
-
-      type Percent is delta 0.01 range 0.00 .. 100.00;
 
       CRLF      : constant String := ASCII.CR & ASCII.LF;
       File_Path : constant String := To_String (T.Path);
@@ -116,7 +269,7 @@ package body Coverage_Suite is
       Read_Gcov (File_Path, Count, Covered, Ignored, Error);
 
       T.Assert (Count /= 0 or Ignored /= 0,
-              "File: reports/" & To_String (T.File) & " " &
+              "File: coverage/" & To_String (T.File) & " " &
               "error, non executable file" &
               CRLF & Read_Whole_File (File_Path));
 
@@ -128,13 +281,13 @@ package body Coverage_Suite is
       end if;
 
       T.Assert (Error <= 0,
-              "File: reports/" & To_String (T.File) & " error line" &
+              "File: coverage/" & To_String (T.File) & " error line" &
               Integer'Image (Error)
               --  & CRLF & Read_Whole_File (File_Path));
               );
 
       T.Assert (Covered = Count,
-              "File: reports/" & To_String (T.File) & Percent'Image (Ratio) &
+              "File: coverage/" & To_String (T.File) & Percent'Image (Ratio) &
               "% covered (" & Trim (Natural'Image (Covered), Left) & "/" &
               Trim (Natural'Image (Count), Left) & ")" &
               --  CRLF & Read_Whole_File (File_Path));

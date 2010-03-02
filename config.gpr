@@ -23,7 +23,7 @@ abstract project Config is
       "-g"              --  Debug
       );
 
-   Ada_Switches_Coverage := Ada_Switches & (
+   Ada_Switches_Coverage := Ada_Switches_Debug & (
       "-fprofile-arcs", -- to use gcov
       "-ftest-coverage" -- to use gcov
       );

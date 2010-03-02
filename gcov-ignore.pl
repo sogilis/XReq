@@ -30,7 +30,8 @@ while ($line = <$INFO>) {
         }
       }
       if($ignore or $src_line =~ /GCOV_IGNORE/) {
-        next;
+        $line = "DA:$da_line,1\n";
+        #next;
       }
     }
   }

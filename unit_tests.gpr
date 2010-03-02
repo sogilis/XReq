@@ -13,7 +13,7 @@ project Unit_Tests is
    for Object_Dir  use "obj";
    for Exec_Dir    use "bin";
 
-   Ada_Switches := Config.Ada_Switches_Coverage & (
+   Ada_Switches := Config.Ada_Switches_Debug & (
       "-gnatQ"
       );
 

@@ -67,29 +67,33 @@ clean: clean-gcov
 clean-gcov:
 	#-$(RM) -f coverage/*.gcov
 	#-$(RM) -f coverage/gcov.summary.txt
-	-$(RM) -rf coverage/lcov.info coverage/*
-	lcov --directory obj/coverage --zerocounters
+	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
+	lcov -q -d obj/coverage --zerocounters
 	#-find obj -name "*.gcda" -print0 | xargs -0 rm -f
+	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
+	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
+	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
 
 gcov-report: dir
-	lcov --directory obj/coverage --capture --output-file coverage/lcov.info
+	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '*~*'    -o coverage/lcov.info
-	perl gcov-ignore.pl coverage/lcov.info > coverage/ignore.lcov.info
-	genhtml --no-function-coverage -o coverage coverage/ignore.lcov.info || \
-	genhtml -o coverage coverage/ignore.lcov.info
-	cd coverage && gcov -o ../obj/coverage ../src/*.adb ../src/lib/*.adb > gcov.summary.txt
-	for gcov in coverage/*.gcov; do \
-		base="`basename "$$gcov"`"; \
-		if [ ! -e "src/$${base%.gcov}" ] && [ ! -e "src/lib/$${base%.gcov}" ]; then \
-			rm "$$gcov"; \
-		fi; \
-	done
+	#perl gcov-ignore.pl coverage/lcov.info > coverage/ignore.lcov.info
+	genhtml --show-details --no-function-coverage -o coverage coverage/lcov.info || \
+	genhtml --show-details -o coverage coverage/lcov.info
+	#cd coverage && gcov -o ../obj/coverage ../src/*.adb ../src/lib/*.adb > gcov.summary.txt
+	#for gcov in coverage/*.gcov; do \
+	#	base="`basename "$$gcov"`"; \
+	#	if [ ! -e "src/$${base%.gcov}" ] && [ ! -e "src/lib/$${base%.gcov}" ]; then \
+	#		rm "$$gcov"; \
+	#	fi; \
+	#done
+	lcov -d obj/coverage --zerocounters
 	-bin/unit_tests -suite=coverage -text
 	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
 
-coverage: tests
+coverage: tests bin/adaspec.cov
 	@echo
 	@echo "##########################"
 	@echo "##  Run coverage tests  ##"
@@ -97,12 +101,16 @@ coverage: tests
 	@echo
 	gnatmake -P adaspec-coverage.gpr
 	-$(RM) -f bin/adaspec
-	cp bin/adaspec.cov bin/adaspec
 	$(MAKE) clean-gcov
+	ln -s adaspec.cov bin/adaspec
+	lcov -q -d obj/coverage --zerocounters
 	-bin/unit_tests >/dev/null 2>&1
-	-$(MAKE) run-cucumber >/dev/null 2>&1
-	$(MAKE) gcov-report
+	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
+	lcov -q -d obj/coverage --zerocounters
+	-cucumber features/*.feature >/dev/null 2>&1
+	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/11-cucumber.lcov.info
 	-$(RM) -f bin/adaspec
+	$(MAKE) gcov-report
 
 .PHONY: clean-gcov gcov-report coverage
 

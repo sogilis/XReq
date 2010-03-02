@@ -5,12 +5,26 @@ with Ada.Strings.Unbounded;
 with AUnit;
 with AUnit.Test_Suites;
 with AUnit.Simple_Test_Cases;
+with Ada.Containers.Ordered_Maps;
 
 package Coverage_Suite is
 
    function Suite return AUnit.Test_Suites.Access_Test_Suite;
 
 private
+
+   package LCov_Matches_Maps is new
+      Ada.Containers.Ordered_Maps (Natural, Boolean, "<", "=");
+
+   type LCov_Test is new AUnit.Simple_Test_Cases.Test_Case with
+      record
+         File_Name : Ada.Strings.Unbounded.Unbounded_String;
+         Lines     : LCov_Matches_Maps.Map;
+      end record;
+   type LCov_Test_Ptr is access all LCov_Test;
+
+   function Name (T : in LCov_Test) return AUnit.Message_String;
+   procedure Run_Test (T : in out LCov_Test);
 
    --  Test type
    type Test is new AUnit.Simple_Test_Cases.Test_Case with
