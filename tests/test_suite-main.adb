@@ -81,6 +81,7 @@ package body Test_Suite.Main is
 
    procedure Run (T : in out Test_2) is
       procedure SpawnAssert2 is new Spawn_Assert (Test_2);
+      Gnat_Flags : constant String := "-gnat05 -aI../../../src/lib";
    begin
 
       SpawnAssert2 (T, "-x result1 -k " &
@@ -88,7 +89,7 @@ package body Test_Suite.Main is
                     "tests/features/simplest2.feature");
 
       SpawnAssert2 (T,
-                    "-gnat05 -aI../step_definitions -aI../../../lib result1",
+                    Gnat_Flags & " -aI../step_definitions result1",
                     Directory       => "tests/features/tests",
                     Executable_Name => "gnatmake");
    end Run;

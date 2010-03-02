@@ -77,7 +77,8 @@ gcov-report: dir
 	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '*~*'    -o coverage/lcov.info
 	perl gcov-ignore.pl coverage/lcov.info > coverage/ignore.lcov.info
-	genhtml --no-function-coverage -o coverage coverage/ignore.lcov.info
+	genhtml --no-function-coverage -o coverage coverage/ignore.lcov.info || \
+	genhtml -o coverage coverage/ignore.lcov.info
 	cd coverage && gcov -o ../obj/coverage ../src/*.adb ../src/lib/*.adb > gcov.summary.txt
 	for gcov in coverage/*.gcov; do \
 		base="`basename "$$gcov"`"; \
@@ -139,20 +140,26 @@ gnatcheck: dir
 	cd reports && mv gnatcheck.out gnatcheck.tests.out
 
 test-report:
+	-$(MAKE) coverage
+	-$(MAKE) test-report-unit
+	-$(MAKE) test-report-cucumber
+
+test-report-unit: tests
 	@echo
 	@echo "##################################"
 	@echo "##  Generate unit test reports  ##"
 	@echo "##################################"
 	@echo
-	-$(MAKE) coverage
 	-bin/unit_tests -o reports/test.aunit.xml
-	-mkdir -p reports/features.junit
-	-mkdir -p reports/features-wip.junit
+
+test-report-cucumber: bin
 	@echo
 	@echo "######################################"
 	@echo "##  Generate cucumber test reports  ##"
 	@echo "######################################"
 	@echo
+	-mkdir -p reports/features.junit
+	-mkdir -p reports/features-wip.junit
 	-cucumber -t "~@wip"   -f junit -o reports/features.junit     features/*.feature
 	-cucumber -t "~@wip"   -f html  -o reports/features.html      features/*.feature
 	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
@@ -160,7 +167,7 @@ test-report:
 
 check: gnatcheck coverage run-cucumber run-tests
 
-.PHONY: gnatcheck test-report check
+.PHONY: gnatcheck test-report test-report-cucumber test-report-unit check
 
 show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE

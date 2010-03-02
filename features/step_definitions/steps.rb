@@ -4,9 +4,9 @@ Given /^adaspec is in the PATH$/ do
   #system("make bin/adaspec");
   ENV['PATH'] = $adaspec_dir + "/bin" + ":" + ENV['PATH'];
   if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
   else
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/lib";
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src/lib";
   end
 end
 
@@ -95,7 +95,9 @@ end
 
 Then /^it should (fail|pass)$/ do |success|
   if success == 'fail'
-    @last_exit_code.should_not == 0
+    if @last_exit_code == 0
+      raise "Unexpected Success\nOutput:\n#{@last_command_output}\n"
+    end
   else
     if @last_exit_code != 0
       raise "Failed with exit status #{@last_exit_code}\nOutput:\n#{@last_command_output}\n"
