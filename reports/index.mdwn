@@ -1,0 +1,8 @@
+Reports
+=======
+
+* Unit test reports are not available in HTML format
+* Cucumber test reports are available:
+  * [Features that should pass](features.html)
+  * [Features that are a work in progress](features-wip.html)
+* [Coverage report](../coverage/index.html) with lcov
