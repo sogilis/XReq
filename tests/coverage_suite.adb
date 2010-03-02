@@ -129,8 +129,9 @@ package body Coverage_Suite is
 
       T.Assert (Error <= 0,
               "File: reports/" & To_String (T.File) & " error line" &
-              Integer'Image (Error) &
-              CRLF & Read_Whole_File (File_Path));
+              Integer'Image (Error)
+              --  & CRLF & Read_Whole_File (File_Path));
+              );
 
       T.Assert (Covered = Count,
               "File: reports/" & To_String (T.File) & Percent'Image (Ratio) &

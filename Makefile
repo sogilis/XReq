@@ -29,7 +29,19 @@ dir:
 bin: dir
 	$(GNATMAKE) -P adaspec-$(CONFIG).gpr
 
-test: dir
+bin/adaspec.cov: dir
+	$(GNATMAKE) -P adaspec-coverage.gpr
+
+bin/adaspec.rel: dir
+	$(GNATMAKE) -P adaspec-release.gpr
+
+bin/adaspec: dir
+	$(GNATMAKE) -P adaspec-debug.gpr
+
+bin/unit_tests: dir
+	$(GNATMAKE) -P unit_tests.gpr
+
+tests: dir
 	$(GNATMAKE) -P unit_tests.gpr
 
 doc: dir README.html src/README.html
@@ -48,16 +60,24 @@ clean: clean-gcov
 # 	-$(RM) reports/features.html
 # 	-$(RM) reports/features.junit/*
 
-.PHONY: all dir bin test doc clean
+.PHONY: all dir bin tests doc clean
 
 
 
 clean-gcov:
-	-$(RM) coverage/*.gcov
-	-$(RM) coverage/gcov.summary.txt
-	-find obj -name "*.gcda" -print0 | xargs -0 rm -f
+	#-$(RM) -f coverage/*.gcov
+	#-$(RM) -f coverage/gcov.summary.txt
+	-$(RM) -rf coverage/lcov.info coverage/*
+	lcov --directory obj/coverage --zerocounters
+	#-find obj -name "*.gcda" -print0 | xargs -0 rm -f
 
 gcov-report: dir
+	lcov --directory obj/coverage --capture --output-file coverage/lcov.info
+	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '*~*'    -o coverage/lcov.info
+	perl gcov-ignore.pl coverage/lcov.info > coverage/ignore.lcov.info
+	genhtml --no-function-coverage -o coverage coverage/ignore.lcov.info
 	cd coverage && gcov -o ../obj/coverage ../src/*.adb ../src/lib/*.adb > gcov.summary.txt
 	for gcov in coverage/*.gcov; do \
 		base="`basename "$$gcov"`"; \
@@ -68,7 +88,7 @@ gcov-report: dir
 	-bin/unit_tests -suite=coverage -text
 	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
 
-coverage: test
+coverage: tests
 	@echo
 	@echo "##########################"
 	@echo "##  Run coverage tests  ##"
@@ -95,7 +115,7 @@ run-cucumber: bin
 	cucumber -t "~@wip" features/*.feature
 	cucumber -w -t "@wip" features/*.feature
 
-run-tests: test
+run-tests: tests
 	@echo
 	@echo "######################"
 	@echo "##  Run unit tests  ##"
@@ -152,7 +172,7 @@ help:
 	@echo
 	@echo "    all:            Build everything    [bin tests doc]"
 	@echo "    bin:            Build project       [bin/adaspec]"
-	@echo "    test:           Build tests         [bin/unit_tests]"
+	@echo "    tests:          Build tests         [bin/unit_tests]"
 	@echo "    doc:            Build documentation [README.html]"
 	@echo "    coverage:       Run coverage tests  [coverage/]"
 	@echo "    gnatcheck:      Run gnatcheck       [reports/gnatcheck*]"
