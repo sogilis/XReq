@@ -62,7 +62,7 @@ Feature: The simplest works
     When  I compile "simplest_test" in features/tests
     Then  it should pass
     And   "features/tests/simplest_test" should exist
-    When  I run "./simplest_test" in features/tests
+    When  I run "strace ./simplest_test 2>&1 | grep gcda" in features/tests
     Then  it should pass with
       """
       Feature: Sample

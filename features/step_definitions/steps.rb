@@ -4,9 +4,14 @@ Given /^adaspec is in the PATH$/ do
   #system("make bin/adaspec");
   ENV['PATH'] = $adaspec_dir + "/bin" + ":" + ENV['PATH'];
   if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + ":" + $adaspec_dir + "/src/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
   else
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src/lib";
+    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + ":" + $adaspec_dir + "/src/lib";
+  end
+  if ENV['GPR_PROJECT_PATH'] then
+    ENV['GPR_PROJECT_PATH'] = $adaspec_dir + ":" + ENV['GPR_PROJECT_PATH'];
+  else
+    ENV['GPR_PROJECT_PATH'] = $adaspec_dir + ":";
   end
 end
 
@@ -90,7 +95,25 @@ When /^I print (.*)$/ do |str|
 end
 
 When /^I compile "(.*)" in (.*)$/ do |name, dir|
-  When("I run \"gnatmake -gnat05 -aI../step_definitions #{name}\" in #{dir}")
+  f = File.new("#{dir}/main.gpr", "w");
+  puts "COVERAGE=#{ENV['COVERAGE']}"
+  if ENV['COVERAGE'] == 'true' then
+    f.write("with \"adaspeclib-coverage.gpr\";\n");
+  else
+    f.write("with \"adaspeclib-debug.gpr\";\n");
+  end
+  f.write("project Main is\n");
+  f.write("   for Main use (\"#{name}\");\n");
+  f.write("   for Source_Dirs use (\".\", \"../step_definitions\");\n");
+  f.write("   package Compiler is\n");
+  f.write("      for Default_Switches (\"Ada\") use (\"-gnat05\", \"-g\");\n");
+  f.write("   end Compiler;\n");
+  f.write("end Main;\n");
+  f.close();
+  #command="gnatmake #{ENV['GNAT_FLAGS']} -gnat05 -g -aI../step_definitions #{name}"
+  command="gnatmake #{ENV['GNAT_FLAGS']} -Pmain.gpr"
+  puts command
+  When("I run \"#{command}\" in #{dir}")
 end
 
 Then /^it should (fail|pass)$/ do |success|

@@ -75,6 +75,11 @@ clean-gcov:
 	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
 
 gcov-report: dir
+	@echo
+	@echo "###############################"
+	@echo "##  Create coverage reports  ##"
+	@echo "###############################"
+	@echo
 	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
@@ -107,7 +112,14 @@ coverage: tests bin/adaspec.cov
 	-bin/unit_tests >/dev/null 2>&1
 	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
 	lcov -q -d obj/coverage --zerocounters
-	-cucumber features/*.feature >/dev/null 2>&1
+	#GCOV_PREFIX="`pwd`/obj/coverage" GCOV_PREFIX_STRIP=1000
+	-GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" COVERAGE=true \
+	cucumber features/*.feature >/dev/null 2>&1
+	for f in obj/coverage/*.gcda; do \
+		if [ ! -e "$${f%.gcda}.gcno" ]; then \
+			rm -f "$$f"; \
+		fi; \
+	done
 	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/11-cucumber.lcov.info
 	-$(RM) -f bin/adaspec
 	$(MAKE) gcov-report
