@@ -156,10 +156,10 @@ package body Coverage_Suite is
          Found : Boolean := False;
       begin
 
-         if Index (Line, "BEGIN_GCOV_IGNORE") in Line'Range then
+         if Index (Line, "GCOV_IGNORE_BEGIN") in Line'Range then
             Ignore := True;
          end if;
-         if Index (Line, "END_GCOV_IGNORE") in Line'Range then
+         if Index (Line, "GCOV_IGNORE_END") in Line'Range then
             Ignore := False;
          end if;
 
