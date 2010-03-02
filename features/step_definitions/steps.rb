@@ -96,7 +96,6 @@ end
 
 When /^I compile "(.*)" in (.*)$/ do |name, dir|
   f = File.new("#{dir}/main.gpr", "w");
-  puts "COVERAGE=#{ENV['COVERAGE']}"
   if ENV['COVERAGE'] == 'true' then
     f.write("with \"adaspeclib-coverage.gpr\";\n");
   else

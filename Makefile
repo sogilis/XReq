@@ -44,7 +44,7 @@ bin/unit_tests: dir
 tests: dir
 	$(GNATMAKE) -P unit_tests.gpr
 
-doc: dir README.html src/README.html
+doc: dir README.html src/README.html reports/index.html
 	
 clean: clean-gcov
 	-$(RM) -rf tmp

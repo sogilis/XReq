@@ -56,9 +56,28 @@ Feature: Long strings
       """
     And   a file "features/step_definitions/steps.adb":
       """
-      with Util.Strings;
-      use  Util.Strings;
       package body Steps is
+
+        function Decode (Str : in String) return String is
+          Buffer : Unbounded_String;
+          I      : Natural := Str'First;
+        begin
+          while I <= Str'Last loop
+            if Str (I) = '\' then
+              I := I + 1;
+              case Str (I) is
+                when 'n' =>
+                  Append (Buffer, ASCII.LF);
+                when others =>
+                  Append (Buffer, "\" & Str (I));
+              end case;
+            else
+              Append (Buffer, Str (I));
+            end if;
+            I := I + 1;
+          end loop;
+          return To_String (Buffer);
+        end Decode;
 
         procedure Given (Args : in out Arg_Type) is
         begin
@@ -67,7 +86,7 @@ Feature: Long strings
 
         procedure Compare (Args : in out Arg_Type) is
           Origin  : constant String := To_String (First_String);
-          Against : constant String := Decode_Python (Args.Match (1));
+          Against : constant String := Decode (Args.Match (1));
         begin
           Comparaison   := (Origin = Against);
           Second_String := To_Unbounded_String (Against);
