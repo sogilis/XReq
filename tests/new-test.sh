@@ -69,12 +69,12 @@ package body $test_package is
    --  Test_1  ----------------------------------------------------------------
 
    function  Name (T : in Test_1) return String is
+      pragma Unreferenced (T);
    begin
       return "$tested_package";
    end Name;
 
    procedure Run (T : in out Test_1) is
-      pragma Unreferenced (T);
    begin
 
       T.Assert (False, "Missing test for $tested_package");

@@ -19,6 +19,9 @@ with Test_Suite.Generator;
 with Test_Suite.Generator.Ada;
 
 with Test_Suite.Lib;
+with Test_Suite.Lib.Report;
+with Test_Suite.Lib.Format;
+with Test_Suite.Lib.Format.Text;
 
 package body Test_Suite is
 
@@ -31,23 +34,26 @@ package body Test_Suite is
             new AUnit.Test_Suites.Test_Suite;
    begin
 
-      Test_Suite.IO           .Add_Tests (Ret);
-      Test_Suite.Strings      .Add_Tests (Ret);
-      Test_Suite.Strings.Pool .Add_Tests (Ret);
+      Test_Suite.IO             .Add_Tests (Ret);
+      Test_Suite.Strings        .Add_Tests (Ret);
+      Test_Suite.Strings.Pool   .Add_Tests (Ret);
 
-      Test_Suite.Main         .Add_Tests (Ret);
-      Test_Suite.Lang         .Add_Tests (Ret);
-      Test_Suite.CLI          .Add_Tests (Ret);
-      Test_Suite.Job          .Add_Tests (Ret);
-      Test_Suite.Stanzas      .Add_Tests (Ret);
-      Test_Suite.Result       .Add_Tests (Ret);
-      Test_Suite.Steps        .Add_Tests (Ret);
-      Test_Suite.Steps.Ada    .Add_Tests (Ret);
-      Test_Suite.Features     .Add_Tests (Ret);
-      Test_Suite.Generator    .Add_Tests (Ret);
-      Test_Suite.Generator.Ada.Add_Tests (Ret);
+      Test_Suite.Main           .Add_Tests (Ret);
+      Test_Suite.Lang           .Add_Tests (Ret);
+      Test_Suite.CLI            .Add_Tests (Ret);
+      Test_Suite.Job            .Add_Tests (Ret);
+      Test_Suite.Stanzas        .Add_Tests (Ret);
+      Test_Suite.Result         .Add_Tests (Ret);
+      Test_Suite.Steps          .Add_Tests (Ret);
+      Test_Suite.Steps.Ada      .Add_Tests (Ret);
+      Test_Suite.Features       .Add_Tests (Ret);
+      Test_Suite.Generator      .Add_Tests (Ret);
+      Test_Suite.Generator.Ada  .Add_Tests (Ret);
 
-      Test_Suite.Lib          .Add_Tests (Ret);
+      Test_Suite.Lib            .Add_Tests (Ret);
+      Test_Suite.Lib.Report     .Add_Tests (Ret);
+      Test_Suite.Lib.Format     .Add_Tests (Ret);
+      Test_Suite.Lib.Format.Text.Add_Tests (Ret);
 
       return Ret;
 
