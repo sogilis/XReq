@@ -55,7 +55,7 @@ Feature: Run steps with arguments (captures)
           When I concatenate "abc" and "cde"
           Then I get "abccde"
 
-      1 scenarios (1 passed)
+      1 scenario (1 passed)
       2 steps (2 passed)
 
       """

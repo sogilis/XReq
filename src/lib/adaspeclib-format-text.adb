@@ -113,7 +113,11 @@ package body AdaSpecLib.Format.Text is
       Need_Comma : Boolean;
    begin
       New_Line;
-      Put (Trim (Count_Scenarios'Img, Left) & " scenarios (");
+      if Count_Scenarios > 1 then
+         Put (Trim (Count_Scenarios'Img, Left) & " scenarios (");
+      else
+         Put (Trim (Count_Scenarios'Img, Left) & " scenario (");
+      end if;
       Need_Comma := False;
       if Report.Count_Scenario_Failed /= 0 then
          Put (Trim (Report.Count_Scenario_Failed'Img, Left) & " failed");
@@ -126,7 +130,11 @@ package body AdaSpecLib.Format.Text is
       end if;
       Put (")");
       New_Line;
-      Put (Trim (Count_Steps'Img, Left) & " steps (");
+      if Count_Steps > 1 then
+         Put (Trim (Count_Steps'Img, Left) & " steps (");
+      else
+         Put (Trim (Count_Steps'Img, Left) & " step (");
+      end if;
       Need_Comma := False;
       if Report.Count_Steps_Failed /= 0 then
          Put (Trim (Report.Count_Steps_Failed'Img, Left) & " failed");
