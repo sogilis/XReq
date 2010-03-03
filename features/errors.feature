@@ -11,7 +11,7 @@ Feature: Error handling in steps
       """
       Feature: Sample
 
-        Background:
+        Background: B
           Given this step works
 
         Scenario: Run a bad step
@@ -66,7 +66,7 @@ Feature: Error handling in steps
       """
       Feature: Sample
 
-        Background:
+        Background: B
           Given this step works
 
         Scenario: Run a bad step

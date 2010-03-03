@@ -54,7 +54,7 @@ package AdaSpecLib is
 
 private
 
-   type Match_Type is
+   type Match_Type is  --  GCOV_IGNORE
       record
          First : Natural;
          Last  : Natural;

@@ -11,7 +11,7 @@ Feature: ambiguous step definition error reporting
       """
       Feature: Sample
 
-        Background:
+        Background: B
           Given this step works
 
         Scenario: Run a bad step

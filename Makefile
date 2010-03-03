@@ -108,19 +108,22 @@ coverage: tests bin/adaspec.cov
 	-$(RM) -f bin/adaspec
 	$(MAKE) clean-gcov
 	ln -s adaspec.cov bin/adaspec
+	@echo
+	@echo "==>  Run Unit tests"
+	@echo
 	lcov -q -d obj/coverage --zerocounters
 	-bin/unit_tests >/dev/null 2>&1
 	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
+	@echo
+	@echo "==>  Run Cucumber"
+	@echo
+	mkdir -p coverage/cuke
 	lcov -q -d obj/coverage --zerocounters
-	#GCOV_PREFIX="`pwd`/obj/coverage" GCOV_PREFIX_STRIP=1000
-	-GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" COVERAGE=true \
+	-\
+	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
 	cucumber features/*.feature >/dev/null 2>&1
-	for f in obj/coverage/*.gcda; do \
-		if [ ! -e "$${f%.gcda}.gcno" ]; then \
-			rm -f "$$f"; \
-		fi; \
-	done
-	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/11-cucumber.lcov.info
+	lcov -q $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info
 	-$(RM) -f bin/adaspec
 	$(MAKE) gcov-report
 

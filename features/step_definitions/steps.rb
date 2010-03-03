@@ -95,8 +95,17 @@ When /^I print (.*)$/ do |str|
 end
 
 When /^I compile "(.*)" in (.*)$/ do |name, dir|
+  if ENV['COVERAGE'] then
+    n = 0
+    while File.exists?("#{ENV['COVERAGE']}/#{n}.lcov.info") do
+      n = n + 1
+    end
+    system("lcov -q -c -d '#{ENV['COV_OBJ_DIR']}' -t Cucumber -o '#{ENV['COVERAGE']}/#{n}.lcov.info'");
+    system("lcov -q -d '#{ENV['COV_OBJ_DIR']}' --zerocounters");
+  end
+  FileUtils::mkdir_p(dir);
   f = File.new("#{dir}/main.gpr", "w");
-  if ENV['COVERAGE'] == 'true' then
+  if ENV['COVERAGE'] then
     f.write("with \"adaspeclib-coverage.gpr\";\n");
   else
     f.write("with \"adaspeclib-debug.gpr\";\n");
