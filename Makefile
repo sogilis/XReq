@@ -2,7 +2,7 @@
 
 GNATMAKE=gnatmake
 TEST_SUITES=test coverage
-CONFIG=debug
+CONFIG=dbg
 
 all: bin tests doc
 	@echo
@@ -26,8 +26,7 @@ dir:
 	mkdir -p reports
 	mkdir -p coverage
 
-bin: dir
-	$(GNATMAKE) -P adaspec-$(CONFIG).gpr
+bin: bin/adaspec
 
 bin/adaspec.cov: dir
 	$(GNATMAKE) -P adaspec-coverage.gpr
@@ -35,8 +34,12 @@ bin/adaspec.cov: dir
 bin/adaspec.rel: dir
 	$(GNATMAKE) -P adaspec-release.gpr
 
-bin/adaspec: dir
+bin/adaspec.dbg: dir
 	$(GNATMAKE) -P adaspec-debug.gpr
+
+bin/adaspec: bin/adaspec.$(CONFIG)
+	-rm -f bin/adaspec.$(CONFIG)
+	ln -s adaspec.$(CONFIG) bin/adaspec
 
 bin/unit_tests: dir
 	$(GNATMAKE) -P unit_tests-debug.gpr
@@ -129,6 +132,7 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	$(MAKE) _gcov-gather-cucumber
 	-$(RM) -f bin/adaspec
 	$(MAKE) gcov-report
+	ln -s adaspec.$(CONFIG) bin/adaspec
 
 _gcov-gather-cucumber:
 	lcov $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info
