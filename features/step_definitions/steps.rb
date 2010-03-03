@@ -100,6 +100,7 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
     while File.exists?("#{ENV['COVERAGE']}/#{n}.lcov.info") do
       n = n + 1
     end
+    puts "Create: #{ENV['COVERAGE']}/#{n}.lcov.info"
     system("lcov -q -c -d '#{ENV['COV_OBJ_DIR']}' -t Cucumber -o '#{ENV['COVERAGE']}/#{n}.lcov.info'");
     system("lcov -q -d '#{ENV['COV_OBJ_DIR']}' --zerocounters");
   end
