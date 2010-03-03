@@ -35,8 +35,12 @@ package AdaSpecLib.Format is
    procedure Put_Summary    (Format     : in out Format_Type;
                              Report     : in     Report_Type)
                              is abstract;
+   procedure Set_Output     (Format     : in out Format_Type;  --  GCOV_IGNORE
+                             Output     : in     String) is null;
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Format_Type'Class, Format_Ptr);
+
+   function Get_Formatter (Name : in String) return Format_Ptr;
 
 end AdaSpecLib.Format;

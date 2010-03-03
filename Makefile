@@ -127,6 +127,7 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
 	cucumber features/*.feature >/dev/null 2>&1
+	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
 	$(MAKE) _gcov-gather-cucumber
 	-$(RM) -f bin/adaspec
 	$(MAKE) gcov-report
@@ -144,8 +145,8 @@ run-cucumber: bin
 	@echo "##  Run cucumber  ##"
 	@echo "####################"
 	@echo
-	cucumber -t "~@wip" features/*.feature
 	cucumber -w -t "@wip" features/*.feature
+	cucumber -t "~@wip" features/*.feature
 
 run-tests: tests bin
 	@echo

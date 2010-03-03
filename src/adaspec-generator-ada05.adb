@@ -363,19 +363,29 @@ package body AdaSpec.Generator.Ada05 is
       With_B.Put_Line ("--  File: " & Filename);
       With_B.Put_Line ("with Ada.Command_Line;");
       With_B.Put_Line ("with AdaSpecLib;");
+      With_B.Put_Line ("with AdaSpecLib.CLI;");
+      With_B.Put_Line ("with AdaSpecLib.Util;");
       With_B.Put_Line ("with AdaSpecLib.Report;");
       With_B.Put_Line ("with AdaSpecLib.Format;");
       With_B.Put_Line ("with AdaSpecLib.Format.Text;");
       With_B.Put_Line ("use  AdaSpecLib;");
+      With_B.Put_Line ("use  AdaSpecLib.CLI;");
+      With_B.Put_Line ("use  AdaSpecLib.Util;");
       With_B.Put_Line ("use  AdaSpecLib.Report;");
       With_B.Put_Line ("use  AdaSpecLib.Format;");
       With_B.Put_Line ("use  AdaSpecLib.Format.Text;");
       Body_B.Put_Line ("procedure " & Prc_Name & " is");
       Body_B.Indent;
-      Body_B.Put_Line ("Report : Report_Type;");
-      Body_B.Put_Line ("Format : Format_Ptr := Format_Ptr (New_Text_Format);");
+      Body_B.Put_Line ("Self_Name : constant String := " &
+                       Ada_String (Prc_Name) & ";");
+      Body_B.Put_Line ("Continue  : Boolean;");
+      Body_B.Put_Line ("Report    : Report_Type;");
+      Body_B.Put_Line ("Format    : Format_Ptr;");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
+      Body_B.Indent;
+      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Self_Name);");
+      Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
@@ -390,7 +400,18 @@ package body AdaSpec.Generator.Ada05 is
                        "(Ada.Command_Line.Failure);");
       Body_B.UnIndent;
       Body_B.Put_Line ("end if;");
+      Body_B.UnIndent;
+      Body_B.Put_Line ("end if;");
       Body_B.Put_Line ("Free (Format);");
+      Body_B.UnIndent;
+      Body_B.Put_Line ("exception");
+      Body_B.Indent;
+      Body_B.Put_Line ("when E : others =>");
+      Body_B.Indent;
+      Body_B.Put_Line ("Put_Exception_Information (E);");
+      Body_B.Put_Line ("Ada.Command_Line.Set_Exit_Status " &
+                       "(Ada.Command_Line.Failure);");
+      Body_B.UnIndent;
       Body_B.UnIndent;
       Body_B.Put_Line ("end " & Prc_Name & ";");
 

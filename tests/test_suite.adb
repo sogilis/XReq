@@ -19,6 +19,7 @@ with Test_Suite.Generator;
 with Test_Suite.Generator.Ada05;
 
 with Test_Suite.Lib;
+with Test_Suite.Lib.Util;
 with Test_Suite.Lib.Report;
 with Test_Suite.Lib.Format;
 with Test_Suite.Lib.Format.Text;
@@ -51,6 +52,7 @@ package body Test_Suite is
       Test_Suite.Generator.Ada05.Add_Tests (Ret);
 
       Test_Suite.Lib            .Add_Tests (Ret);
+      Test_Suite.Lib.Util       .Add_Tests (Ret);
       Test_Suite.Lib.Report     .Add_Tests (Ret);
       Test_Suite.Lib.Format     .Add_Tests (Ret);
       Test_Suite.Lib.Format.Text.Add_Tests (Ret);

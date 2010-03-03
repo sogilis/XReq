@@ -11,9 +11,6 @@ Feature:
       """
       Feature: Sample
 
-      Background:
-        Given this step works
-
       Scenario: Run a good step
         Given this step works
 
@@ -49,7 +46,6 @@ Feature:
     Then it should pass
     Given I am in "features/tests"
 
-  @wip
   Scenario: Help
     When I run "./test_suite -h"
     Then it should pass
@@ -60,4 +56,53 @@ Feature:
       SYNOPSIS
 
           test_suite [OPTIONS]
+      """
+
+  Scenario: Text Format
+    When I run "./test_suite -f TexT"
+    Then it should pass
+    And the output should contain
+      """
+      1 scenario (1 passed)
+      1 step (1 passed)
+      """
+
+  Scenario: Unknown Format
+    When I run "./test_suite -f toto"
+    Then it should pass
+    And the output should contain
+      """
+      Invalid format: toto
+      """
+    And the output should contain
+      """
+      1 scenario (1 passed)
+      1 step (1 passed)
+      """
+
+  Scenario: Unknown Switch
+    When I run "./test_suite -toto"
+    Then it should fail
+    And the output should contain
+    """
+    Invalid switch
+    """
+
+  Scenario: Missing parameter
+    When I run "./test_suite --format"
+    Then it should fail
+    And the output should contain
+    """
+    Missing parameter for switch --format
+    """
+
+  @wip
+  Scenario: Text with output
+    When I run "./test_suite -f TexT -o report.txt"
+    Then it should pass
+    And  "report.txt" should exist
+    And  "report.txt" should contain
+      """
+      1 scenario (1 passed)
+      1 step (1 passed)
       """

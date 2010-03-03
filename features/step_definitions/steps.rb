@@ -122,6 +122,9 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
   f.write("   package Compiler is\n");
   f.write("      for Default_Switches (\"Ada\") use (\"-gnat05\", \"-g\");\n");
   f.write("   end Compiler;\n");
+  f.write("   package Binder is\n");
+  f.write("      for Default_Switches (\"Ada\") use (\"-E\");\n");
+  f.write("   end Binder;\n");
   f.write("end Main;\n");
   f.close();
   #command="gnatmake #{ENV['GNAT_FLAGS']} -gnat05 -g -aI../step_definitions #{name}"
@@ -161,6 +164,10 @@ end
 
 Then /^"([^\"]*)" should match "([^\"]*)"$/ do |file, text|
   File.open(file, Cucumber.file_mode('r')).read.should =~ Regexp.new(text)
+end
+
+Then /^"([^\"]*)" should contain$/ do |file, text|
+  File.open(file, Cucumber.file_mode('r')).read.should include(text)
 end
 
 Then /^print output$/ do
