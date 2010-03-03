@@ -68,18 +68,11 @@ package body AdaSpecLib.Format.Text is
             J    : Natural := Text'First;
          begin
             while J <= Text'Last loop
-               if J + 2 <= Text'Last and then
-                  Text (J .. J + 2) = """"""""
-               then
-                  Put ("\""\""\""");
-                  J := J + 3;
-               else
-                  Put (Text (J));
-                  if Text (J) = ASCII.LF then
-                     Put ("      ");
-                  end if;
-                  J := J + 1;
+               Put (Text (J));
+               if Text (J) = ASCII.LF then
+                  Put ("      ");
                end if;
+               J := J + 1;
             end loop;
          end;
          New_Line;
