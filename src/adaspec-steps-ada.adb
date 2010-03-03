@@ -68,27 +68,30 @@ package body AdaSpec.Steps.Ada is
    -------------
 
    procedure Parse (S : in out Ada_Step_File_Type) is
-      File         : File_Type;
-      Line_S       : Unbounded_String;
-      Idx_Next     : Natural;
-      Idx_Tk       : Natural;
-      Idx          : Natural;
-      Tokens       : constant String_List
-                   := (To_Unbounded_String ("@given"),
-                       To_Unbounded_String ("@when"),
-                       To_Unbounded_String ("@then"),
-                       To_Unbounded_String ("package "),
-                       To_Unbounded_String ("procedure "));
-      Prefix       : Prefix_Type;
-      Found_Pkg    : Boolean;
-      Found_Prc    : Boolean;
-      Found        : Boolean;
-      Pattern      : Unbounded_String;
-      Package_S    : Unbounded_String;
-      Procedure_S  : Unbounded_String;
-      Current_Step : Step_Type;
-      Pending_Step : Boolean := False;
-      Char         : Character;
+      use Step_Container;
+      File          : File_Type;
+      Line_S        : Unbounded_String;
+      Idx_Next      : Natural;
+      Idx_Tk        : Natural;
+      Idx           : Natural;
+      Tokens        : constant String_List
+                    := (To_Unbounded_String ("@given"),
+                        To_Unbounded_String ("@when"),
+                        To_Unbounded_String ("@then"),
+                        To_Unbounded_String ("package "),
+                        To_Unbounded_String ("procedure "));
+      Prefix        : Prefix_Type;
+      Found_Pkg     : Boolean;
+      Found_Prc     : Boolean;
+      Found         : Boolean;
+      Pattern       : Unbounded_String;
+      Package_S     : Unbounded_String;
+      Procedure_S   : Unbounded_String;
+      Current_Steps : Step_Container.Vector;
+      I             : Step_Container.Cursor;
+      Current_Step  : Step_Type;
+      Pending_Step  : Boolean := False;
+      Char          : Character;
    begin
       Open (File, In_File, To_String (S.File_Name));
       while not End_Of_File (File) loop
@@ -119,13 +122,13 @@ package body AdaSpec.Steps.Ada is
             Idx := Index_Non_Blank (Line_S, Idx_Next);
             if Idx /= 0 then
                Pattern := Unbounded_Slice (Line_S, Idx, Length (Line_S));
-               if Pending_Step then
-                  --  TODO: use better reporting method
-                  Put_Line (Name (File) & ":" &
-                           Natural'Image (Natural (Line (File) - 1)) & ":" &
-                           Natural'Image (Idx_Next) & ": " &
-                           "Warning: expecting procedure for previous step");
-               end if;
+               --  if Pending_Step then
+               --   --  TODO: use better reporting method
+               --   Put_Line (Name (File) & ":" &
+               --            Natural'Image (Natural (Line (File) - 1)) & ":" &
+               --            Natural'Image (Idx_Next) & ": " &
+               --            "Warning: expecting procedure for previous step");
+               --  end if;
                Current_Step := Step_Type'(
                   Prefix    => Prefix,
                   --  TODO: free memory
@@ -133,6 +136,7 @@ package body AdaSpec.Steps.Ada is
                                Compile (To_String (Pattern))),
                   Pattern_S => Pattern,
                   others    => <>);
+               Append (Current_Steps, Current_Step);
                Pending_Step := True;
             else
                --  TODO: use better reporting method
@@ -173,8 +177,14 @@ package body AdaSpec.Steps.Ada is
                Char := Element (Line_S, Idx);
             end loop;
 --             Put_Line ("Procedure " & To_String (Procedure_S));
-            Current_Step.Proc_Name := Package_S & '.' & Procedure_S;
-            S.Steps.Append (Current_Step);
+            I := First (Current_Steps);
+            while Has_Element (I) loop
+               Current_Step := Element (I);
+               Current_Step.Proc_Name := Package_S & '.' & Procedure_S;
+               S.Steps.Append (Current_Step);
+               Next (I);
+            end loop;
+            Clear (Current_Steps);
             Pending_Step := False;
          end if;
       end loop;

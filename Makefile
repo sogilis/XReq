@@ -4,7 +4,7 @@ GNATMAKE=gnatmake
 TEST_SUITES=test coverage
 CONFIG=debug
 
-all: bin test doc
+all: bin tests doc
 	@echo
 	@echo "####################################################"
 	@echo "##                                                ##"

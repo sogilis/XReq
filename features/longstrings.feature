@@ -15,6 +15,15 @@ Feature: Long strings
       """
       Feature: test
 
+        Background:
+          Given two long strings:
+            \"""
+            a
+            \"""
+            \"""
+            b
+            \"""
+
         Scenario: A
           Given the long string:
             '''
@@ -43,6 +52,7 @@ Feature: Long strings
         Second_String : Unbounded_String;
         Comparaison   : Boolean;
 
+        --  @given ^two long strings:$
         --  @given ^the long string:$
         procedure Given (Args : in out Arg_Type);
 
@@ -111,6 +121,15 @@ Feature: Long strings
       """
       Feature: test
 
+        Background:
+          Given two long strings:
+            \"""
+            a
+            \"""
+            \"""
+            b
+            \"""
+
         Scenario: A
           Given the long string:
             \"\"\"
@@ -130,6 +149,6 @@ Feature: Long strings
           Then they are equal
 
       2 scenarios (2 passed)
-      6 steps (6 passed)
+      8 steps (8 passed)
 
       """
