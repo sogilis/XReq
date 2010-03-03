@@ -10,7 +10,7 @@ use Util.Strings;
 use Util.Strings.Pool;
 use AdaSpec.Result;
 
-package AdaSpec.Generator.Ada is
+package AdaSpec.Generator.Ada05 is
 
    type Ada_Generator_Type is new Generator_Type with private;
    type Ada_Generator_Ptr is access all Ada_Generator_Type'Class;
@@ -44,4 +44,4 @@ private
       end record;
 
 
-end AdaSpec.Generator.Ada;
+end AdaSpec.Generator.Ada05;

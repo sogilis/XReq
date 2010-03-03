@@ -13,10 +13,10 @@ with Test_Suite.Job;
 with Test_Suite.Result;
 with Test_Suite.Stanzas;
 with Test_Suite.Steps;
-with Test_Suite.Steps.Ada;
+with Test_Suite.Steps.Ada05;
 with Test_Suite.Features;
 with Test_Suite.Generator;
-with Test_Suite.Generator.Ada;
+with Test_Suite.Generator.Ada05;
 
 with Test_Suite.Lib;
 with Test_Suite.Lib.Report;
@@ -45,10 +45,10 @@ package body Test_Suite is
       Test_Suite.Stanzas        .Add_Tests (Ret);
       Test_Suite.Result         .Add_Tests (Ret);
       Test_Suite.Steps          .Add_Tests (Ret);
-      Test_Suite.Steps.Ada      .Add_Tests (Ret);
+      Test_Suite.Steps.Ada05    .Add_Tests (Ret);
       Test_Suite.Features       .Add_Tests (Ret);
       Test_Suite.Generator      .Add_Tests (Ret);
-      Test_Suite.Generator.Ada  .Add_Tests (Ret);
+      Test_Suite.Generator.Ada05.Add_Tests (Ret);
 
       Test_Suite.Lib            .Add_Tests (Ret);
       Test_Suite.Lib.Report     .Add_Tests (Ret);

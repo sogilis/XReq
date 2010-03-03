@@ -1,6 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.Generator.Ada;
+with AdaSpec.Generator.Ada05;
 
 package body AdaSpec.Generator is
 
@@ -8,7 +8,8 @@ package body AdaSpec.Generator is
                        Env : in  Job_Environment;
                        Gen : out Generator_Ptr)
    is
-      Ada_Gen : constant Ada.Ada_Generator_Ptr := new Ada.Ada_Generator_Type;
+      Ada_Gen : constant Ada05.Ada_Generator_Ptr
+              := new Ada05.Ada_Generator_Type;
    begin
       Ada_Gen.Make (Job, Env);
       Ada_Gen.Generate;
@@ -29,7 +30,7 @@ package body AdaSpec.Generator is
                              Env  : in Job_Environment)
    is
    begin
-      Ada.Generate_Suite (Gens, Name, Env);
+      Ada05.Generate_Suite (Gens, Name, Env);
    end Generate_Suite;
 
 end AdaSpec.Generator;

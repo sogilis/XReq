@@ -12,7 +12,7 @@ use Util.IO;
 use AdaSpec.Job;
 use AdaSpec.Generator;
 
-package body Test_Suite.Generator.Ada is
+package body Test_Suite.Generator.Ada05 is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
@@ -26,7 +26,7 @@ package body Test_Suite.Generator.Ada is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Generator.Ada");
+      return ("AdaSpec.Generator.Ada05");
    end Name;
 
    procedure Run (T : in out Test_1) is
@@ -67,5 +67,5 @@ package body Test_Suite.Generator.Ada is
 
    end Run;
 
-end Test_Suite.Generator.Ada;
+end Test_Suite.Generator.Ada05;
 

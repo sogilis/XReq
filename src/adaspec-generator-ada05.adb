@@ -12,7 +12,7 @@ use Ada.Text_IO;
 use Util.IO;
 use AdaSpec.Steps;
 
-package body AdaSpec.Generator.Ada is
+package body AdaSpec.Generator.Ada05 is
 
 
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
@@ -399,4 +399,4 @@ package body AdaSpec.Generator.Ada is
       Put_Line ("Generate: " & Filename);
    end Generate_Suite;
 
-end AdaSpec.Generator.Ada;
+end AdaSpec.Generator.Ada05;

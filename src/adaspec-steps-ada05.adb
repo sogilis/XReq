@@ -16,7 +16,7 @@ use Util.IO;
 use Util.Strings;
 use AdaSpec;
 
-package body AdaSpec.Steps.Ada is
+package body AdaSpec.Steps.Ada05 is
 
    -----------------------
    --  Parse_Directory  --
@@ -288,4 +288,4 @@ package body AdaSpec.Steps.Ada is
 
 
 
-end AdaSpec.Steps.Ada;
+end AdaSpec.Steps.Ada05;

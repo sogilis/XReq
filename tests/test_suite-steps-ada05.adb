@@ -6,7 +6,7 @@ with Ada.Directories;
 with AdaSpec;
 with AdaSpec.Stanzas;
 with AdaSpec.Steps;
-with AdaSpec.Steps.Ada;
+with AdaSpec.Steps.Ada05;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
@@ -14,9 +14,9 @@ use Ada.Directories;
 use AdaSpec;
 use AdaSpec.Stanzas;
 use AdaSpec.Steps;
-use AdaSpec.Steps.Ada;
+use AdaSpec.Steps.Ada05;
 
-package body Test_Suite.Steps.Ada is
+package body Test_Suite.Steps.Ada05 is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
@@ -31,7 +31,7 @@ package body Test_Suite.Steps.Ada is
    function  Name (T : in Test_Sample1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AsaSpec.Steps.Ada sample1.ads");
+      return ("AsaSpec.Steps.Ada05 sample1.ads");
    end Name;
 
    procedure Run (T : in out Test_Sample1) is
@@ -104,7 +104,7 @@ package body Test_Suite.Steps.Ada is
    function  Name (T : in Test_Parse_Dir) return String is
       pragma Unreferenced (T);
    begin
-      return ("AsaSpec.Steps.Ada.Parse_Directory");
+      return ("AsaSpec.Steps.Ada05.Parse_Directory");
    end Name;
 
    procedure Run (T : in out Test_Parse_Dir) is
@@ -142,4 +142,4 @@ package body Test_Suite.Steps.Ada is
    end Run;
 
 
-end Test_Suite.Steps.Ada;
+end Test_Suite.Steps.Ada05;

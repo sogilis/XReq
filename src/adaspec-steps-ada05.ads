@@ -5,7 +5,7 @@ with GNAT.Regpat;
 
 use Ada.Containers;
 
-package AdaSpec.Steps.Ada is
+package AdaSpec.Steps.Ada05 is
 
 
    --  Called in AdaSpec.Steps.Load
@@ -36,10 +36,8 @@ private
 
    type Pattern_Matcher_Ptr is access all GNAT.Regpat.Pattern_Matcher;
 
---    procedure Free is new Ada.Unchecked_Deallocation
---       (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
-   procedure Free (P : in out Pattern_Matcher_Ptr) is null;  --  GCOV_IGNORE
-   --  TODO: make the Unchecked_Deallocation work.
+   procedure Free is new Ada.Unchecked_Deallocation
+      (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
 
    type Step_Type is
       record
@@ -57,4 +55,4 @@ private
          Steps  : Step_Container.Vector;
       end record;
 
-end AdaSpec.Steps.Ada;
+end AdaSpec.Steps.Ada05;

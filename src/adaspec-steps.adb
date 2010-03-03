@@ -1,6 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.Steps.Ada;
+with AdaSpec.Steps.Ada05;
 
 package body AdaSpec.Steps is
 
@@ -55,7 +55,7 @@ package body AdaSpec.Steps is
    begin
       case Language is
          when Lang_Ada =>
-            AdaSpec.Steps.Ada.Parse_Directory (Steps, Directory);
+            AdaSpec.Steps.Ada05.Parse_Directory (Steps, Directory);
       end case;
    end Load;
 
