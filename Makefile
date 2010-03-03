@@ -38,7 +38,7 @@ bin/adaspec.dbg: dir
 	$(GNATMAKE) -P adaspec-debug.gpr
 
 bin/adaspec: bin/adaspec.$(CONFIG)
-	-rm -f bin/adaspec.$(CONFIG)
+	-rm -f bin/adaspec
 	ln -s adaspec.$(CONFIG) bin/adaspec
 
 bin/unit_tests: dir
