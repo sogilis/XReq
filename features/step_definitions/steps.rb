@@ -110,6 +110,8 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
     system("lcov -q -d '#{ENV['COV_OBJ_DIR']}' --zerocounters");
   end
   FileUtils::mkdir_p(dir);
+  FileUtils::rm_rf("#{dir}/obj");
+  FileUtils::mkdir_p("#{dir}/obj");
   f = File.new("#{dir}/main.gpr", "w");
   if ENV['COVERAGE'] then
     f.write("with \"adaspeclib-coverage.gpr\";\n");
@@ -117,8 +119,10 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
     f.write("with \"adaspeclib-debug.gpr\";\n");
   end
   f.write("project Main is\n");
-  f.write("   for Main use (\"#{name}\");\n");
+  f.write("   for Main        use (\"#{name}\");\n");
   f.write("   for Source_Dirs use (\".\", \"../step_definitions\");\n");
+  f.write("   for Object_Dir  use \"obj\";\n");
+  f.write("   for Exec_Dir    use \".\";\n");
   f.write("   package Compiler is\n");
   f.write("      for Default_Switches (\"Ada\") use (\"-gnat05\", \"-g\");\n");
   f.write("   end Compiler;\n");
@@ -129,7 +133,7 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
   f.close();
   #command="gnatmake #{ENV['GNAT_FLAGS']} -gnat05 -g -aI../step_definitions #{name}"
   command="gnatmake #{ENV['GNAT_FLAGS']} -Pmain.gpr 2>&1"
-  puts command
+  #puts command
   When("I run \"#{command}\" in #{dir}")
 end
 
