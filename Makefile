@@ -71,8 +71,6 @@ clean-gcov:
 	lcov -q -d obj/coverage --zerocounters
 	#-find obj -name "*.gcda" -print0 | xargs -0 rm -f
 	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
-	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
-	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
 
 gcov-report: dir
 	@echo
@@ -107,6 +105,8 @@ coverage: tests bin/adaspec.cov
 	gnatmake -P adaspec-coverage.gpr
 	-$(RM) -f bin/adaspec
 	$(MAKE) clean-gcov
+	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
+	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
 	ln -s adaspec.cov bin/adaspec
 	@echo
 	@echo "==>  Run Unit tests"
@@ -139,7 +139,7 @@ run-cucumber: bin
 	cucumber -t "~@wip" features/*.feature
 	cucumber -w -t "@wip" features/*.feature
 
-run-tests: tests
+run-tests: tests bin
 	@echo
 	@echo "######################"
 	@echo "##  Run unit tests  ##"

@@ -1,8 +1,11 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with Ada.IO_Exceptions;
+with Ada.Strings.Fixed;
 with GNAT.OS_Lib;
 
+use Ada.Strings.Fixed;
 use GNAT.OS_Lib;
 
 package body Util.IO is
@@ -153,22 +156,35 @@ package body Util.IO is
                     Return_Code   : out    Integer;
                     Err_To_Out    : in     Boolean := True)
    is
---       use Ada.Directories;
+      --  use Ada.Directories;
       use Char_IO;
       Tmp_File : File_Type;
-      Cmd_Path : GNAT.OS_Lib.String_Access
-               := Locate_Exec_On_Path (Command_Name);
+      Cmd_Path : GNAT.OS_Lib.String_Access;
    begin
       Create (Tmp_File);
---       Ada.Text_IO.Put_Line ("Temp file: " & Name (Tmp_File));
-      Spawn  (Cmd_Path.all,
-              Args,
-              Name (Tmp_File),
-              Success,
-              Return_Code,
-              Err_To_Out);
---       Ada.Text_IO.Put_Line ("Result " & Command_Name & " " &
---          Success'Img & Return_Code'Img);
+      --  Ada.Text_IO.Put_Line ("Temp file: " & Name (Tmp_File));
+      if Index (Command_Name, "/") not in Command_Name'Range then
+         Cmd_Path := Locate_Exec_On_Path (Command_Name);
+         if Cmd_Path = null then
+            raise Ada.IO_Exceptions.Name_Error
+               with "Cannot locate """ & Command_Name & """ on the PATH";
+         end if;
+         Spawn  (Cmd_Path.all,
+                 Args,
+                 Name (Tmp_File),
+                 Success,
+                 Return_Code,
+                 Err_To_Out);
+      else
+         Spawn  (Command_Name,
+                 Args,
+                 Name (Tmp_File),
+                 Success,
+                 Return_Code,
+                 Err_To_Out);
+      end if;
+      --  Ada.Text_IO.Put_Line ("Result " & Command_Name & " " &
+      --     Success'Img & Return_Code'Img);
       Read_Whole_File (Tmp_File, Output_Buffer);
       Delete (Tmp_File);
       Free (Cmd_Path);
