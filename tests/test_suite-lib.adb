@@ -8,18 +8,19 @@ package body Test_Suite.Lib is
 
    procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
    begin
-      Ret.Add_Test (new Test_1);
+      Ret.Add_Test (new Test_Args);
+      Ret.Add_Test (new Test_Assert);
    end Add_Tests;
 
-   --  Test_1  ----------------------------------------------------------------
+   --  Test_Args  -------------------------------------------------------------
 
-   function  Name (T : in Test_1) return String is
+   function  Name (T : in Test_Args) return String is
       pragma Unreferenced (T);
    begin
       return "AdaSpecLib.Arg_Type";
    end Name;
 
-   procedure Run (T : in out Test_1) is
+   procedure Run (T : in out Test_Args) is
       Stanza : constant String := "abcdefghijklm";
       Match1 : constant String := "abc";
       Match2 : constant String := "ghi";
@@ -62,6 +63,39 @@ package body Test_Suite.Lib is
       T.Assert (First = 7, "Match (2, First) incorrect");
       T.Assert (Last  = 9, "Match (2, Last) incorrect");
 
+      T.Assert (Args.Num_Text = 0, "No text until Add_Text is called");
+
+      Args.Add_Text ("1st text");
+      T.Assert (Args.Num_Text = 1, "1 text should be present");
+
+      Args.Add_Text ("2nd text");
+      T.Assert (Args.Num_Text = 2, "2 text should be present");
+
+      T.Assert (Args.Text (0) = "1st text", "First text mismatch");
+
+      T.Assert (Args.Text (1) = "2nd text", "Second text mismatch");
+
+   end Run;
+
+   --  Test_Assert  -----------------------------------------------------------
+
+   function  Name (T : in Test_Assert) return String is
+      pragma Unreferenced (T);
+   begin
+      return "AdaSpecLib.Assert";
+   end Name;
+
+   procedure Run (T : in out Test_Assert) is
+   begin
+      begin
+         AdaSpecLib.Assert (False, "errmsg");
+         T.Assert (False, "Assert should raise AdaSpecLib.Error");
+      exception
+         when E : AdaSpecLib.Error =>
+            T.Assert (Exception_Message (E) = "errmsg",
+                      "Exception message not OK. Found: '" &
+                      Exception_Message (E) & "'");
+      end;
    end Run;
 
 end Test_Suite.Lib;
