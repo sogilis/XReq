@@ -29,4 +29,8 @@ project Unit_Tests is
       for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
    end Linker;
 
+   package Binder is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Coverage;
+   end Binder;
+
 end Unit_Tests;

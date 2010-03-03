@@ -12,4 +12,12 @@ library project AdaSpecLib.Debug extends "adaspeclib.gpr" is
       for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
    end Compiler;
 
+   package Linker is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug;
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Debug;
+   end Binder;
+
 end AdaSpecLib.Debug;

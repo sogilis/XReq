@@ -20,7 +20,15 @@ abstract project Config is
       );
 
    Ada_Switches_Debug := Ada_Switches & (
+      "-gnata",         --  Pragma Debug and Assert
       "-g"              --  Debug
+      );
+
+   Ada_Switches_Binder_Debug :=  (
+      "-E"              -- get strack information on exceptions
+      );
+
+   Ada_Switches_Linker_Debug :=  (
       );
 
    Ada_Switches_Coverage := Ada_Switches_Debug & (
@@ -28,9 +36,11 @@ abstract project Config is
       "-ftest-coverage" -- to use gcov
       );
 
-   Ada_Switches_Linker_Coverage :=  (
+   Ada_Switches_Linker_Coverage := Ada_Switches_Linker_Debug & (
       "-fprofile-arcs"  -- to use gcov
       );
+
+   Ada_Switches_Binder_Coverage := Ada_Switches_Binder_Debug;
 
    package Builder is
    end Builder;
