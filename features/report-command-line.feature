@@ -68,7 +68,7 @@ Feature:
       """
 
   Scenario: Unknown Format
-    When I run "./test_suite -f toto"
+    When I run "./test_suite -f toto 2>&1"
     Then it should pass
     And the output should contain
       """
@@ -81,7 +81,7 @@ Feature:
       """
 
   Scenario: Unknown Switch
-    When I run "./test_suite -toto"
+    When I run "./test_suite -toto 2>&1"
     Then it should fail
     And the output should contain
     """
@@ -89,7 +89,7 @@ Feature:
     """
 
   Scenario: Missing parameter
-    When I run "./test_suite --format"
+    When I run "./test_suite --format 2>&1"
     Then it should fail
     And the output should contain
     """
