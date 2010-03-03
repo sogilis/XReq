@@ -128,7 +128,7 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
   f.write("end Main;\n");
   f.close();
   #command="gnatmake #{ENV['GNAT_FLAGS']} -gnat05 -g -aI../step_definitions #{name}"
-  command="gnatmake #{ENV['GNAT_FLAGS']} -Pmain.gpr"
+  command="gnatmake #{ENV['GNAT_FLAGS']} -Pmain.gpr 2>&1"
   puts command
   When("I run \"#{command}\" in #{dir}")
 end
