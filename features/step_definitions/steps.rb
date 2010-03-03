@@ -33,6 +33,11 @@ Given /^I am in an empty directory$/ do
   #puts FileUtils.pwd();
 end
 
+Given /^I am in the adaspec directory$/ do
+  @oldcwd = FileUtils.pwd();
+  FileUtils.cd($adaspec_dir);
+end
+
 Given /^I am in "(.*)"$/ do |dir|
   @oldcwd = FileUtils.pwd();
   FileUtils.cd(dir);
