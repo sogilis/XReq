@@ -1,0 +1,12 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config.gpr";
+with "adaspec-debug.gpr";
+
+project Unit_Tests.Debug extends "unit_tests.gpr" is
+
+   for Object_Dir  use "obj/debug";
+   for Exec_Dir    use "bin";
+
+end Unit_Tests.Debug;

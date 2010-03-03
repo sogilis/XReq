@@ -1,0 +1,24 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config.gpr";
+with "adaspec-coverage.gpr";
+
+project Unit_Tests.Coverage extends "unit_tests.gpr" is
+
+   for Object_Dir  use "obj/coverage";
+   for Exec_Dir    use "bin";
+
+   package Builder is
+      for Executable ("test_main") use "unit_tests.cov";
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
+   end Linker;
+
+   package Binder is
+      for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Coverage;
+   end Binder;
+
+end Unit_Tests.Coverage;

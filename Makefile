@@ -39,10 +39,13 @@ bin/adaspec: dir
 	$(GNATMAKE) -P adaspec-debug.gpr
 
 bin/unit_tests: dir
-	$(GNATMAKE) -P unit_tests.gpr
+	$(GNATMAKE) -P unit_tests-debug.gpr
+
+bin/unit_tests.cov: dir
+	$(GNATMAKE) -P unit_tests-coverage.gpr
 
 tests: dir
-	$(GNATMAKE) -P unit_tests.gpr
+	$(GNATMAKE) -P unit_tests-debug.gpr
 
 doc: dir README.html src/README.html reports/index.html
 	
@@ -72,7 +75,7 @@ clean-gcov:
 	#-find obj -name "*.gcda" -print0 | xargs -0 rm -f
 	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
 
-gcov-report: dir
+gcov-report: dir bin/unit_tests
 	@echo
 	@echo "###############################"
 	@echo "##  Create coverage reports  ##"
@@ -96,7 +99,7 @@ gcov-report: dir
 	-bin/unit_tests -suite=coverage -text
 	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
 
-coverage: tests bin/adaspec.cov
+coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	@echo
 	@echo "##########################"
 	@echo "##  Run coverage tests  ##"
@@ -112,22 +115,27 @@ coverage: tests bin/adaspec.cov
 	@echo "==>  Run Unit tests"
 	@echo
 	lcov -q -d obj/coverage --zerocounters
-	-bin/unit_tests >/dev/null 2>&1
+	-bin/unit_tests.cov >/dev/null 2>&1
 	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
 	@echo
 	@echo "==>  Run Cucumber"
 	@echo
-	mkdir -p coverage/cuke
+	-rm -rf coverage/cuke
+	-mkdir -p coverage/cuke
 	lcov -q -d obj/coverage --zerocounters
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
 	cucumber features/*.feature >/dev/null 2>&1
-	lcov -q $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info
+	$(MAKE) _gcov-gather-cucumber
 	-$(RM) -f bin/adaspec
 	$(MAKE) gcov-report
 
-.PHONY: clean-gcov gcov-report coverage
+_gcov-gather-cucumber:
+	lcov $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info
+	-rm -rf coverage/cuke
+
+.PHONY: clean-gcov gcov-report _gcov-gather-cucumber coverage
 
 
 run-cucumber: bin
