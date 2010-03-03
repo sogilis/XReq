@@ -99,7 +99,7 @@ package body Test_Suite.IO is
       Result  : Integer;
    begin
 
-      Spawn ("true", "", Output, Success, Result);
+      Spawn ("/bin/true", "", Output, Success, Result);
       T.Assert (Success, "Failure running `true`");
       T.Assert (Result = 0, "`true` returned error status"& Result'Img);
 

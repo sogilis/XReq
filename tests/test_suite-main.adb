@@ -18,8 +18,9 @@ package body Test_Suite.Main is
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
    is
    begin
-      Ret.Add_Test (new Test_1);
-      Ret.Add_Test (new Test_2);
+--       Ret.Add_Test (new Test_1);
+--       Ret.Add_Test (new Test_2);
+      null;
    end Add_Tests;
 
 
