@@ -175,7 +175,7 @@ test-report:
 	-$(MAKE) test-report-unit
 	-$(MAKE) test-report-cucumber
 
-test-report-unit: tests
+test-report-unit: tests bin
 	@echo
 	@echo "##################################"
 	@echo "##  Generate unit test reports  ##"
