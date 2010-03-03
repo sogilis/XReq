@@ -1,3 +1,4 @@
+*.gcda
 *.gpr
 *.ad[bs]
 *.ali
