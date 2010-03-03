@@ -137,6 +137,8 @@ package body AdaSpecLib.CLI is
          Continue := False;
       --  GCOV_IGNORE_BEGIN
       when E : others =>
+         Format   := null;
+         Continue := True;
          Free (Parser);
          Free (Format);
          Reraise_Occurrence (E);
