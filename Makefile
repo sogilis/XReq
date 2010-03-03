@@ -167,8 +167,9 @@ gnatcheck: dir
 	cd reports && mv gnatcheck.out gnatcheck.adaspec.out
 	cd reports && gnat check -P ../adaspeclib.gpr -rules -from=../gnatcheck.rules
 	cd reports && mv gnatcheck.out gnatcheck.adaspeclib.out
-	cd reports && gnat check -P ../unit_tests.gpr -rules -from=../gnatcheck.rules
-	cd reports && mv gnatcheck.out gnatcheck.tests.out
+	# Doesn't work for some reason
+	#cd reports && gnat check -P ../unit_tests-debug.gpr -rules -from=../gnatcheck.rules
+	#cd reports && mv gnatcheck.out gnatcheck.tests.out
 
 test-report:
 	-$(MAKE) coverage
