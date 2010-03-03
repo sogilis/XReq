@@ -59,21 +59,18 @@ clean: clean-gcov
 	-$(RM) reports/*.aunit.xml
 	-$(RM) reports/gnatcheck*.out
 	-$(RM) reports/gnatcheck*.log
-# 	-$(RM) reports/*.aunit.gcov
-# 	-$(RM) reports/features.html
-# 	-$(RM) reports/features.junit/*
+	-$(RM) reports/*.gcov
+	-$(RM) reports/features*.html
+	-$(RM) reports/features*.junit/*
 
 .PHONY: all dir bin tests doc clean
 
 
 
 clean-gcov:
-	#-$(RM) -f coverage/*.gcov
-	#-$(RM) -f coverage/gcov.summary.txt
 	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
-	lcov -q -d obj/coverage --zerocounters
-	#-find obj -name "*.gcda" -print0 | xargs -0 rm -f
-	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
+	-lcov -q -d obj/coverage --zerocounters
+	
 
 gcov-report: dir bin/unit_tests
 	@echo
@@ -81,6 +78,7 @@ gcov-report: dir bin/unit_tests
 	@echo "##  Create coverage reports  ##"
 	@echo "###############################"
 	@echo
+	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
 	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
