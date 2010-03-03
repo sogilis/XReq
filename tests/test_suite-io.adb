@@ -126,6 +126,19 @@ package body Test_Suite.IO is
               "Command output for `printf %s-%s a b` should be ""a-b"" " &
               "instead of """ & To_String (Output) & """");
 
+      declare
+         procedure P;
+         procedure P is begin
+            Spawn ("ThIs_CoMmAnD_dOeSn_T_eXiStS", "", Output, Success, Result);
+         end P;
+         procedure A is new Assert_Except (Test_Spawn, P);
+      begin
+         A (T, "Spawn should raise Ada.IO_Exceptions.Name_Error when spawn " &
+               """ThIs_CoMmAnD_dOeSn_T_eXiStS"". If you have this command " &
+               "on your system, remove it to pass the test.",
+               Ada.IO_Exceptions.Name_Error'Identity);
+      end;
+
    end Run;
 
    --  Test_Char_IO  ----------------------------------------------------------
