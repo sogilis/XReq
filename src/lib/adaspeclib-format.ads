@@ -3,15 +3,53 @@
 with Ada.Unchecked_Deallocation;
 with Ada.Exceptions;
 with AdaSpecLib.Report;
+with Ada.Finalization;
+with Ada.Text_IO;
 
 use  Ada.Exceptions;
 use  AdaSpecLib.Report;
 
 package AdaSpecLib.Format is
 
+   package New_Text_IO is
+
+      type Local_File_Ptr is access Ada.Text_IO.File_Type;
+
+      type File_Type is new Ada.Finalization.Controlled with
+         record
+            Output_Ownership : Boolean := False;
+            Output_Ptr       : Local_File_Ptr
+                             := new Ada.Text_IO.File_Type;
+            Output_Access    : Ada.Text_IO.File_Access
+                             := Ada.Text_IO.Current_Output;
+         end record;
+
+      subtype File_Mode is Ada.Text_IO.File_Mode;
+
+      procedure Put      (File : in out File_Type;
+                          Item : in     String);
+      procedure Put      (File : in out File_Type;
+                          Item : in     Character);
+      procedure Put_Line (File : in out File_Type;
+                          Item : in     String);
+      procedure New_Line (File : in out File_Type);
+      procedure Create   (File : in out File_Type;
+                          Mode : in     File_Mode;
+                          Name : in     String := "");
+      procedure Close    (File : in out File_Type);
+      overriding
+      procedure Finalize (File : in out File_Type);
+
+   end New_Text_IO;
+
+   ----------------------------------------------------------------------------
+
    type Status_Type is (Status_Passed, Status_Skipped, Status_Failed);
 
-   type Format_Type is interface;
+   type Format_Type is abstract tagged
+      record
+         Output : New_Text_IO.File_Type;
+      end record;
    type Format_Ptr  is access all Format_Type'Class;
 
    procedure Put_Feature    (Format     : in out Format_Type;
@@ -35,12 +73,16 @@ package AdaSpecLib.Format is
    procedure Put_Summary    (Format     : in out Format_Type;
                              Report     : in     Report_Type)
                              is abstract;
-   procedure Set_Output     (Format     : in out Format_Type;  --  GCOV_IGNORE
-                             Output     : in     String) is null;
+   procedure Set_Output     (Format     : in out Format_Type;
+                             Output     : in     String);
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Format_Type'Class, Format_Ptr);
 
    function Get_Formatter (Name : in String) return Format_Ptr;
+
+private
+
+   --  type Format_Type should be private but Ada is absolutely awful
 
 end AdaSpecLib.Format;
