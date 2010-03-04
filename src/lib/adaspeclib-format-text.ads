@@ -60,6 +60,7 @@ package AdaSpecLib.Format.Text is
       procedure Create   (File : in out File_Type;
                           Mode : in     File_Mode;
                           Name : in     String := "");
+      procedure Close    (File : in out File_Type);
       overriding
       procedure Finalize (File : in out File_Type);
 

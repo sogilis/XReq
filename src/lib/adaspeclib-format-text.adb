@@ -217,11 +217,7 @@ package body AdaSpecLib.Format.Text is
                      Item : in     Character)
       is
       begin
-         if File.Output_Ownership then
-            Ada.Text_IO.Put (File.Output_Ptr.all, Item);
-         else
-            Ada.Text_IO.Put (File.Output_Access.all, Item);
-         end if;
+         File.Put ("" & Item);
       end Put;
 
       procedure Put_Line (File : in out File_Type;
@@ -245,25 +241,28 @@ package body AdaSpecLib.Format.Text is
          end if;
       end New_Line;
 
-      procedure Create   (File : in out File_Type;
+      procedure Create (File : in out File_Type;
                           Mode : in     File_Mode;
                           Name : in     String := "")
       is
       begin
-         if Ada.Text_IO.Is_Open (File.Output_Ptr.all) then
-            Ada.Text_IO.Close (File.Output_Ptr.all);
-         end if;
+         File.Close;
          File.Output_Ownership := True;
          Ada.Text_IO.Create (File.Output_Ptr.all, Mode, Name);
       end Create;
+
+      procedure Close (File : in out File_Type) is
+      begin
+         if Ada.Text_IO.Is_Open (File.Output_Ptr.all) then
+            Ada.Text_IO.Close (File.Output_Ptr.all);
+         end if;
+      end Close;
 
       procedure Finalize (File : in out File_Type) is
          procedure Free is new
             Ada.Unchecked_Deallocation (Ada.Text_IO.File_Type, Local_File_Ptr);
       begin
-         if Ada.Text_IO.Is_Open (File.Output_Ptr.all) then
-            Ada.Text_IO.Close (File.Output_Ptr.all);
-         end if;
+         File.Close;
          Free (File.Output_Ptr);
       end Finalize;
 
