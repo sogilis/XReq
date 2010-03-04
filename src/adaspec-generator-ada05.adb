@@ -75,6 +75,7 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Put_Line ("begin");
       Indent (Gen.Ads);
       Indent (Gen.Adb);
+      Gen.Adb.Put_Line ("Format.Start_Feature;");
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
                         Ada_String (To_String (Gen.Feature.Name)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
@@ -87,6 +88,7 @@ package body AdaSpec.Generator.Ada05 is
                               " (Format, Report, False);");
          end if;
       end loop;
+      Gen.Adb.Put_Line ("Format.Stop_Feature;");
       Gen.Ads.UnIndent;
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("end Run;");
@@ -121,6 +123,7 @@ package body AdaSpec.Generator.Ada05 is
       I2       : Util.Strings.Vectors.Cursor := First (Step.Step.Texts);
       E2       : Unbounded_String;
    begin
+      S.Adb.Put_Line ("Format.Start_Step;");
       --  Declare
       S.Adb.Put_Line ("declare");
       S.Adb.Indent;
@@ -209,6 +212,7 @@ package body AdaSpec.Generator.Ada05 is
       --  End block
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end;");
+      S.Adb.Put_Line ("Format.Stop_Step;");
    end Generate_Step;
 
    -------------------------
@@ -249,6 +253,7 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.UnIndent;
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
+      S.Adb.Put_Line ("Format.Start_Scenario;");
       --  body
       if not Background then
          S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First);");
@@ -292,6 +297,7 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("end if;");
       end if;
       --  end
+      S.Adb.Put_Line ("Format.Stop_Scenario;");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end " & Name & ";");
    end Generate_Scenario;
@@ -387,19 +393,21 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Put_Line ("Parse_Arguments (Format, Continue, Self_Name);");
       Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
+      Body_B.Put_Line    ("Format.Start_Tests;");
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & E.Full_Name & ";");
          Body_B.Put_Line (E.Full_Name & ".Run (Format, Report);");
          Next (I);
       end loop;
-      Body_B.Put_Line ("Format.Put_Summary (Report);");
-      Body_B.Put_Line ("if not Status (Report) then");
+      Body_B.Put_Line    ("Format.Put_Summary (Report);");
+      Body_B.Put_Line    ("if not Status (Report) then");
       Body_B.Indent;
-      Body_B.Put_Line ("Ada.Command_Line.Set_Exit_Status " &
-                       "(Ada.Command_Line.Failure);");
+      Body_B.Put_Line       ("Ada.Command_Line.Set_Exit_Status " &
+                             "(Ada.Command_Line.Failure);");
       Body_B.UnIndent;
-      Body_B.Put_Line ("end if;");
+      Body_B.Put_Line    ("end if;");
+      Body_B.Put_Line    ("Format.Stop_Tests;");
       Body_B.UnIndent;
       Body_B.Put_Line ("end if;");
       Body_B.Put_Line ("Free (Format);");

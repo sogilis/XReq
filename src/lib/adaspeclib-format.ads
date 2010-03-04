@@ -76,6 +76,26 @@ package AdaSpecLib.Format is
    procedure Set_Output     (Format     : in out Format_Type;
                              Output     : in     String);
 
+   procedure Start_Tests    (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+   procedure Stop_Tests     (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+
+   procedure Start_Feature  (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+   procedure Stop_Feature   (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+
+   procedure Start_Scenario (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+   procedure Stop_Scenario  (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+
+   procedure Start_Step     (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+   procedure Stop_Step      (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
+
    procedure Free is new Ada.Unchecked_Deallocation
       (Format_Type'Class, Format_Ptr);
 
