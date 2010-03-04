@@ -2,31 +2,6 @@ package body AdaSpecLib.Format_HTML_Template is
 
    pragma Style_Checks (Off);
 
-   procedure feature_begin
-        (File : in out File_Type;
-         Param_id : in String;
-         Param_name : in String;
-         Param_description : in String) is
-   begin
-      Put (File, "    <div id=""feature-");
-      Put (File, Param_id);
-      Put (File, """ class=""feature skip"">" & ASCII.LF);
-      Put (File, "      <div class=""feature-header"">" & ASCII.LF);
-      Put (File, "        <h2 class=""title-feature"">Feature: ");
-      Put (File, Param_name);
-      Put (File, "</h2>" & ASCII.LF);
-      Put (File, "        <p>");
-      Put (File, Param_description);
-      Put (File, "</p>" & ASCII.LF);
-      Put (File, "      </div>" & ASCII.LF);
-   end feature_begin;
-
-   procedure step_end
-        (File : in out File_Type) is
-   begin
-      Put (File, "        </div> <!-- step -->" & ASCII.LF);
-   end step_end;
-
    procedure page_begin
         (File : in out File_Type) is
    begin
@@ -251,25 +226,58 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "    </div>" & ASCII.LF);
    end page_begin;
 
+   procedure feature_begin
+        (File : in out File_Type;
+         Param_id : in String;
+         Param_name : in String;
+         Param_description : in String) is
+   begin
+      Put (File, "    <div id=""feature-");
+      Put (File, Param_id);
+      Put (File, """ class=""feature skip"">" & ASCII.LF);
+      Put (File, "      <div class=""feature-header"">" & ASCII.LF);
+      Put (File, "        <h2 class=""title-feature"">Feature: ");
+      Put (File, Param_name);
+      Put (File, "</h2>" & ASCII.LF);
+      Put (File, "        <p>");
+      Put (File, Param_description);
+      Put (File, "</p>" & ASCII.LF);
+      Put (File, "      </div>" & ASCII.LF);
+   end feature_begin;
+
    procedure background_begin
         (File : in out File_Type;
-         Param_feature_id : in String) is
+         Param_feature_id : in String;
+         Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
       Put (File, Param_feature_id);
       Put (File, "-background"" class=""scenario skip"">" & ASCII.LF);
+      Put (File, "        <h3 class=""title-background"">Background: ");
+      Put (File, Param_title);
+      Put (File, "</h3>" & ASCII.LF);
    end background_begin;
+
+   procedure background_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "      </div> <!-- background -->" & ASCII.LF);
+   end background_end;
 
    procedure scenario_begin
         (File : in out File_Type;
          Param_feature_id : in String;
-         Param_num : in String) is
+         Param_num : in String;
+         Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
       Put (File, Param_feature_id);
       Put (File, "-scenario-");
       Put (File, Param_num);
       Put (File, """ class=""scenario skip"">" & ASCII.LF);
+      Put (File, "        <h3 class=""title-scenario"">Scenario: ");
+      Put (File, Param_title);
+      Put (File, "</h3>" & ASCII.LF);
    end scenario_begin;
 
    procedure step_begin
@@ -285,35 +293,89 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "</p>" & ASCII.LF);
    end step_begin;
 
+   procedure step_string
+        (File : in out File_Type;
+         Param_string : in String) is
+   begin
+      Put (File, "          <pre class=""string"">");
+      Put (File, Param_string);
+      Put (File, "</pre>" & ASCII.LF);
+   end step_string;
+
+   procedure step_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "        </div> <!-- step -->" & ASCII.LF);
+   end step_end;
+
    procedure scenario_end
         (File : in out File_Type) is
    begin
       Put (File, "      </div> <!-- scenario -->" & ASCII.LF);
    end scenario_end;
 
-   procedure report
+   procedure feature_end
         (File : in out File_Type) is
    begin
-      Put (File, "    <div id=""title-background"" class=""fail"">&nbsp;</div>" & ASCII.LF);
-      Put (File, "    <div id=""summary"" class=""fail"">" & ASCII.LF);
-      Put (File, "      <div class=""report fail"">" & ASCII.LF);
+      Put (File, "    </div> <!-- feature -->" & ASCII.LF);
+   end feature_end;
+
+   procedure report_begin
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_num_scenarios : in String;
+         Param_num_scenarios_fail : in String;
+         Param_num_scenarios_pass : in String;
+         Param_num_steps : in String;
+         Param_num_steps_fail : in String;
+         Param_num_steps_skip : in String;
+         Param_num_steps_pass : in String) is
+   begin
+      Put (File, "    <div id=""title-background"" class=""");
+      Put (File, Param_status);
+      Put (File, """>&nbsp;</div>" & ASCII.LF);
+      Put (File, "    <div id=""summary"" class=""");
+      Put (File, Param_status);
+      Put (File, """>" & ASCII.LF);
+      Put (File, "      <div class=""report ");
+      Put (File, Param_status);
+      Put (File, """>" & ASCII.LF);
       Put (File, "        <ul>" & ASCII.LF);
-      Put (File, "          <li class=""report-scenarios"">10 scenarios" & ASCII.LF);
+      Put (File, "          <li class=""report-scenarios"">");
+      Put (File, Param_num_scenarios);
+      Put (File, " scenarios" & ASCII.LF);
       Put (File, "            <ul>" & ASCII.LF);
-      Put (File, "              <li>3 failed</li>" & ASCII.LF);
-      Put (File, "              <li>7 passed</li>" & ASCII.LF);
+      Put (File, "              <li>");
+      Put (File, Param_num_scenarios_fail);
+      Put (File, " failed</li>" & ASCII.LF);
+      Put (File, "              <li>");
+      Put (File, Param_num_scenarios_pass);
+      Put (File, " passed</li>" & ASCII.LF);
       Put (File, "            </ul>" & ASCII.LF);
       Put (File, "          </li>" & ASCII.LF);
-      Put (File, "          <li class=""report-steps"">100 steps" & ASCII.LF);
+      Put (File, "          <li class=""report-steps"">");
+      Put (File, Param_num_steps);
+      Put (File, " steps" & ASCII.LF);
       Put (File, "            <ul>" & ASCII.LF);
-      Put (File, "              <li>20 failed</li>" & ASCII.LF);
-      Put (File, "              <li>20 skipped</li>" & ASCII.LF);
-      Put (File, "              <li>60 passed</li>" & ASCII.LF);
+      Put (File, "              <li>");
+      Put (File, Param_num_steps_fail);
+      Put (File, " failed</li>" & ASCII.LF);
+      Put (File, "              <li>");
+      Put (File, Param_num_steps_skip);
+      Put (File, " skipped</li>" & ASCII.LF);
+      Put (File, "              <li>");
+      Put (File, Param_num_steps_pass);
+      Put (File, " passed</li>" & ASCII.LF);
       Put (File, "            </ul>" & ASCII.LF);
       Put (File, "          </li>" & ASCII.LF);
       Put (File, "          <li class=""clear"">Finished in 0 seconds</li>" & ASCII.LF);
       Put (File, "        </ul>" & ASCII.LF);
       Put (File, "      </div>" & ASCII.LF);
+   end report_begin;
+
+   procedure report_menu
+        (File : in out File_Type) is
+   begin
       Put (File, "      <ul class=""menu"">" & ASCII.LF);
       Put (File, "        <li class=""fail"">" & ASCII.LF);
       Put (File, "          <a href=""#feature-1"">Feature: Ambiguous step definition error reporting</a>" & ASCII.LF);
@@ -324,14 +386,13 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "          </ul>" & ASCII.LF);
       Put (File, "        </li>" & ASCII.LF);
       Put (File, "      </ul>" & ASCII.LF);
-      Put (File, "    </div>" & ASCII.LF);
-   end report;
+   end report_menu;
 
-   procedure background_end
+   procedure report_end
         (File : in out File_Type) is
    begin
-      Put (File, "      </div> <!-- background -->" & ASCII.LF);
-   end background_end;
+      Put (File, "    </div>" & ASCII.LF);
+   end report_end;
 
    procedure page_end
         (File : in out File_Type) is
@@ -339,21 +400,6 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  </body>" & ASCII.LF);
       Put (File, "</html>" & ASCII.LF);
    end page_end;
-
-   procedure feature_end
-        (File : in out File_Type) is
-   begin
-      Put (File, "    </div> <!-- feature -->" & ASCII.LF);
-   end feature_end;
-
-   procedure step_string
-        (File : in out File_Type;
-         Param_string : in String) is
-   begin
-      Put (File, "          <pre class=""string"">");
-      Put (File, Param_string);
-      Put (File, "</pre>" & ASCII.LF);
-   end step_string;
 
    pragma Style_Checks (On);
 

@@ -12,33 +12,43 @@ package body AdaSpecLib.Format.HTML is
    package Tmpl is new AdaSpecLib.Format_HTML_Template
       (New_Text_IO.File_Type, New_Text_IO.Put);
 
+   function To_String (N : in Integer) return String;
+   function Status_Class (Success : in Status_Type) return String;
+
+   function To_String (N : in Integer) return String is
+   begin
+      return Trim (N'Img, Left);
+   end To_String;
+
+   function Status_Class (Success : in Status_Type) return String is
+   begin
+      case Success is
+         when Status_Passed  => return "pass";
+         when Status_Skipped => return "skip";
+         when Status_Failed  => return "fail";
+      end case;
+   end Status_Class;
+
+
+
    -------------------
    --  Start_Tests  --
    -------------------
 
    procedure Start_Tests    (Format     : in out HTML_Format_Type) is
    begin
-      pragma Style_Checks (Off);
---       Format.Output.Put_Line ("<?xml version=""1.0"" encoding=""UTF-8""?>");
---       Format.Output.Put_Line ("<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">");
---       Format.Output.Put_Line ("<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"" lang=""en"">");
---       Format.Output.Put_Line (" <body>");
---       Format.Output.Put_Line ("  <pre>");
-      pragma Style_Checks (On);
       Tmpl.page_begin (Format.Output);
    end Start_Tests;
 
-   ------------------
-   --  Stop_Tests  --
-   ------------------
+   ---------------------
+   --  Start_Feature  --
+   ---------------------
 
-   procedure Stop_Tests     (Format     : in out HTML_Format_Type) is
+   procedure Start_Feature  (Format     : in out HTML_Format_Type) is
    begin
---       Format.Output.Put_Line ("  </pre>");
---       Format.Output.Put_Line (" </body>");
---       Format.Output.Put_Line ("</html>");
-      Tmpl.page_end (Format.Output);
-   end Stop_Tests;
+      Format.Feature_ID  := Format.Feature_ID + 1;
+      Format.Scenario_ID := 0;
+   end Start_Feature;
 
    -------------------
    --  Put_Feature  --
@@ -51,29 +61,90 @@ package body AdaSpecLib.Format.HTML is
       Format.Output.Put_Line ("Feature: " & Feature);
    end Put_Feature;
 
+   ----------------------
+   --  Enter_Scenario  --
+   ----------------------
+
+   procedure Enter_Scenario (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Format.Scenario_ID := Format.Scenario_ID + 1;
+   end Enter_Scenario;
+
+   ------------------------
+   --  Start_Background  --
+   ------------------------
+
+   procedure Start_Background (Format   : in out HTML_Format_Type;
+                               First    : in Boolean)
+   is
+      pragma Unreferenced (First);
+   begin
+      Format.In_Background := True;
+   end Start_Background;
+
+   ----------------------
+   --  Put_Background  --
+   ----------------------
+
    procedure Put_Background (Format     : in out HTML_Format_Type;
                              Background : in String)
    is
    begin
-      Format.Output.New_Line;
-      Format.Output.Put ("  Background:");
-      if Background /= "" then
-         Format.Output.Put (" " & Background);
-      end if;
-      Format.Output.New_Line;
+      Format.Have_Background := True;
+      Tmpl.background_begin (Format.Output,
+         Param_feature_id => To_String (Format.Feature_ID),
+         Param_title      => Background);
    end Put_Background;
+
+   -----------------------
+   --  Stop_Background  --
+   -----------------------
+
+   procedure Stop_Background  (Format   : in out HTML_Format_Type;
+                               First    : in Boolean)
+   is
+      pragma Unreferenced (First);
+   begin
+      if Format.Have_Background then
+         Tmpl.background_end (Format.Output);
+      end if;
+      Format.Have_Background := False;
+      Format.In_Background   := False;
+   end Stop_Background;
+
+   ----------------------
+   --  Start_Scenario  --
+   ----------------------
+
+   procedure Start_Scenario (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Format.Step_ID := 0;
+   end Start_Scenario;
+
+   --------------------
+   --  Put_Scenario  --
+   --------------------
 
    procedure Put_Scenario (Format   : in out HTML_Format_Type;
                            Scenario : in String)
    is
    begin
-      Format.Output.New_Line;
-      Format.Output.Put ("  Scenario:");
-      if Scenario /= "" then
-         Format.Output.Put (" " & Scenario);
-      end if;
-      Format.Output.New_Line;
+      Tmpl.scenario_begin (Format.Output,
+         Param_feature_id => To_String (Format.Feature_ID),
+         Param_num        => To_String (Format.Scenario_ID),
+         Param_title      => Scenario);
    end Put_Scenario;
+
+   ------------------
+   --  Start_Step  --
+   ------------------
+
+   procedure Start_Step     (Format     : in out HTML_Format_Type) is
+   begin
+      Format.Step_ID := Format.Step_ID + 1;
+   end Start_Step;
 
    ----------------
    --  Put_Step  --
@@ -85,33 +156,20 @@ package body AdaSpecLib.Format.HTML is
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
    is
-      pragma Unreferenced (Success);
+      Stanza : Unbounded_String;
    begin
-      Format.Output.Put ("    ");
       case Step is
-         when Step_Given => Format.Output.Put ("Given ");
-         when Step_When  => Format.Output.Put ("When ");
-         when Step_Then  => Format.Output.Put ("Then ");
+         when Step_Given => Append (Stanza, "Given ");
+         when Step_When  => Append (Stanza, "When ");
+         when Step_Then  => Append (Stanza, "Then ");
       end case;
-      Format.Output.Put (Name);
-      Format.Output.New_Line;
+      Append (Stanza, Name);
+      Tmpl.step_begin (Format.Output,
+            Param_status => Status_Class (Success),
+            Param_stanza => To_String (Stanza));
       for I in Args.First_Text .. Args.Last_Text loop
-         Format.Output.Put_Line ("      """"""");
-         Format.Output.Put      ("      ");
-         declare
-            Text : constant String := Args.Text (I);
-            J    : Natural := Text'First;
-         begin
-            while J <= Text'Last loop
-               Format.Output.Put (Text (J));
-               if Text (J) = ASCII.LF then
-                  Format.Output.Put ("      ");
-               end if;
-               J := J + 1;
-            end loop;
-         end;
-         Format.Output.New_Line;
-         Format.Output.Put_Line ("      """"""");
+         Tmpl.step_string (Format.Output,
+            Param_string => Args.Text (I));
       end loop;
    end Put_Step;
 
@@ -139,6 +197,43 @@ package body AdaSpecLib.Format.HTML is
 --       end loop;
    end Put_Error;
 
+   -----------------
+   --  Stop_Step  --
+   -----------------
+
+   procedure Stop_Step      (Format     : in out HTML_Format_Type) is
+   begin
+      Tmpl.step_end (Format.Output);
+   end Stop_Step;
+
+   ---------------------
+   --  Stop_Scenario  --
+   ---------------------
+
+   procedure Stop_Scenario  (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Tmpl.scenario_end (Format.Output);
+   end Stop_Scenario;
+
+   --------------------
+   --  Stop_Feature  --
+   --------------------
+
+   procedure Stop_Feature  (Format     : in out HTML_Format_Type) is
+   begin
+      Tmpl.feature_end (Format.Output);
+   end Stop_Feature;
+
+   ------------------
+   --  Stop_Tests  --
+   ------------------
+
+   procedure Stop_Tests     (Format     : in out HTML_Format_Type) is
+   begin
+      Tmpl.page_end (Format.Output);
+   end Stop_Tests;
+
    -------------------
    --  Put_Summary  --
    -------------------
@@ -151,57 +246,28 @@ package body AdaSpecLib.Format.HTML is
       Count_Steps     : constant Natural := Report.Count_Steps_Failed +
                                             Report.Count_Steps_Skipped +
                                             Report.Count_Steps_Passed;
-      Need_Comma : Boolean;
+      Status : Status_Type;
    begin
-      Format.Output.New_Line;
-      if Count_Scenarios > 1 then
-         Format.Output.Put
-            (Trim (Count_Scenarios'Img, Left) & " scenarios (");
+
+      if (Report.Count_Scenario_Failed +
+          Report.Count_Steps_Skipped +
+          Report.Count_Steps_Failed) /= 0
+      then
+         Status := Status_Failed;
       else
-         Format.Output.Put
-            (Trim (Count_Scenarios'Img, Left) & " scenario (");
+         Status := Status_Passed;
       end if;
-      Need_Comma := False;
-      if Report.Count_Scenario_Failed /= 0 then
-         Format.Output.Put
-            (Trim (Report.Count_Scenario_Failed'Img, Left) & " failed");
-         Need_Comma := True;
-      end if;
-      if Report.Count_Scenario_Passed /= 0 then
-         if Need_Comma then Format.Output.Put (", "); end if;
-         Format.Output.Put
-            (Trim (Report.Count_Scenario_Passed'Img, Left) & " passed");
-         Need_Comma := True;
-      end if;
-      Format.Output.Put (")");
-      Format.Output.New_Line;
-      if Count_Steps > 1 then
-         Format.Output.Put
-            (Trim (Count_Steps'Img, Left) & " steps (");
-      else
-         Format.Output.Put
-            (Trim (Count_Steps'Img, Left) & " step (");
-      end if;
-      Need_Comma := False;
-      if Report.Count_Steps_Failed /= 0 then
-         Format.Output.Put
-            (Trim (Report.Count_Steps_Failed'Img, Left) & " failed");
-         Need_Comma := True;
-      end if;
-      if Report.Count_Steps_Skipped /= 0 then
-         if Need_Comma then Format.Output.Put (", "); end if;
-         Format.Output.Put
-            (Trim (Report.Count_Steps_Skipped'Img, Left) & " skipped");
-         Need_Comma := True;
-      end if;
-      if Report.Count_Steps_Passed /= 0 then
-         if Need_Comma then Format.Output.Put (", "); end if;
-         Format.Output.Put
-            (Trim (Report.Count_Steps_Passed'Img, Left) & " passed");
-         Need_Comma := True;
-      end if;
-      Format.Output.Put (")");
-      Format.Output.New_Line;
+
+      Tmpl.report_begin (Format.Output,
+         Param_status             => Status_Class (Status),
+         Param_num_scenarios      => To_String (Count_Scenarios),
+         Param_num_scenarios_fail => To_String (Report.Count_Scenario_Failed),
+         Param_num_scenarios_pass => To_String (Report.Count_Scenario_Passed),
+         Param_num_steps          => To_String (Count_Steps),
+         Param_num_steps_fail     => To_String (Report.Count_Steps_Failed),
+         Param_num_steps_skip     => To_String (Report.Count_Steps_Skipped),
+         Param_num_steps_pass     => To_String (Report.Count_Steps_Passed));
+      Tmpl.report_end (Format.Output);
    end Put_Summary;
 
    -----------------------

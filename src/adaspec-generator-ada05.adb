@@ -254,6 +254,7 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
       --  body
+      S.Adb.Put_Line ("Format.Enter_Scenario;");
       if not Background then
          S.Adb.Put_Line ("Format.Start_Background (First);");
          S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First);");

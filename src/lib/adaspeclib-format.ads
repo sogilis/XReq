@@ -89,10 +89,12 @@ package AdaSpecLib.Format is
    procedure Start_Background (Format     : in out Format_Type; --  GCOV_IGNORE
                                First      : in Boolean)
                                is null;
-   procedure Stop_background  (Format     : in out Format_Type; --  GCOV_IGNORE
+   procedure Stop_Background  (Format     : in out Format_Type; --  GCOV_IGNORE
                                First      : in Boolean)
                                is null;
 
+   procedure Enter_Scenario (Format     : in out Format_Type) --  GCOV_IGNORE
+                             is null;
    procedure Start_Scenario (Format     : in out Format_Type) --  GCOV_IGNORE
                              is null;
    procedure Stop_Scenario  (Format     : in out Format_Type) --  GCOV_IGNORE

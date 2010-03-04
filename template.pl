@@ -45,6 +45,7 @@ print "Write: $ads_file\n" if $ads_file;
 print "Write: $adb_file\n" if $adb_file;
 
 %variables = ();
+@variable_order = ();
 $current_var = "";
 
 while ($line = <$INFO>) {
@@ -55,6 +56,9 @@ while ($line = <$INFO>) {
       $current_var = $2;
     }
   } elsif ($current_var) {
+    if(not $variables{$current_var}) {
+      push @variable_order, $current_var;
+    };
     $variables{$current_var} .= $line;
   }
 }
@@ -76,14 +80,19 @@ $adb .= "package body $pkgname is\n\n";
 $ads .= "   pragma Style_Checks (Off);\n";
 $adb .= "   pragma Style_Checks (Off);\n";
 
-while (($var, $content) = each(%variables)) {
-  $proto = "\n";
+foreach my $var (@variable_order) {
+  my $content = $variables{$var};
+  my $proto = "\n";
   $var =~ s/[^A-Za-z0-9_]/_/g;
   $proto   .= "   procedure $var\n";
   $proto   .= "        (File : in out File_Type";
+  my %seen = ();
   while ($content =~ m/<\?placeholder name="([^"]*)"\?>/g) {
-    $proto .= ";\n";
-    $proto .= "         Param_$1 : in String";
+    if (not $seen{$1}) {
+      $proto .= ";\n";
+      $proto .= "         Param_$1 : in String";
+    }
+    $seen{$1} = 1;
   }
   $proto   .= ")";
   $ads .= "$proto;\n";

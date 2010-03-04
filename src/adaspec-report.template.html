@@ -299,10 +299,12 @@ end Steps2;
       </div>
 <?var name="background-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-background" class="scenario skip">
+        <h3 class="title-background">Background: <?placeholder name="title"?></h3>
 <?var name="background-end"?>
       </div> <!-- background -->
 <?var name="scenario-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
+        <h3 class="title-scenario">Scenario: <?placeholder name="title"?></h3>
 <?var name="step-begin"?>
         <div class="step <?placeholder name="status"?>">
           <p><?placeholder name="stanza"?></p>
@@ -314,27 +316,28 @@ end Steps2;
       </div> <!-- scenario -->
 <?var name="feature-end"?>
     </div> <!-- feature -->
-<?var name="report"?>
-    <div id="title-background" class="fail">&nbsp;</div>
-    <div id="summary" class="fail">
-      <div class="report fail">
+<?var name="report-begin"?>
+    <div id="title-background" class="<?placeholder name="status"?>">&nbsp;</div>
+    <div id="summary" class="<?placeholder name="status"?>">
+      <div class="report <?placeholder name="status"?>">
         <ul>
-          <li class="report-scenarios">10 scenarios
+          <li class="report-scenarios"><?placeholder name="num_scenarios"?> scenarios
             <ul>
-              <li>3 failed</li>
-              <li>7 passed</li>
+              <li><?placeholder name="num_scenarios_fail"?> failed</li>
+              <li><?placeholder name="num_scenarios_pass"?> passed</li>
             </ul>
           </li>
-          <li class="report-steps">100 steps
+          <li class="report-steps"><?placeholder name="num_steps"?> steps
             <ul>
-              <li>20 failed</li>
-              <li>20 skipped</li>
-              <li>60 passed</li>
+              <li><?placeholder name="num_steps_fail"?> failed</li>
+              <li><?placeholder name="num_steps_skip"?> skipped</li>
+              <li><?placeholder name="num_steps_pass"?> passed</li>
             </ul>
           </li>
           <li class="clear">Finished in 0 seconds</li>
         </ul>
       </div>
+<?var name="report-menu"?>
       <ul class="menu">
         <li class="fail">
           <a href="#feature-1">Feature: Ambiguous step definition error reporting</a>
@@ -345,6 +348,7 @@ end Steps2;
           </ul>
         </li>
       </ul>
+<?var name="report-end"?>
     </div>
 <?var name="page-end"?>
   </body>
