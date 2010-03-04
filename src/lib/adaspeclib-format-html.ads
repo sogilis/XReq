@@ -6,6 +6,11 @@ package AdaSpecLib.Format.HTML is
    type HTML_Format_Ptr  is access all HTML_Format_Type;
 
    overriding
+   procedure Start_Tests    (Format     : in out HTML_Format_Type);
+   overriding
+   procedure Stop_Tests     (Format     : in out HTML_Format_Type);
+
+   overriding
    procedure Put_Feature    (Format     : in out HTML_Format_Type;
                              Feature    : in     String);
    overriding

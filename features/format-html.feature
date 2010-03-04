@@ -45,12 +45,11 @@ Feature: HTML reports
     Then it should pass
     Given I am in "features/tests"
 
-  @wip
   Scenario: Generate HTML report
     When I run "./test_suite -f html -o report.html"
     Then it should pass
     And  "report.html" should exist
     And  "report.html" should contain
       """
-      <html>
+      <html
       """

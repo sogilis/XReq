@@ -2,11 +2,43 @@
 
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with AdaSpecLib.Format_HTML_Template;
 
 use Ada.Strings;
 use Ada.Strings.Fixed;
 
 package body AdaSpecLib.Format.HTML is
+
+   package Tmpl is new AdaSpecLib.Format_HTML_Template
+      (New_Text_IO.File_Type, New_Text_IO.Put);
+
+   -------------------
+   --  Start_Tests  --
+   -------------------
+
+   procedure Start_Tests    (Format     : in out HTML_Format_Type) is
+   begin
+      pragma Style_Checks (Off);
+--       Format.Output.Put_Line ("<?xml version=""1.0"" encoding=""UTF-8""?>");
+--       Format.Output.Put_Line ("<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">");
+--       Format.Output.Put_Line ("<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"" lang=""en"">");
+--       Format.Output.Put_Line (" <body>");
+--       Format.Output.Put_Line ("  <pre>");
+      pragma Style_Checks (On);
+      Tmpl.page_begin (Format.Output);
+   end Start_Tests;
+
+   ------------------
+   --  Stop_Tests  --
+   ------------------
+
+   procedure Stop_Tests     (Format     : in out HTML_Format_Type) is
+   begin
+--       Format.Output.Put_Line ("  </pre>");
+--       Format.Output.Put_Line (" </body>");
+--       Format.Output.Put_Line ("</html>");
+      Tmpl.page_end (Format.Output);
+   end Stop_Tests;
 
    -------------------
    --  Put_Feature  --

@@ -1,0 +1,353 @@
+<?var name="page-begin"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>Test suite</title>
+    <style type="text/css">
+
+a {
+  color: inherit;
+}
+
+.clear {
+  clear: both;
+}
+
+.capture {
+  font-weight: bold;
+}
+
+.fail {
+  color: #c20000;
+}
+
+.pass {
+  color: #3d7700;
+}
+
+.skip {
+  color: #004444;
+}
+
+.feature.fail .feature-header {
+  background-color: #fffbd3;
+}
+
+.feature.pass .feature-header {
+  background-color: #dbffb4;
+}
+
+.feature.skip .feature-header {
+  background-color: #e0ffff;
+}
+
+.scenario {
+  margin-left: 3em;
+  border-left-width: thin;
+  border-left-style: solid;
+}
+
+.scenario.fail {
+  background-color: #fffbd3;
+  border-color: #c20000;
+}
+
+.scenario.pass {
+  background-color: #dbffb4;
+  border-color: #65c400;
+}
+
+.scenario.skip {
+  background-color: #e0ffff;
+  border-color: aqua;
+}
+
+.scenario.fail h3 {
+  color: #fffbd3;
+  background-color: #c20000;
+}
+
+.scenario.pass h3 {
+  color: #dbffb4;
+  background-color: #65c400;
+}
+
+.scenario.skip h3 {
+  color: #004444;
+  background-color: aqua;
+}
+
+.step {
+  margin-left: 3em;
+  border-left: 1em solid transparent;
+  margin-top: 0.25em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  padding-left: 0.5em;
+  font-size: 0.8em;
+}
+
+.step.fail {
+  border-left-color: #c20000;
+  background-color: #fffbd3;
+  border-top-width: thin;
+  border-top-style: solid;
+  border-bottom-width: thin;
+  border-bottom-style: solid;
+  border-right-width: thin;
+  border-right-style: solid;
+}
+.step.pass {
+  border-left-color: #65c400;
+  background-color: #dbffb4;
+}
+.step.skip {
+  border-left-color: aqua;
+  background-color: #e0ffff;
+}
+
+.step.fail pre.string {
+  background-color: white;
+}
+
+.step.pass pre.string {
+  background-color: white;
+}
+
+.step.skip pre.string {
+  background-color: white;
+}
+
+pre.string {
+  margin: 0.5em;
+  margin-left: 2em;
+  margin-right: 7em;
+  padding: 0.5em 0 0.5em 0.5em;
+  -moz-border-radius-topleft: 1em;
+  -webkit-border-radius-topleft: 1em;
+  border-radius-topleft: 1em;
+  -moz-border-radius-bottomright: 1em;
+  -webkit-border-radius-bottomright: 1em;
+  border-radius-bottomright: 1em;
+}
+
+
+
+body {
+  padding-top: 5em;
+  padding-left: 15em;
+}
+
+#title {
+  position: absolute;
+  padding-left: 2em;
+  left: 15em;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+  height: 5em;
+  color: white;
+  z-index: 1;
+}
+
+#title-background {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 5em;
+}
+
+#summary {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 15em;
+  overflow: auto;
+}
+
+#summary .menu {
+  font-size: 0.8em;
+}
+
+#summary .report {
+  border-top: thin solid transparent;
+  /* BUG: without this, there is a spall space at the top */
+  -moz-border-radius-bottomright: 1em;
+  -webkit-border-radius-bottomright: 1em;
+  border-radius-bottomright: 1em;
+}
+
+.report > * {
+  font-size: 0.75em;
+}
+
+.report ul {
+  margin: .25em;
+  padding: .25em;
+  list-style-type: none;
+}
+
+.report.fail, #title-background.fail {
+  color: #fffbd3;
+  background-color: #c20000;
+}
+
+.report.pass, #title-background.pass {
+  color: #dbffb4;
+  background-color: #65c400;
+}
+
+.report.skip, #title-background.skip {
+  color: #004444;
+  background-color: aqua;
+}
+
+li.report-steps, li.report-scenarios {
+  display: block;
+  float: left;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+    </style>
+  </head>
+  <body class="pass">
+    <div id="title">
+      <h1>Test suite results</h1>
+    </div>
+<?garbage?>
+    <div id="feature-1" class="feature skip">
+      <div class="feature-header">
+        <h2 class="title-feature">Feature: Ambiguous step definition error reporting</h2>
+        <p>In order to avoid writing ambiguous step definitions. As an adaspec
+        user. I want to be notified whenever the step definitions regular
+        expressions are ambiguous for a given step</p>
+      </div>
+      <div id="feature-1-background" class="scenario skip">
+        <h3 class="title-background">Background:</h3>
+        <div class="step pass"><p>Given adaspec is in the PATH</p></div>
+        <div class="step pass"><p>And I am in an empty directory</p></div>
+        <div class="step pass">
+          <p>And a file "<span class="capture">features/ambiguous.feature</span>":</p>
+          <pre class="string">Feature: Sample
+
+  Background: B
+    Given this step works
+
+  Scenario: Run a bad step
+    Given this step doesn't work
+    Given this step works
+
+  Scenario: Run a good step
+    Given this step works
+</pre>
+        </div>
+        <div class="step fail">
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-1-background").className = "scenario fail";
+            document.getElementById("feature-1").className = "feature fail";
+          /*]]>*/</script>
+          <p>And a file "<span class="capture">features/step_definitions/steps.ads</span>":</p>
+          <pre class="string">with AdaSpecLib;
+use  AdaSpecLib;
+package Steps is
+
+  --  @given ^this step works$
+  procedure This_Step_Works (Args : in out Arg_Type);
+
+  --  @given ^this is ambiguous$
+  procedure Ambiguous (Args : in out Arg_Type);
+
+  --  @given ^this is( not)? ambiguous$
+  procedure Not_Ambiguous (Args : in out Arg_Type);
+
+end Steps;
+</pre>
+        </div>
+        <div class="step skip">
+          <p>And a file "<span class="capture">features/step_definitions/steps2.ads</span>":</p>
+          <pre class="string">with AdaSpecLib;
+use  AdaSpecLib;
+package Steps2 is
+
+  --  @given ^this step .*works$
+  procedure This_Step_Doest_Work (Args : in out Arg_Type);
+
+end Steps2;
+</pre>
+        </div>
+      </div> <!-- scenario -->
+      <div id="feature-1-scenario-1" class="scenario skip">
+        <h3 class="title-scenario">Scenario: </h3>
+        <div class="step skip"><p>When I run <span class="capture">adaspec features/ambiguous.feature</span></p></div>
+        <div class="step skip"><p>Then it should <span class="capture">fail</span></p></div>
+      </div> <!-- scenario -->
+      <div id="feature-1-scenario-2" class="scenario skip">
+        <h3 class="title-scenario">Scenario: </h3>
+        <div class="step skip"><p>When I run <span class="capture">adaspec features/ambiguous2.feature</span></p></div>
+        <div class="step skip"><p>Then it should <span class="capture">fail</span></p></div>
+      </div> <!-- scenario -->
+    </div> <!-- feature -->
+<?var name="feature-begin"?>
+    <div id="feature-<?placeholder name="id"?>" class="feature skip">
+      <div class="feature-header">
+        <h2 class="title-feature">Feature: <?placeholder name="name"?></h2>
+        <p><?placeholder name="description"?></p>
+      </div>
+<?var name="background-begin"?>
+      <div id="feature-<?placeholder name="feature_id"?>-background" class="scenario skip">
+<?var name="background-end"?>
+      </div> <!-- background -->
+<?var name="scenario-begin"?>
+      <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
+<?var name="step-begin"?>
+        <div class="step <?placeholder name="status"?>">
+          <p><?placeholder name="stanza"?></p>
+<?var name="step-string"?>
+          <pre class="string"><?placeholder name="string"?></pre>
+<?var name="step-end"?>
+        </div> <!-- step -->
+<?var name="scenario-end"?>
+      </div> <!-- scenario -->
+<?var name="feature-end"?>
+    </div> <!-- feature -->
+<?var name="report"?>
+    <div id="title-background" class="fail">&nbsp;</div>
+    <div id="summary" class="fail">
+      <div class="report fail">
+        <ul>
+          <li class="report-scenarios">10 scenarios
+            <ul>
+              <li>3 failed</li>
+              <li>7 passed</li>
+            </ul>
+          </li>
+          <li class="report-steps">100 steps
+            <ul>
+              <li>20 failed</li>
+              <li>20 skipped</li>
+              <li>60 passed</li>
+            </ul>
+          </li>
+          <li class="clear">Finished in 0 seconds</li>
+        </ul>
+      </div>
+      <ul class="menu">
+        <li class="fail">
+          <a href="#feature-1">Feature: Ambiguous step definition error reporting</a>
+          <ul>
+            <li class="title-background fail"><a href="#feature-1-background">Background</a></li>
+            <li class="title-scenario skip"><a href="#feature-1-scenario-1">Scenario</a></li>
+            <li class="title-scenario skip"><a href="#feature-1-scenario-2">Scenario</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+<?var name="page-end"?>
+  </body>
+</html>
+<?garbage?>
+<!-- kate: hl PHP (HTML); -->

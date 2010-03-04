@@ -230,6 +230,9 @@ help:
 
 .PHONY: help show-ignored-coverage
 
+src/lib/adaspeclib-format_html_template.ads src/lib/adaspeclib-format_html_template.adb: src/adaspec-report.template.html ./template.pl
+	./template.pl $< AdaSpecLib.Format_HTML_Template $@
+
 ### Markdown ###
 
 MARKDOWN_URL=http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip
