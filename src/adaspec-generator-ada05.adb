@@ -253,11 +253,13 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.UnIndent;
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
-      S.Adb.Put_Line ("Format.Start_Scenario;");
       --  body
       if not Background then
+         S.Adb.Put_Line ("Format.Start_Background (First);");
          S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First);");
+         S.Adb.Put_Line ("Format.Stop_Background (First);");
       end if;
+      S.Adb.Put_Line ("Format.Start_Scenario;");
       if Length (Scenario.Steps) = 0 then
          S.Adb.Put_Line ("null;");
       else
