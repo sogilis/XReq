@@ -5,4 +5,4 @@ gnatcheck.*.log
 gnatcheck.out
 gnatcheck.log
 *aunit.xml
-/features.junit/*.xml
+/*.junit/*.xml

@@ -96,7 +96,6 @@ Feature:
     Missing parameter for switch --format
     """
 
-  @wip
   Scenario: Text with output
     When I run "./test_suite -f TexT -o report.txt"
     Then it should pass

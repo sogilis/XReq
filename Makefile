@@ -141,13 +141,16 @@ _gcov-gather-cucumber:
 .PHONY: clean-gcov gcov-report _gcov-gather-cucumber coverage
 
 
+run-wip-cucumber: bin
+	cucumber -w -t "@wip" features/*.feature
+
 run-cucumber: bin
 	@echo
 	@echo "####################"
 	@echo "##  Run cucumber  ##"
 	@echo "####################"
 	@echo
-	cucumber -w -t "@wip" features/*.feature
+	@$(MAKE) run-wip-cucumber
 	cucumber -t "~@wip" features/*.feature
 
 run-tests: tests bin
@@ -158,7 +161,7 @@ run-tests: tests bin
 	@echo
 	bin/unit_tests
 
-.PHONY: run-cucumber run-tests
+.PHONY: run-cucumber run-wip-cucumber run-tests
 
 gnatcheck: dir
 	@echo
