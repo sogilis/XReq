@@ -3,6 +3,7 @@
 with Ada.Strings.Fixed;
 with Ada.Strings.Maps.Constants;
 with AdaSpecLib.Format.Text;
+with AdaSpecLib.Format.HTML;
 
 package body AdaSpecLib.Format is
 
@@ -17,6 +18,8 @@ package body AdaSpecLib.Format is
    begin
       if N = "text" then
          return Format_Ptr (AdaSpecLib.Format.Text.New_Text_Format);
+      elsif N = "html" then
+         return Format_Ptr (AdaSpecLib.Format.HTML.New_HTML_Format);
       else
          return null;
       end if;
