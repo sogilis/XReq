@@ -209,7 +209,9 @@ package body AdaSpecLib.Format.HTML is
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
    is
-      Stanza : Unbounded_String;
+      Inserts     : array (1 .. Name'Last + 1) of Unbounded_String;
+      Stanza      : Unbounded_String;
+      Left, Right : Natural; --  Left and right boundaries of matches
    begin
       if Format.In_Background and
          (not Format.Have_Background) and
@@ -229,7 +231,16 @@ package body AdaSpecLib.Format.HTML is
          when Step_When  => Append (Stanza, "When ");
          when Step_Then  => Append (Stanza, "Then ");
       end case;
-      Append (Stanza, Name);
+      for I in 1 .. Args.Last_Match loop
+         Args.Match (I, Left, Right);
+         Append (Inserts (Left), "<span class=""capture"">");
+         Insert (Inserts (Right + 1), 1, "</span>");
+      end loop;
+      for I in Name'Range loop
+         Append (Stanza, Inserts (I));
+         Append (Stanza, Name (I));
+      end loop;
+      Append (Stanza, Inserts (Inserts'Last));
       Tmpl.step_begin (Format.Output,
             Param_status => Status_Class (Success),
             Param_stanza => To_String (Stanza));

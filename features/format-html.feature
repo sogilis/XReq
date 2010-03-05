@@ -139,18 +139,18 @@ Feature: HTML reports
       use  AdaSpecLib;
       package Steps is
 
-        --  @given ^this step works$
+        --  @given ^this step (works)$
         procedure This_Step_Works (Args : in out Arg_Type);
 
-        --  @given ^this fails periodically$
+        --  @given ^this (fails) periodically$
         procedure Periodic_Fail (Args : in out Arg_Type);
 
-        --  @given ^it fails?$
-        --  @when ^it fails?$
+        --  @given ^it (fails?)$
+        --  @when ^it (fails?)$
         procedure Make_It_Fail (Args : in out Arg_Type);
 
         --  @then ^do nothing$
-        --  @given ^this is ignored$
+        --  @given ^this is (ignored)$
         procedure Do_Nothing (Args : in out Arg_Type) is null;
 
       end Steps;

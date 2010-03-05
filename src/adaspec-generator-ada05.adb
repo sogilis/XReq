@@ -131,7 +131,7 @@ package body AdaSpec.Generator.Ada05 is
    begin
       S.Adb.Put_Line ("Format.Start_Step;");
       --  Declare
-      S.Adb.Put_Line ("declare");
+      S.Adb.Put_Line ("declare"); ---------------------------------------------
       S.Adb.Indent;
       S.Adb.Put_Line ("Args   : Arg_Type;");
       S.Adb.Put_Indent;
@@ -145,7 +145,7 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("Stanza : constant String    := " &
                       Ada_String (To_String (Step.Step.Stanza)) & ";");
       S.Adb.UnIndent;
-      S.Adb.Put_Line ("begin");
+      S.Adb.Put_Line ("begin"); -----------------------------------------------
       S.Adb.Indent;
       --  Skip if failure
       S.Adb.Put_Line ("if Fail then");
@@ -212,7 +212,7 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("end if;");
       --  Exception
       S.Adb.UnIndent;
-      S.Adb.Put_Line ("exception");
+      S.Adb.Put_Line ("exception"); -------------------------------------------
       S.Adb.Indent;
       S.Adb.Put_Line ("when Err : others =>");
       S.Adb.Indent;
