@@ -259,8 +259,17 @@ package body AdaSpecLib.Format_HTML_Template is
    end background_begin;
 
    procedure background_end
-        (File : in out File_Type) is
+        (File : in out File_Type;
+         Param_feature_id : in String) is
    begin
+      Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "          var scenario = document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-background"");" & ASCII.LF);
+      Put (File, "          if (scenario.className != ""scenario fail"") {" & ASCII.LF);
+      Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
+      Put (File, "          };" & ASCII.LF);
+      Put (File, "        /*]]>*/</script>" & ASCII.LF);
       Put (File, "      </div> <!-- background -->" & ASCII.LF);
    end background_end;
 
@@ -302,6 +311,47 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "</pre>" & ASCII.LF);
    end step_string;
 
+   procedure step_error_background
+        (File : in out File_Type;
+         Param_error : in String;
+         Param_feature_id : in String) is
+   begin
+      Put (File, "          <hr />" & ASCII.LF);
+      Put (File, "          <pre class=""error"">");
+      Put (File, Param_error);
+      Put (File, "</pre>" & ASCII.LF);
+      Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "            document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-background"").className = ""scenario fail"";" & ASCII.LF);
+      Put (File, "            document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, """).className = ""feature fail"";" & ASCII.LF);
+      Put (File, "          /*]]>*/</script>" & ASCII.LF);
+   end step_error_background;
+
+   procedure step_error_scenario
+        (File : in out File_Type;
+         Param_error : in String;
+         Param_feature_id : in String;
+         Param_num : in String) is
+   begin
+      Put (File, "          <hr />" & ASCII.LF);
+      Put (File, "          <pre class=""error"">");
+      Put (File, Param_error);
+      Put (File, "</pre>" & ASCII.LF);
+      Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "            document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-scenario-");
+      Put (File, Param_num);
+      Put (File, """).className = ""scenario fail"";" & ASCII.LF);
+      Put (File, "            document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, """).className = ""feature fail"";" & ASCII.LF);
+      Put (File, "          /*]]>*/</script>" & ASCII.LF);
+   end step_error_scenario;
+
    procedure step_end
         (File : in out File_Type) is
    begin
@@ -309,14 +359,35 @@ package body AdaSpecLib.Format_HTML_Template is
    end step_end;
 
    procedure scenario_end
-        (File : in out File_Type) is
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String) is
    begin
+      Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "          var scenario = document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-scenario-");
+      Put (File, Param_num);
+      Put (File, """);" & ASCII.LF);
+      Put (File, "          if (scenario.className != ""scenario fail"") {" & ASCII.LF);
+      Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
+      Put (File, "          };" & ASCII.LF);
+      Put (File, "        /*]]>*/</script>" & ASCII.LF);
       Put (File, "      </div> <!-- scenario -->" & ASCII.LF);
    end scenario_end;
 
    procedure feature_end
-        (File : in out File_Type) is
+        (File : in out File_Type;
+         Param_feature_id : in String) is
    begin
+      Put (File, "      <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "        var feature = document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, """);" & ASCII.LF);
+      Put (File, "        if (feature.className != ""feature fail"") {" & ASCII.LF);
+      Put (File, "          feature.className = ""feature pass""" & ASCII.LF);
+      Put (File, "        };" & ASCII.LF);
+      Put (File, "      /*]]>*/</script>" & ASCII.LF);
       Put (File, "    </div> <!-- feature -->" & ASCII.LF);
    end feature_end;
 

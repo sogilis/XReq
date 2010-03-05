@@ -301,6 +301,12 @@ end Steps2;
       <div id="feature-<?placeholder name="feature_id"?>-background" class="scenario skip">
         <h3 class="title-background">Background: <?placeholder name="title"?></h3>
 <?var name="background-end"?>
+        <script type="text/javascript">/*<![CDATA[*/
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-background");
+          if (scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
       </div> <!-- background -->
 <?var name="scenario-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
@@ -310,11 +316,37 @@ end Steps2;
           <p><?placeholder name="stanza"?></p>
 <?var name="step-string"?>
           <pre class="string"><?placeholder name="string"?></pre>
+<?var name="step-error-background"?>
+          <hr />
+          <pre class="error"><?placeholder name="error"?></pre>
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-<?placeholder name="feature_id"?>-background").className = "scenario fail";
+            document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
+          /*]]>*/</script>
+<?var name="step-error-scenario"?>
+          <hr />
+          <pre class="error"><?placeholder name="error"?></pre>
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario fail";
+            document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
+          /*]]>*/</script>
 <?var name="step-end"?>
         </div> <!-- step -->
 <?var name="scenario-end"?>
+        <script type="text/javascript">/*<![CDATA[*/
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
+          if (scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
       </div> <!-- scenario -->
 <?var name="feature-end"?>
+      <script type="text/javascript">/*<![CDATA[*/
+        var feature = document.getElementById("feature-<?placeholder name="feature_id"?>");
+        if (feature.className != "feature fail") {
+          feature.className = "feature pass"
+        };
+      /*]]>*/</script>
     </div> <!-- feature -->
 <?var name="report-begin"?>
     <div id="title-background" class="<?placeholder name="status"?>">&nbsp;</div>

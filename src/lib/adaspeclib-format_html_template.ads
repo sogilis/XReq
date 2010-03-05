@@ -20,7 +20,8 @@ package AdaSpecLib.Format_HTML_Template is
          Param_title : in String);
 
    procedure background_end
-        (File : in out File_Type);
+        (File : in out File_Type;
+         Param_feature_id : in String);
 
    procedure scenario_begin
         (File : in out File_Type;
@@ -37,14 +38,28 @@ package AdaSpecLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_string : in String);
 
+   procedure step_error_background
+        (File : in out File_Type;
+         Param_error : in String;
+         Param_feature_id : in String);
+
+   procedure step_error_scenario
+        (File : in out File_Type;
+         Param_error : in String;
+         Param_feature_id : in String;
+         Param_num : in String);
+
    procedure step_end
         (File : in out File_Type);
 
    procedure scenario_end
-        (File : in out File_Type);
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String);
 
    procedure feature_end
-        (File : in out File_Type);
+        (File : in out File_Type;
+         Param_feature_id : in String);
 
    procedure report_begin
         (File : in out File_Type;

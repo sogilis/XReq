@@ -58,7 +58,10 @@ package body AdaSpecLib.Format.HTML is
                           Feature : in String)
    is
    begin
-      Format.Output.Put_Line ("Feature: " & Feature);
+      Tmpl.feature_begin (Format.Output,
+         Param_id          => To_String (Format.Feature_ID),
+         Param_name        => Feature,
+         Param_description => "");
    end Put_Feature;
 
    ----------------------
@@ -107,7 +110,8 @@ package body AdaSpecLib.Format.HTML is
       pragma Unreferenced (First);
    begin
       if Format.Have_Background then
-         Tmpl.background_end (Format.Output);
+         Tmpl.background_end (Format.Output,
+            Param_feature_id => To_String (Format.Feature_ID));
       end if;
       Format.Have_Background := False;
       Format.In_Background   := False;
@@ -158,6 +162,15 @@ package body AdaSpecLib.Format.HTML is
    is
       Stanza : Unbounded_String;
    begin
+      if Success = Status_Failed and
+         Format.In_Background and
+         not Format.Have_Background
+      then
+         Format.Have_Background := True;
+         Tmpl.background_begin (Format.Output,
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_title      => "");
+      end if;
       case Step is
          when Step_Given => Append (Stanza, "Given ");
          when Step_When  => Append (Stanza, "When ");
@@ -180,21 +193,20 @@ package body AdaSpecLib.Format.HTML is
    procedure Put_Error      (Format     : in out HTML_Format_Type;
                              Err        : in Exception_Occurrence)
    is
---       Info : constant String := Exception_Information (Err);
---       Line : Positive := 1;
+      Error : constant String :=
+         Exception_Name (Err) & ": " & Exception_Message (Err) & ASCII.LF &
+         Exception_Information (Err);
    begin
-      Format.Output.Put_Line ("      " & Exception_Name (Err) &
-                ": " & Exception_Message (Err));
---       Format.Output.Put ("      ");
---       for I in Info'Range loop
---          if Line > 1 then
---             Format.Output.Put (Info (I));
---          end if;
---          if Info (I) = ASCII.LF and I /= info'Last then
---             Format.Output.Put ("      ");
---             Line := Line + 1;
---          end if;
---       end loop;
+      if Format.In_Background then
+         Tmpl.step_error_background (Format.Output,
+            Param_error      => Error,
+            Param_feature_id => To_String (Format.Feature_ID));
+      else
+         Tmpl.step_error_scenario (Format.Output,
+            Param_error      => Error,
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Scenario_ID));
+      end if;
    end Put_Error;
 
    -----------------
@@ -213,7 +225,9 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Scenario  (Format     : in out HTML_Format_Type)
    is
    begin
-      Tmpl.scenario_end (Format.Output);
+      Tmpl.scenario_end (Format.Output,
+         Param_feature_id => To_String (Format.Feature_ID),
+         Param_num        => To_String (Format.Scenario_ID));
    end Stop_Scenario;
 
    --------------------
@@ -222,7 +236,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Stop_Feature  (Format     : in out HTML_Format_Type) is
    begin
-      Tmpl.feature_end (Format.Output);
+      Tmpl.feature_end (Format.Output,
+         Param_feature_id => To_String (Format.Feature_ID));
    end Stop_Feature;
 
    ------------------

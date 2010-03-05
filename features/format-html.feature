@@ -10,8 +10,20 @@ Feature: HTML reports
       """
       Feature: Sample
 
+      Background: Set things up
+        Given this step works
+          \"""
+          abc
+          def
+          \"""
+
       Scenario: Run a good step
         Given this step works
+
+      Scenario: Failure
+        Given this step works
+        When it fail
+        Then do nothing
 
       """
     And a file "features/step_definitions/steps.ads":
@@ -22,6 +34,12 @@ Feature: HTML reports
 
         --  @given ^this step works$
         procedure This_Step_Works (Args : in out Arg_Type);
+
+        --  @when ^it fail$
+        procedure Make_It_Fail (Args : in out Arg_Type);
+
+        --  @then ^do nothing$
+        procedure Do_Nothing (Args : in out Arg_Type) is null;
 
       end Steps;
       """
@@ -37,6 +55,12 @@ Feature: HTML reports
           Put_Line ("This step works");
         end This_Step_Works;
 
+        procedure Make_It_Fail (Args : in out Arg_Type) is
+          pragma Unreferenced (Args);
+        begin
+          Assert (False, "Error message");
+        end Make_It_Fail;
+
       end Steps;
       """
     When I run adaspec -x test_suite features/simplest.feature
@@ -47,7 +71,7 @@ Feature: HTML reports
 
   Scenario: Generate HTML report
     When I run "./test_suite -f html -o report.html"
-    Then it should pass
+    Then it should fail
     And  "report.html" should exist
     And  "report.html" should contain
       """
