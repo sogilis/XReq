@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title>AdaSpec Reports</title>
+    <style type="text/css">
+
+body, html {
+  margin: 0;
+  padding: 0;
+}
+
+ul.horizontal {
+  list-style-type: none;
+  padding: 0;
+}
+ul.horizontal li {
+  display: block;
+  margin: 0;
+  padding: 0;
+  margin-right: 1em;
+  float: left;
+}
+.top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 10%;
+  overflow: auto;
+  margin: 0;
+}
+
+iframe {
+  border: None;
+}
+
+.frame iframe {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding-top: 3em;
+  height: 90%;
+}
+
+    </style>
+  </head>
+  <body>
+    <ul class="top horizontal" style="padding-bottom: 1em;">
+      <li><a href="coverage/index.html" target="frame">Code coverage</a></li>
+      <li><a href="reports/features.html" target="frame">Features</a></li>
+      <li><a href="reports/features-wip.html" target="frame">Work in Progress Features</a></li>
+    </ul>
+    <div class="frame">
+      <iframe name="frame" src="coverage/index.html"></iframe>
+    </div>
+  </body>
+</html>

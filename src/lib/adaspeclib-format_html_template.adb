@@ -220,7 +220,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "" & ASCII.LF);
       Put (File, "    </style>" & ASCII.LF);
       Put (File, "  </head>" & ASCII.LF);
-      Put (File, "  <body class=""pass"">" & ASCII.LF);
+      Put (File, "  <body>" & ASCII.LF);
       Put (File, "    <div id=""title"">" & ASCII.LF);
       Put (File, "      <h1>Test suite results</h1>" & ASCII.LF);
       Put (File, "    </div>" & ASCII.LF);
