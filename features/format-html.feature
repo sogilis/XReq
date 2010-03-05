@@ -26,6 +26,36 @@ Feature: HTML reports
         Then do nothing
 
       """
+    And a file "features/simplest2.feature":
+      """
+      Feature: Periodic Fail
+
+      Background: Set things up
+        Given this step works
+          \"""
+          abc
+          def
+          \"""
+        And this fails periodically
+        And this is ignored
+
+      Scenario: Run a good step
+        Given this step works
+        And this is ignored
+
+      Scenario: Run a good step
+        Given this step works
+        And this is ignored
+
+      Scenario: Run a good step
+        Given this step works
+        And this is ignored
+
+      Scenario: Run a good step
+        Given this step works
+        And this is ignored
+
+      """
     And a file "features/step_definitions/steps.ads":
       """
       with AdaSpecLib;
@@ -35,10 +65,14 @@ Feature: HTML reports
         --  @given ^this step works$
         procedure This_Step_Works (Args : in out Arg_Type);
 
+        --  @given ^this fails periodically$
+        procedure Periodic_Fail (Args : in out Arg_Type);
+
         --  @when ^it fail$
         procedure Make_It_Fail (Args : in out Arg_Type);
 
         --  @then ^do nothing$
+        --  @given ^this is ignored$
         procedure Do_Nothing (Args : in out Arg_Type) is null;
 
       end Steps;
@@ -49,11 +83,23 @@ Feature: HTML reports
       use Ada.Text_IO;
       package body Steps is
 
+        Num : Positive := 1;
+
         procedure This_Step_Works (Args : in out Arg_Type) is
           pragma Unreferenced (Args);
         begin
           Put_Line ("This step works");
         end This_Step_Works;
+
+        procedure Periodic_Fail (Args : in out Arg_Type) is
+          pragma Unreferenced (Args);
+        begin
+          Num := Num + 1;
+          if Num = 3 then
+            Num := 1;
+          end if;
+          Assert (Num = 1, "Num =" & Num'Img & " /= 1");
+        end Periodic_Fail;
 
         procedure Make_It_Fail (Args : in out Arg_Type) is
           pragma Unreferenced (Args);
@@ -63,7 +109,7 @@ Feature: HTML reports
 
       end Steps;
       """
-    When I run adaspec -x test_suite features/simplest.feature
+    When I run adaspec -x test_suite features/simplest.feature features/simplest2.feature
     Then it should pass
     When I compile "test_suite" in features/tests
     Then it should pass

@@ -226,7 +226,7 @@ li.report-steps, li.report-scenarios {
         user. I want to be notified whenever the step definitions regular
         expressions are ambiguous for a given step</p>
       </div>
-      <div id="feature-1-background" class="scenario skip">
+      <div id="feature-1-background-1" class="scenario skip">
         <h3 class="title-background">Background:</h3>
         <div class="step pass"><p>Given adaspec is in the PATH</p></div>
         <div class="step pass"><p>And I am in an empty directory</p></div>
@@ -247,7 +247,7 @@ li.report-steps, li.report-scenarios {
         </div>
         <div class="step fail">
           <script type="text/javascript">/*<![CDATA[*/
-            document.getElementById("feature-1-background").className = "scenario fail";
+            document.getElementById("feature-1-background-1").className = "scenario fail";
             document.getElementById("feature-1").className = "feature fail";
           /*]]>*/</script>
           <p>And a file "<span class="capture">features/step_definitions/steps.ads</span>":</p>
@@ -298,11 +298,11 @@ end Steps2;
         <p><?placeholder name="description"?></p>
       </div>
 <?var name="background-begin"?>
-      <div id="feature-<?placeholder name="feature_id"?>-background" class="scenario skip">
+      <div id="feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>" class="scenario skip">
         <h3 class="title-background">Background: <?placeholder name="title"?></h3>
 <?var name="background-end"?>
         <script type="text/javascript">/*<![CDATA[*/
-          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-background");
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>");
           if (scenario.className != "scenario fail") {
             scenario.className = "scenario pass"
           };
@@ -320,7 +320,7 @@ end Steps2;
           <hr />
           <pre class="error"><?placeholder name="error"?></pre>
           <script type="text/javascript">/*<![CDATA[*/
-            document.getElementById("feature-<?placeholder name="feature_id"?>-background").className = "scenario fail";
+            document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
           /*]]>*/</script>
 <?var name="step-error-scenario"?>
@@ -374,7 +374,7 @@ end Steps2;
         <li class="fail">
           <a href="#feature-1">Feature: Ambiguous step definition error reporting</a>
           <ul>
-            <li class="title-background fail"><a href="#feature-1-background">Background</a></li>
+            <li class="title-background fail"><a href="#feature-1-background-1">Background</a></li>
             <li class="title-scenario skip"><a href="#feature-1-scenario-1">Scenario</a></li>
             <li class="title-scenario skip"><a href="#feature-1-scenario-2">Scenario</a></li>
           </ul>

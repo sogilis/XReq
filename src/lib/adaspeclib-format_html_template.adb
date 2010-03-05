@@ -248,11 +248,14 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure background_begin
         (File : in out File_Type;
          Param_feature_id : in String;
+         Param_num : in String;
          Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
       Put (File, Param_feature_id);
-      Put (File, "-background"" class=""scenario skip"">" & ASCII.LF);
+      Put (File, "-background-");
+      Put (File, Param_num);
+      Put (File, """ class=""scenario skip"">" & ASCII.LF);
       Put (File, "        <h3 class=""title-background"">Background: ");
       Put (File, Param_title);
       Put (File, "</h3>" & ASCII.LF);
@@ -260,12 +263,15 @@ package body AdaSpecLib.Format_HTML_Template is
 
    procedure background_end
         (File : in out File_Type;
-         Param_feature_id : in String) is
+         Param_feature_id : in String;
+         Param_num : in String) is
    begin
       Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
       Put (File, "          var scenario = document.getElementById(""feature-");
       Put (File, Param_feature_id);
-      Put (File, "-background"");" & ASCII.LF);
+      Put (File, "-background-");
+      Put (File, Param_num);
+      Put (File, """);" & ASCII.LF);
       Put (File, "          if (scenario.className != ""scenario fail"") {" & ASCII.LF);
       Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
       Put (File, "          };" & ASCII.LF);
@@ -314,7 +320,8 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure step_error_background
         (File : in out File_Type;
          Param_error : in String;
-         Param_feature_id : in String) is
+         Param_feature_id : in String;
+         Param_num : in String) is
    begin
       Put (File, "          <hr />" & ASCII.LF);
       Put (File, "          <pre class=""error"">");
@@ -323,7 +330,9 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
       Put (File, "            document.getElementById(""feature-");
       Put (File, Param_feature_id);
-      Put (File, "-background"").className = ""scenario fail"";" & ASCII.LF);
+      Put (File, "-background-");
+      Put (File, Param_num);
+      Put (File, """).className = ""scenario fail"";" & ASCII.LF);
       Put (File, "            document.getElementById(""feature-");
       Put (File, Param_feature_id);
       Put (File, """).className = ""feature fail"";" & ASCII.LF);
@@ -451,7 +460,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "        <li class=""fail"">" & ASCII.LF);
       Put (File, "          <a href=""#feature-1"">Feature: Ambiguous step definition error reporting</a>" & ASCII.LF);
       Put (File, "          <ul>" & ASCII.LF);
-      Put (File, "            <li class=""title-background fail""><a href=""#feature-1-background"">Background</a></li>" & ASCII.LF);
+      Put (File, "            <li class=""title-background fail""><a href=""#feature-1-background-1"">Background</a></li>" & ASCII.LF);
       Put (File, "            <li class=""title-scenario skip""><a href=""#feature-1-scenario-1"">Scenario</a></li>" & ASCII.LF);
       Put (File, "            <li class=""title-scenario skip""><a href=""#feature-1-scenario-2"">Scenario</a></li>" & ASCII.LF);
       Put (File, "          </ul>" & ASCII.LF);

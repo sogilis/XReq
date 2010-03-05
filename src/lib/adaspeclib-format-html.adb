@@ -47,7 +47,8 @@ package body AdaSpecLib.Format.HTML is
    procedure Start_Feature  (Format     : in out HTML_Format_Type) is
    begin
       Format.Feature_ID  := Format.Feature_ID + 1;
-      Format.Scenario_ID := 0;
+      Format.Background_ID := 0;
+      Format.Scenario_ID   := 0;
    end Start_Feature;
 
    -------------------
@@ -71,7 +72,8 @@ package body AdaSpecLib.Format.HTML is
    procedure Enter_Scenario (Format     : in out HTML_Format_Type)
    is
    begin
-      Format.Scenario_ID := Format.Scenario_ID + 1;
+      Format.Background_ID := Format.Background_ID + 1;
+      Format.Scenario_ID   := Format.Scenario_ID   + 1;
    end Enter_Scenario;
 
    ------------------------
@@ -97,6 +99,7 @@ package body AdaSpecLib.Format.HTML is
       Format.Have_Background := True;
       Tmpl.background_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
+         Param_num        => To_String (Format.Background_ID),
          Param_title      => Background);
    end Put_Background;
 
@@ -111,7 +114,8 @@ package body AdaSpecLib.Format.HTML is
    begin
       if Format.Have_Background then
          Tmpl.background_end (Format.Output,
-            Param_feature_id => To_String (Format.Feature_ID));
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Background_ID));
       end if;
       Format.Have_Background := False;
       Format.In_Background   := False;
@@ -169,6 +173,7 @@ package body AdaSpecLib.Format.HTML is
          Format.Have_Background := True;
          Tmpl.background_begin (Format.Output,
             Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Background_ID),
             Param_title      => "");
       end if;
       case Step is
@@ -200,7 +205,8 @@ package body AdaSpecLib.Format.HTML is
       if Format.In_Background then
          Tmpl.step_error_background (Format.Output,
             Param_error      => Error,
-            Param_feature_id => To_String (Format.Feature_ID));
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Background_ID));
       else
          Tmpl.step_error_scenario (Format.Output,
             Param_error      => Error,
@@ -215,7 +221,9 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Stop_Step      (Format     : in out HTML_Format_Type) is
    begin
-      Tmpl.step_end (Format.Output);
+      if not Format.In_Background or Format.Have_Background then
+         Tmpl.step_end (Format.Output);
+      end if;
    end Stop_Step;
 
    ---------------------
@@ -225,9 +233,11 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Scenario  (Format     : in out HTML_Format_Type)
    is
    begin
-      Tmpl.scenario_end (Format.Output,
-         Param_feature_id => To_String (Format.Feature_ID),
-         Param_num        => To_String (Format.Scenario_ID));
+      if not Format.In_Background or Format.Have_Background then
+         Tmpl.scenario_end (Format.Output,
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Scenario_ID));
+      end if;
    end Stop_Scenario;
 
    --------------------

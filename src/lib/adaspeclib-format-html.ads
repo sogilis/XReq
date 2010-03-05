@@ -66,6 +66,7 @@ private
          In_Background   : Boolean := False;
          Have_Background : Boolean := False;
          Feature_ID      : Natural := 0;
+         Background_ID   : Natural := 0;
          Scenario_ID     : Natural := 0;
          Step_ID         : Natural := 0;
       end record;
