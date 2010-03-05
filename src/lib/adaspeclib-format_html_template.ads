@@ -6,7 +6,8 @@ package AdaSpecLib.Format_HTML_Template is
    pragma Style_Checks (Off);
 
    procedure page_begin
-        (File : in out File_Type);
+        (File : in out File_Type;
+         Param_title : in String);
 
    procedure feature_begin
         (File : in out File_Type;
@@ -75,7 +76,39 @@ package AdaSpecLib.Format_HTML_Template is
          Param_num_steps_skip : in String;
          Param_num_steps_pass : in String);
 
-   procedure report_menu
+   procedure report_menu_begin
+        (File : in out File_Type);
+
+   procedure report_menu_feature_begin
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_feature_id : in String;
+         Param_name : in String);
+
+   procedure report_menu_scenarios_begin
+        (File : in out File_Type);
+
+   procedure report_menu_background
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_feature_id : in String;
+         Param_num : in String;
+         Param_name : in String);
+
+   procedure report_menu_scenario
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_feature_id : in String;
+         Param_num : in String;
+         Param_name : in String);
+
+   procedure report_menu_scenarios_end
+        (File : in out File_Type);
+
+   procedure report_menu_feature_end
+        (File : in out File_Type);
+
+   procedure report_menu_end
         (File : in out File_Type);
 
    procedure report_end

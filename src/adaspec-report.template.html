@@ -3,7 +3,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <title>Test suite</title>
+    <title><?placeholder name="title"?></title>
     <style type="text/css">
 
 a {
@@ -170,6 +170,31 @@ body {
 
 #summary .menu {
   font-size: 0.8em;
+}
+
+.menu a {
+  text-decoration: none;
+}
+
+.menu *.fail > a, .menu *.skip > a {
+  font-weight: bold;
+}
+
+.menu ul, .menu ol {
+  padding: 0;
+  padding-left: 1em;
+}
+
+.menu li {
+  margin: 0;
+  padding: 0;
+}
+
+ul.menu > li {
+  margin-top: 1em;
+}
+ul.menu > li > ul {
+  margin-top: 0.5em;
 }
 
 #summary .report {
@@ -370,16 +395,22 @@ end Steps2;
           <li class="clear">Finished in 0 seconds</li>
         </ul>
       </div>
-<?var name="report-menu"?>
+<?var name="report-menu-begin"?>
       <ul class="menu">
-        <li class="fail">
-          <a href="#feature-1">Feature: Ambiguous step definition error reporting</a>
+<?var name="report-menu-feature-begin"?>
+        <li class="<?placeholder name="status"?>">
+          <a href="#feature-<?placeholder name="feature_id"?>"><?placeholder name="name"?></a>
+<?var name="report-menu-scenarios-begin"?>
           <ul>
-            <li class="title-background fail"><a href="#feature-1-background-1">Background</a></li>
-            <li class="title-scenario skip"><a href="#feature-1-scenario-1">Scenario</a></li>
-            <li class="title-scenario skip"><a href="#feature-1-scenario-2">Scenario</a></li>
+<?var name="report-menu-background"?>
+            <li class="title-background <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
+<?var name="report-menu-scenario"?>
+            <li class="title-scenario <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
+<?var name="report-menu-scenarios-end"?>
           </ul>
+<?var name="report-menu-feature-end"?>
         </li>
+<?var name="report-menu-end"?>
       </ul>
 <?var name="report-end"?>
     </div>

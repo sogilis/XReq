@@ -1,5 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Containers.Vectors;
+
 package AdaSpecLib.Format.HTML is
 
    type HTML_Format_Type is new Format_Type with private;
@@ -61,15 +63,42 @@ package AdaSpecLib.Format.HTML is
 
 private
 
+   type Menu_Item_2 is
+      record
+         Name            : Unbounded_String;
+         Status          : Status_Type := Status_Passed;
+         Is_Background   : Boolean;
+         Feature_ID      : Natural := 0;
+         Scenario_ID     : Natural := 0;
+      end record;
+
+   package Menu_Vectors_2 is
+      new Ada.Containers.Vectors (Positive, Menu_Item_2, "=");
+
+   type Menu_Item_1 is
+      record
+         Name            : Unbounded_String;
+         Status          : Status_Type := Status_Passed;
+         Feature_ID      : Natural := 0;
+         Sub_Menu        : Menu_Vectors_2.Vector;
+      end record;
+
+   package Menu_Vectors is
+      new Ada.Containers.Vectors (Positive, Menu_Item_1, "=");
+
    type HTML_Format_Type is new Format_Type with
       record
          Close_Step      : Boolean := False;
          In_Background   : Boolean := False;
          Have_Background : Boolean := False;
+         Skip_Scenarios  : Boolean := False;
          Feature_ID      : Natural := 0;
          Background_ID   : Natural := 0;
          Scenario_ID     : Natural := 0;
          Step_ID         : Natural := 0;
+         Curr_Scenario   : Menu_Item_2;
+         Curr_Feature    : Menu_Item_1;
+         Menu            : Menu_Vectors.Vector;
       end record;
 
 

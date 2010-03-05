@@ -15,6 +15,9 @@ package body AdaSpecLib.Format.HTML is
    function To_String (N : in Integer) return String;
    function Status_Class (Success : in Status_Type) return String;
 
+   use Menu_Vectors_2;
+   use Menu_Vectors;
+
    function To_String (N : in Integer) return String is
    begin
       return Trim (N'Img, Left);
@@ -37,7 +40,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Tests    (Format     : in out HTML_Format_Type) is
    begin
-      Tmpl.page_begin (Format.Output);
+      Tmpl.page_begin (Format.Output,
+         Param_title => "Test Results");  --  TODO
    end Start_Tests;
 
    ---------------------
@@ -46,9 +50,13 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Feature  (Format     : in out HTML_Format_Type) is
    begin
-      Format.Feature_ID  := Format.Feature_ID + 1;
+      Format.Feature_ID    := Format.Feature_ID + 1;
       Format.Background_ID := 0;
       Format.Scenario_ID   := 0;
+      Format.Curr_Feature  := (
+         Name          => To_Unbounded_String ("Feature"),
+         Feature_ID    => Format.Feature_ID,
+         others        => <>);
    end Start_Feature;
 
    -------------------
@@ -59,10 +67,12 @@ package body AdaSpecLib.Format.HTML is
                           Feature : in String)
    is
    begin
+      Format.Curr_Feature.Name := To_Unbounded_String (Feature);
       Tmpl.feature_begin (Format.Output,
          Param_id          => To_String (Format.Feature_ID),
          Param_name        => Feature,
-         Param_description => "");
+         Param_description => "");  --  TODO
+      Format.Skip_Scenarios := False;
    end Put_Feature;
 
    ----------------------
@@ -86,6 +96,12 @@ package body AdaSpecLib.Format.HTML is
    begin
       Format.Background_ID := Format.Background_ID + 1;
       Format.In_Background := True;
+      Format.Curr_Scenario := (
+         Is_Background => True,
+         Name          => Format.Curr_Scenario.Name,
+         Feature_ID    => Format.Feature_ID,
+         Scenario_ID   => Format.Background_ID,
+         others        => <>);
    end Start_Background;
 
    ----------------------
@@ -96,6 +112,12 @@ package body AdaSpecLib.Format.HTML is
                              Background : in String)
    is
    begin
+      if Background /= "" then
+         Format.Curr_Scenario.Name := To_Unbounded_String
+            ("Background: " & Background);
+      else
+         Format.Curr_Scenario.Name := To_Unbounded_String ("Background");
+      end if;
       Format.Have_Background := True;
       Tmpl.background_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
@@ -113,9 +135,11 @@ package body AdaSpecLib.Format.HTML is
       pragma Unreferenced (First);
    begin
       if Format.Have_Background then
+         Format.Skip_Scenarios := Format.Curr_Scenario.Status = Status_Failed;
          Tmpl.background_end (Format.Output,
             Param_feature_id => To_String (Format.Feature_ID),
             Param_num        => To_String (Format.Background_ID));
+         Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
       end if;
       Format.Have_Background := False;
       Format.In_Background   := False;
@@ -129,6 +153,16 @@ package body AdaSpecLib.Format.HTML is
    is
    begin
       Format.Step_ID := 0;
+      Format.Curr_Scenario := (
+         Name          => Format.Curr_Scenario.Name,
+         Status        => Format.Curr_Scenario.Status,
+         Is_Background => False,
+         Feature_ID    => Format.Feature_ID,
+         Scenario_ID   => Format.Scenario_ID,
+         others        => <>);
+      if Format.Skip_Scenarios then
+         Format.Curr_Scenario.Status := Status_Skipped;
+      end if;
    end Start_Scenario;
 
    --------------------
@@ -143,6 +177,11 @@ package body AdaSpecLib.Format.HTML is
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Scenario_ID),
          Param_title      => Scenario);
+      if Scenario /= "" then
+         Format.Curr_Scenario.Name := To_Unbounded_String (Scenario);
+      else
+         Format.Curr_Scenario.Name := To_Unbounded_String ("Scenario");
+      end if;
    end Put_Scenario;
 
    ------------------
@@ -167,6 +206,10 @@ package body AdaSpecLib.Format.HTML is
    is
       Stanza : Unbounded_String;
    begin
+      if Success = Status_Failed then
+         Format.Curr_Feature.Status := Status_Failed;
+         Format.Curr_Scenario.Status := Status_Failed;
+      end if;
       Format.Close_Step := True;
       case Step is
          when Step_Given => Append (Stanza, "Given ");
@@ -225,11 +268,10 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Scenario  (Format     : in out HTML_Format_Type)
    is
    begin
-      if not Format.In_Background or Format.Have_Background then
-         Tmpl.scenario_end (Format.Output,
-            Param_feature_id => To_String (Format.Feature_ID),
-            Param_num        => To_String (Format.Scenario_ID));
-      end if;
+      Tmpl.scenario_end (Format.Output,
+         Param_feature_id => To_String (Format.Feature_ID),
+         Param_num        => To_String (Format.Scenario_ID));
+      Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
    end Stop_Scenario;
 
    --------------------
@@ -240,6 +282,7 @@ package body AdaSpecLib.Format.HTML is
    begin
       Tmpl.feature_end (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID));
+      Append (Format.Menu, Format.Curr_Feature);
    end Stop_Feature;
 
    ------------------
@@ -264,6 +307,8 @@ package body AdaSpecLib.Format.HTML is
                                             Report.Count_Steps_Skipped +
                                             Report.Count_Steps_Passed;
       Status : Status_Type;
+      E1     : Menu_Item_1;
+      E2     : Menu_Item_2;
    begin
 
       if (Report.Count_Scenario_Failed +
@@ -284,6 +329,36 @@ package body AdaSpecLib.Format.HTML is
          Param_num_steps_fail     => To_String (Report.Count_Steps_Failed),
          Param_num_steps_skip     => To_String (Report.Count_Steps_Skipped),
          Param_num_steps_pass     => To_String (Report.Count_Steps_Passed));
+      Tmpl.report_menu_begin (Format.Output);
+      for I in 1 .. Integer (Length (Format.Menu)) loop
+         E1 := Element (Format.Menu, I);
+         Tmpl.report_menu_feature_begin (Format.Output,
+            Param_status     => Status_Class (E1.Status),
+            Param_feature_id => To_String    (E1.Feature_ID),
+            Param_name       => To_String    (E1.Name));
+         if Length (E1.Sub_Menu) > 0 then
+            Tmpl.report_menu_scenarios_begin (Format.Output);
+            for J in 1 .. Integer (Length (E1.Sub_Menu)) loop
+               E2 := Element (E1.Sub_Menu, J);
+               if E2.Is_Background then
+                  Tmpl.report_menu_background (Format.Output,
+                     Param_status     => Status_Class (E2.Status),
+                     Param_feature_id => To_String    (E2.Feature_ID),
+                     Param_num        => To_String    (E2.Scenario_ID),
+                     Param_name       => To_String    (E2.Name));
+               else
+                  Tmpl.report_menu_scenario (Format.Output,
+                     Param_status     => Status_Class (E2.Status),
+                     Param_feature_id => To_String    (E2.Feature_ID),
+                     Param_num        => To_String    (E2.Scenario_ID),
+                     Param_name       => To_String    (E2.Name));
+               end if;
+            end loop;
+            Tmpl.report_menu_scenarios_end (Format.Output);
+         end if;
+         Tmpl.report_menu_feature_end (Format.Output);
+      end loop;
+      Tmpl.report_menu_end (Format.Output);
       Tmpl.report_end (Format.Output);
    end Put_Summary;
 

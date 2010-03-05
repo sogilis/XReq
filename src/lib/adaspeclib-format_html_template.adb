@@ -3,13 +3,16 @@ package body AdaSpecLib.Format_HTML_Template is
    pragma Style_Checks (Off);
 
    procedure page_begin
-        (File : in out File_Type) is
+        (File : in out File_Type;
+         Param_title : in String) is
    begin
       Put (File, "<?xml version=""1.0"" encoding=""UTF-8""?>" & ASCII.LF);
       Put (File, "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">" & ASCII.LF);
       Put (File, "<html xmlns=""http://www.w3.org/1999/xhtml"" xml:lang=""en"" lang=""en"">" & ASCII.LF);
       Put (File, "  <head>" & ASCII.LF);
-      Put (File, "    <title>Test suite</title>" & ASCII.LF);
+      Put (File, "    <title>");
+      Put (File, Param_title);
+      Put (File, "</title>" & ASCII.LF);
       Put (File, "    <style type=""text/css"">" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "a {" & ASCII.LF);
@@ -176,6 +179,31 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "" & ASCII.LF);
       Put (File, "#summary .menu {" & ASCII.LF);
       Put (File, "  font-size: 0.8em;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".menu a {" & ASCII.LF);
+      Put (File, "  text-decoration: none;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".menu *.fail > a, .menu *.skip > a {" & ASCII.LF);
+      Put (File, "  font-weight: bold;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".menu ul, .menu ol {" & ASCII.LF);
+      Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "  padding-left: 1em;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".menu li {" & ASCII.LF);
+      Put (File, "  margin: 0;" & ASCII.LF);
+      Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "ul.menu > li {" & ASCII.LF);
+      Put (File, "  margin-top: 1em;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "ul.menu > li > ul {" & ASCII.LF);
+      Put (File, "  margin-top: 0.5em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "#summary .report {" & ASCII.LF);
@@ -456,20 +484,87 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "      </div>" & ASCII.LF);
    end report_begin;
 
-   procedure report_menu
+   procedure report_menu_begin
         (File : in out File_Type) is
    begin
       Put (File, "      <ul class=""menu"">" & ASCII.LF);
-      Put (File, "        <li class=""fail"">" & ASCII.LF);
-      Put (File, "          <a href=""#feature-1"">Feature: Ambiguous step definition error reporting</a>" & ASCII.LF);
+   end report_menu_begin;
+
+   procedure report_menu_feature_begin
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_feature_id : in String;
+         Param_name : in String) is
+   begin
+      Put (File, "        <li class=""");
+      Put (File, Param_status);
+      Put (File, """>" & ASCII.LF);
+      Put (File, "          <a href=""#feature-");
+      Put (File, Param_feature_id);
+      Put (File, """>");
+      Put (File, Param_name);
+      Put (File, "</a>" & ASCII.LF);
+   end report_menu_feature_begin;
+
+   procedure report_menu_scenarios_begin
+        (File : in out File_Type) is
+   begin
       Put (File, "          <ul>" & ASCII.LF);
-      Put (File, "            <li class=""title-background fail""><a href=""#feature-1-background-1"">Background</a></li>" & ASCII.LF);
-      Put (File, "            <li class=""title-scenario skip""><a href=""#feature-1-scenario-1"">Scenario</a></li>" & ASCII.LF);
-      Put (File, "            <li class=""title-scenario skip""><a href=""#feature-1-scenario-2"">Scenario</a></li>" & ASCII.LF);
+   end report_menu_scenarios_begin;
+
+   procedure report_menu_background
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_feature_id : in String;
+         Param_num : in String;
+         Param_name : in String) is
+   begin
+      Put (File, "            <li class=""title-background ");
+      Put (File, Param_status);
+      Put (File, """><a href=""#feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-background-");
+      Put (File, Param_num);
+      Put (File, """>");
+      Put (File, Param_name);
+      Put (File, "</a></li>" & ASCII.LF);
+   end report_menu_background;
+
+   procedure report_menu_scenario
+        (File : in out File_Type;
+         Param_status : in String;
+         Param_feature_id : in String;
+         Param_num : in String;
+         Param_name : in String) is
+   begin
+      Put (File, "            <li class=""title-scenario ");
+      Put (File, Param_status);
+      Put (File, """><a href=""#feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-scenario-");
+      Put (File, Param_num);
+      Put (File, """>");
+      Put (File, Param_name);
+      Put (File, "</a></li>" & ASCII.LF);
+   end report_menu_scenario;
+
+   procedure report_menu_scenarios_end
+        (File : in out File_Type) is
+   begin
       Put (File, "          </ul>" & ASCII.LF);
+   end report_menu_scenarios_end;
+
+   procedure report_menu_feature_end
+        (File : in out File_Type) is
+   begin
       Put (File, "        </li>" & ASCII.LF);
+   end report_menu_feature_end;
+
+   procedure report_menu_end
+        (File : in out File_Type) is
+   begin
       Put (File, "      </ul>" & ASCII.LF);
-   end report_menu;
+   end report_menu_end;
 
    procedure report_end
         (File : in out File_Type) is
