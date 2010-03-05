@@ -83,6 +83,7 @@ package body AdaSpecLib.Format.HTML is
    is
    begin
       Format.Scenario_ID := Format.Scenario_ID + 1;
+      Format.Inline_Backgrnd := False;
    end Enter_Scenario;
 
    ------------------------
@@ -163,6 +164,10 @@ package body AdaSpecLib.Format.HTML is
       if Format.Skip_Scenarios then
          Format.Curr_Scenario.Status := Status_Skipped;
       end if;
+      if Format.Inline_Backgrnd then
+         Tmpl.scenario_label (Format.Output,
+            Param_label => "Scenario:");
+      end if;
    end Start_Scenario;
 
    --------------------
@@ -206,6 +211,14 @@ package body AdaSpecLib.Format.HTML is
    is
       Stanza : Unbounded_String;
    begin
+      if Format.In_Background and
+         (not Format.Have_Background) and
+         (not Format.Inline_Backgrnd)
+      then
+         Tmpl.scenario_label (Format.Output,
+            Param_label => "Background:");
+         Format.Inline_Backgrnd := True;
+      end if;
       if Success = Status_Failed then
          Format.Curr_Feature.Status := Status_Failed;
          Format.Curr_Scenario.Status := Status_Failed;

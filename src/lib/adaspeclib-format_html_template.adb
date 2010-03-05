@@ -323,6 +323,15 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "</h3>" & ASCII.LF);
    end scenario_begin;
 
+   procedure scenario_label
+        (File : in out File_Type;
+         Param_label : in String) is
+   begin
+      Put (File, "        <p>");
+      Put (File, Param_label);
+      Put (File, "</p>" & ASCII.LF);
+   end scenario_label;
+
    procedure step_begin
         (File : in out File_Type;
          Param_status : in String;
