@@ -2,5 +2,5 @@
 *.o
 *.ali
 *.gcno
-*.html
+README.html
 /tmp/

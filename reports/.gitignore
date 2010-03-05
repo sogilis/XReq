@@ -6,3 +6,5 @@ gnatcheck.out
 gnatcheck.log
 *aunit.xml
 /*.junit/*.xml
+index.html
+features*.html
