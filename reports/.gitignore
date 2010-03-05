@@ -8,3 +8,5 @@ gnatcheck.log
 /*.junit/*.xml
 index.html
 features*.html
+sample-html*.html
+*.aunit.txt

@@ -189,6 +189,7 @@ test-report-unit: tests bin
 	@echo "##################################"
 	@echo
 	-bin/unit_tests -xml -o reports/test.aunit.xml
+	-bin/unit_tests -text -o reports/test.aunit.txt > reports/test-debug.aunit.txt 2>&1
 
 test-report-cucumber: bin
 	@echo

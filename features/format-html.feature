@@ -201,6 +201,7 @@ Feature: HTML reports
       """
       <html
       """
+    When I run "cp report-fail.html ../../../reports/sample-html-fail.html"
 
   Scenario: Generate HTML report that pass
     When I run adaspec -x test_suite_pass features/pass.feature features/pass2.feature
@@ -215,3 +216,4 @@ Feature: HTML reports
       """
       >Sample</pre>
       """
+    When I run "cp report-pass.html ../../../reports/sample-html-pass.html"

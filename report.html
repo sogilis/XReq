@@ -40,7 +40,6 @@ iframe {
   bottom: 0;
   left: 0;
   width: 100%;
-  padding-top: 3em;
   height: 90%;
 }
 
@@ -48,9 +47,14 @@ iframe {
   </head>
   <body>
     <ul class="top horizontal" style="padding-bottom: 1em;">
+      <li><a href="reports/test.aunit.txt" target="frame">Unit tests</a>
+          <a href="reports/test-debug.aunit.txt" target="frame">(debug)</a></li>
+      <li><a href="reports/features.html" target="frame">Features</a>
+          <a href="reports/features-wip.html" target="frame" title="Work in Progress">(wip)</a></li>
       <li><a href="coverage/index.html" target="frame">Code coverage</a></li>
-      <li><a href="reports/features.html" target="frame">Features</a></li>
-      <li><a href="reports/features-wip.html" target="frame">Work in Progress Features</a></li>
+      <li>Sample AdaSpec HTML Report
+          <a href="reports/sample-html-pass.html" target="frame">(pass)</a>
+          <a href="reports/sample-html-fail.html" target="frame">(fail)</a></li>
     </ul>
     <div class="frame">
       <iframe name="frame" src="coverage/index.html"></iframe>
