@@ -266,20 +266,20 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
       --  body
-      S.Adb.Put_Line ("Format.Enter_Scenario;");
-      if not Background then
+      if Background then
+         S.Adb.Put_Line ("Format.Start_Background (First);");
+      else
+         S.Adb.Put_Line ("Format.Enter_Scenario;");
          S.Adb.Put_Line ("if not First then");
          S.Adb.Indent;
             S.Adb.Put_Line ("Format.Put_Scenario (" &
                             Ada_String (To_String (Scenario.Name)) & ");");
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
-         S.Adb.Put_Line ("Format.Start_Background (First);");
          S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First, Fail);");
-         S.Adb.Put_Line ("Format.Stop_Background (First);");
          S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
+         S.Adb.Put_Line ("Format.Start_Scenario;");
       end if;
-      S.Adb.Put_Line ("Format.Start_Scenario;");
       if Length (Scenario.Steps) = 0 then
          S.Adb.Put_Line ("null;");
       else
@@ -314,9 +314,11 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("end if;");
       end if;
       --  end
-      S.Adb.Put_Line ("Format.Stop_Scenario;");
       if Background then
          S.Adb.Put_Line ("Stop := Fail;");
+         S.Adb.Put_Line ("Format.Stop_Background (First);");
+      else
+         S.Adb.Put_Line ("Format.Stop_Scenario;");
       end if;
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end " & Name & ";");

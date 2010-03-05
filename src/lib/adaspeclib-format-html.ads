@@ -63,6 +63,7 @@ private
 
    type HTML_Format_Type is new Format_Type with
       record
+         Close_Step      : Boolean := False;
          In_Background   : Boolean := False;
          Have_Background : Boolean := False;
          Feature_ID      : Natural := 0;

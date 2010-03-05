@@ -72,8 +72,7 @@ package body AdaSpecLib.Format.HTML is
    procedure Enter_Scenario (Format     : in out HTML_Format_Type)
    is
    begin
-      Format.Background_ID := Format.Background_ID + 1;
-      Format.Scenario_ID   := Format.Scenario_ID   + 1;
+      Format.Scenario_ID := Format.Scenario_ID + 1;
    end Enter_Scenario;
 
    ------------------------
@@ -85,6 +84,7 @@ package body AdaSpecLib.Format.HTML is
    is
       pragma Unreferenced (First);
    begin
+      Format.Background_ID := Format.Background_ID + 1;
       Format.In_Background := True;
    end Start_Background;
 
@@ -151,7 +151,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Step     (Format     : in out HTML_Format_Type) is
    begin
-      Format.Step_ID := Format.Step_ID + 1;
+      Format.Close_Step := False;
+      Format.Step_ID    := Format.Step_ID + 1;
    end Start_Step;
 
    ----------------
@@ -166,6 +167,7 @@ package body AdaSpecLib.Format.HTML is
    is
       Stanza : Unbounded_String;
    begin
+      Format.Close_Step := True;
       case Step is
          when Step_Given => Append (Stanza, "Given ");
          when Step_When  => Append (Stanza, "When ");
@@ -192,7 +194,7 @@ package body AdaSpecLib.Format.HTML is
          Exception_Name (Err) & ": " & Exception_Message (Err) & ASCII.LF &
          Exception_Information (Err);
    begin
-      if Format.In_Background then
+      if Format.Have_Background then
          Tmpl.step_error_background (Format.Output,
             Param_error      => Error,
             Param_feature_id => To_String (Format.Feature_ID),
@@ -211,7 +213,7 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Stop_Step      (Format     : in out HTML_Format_Type) is
    begin
-      if not Format.In_Background or Format.Have_Background then
+      if Format.Close_Step then
          Tmpl.step_end (Format.Output);
       end if;
    end Stop_Step;
