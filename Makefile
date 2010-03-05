@@ -116,7 +116,7 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	@echo "==>  Run Unit tests"
 	@echo
 	lcov -q -d obj/coverage --zerocounters
-	-bin/unit_tests.cov >/dev/null 2>&1
+	-bin/unit_tests.cov -text -o reports/test.aunit.txt > reports/test-debug.aunit.txt 2>&1
 	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
 	@echo
 	@echo "==>  Run Cucumber"
@@ -127,7 +127,11 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
-	cucumber features/*.feature >/dev/null 2>&1
+	cucumber -t "~@wip"   -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
+	-\
+	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
+	cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature >/dev/null 2>&1
 	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
 	$(MAKE) _gcov-gather-cucumber
 	-$(RM) -f bin/adaspec
