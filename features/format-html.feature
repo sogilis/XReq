@@ -30,7 +30,7 @@ Feature: HTML reports
       """
       Feature: Periodic Fail
 
-      Background: Set things up
+      Background:
         Given this step works
           \"""
           abc
@@ -125,7 +125,7 @@ Feature: HTML reports
             \"""Second
             String\"""
 
-        Scenario: C
+        Scenario:
           Given this step works
             \"""
             Another multi-line string
