@@ -1,8 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with Ada.Text_IO;
 
 use Ada.Directories;
+use Ada.Text_IO;
 
 package body AdaSpec.Job is
 
@@ -143,7 +145,12 @@ package body AdaSpec.Job is
       Parse (F.all);
       Job.Feature := Feature_Ptr (F);
 
+      Put_Line ("Compile: " & To_String (Job.Feature_File));
       Process_Feature (Job.Result, Job.Feature, Env.Steps);
+--       Put_Line ("--  Feature  --");
+--       Put_Line (Job.Feature.To_String);
+--       Put_Line ("--  Result  --");
+--       Put_Line (To_String (Job.Result));
    end Run;
 
    -----------------------------

@@ -56,6 +56,52 @@ Feature: HTML reports
         And this is ignored
 
       """
+    And a file "features/pass.feature":
+      """
+      Feature: Feature that pass
+
+        Background: definitions
+          Given this step works
+            \"""
+            This is a long string
+            that take two lines
+
+            \"""
+          And this is ignored
+
+        Scenario: A
+          Given this step works
+          And this is ignored
+            \"""
+            Another multi-line string
+            \"""
+          Then do nothing
+
+        Scenario: B
+          Given this step works
+          And this is ignored
+          Then do nothing
+            \"""
+            Another multi-line string
+            \"""
+      """
+    And a file "features/pass2.feature":
+      """
+      Feature: Feature that pass (2)
+
+        Background: definitions
+          Given this step works
+          And this is ignored
+            \"""Sample\"""
+
+        Scenario: C
+          Given this step works
+            \"""
+            Another multi-line string
+            \"""
+          And this is ignored
+          Then do nothing
+      """
     And a file "features/step_definitions/steps.ads":
       """
       with AdaSpecLib;
@@ -109,17 +155,31 @@ Feature: HTML reports
 
       end Steps;
       """
-    When I run adaspec -x test_suite features/simplest.feature features/simplest2.feature
+
+  Scenario: Generate HTML report that fail
+    When I run adaspec -x test_suite_fail features/simplest.feature features/simplest2.feature
     Then it should pass
-    When I compile "test_suite" in features/tests
+    When I compile "test_suite_fail" in features/tests
     Then it should pass
     Given I am in "features/tests"
-
-  Scenario: Generate HTML report
-    When I run "./test_suite -f html -o report.html"
+    When I run "./test_suite_fail -f html -o report-fail.html"
     Then it should fail
-    And  "report.html" should exist
-    And  "report.html" should contain
+    And  "report-fail.html" should exist
+    And  "report-fail.html" should contain
       """
       <html
+      """
+
+  Scenario: Generate HTML report that pass
+    When I run adaspec -x test_suite_pass features/pass.feature features/pass2.feature
+    Then it should pass
+    When I compile "test_suite_pass" in features/tests
+    Then it should pass
+    Given I am in "features/tests"
+    When I run "./test_suite_pass -f html -o report-pass.html"
+    Then it should pass
+    And  "report-pass.html" should exist
+    And  "report-pass.html" should contain
+      """
+      >Sample</pre>
       """

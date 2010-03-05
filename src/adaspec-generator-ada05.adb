@@ -104,8 +104,8 @@ package body AdaSpec.Generator.Ada05 is
 
       Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
       Set_File (To_String (Gen.Adb_File), To_String (Gen.Adb.Buffer));
-      Put_Line ("Generate: " & To_String (Gen.Ads.Buffer));
-      Put_Line ("Generate: " & To_String (Gen.Adb.Buffer));
+      Put_Line ("Generate: " & To_String (Gen.Ads_File));
+      Put_Line ("Generate: " & To_String (Gen.Adb_File));
    end Generate;
 
    ---------------------

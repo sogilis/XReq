@@ -161,8 +161,12 @@ package body AdaSpec.Features is
          Add_Stanza;
          if State = M_Scenario then
             Append (Self.Scenarios, Current_Scenario);
+--             Put_Line ("Found Scenario: " &
+--                       To_String (Current_Scenario.Name));
          elsif State = M_Background then
             Self.Background.Stanzas := Current_Scenario.Stanzas;
+--             Put_Line ("Found Background: " &
+--                       To_String (Current_Scenario.Name));
          end if;
          Current_Scenario.Name := Null_Unbounded_String;
          Clear (Current_Scenario.Stanzas);
@@ -171,6 +175,7 @@ package body AdaSpec.Features is
       procedure Add_Stanza is
       begin
          if Stanza_State /= Prefix_None then
+--             Put_Line ("Found Stanza: " & To_String (Current_Stanza));
             Append (Current_Scenario.Stanzas, Current_Stanza);
             Current_Stanza := Null_Stanza;
          end if;
@@ -179,7 +184,7 @@ package body AdaSpec.Features is
       procedure Add_Text is
       begin
          Long_String := Decode_Python (To_String (Long_String));
---          Put_Line ("Found String " & CurrentStr &
+--          Put_Line ("Found String: " & CurrentStr &
 --                    To_String (Long_String) & CurrentStr);
          Append (Current_Stanza.Texts, Long_String);
          Long_String := Null_Unbounded_String;
@@ -274,21 +279,36 @@ package body AdaSpec.Features is
                   State_Saved := State;
                   State       := M_Str;
                   CurrentStr  := K_StrDouble;
+                  Idx_Start   := Idx_Start + CurrentStr'Length;
 
                --  Found '''
                elsif Starts_With_K (K_StrSimple) then
                   State_Saved := State;
                   State       := M_Str;
                   CurrentStr  := K_StrSimple;
+                  Idx_Start   := Idx_Start + CurrentStr'Length;
                end if;
 
                --  Record first line of long string
                if State = M_Str then
-                  Long_String := Unbounded_Slice (Line_S, Idx_Start + 3,
-                                                  Length (Line_S));
-                  if Long_String /= Null_Unbounded_String then
-                     Append (Long_String, ASCII.LF);
-                  end if;
+                  declare
+                     Line_End : Natural;
+                  begin
+                     Line_End := Index (Line_S, CurrentStr, Idx_Start);
+                     if Line_End = 0 then
+                        Line_End := Length (Line_S);
+                     else
+                        Line_End := Line_End - 1;
+                        State    := State_Saved;
+                     end if;
+                     Long_String := Unbounded_Slice
+                                       (Line_S, Idx_Start, Line_End);
+                     if State /= M_Str then
+                        Add_Text;
+                     elsif Length (Long_String) > 0 then
+                        Append (Long_String, ASCII.LF);
+                     end if;
+                  end;
 
                --  Continue the stanza on the next line
                elsif Stanza_State /= Prefix_None then
@@ -305,12 +325,15 @@ package body AdaSpec.Features is
             when M_Str =>
 
                declare
-                  Line_First  : constant Natural
-                              := Natural'Min (Index_Non_Blank (Line_S),
-                                              Idx_Start);
-                  Line_End    : Natural
-                              := Index (Line_S, CurrentStr, Line_First);
+                  Line_First : Natural;
+                  Line_End   : Natural := 0;
                begin
+                  Line_First := Natural'Min (Index_Non_Blank (Line_S),
+                                             Idx_Start);
+                  if Line_First = 0 then
+                     Line_First := 1;
+                  end if;
+                  Line_End := Index (Line_S, CurrentStr, Line_First);
                   --  Look if there is the end of string marker
                   if Line_End = 0 then
                      --  Still in the string, slice till the end of line
