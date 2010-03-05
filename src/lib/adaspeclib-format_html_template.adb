@@ -373,12 +373,15 @@ package body AdaSpecLib.Format_HTML_Template is
          Param_num : in String) is
    begin
       Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "          var backgrnd = document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-background-1"");" & ASCII.LF);
       Put (File, "          var scenario = document.getElementById(""feature-");
       Put (File, Param_feature_id);
       Put (File, "-scenario-");
       Put (File, Param_num);
       Put (File, """);" & ASCII.LF);
-      Put (File, "          if (scenario.className != ""scenario fail"") {" & ASCII.LF);
+      Put (File, "          if (backgrnd.className != ""scenario fail"" && scenario.className != ""scenario fail"") {" & ASCII.LF);
       Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
       Put (File, "          };" & ASCII.LF);
       Put (File, "        /*]]>*/</script>" & ASCII.LF);

@@ -56,6 +56,35 @@ Feature: HTML reports
         And this is ignored
 
       """
+    And a file "features/fail.feature":
+      """
+      Feature: Feature that fail
+
+        Background: definitions
+          Given it fail
+            \"""
+            This is a long string
+            that take two lines
+
+            \"""
+          And this is ignored
+
+        Scenario: A
+          Given this step works
+          And this is ignored
+            \"""
+            Another multi-line string
+            \"""
+          Then do nothing
+
+        Scenario: B
+          Given this step works
+          And this is ignored
+          Then do nothing
+            \"""
+            Another multi-line string
+            \"""
+      """
     And a file "features/pass.feature":
       """
       Feature: Feature that pass
@@ -93,6 +122,8 @@ Feature: HTML reports
           Given this step works
           And this is ignored
             \"""Sample\"""
+            \"""Second
+            String\"""
 
         Scenario: C
           Given this step works
@@ -114,7 +145,8 @@ Feature: HTML reports
         --  @given ^this fails periodically$
         procedure Periodic_Fail (Args : in out Arg_Type);
 
-        --  @when ^it fail$
+        --  @given ^it fails?$
+        --  @when ^it fails?$
         procedure Make_It_Fail (Args : in out Arg_Type);
 
         --  @then ^do nothing$
@@ -157,7 +189,7 @@ Feature: HTML reports
       """
 
   Scenario: Generate HTML report that fail
-    When I run adaspec -x test_suite_fail features/simplest.feature features/simplest2.feature
+    When I run adaspec -x test_suite_fail features/simplest.feature features/simplest2.feature features/fail.feature
     Then it should pass
     When I compile "test_suite_fail" in features/tests
     Then it should pass

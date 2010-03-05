@@ -334,8 +334,9 @@ end Steps2;
         </div> <!-- step -->
 <?var name="scenario-end"?>
         <script type="text/javascript">/*<![CDATA[*/
+          var backgrnd = document.getElementById("feature-<?placeholder name="feature_id"?>-background-1");
           var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
-          if (scenario.className != "scenario fail") {
+          if (backgrnd.className != "scenario fail" && scenario.className != "scenario fail") {
             scenario.className = "scenario pass"
           };
         /*]]>*/</script>
