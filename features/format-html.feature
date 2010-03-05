@@ -83,7 +83,7 @@ Feature: HTML reports
       use Ada.Text_IO;
       package body Steps is
 
-        Num : Positive := 1;
+        Num : Positive := 2;
 
         procedure This_Step_Works (Args : in out Arg_Type) is
           pragma Unreferenced (Args);

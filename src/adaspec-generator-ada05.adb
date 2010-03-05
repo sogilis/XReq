@@ -16,6 +16,7 @@ package body AdaSpec.Generator.Ada05 is
 
 
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
+                                Scenario   : in     Result_Scenario_Type;
                                 Step       : in     Result_Step_Type;
                                 Background : in     Boolean := False);
    procedure Generate_Scenario (S          : in out Ada_Generator_Type;
@@ -72,20 +73,23 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Ads.Put_Line ("               Report : in out Report_Type);");
       Gen.Adb.Put_Line ("procedure Run (Format : in out Format_Ptr;");
       Gen.Adb.Put_Line ("               Report : in out Report_Type) is");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Stop : Boolean := False;");
+      Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("begin");
-      Indent (Gen.Ads);
-      Indent (Gen.Adb);
+      Gen.Ads.Indent;
+      Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.Start_Feature;");
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
                         Ada_String (To_String (Gen.Feature.Name)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          if First then
             Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
-                              " (Format, Report, True);");
+                              " (Format, Report, True, Stop);");
             First := False;
          else
             Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
-                              " (Format, Report, False);");
+                              " (Format, Report, False, Stop);");
          end if;
       end loop;
       Gen.Adb.Put_Line ("Format.Stop_Feature;");
@@ -109,9 +113,11 @@ package body AdaSpec.Generator.Ada05 is
    ---------------------
 
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
+                                Scenario   : in     Result_Scenario_Type;
                                 Step       : in     Result_Step_Type;
                                 Background : in     Boolean := False)
    is
+      pragma Unreferenced (Scenario);
       use Util.Strings.Vectors;
       use String_Set;
       use Match_Vectors;
@@ -146,8 +152,16 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Indent;
       S.Adb.Put_Line ("Report.Count_Steps_Skipped := " &
                       "Report.Count_Steps_Skipped + 1;");
+      if Background then
+         S.Adb.Put_Line ("if not Stop then");
+         S.Adb.Indent;
+      end if;
       S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Args, " &
                       "Status_Skipped);");
+      if Background then
+         S.Adb.UnIndent;
+         S.Adb.Put_Line ("end if;");
+      end if;
       S.Adb.UnIndent;
       S.Adb.Put_Line ("else");
       S.Adb.Indent;
@@ -231,57 +245,57 @@ package body AdaSpec.Generator.Ada05 is
       --  declaration
       S.Ads.Put_Line (Proc & "(Format : in out Format_Ptr;");
       S.Adb.Put_Line (Proc & "(Format : in out Format_Ptr;");
-      S.Ads.Put_Indent;
-      S.Adb.Put_Indent;
-      S.Ads.Put (Proc'Length * " ");
-      S.Adb.Put (Proc'Length * " ");
+      S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
+      S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
       S.Ads.Put             (" Report : in out Report_Type;");
       S.Adb.Put             (" Report : in out Report_Type;");
-      S.Ads.New_Line;
-      S.Adb.New_Line;
-      S.Ads.Put_Indent;
-      S.Adb.Put_Indent;
-      S.Ads.Put (Proc'Length * " ");
-      S.Adb.Put (Proc'Length * " ");
-      S.Ads.Put             (" First  : Boolean);");
-      S.Adb.Put             (" First  : Boolean)");
+      S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
+      S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
+      S.Ads.Put             (" First  : in     Boolean;");
+      S.Adb.Put             (" First  : in     Boolean;");
+      S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
+      S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
+      S.Ads.Put             (" Stop   : in out Boolean);");
+      S.Adb.Put             (" Stop   : in out Boolean)");
       S.Ads.New_Line;
       S.Adb.New_Line;
       S.Adb.Put_Line ("is");
       S.Adb.Indent;
-      S.Adb.Put_Line ("Fail : Boolean := False;");
+      S.Adb.Put_Line ("Fail : Boolean := Stop;");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("begin");
       Indent (S.Adb);
       --  body
       S.Adb.Put_Line ("Format.Enter_Scenario;");
       if not Background then
+         S.Adb.Put_Line ("if not First then");
+         S.Adb.Indent;
+            S.Adb.Put_Line ("Format.Put_Scenario (" &
+                            Ada_String (To_String (Scenario.Name)) & ");");
+         S.Adb.UnIndent;
+         S.Adb.Put_Line ("end if;");
          S.Adb.Put_Line ("Format.Start_Background (First);");
-         S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First);");
+         S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First, Fail);");
          S.Adb.Put_Line ("Format.Stop_Background (First);");
+         S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
       end if;
       S.Adb.Put_Line ("Format.Start_Scenario;");
       if Length (Scenario.Steps) = 0 then
          S.Adb.Put_Line ("null;");
       else
+         S.Adb.Put_Line ("if First then");
+         S.Adb.Indent;
          if Background then
-            S.Adb.Put_Line ("if First then");
-            S.Adb.Indent;
-         end if;
-         S.Adb.Put_Indent;
-         if Background then
-            S.Adb.Put ("Format.Put_Background ");
+            S.Adb.Put_Line ("Format.Put_Background (" &
+                            Ada_String (To_String (Scenario.Name)) & ");");
          else
-            S.Adb.Put ("Format.Put_Scenario ");
+            S.Adb.Put_Line ("Format.Put_Scenario (" &
+                            Ada_String (To_String (Scenario.Name)) & ");");
          end if;
-         S.Adb.Put ("(" & Ada_String (To_String (Scenario.Name)) & ");");
-         S.Adb.New_Line;
-         if Background then
-            S.Adb.UnIndent;
-            S.Adb.Put_Line ("end if;");
-         end if;
+         S.Adb.UnIndent;
+         S.Adb.Put_Line ("end if;");
          while Has_Element (I) loop
-            Generate_Step (S, Element (I), Background);
+            Generate_Step (S, Scenario, Element (I), Background);
             Next (I);
          end loop;
       end if;
@@ -301,6 +315,9 @@ package body AdaSpec.Generator.Ada05 is
       end if;
       --  end
       S.Adb.Put_Line ("Format.Stop_Scenario;");
+      if Background then
+         S.Adb.Put_Line ("Stop := Fail;");
+      end if;
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end " & Name & ";");
    end Generate_Scenario;

@@ -166,16 +166,6 @@ package body AdaSpecLib.Format.HTML is
    is
       Stanza : Unbounded_String;
    begin
-      if Success = Status_Failed and
-         Format.In_Background and
-         not Format.Have_Background
-      then
-         Format.Have_Background := True;
-         Tmpl.background_begin (Format.Output,
-            Param_feature_id => To_String (Format.Feature_ID),
-            Param_num        => To_String (Format.Background_ID),
-            Param_title      => "");
-      end if;
       case Step is
          when Step_Given => Append (Stanza, "Given ");
          when Step_When  => Append (Stanza, "When ");

@@ -32,6 +32,7 @@ package body AdaSpecLib.Format.Text is
          Format.Output.Put (" " & Background);
       end if;
       Format.Output.New_Line;
+      Format.Has_Previous_Step := False;
    end Put_Background;
 
    procedure Put_Scenario (Format   : in out Text_Format_Type;
@@ -44,6 +45,7 @@ package body AdaSpecLib.Format.Text is
          Format.Output.Put (" " & Scenario);
       end if;
       Format.Output.New_Line;
+      Format.Has_Previous_Step := False;
    end Put_Scenario;
 
    ----------------
@@ -59,11 +61,15 @@ package body AdaSpecLib.Format.Text is
       pragma Unreferenced (Success);
    begin
       Format.Output.Put ("    ");
-      case Step is
-         when Step_Given => Format.Output.Put ("Given ");
-         when Step_When  => Format.Output.Put ("When ");
-         when Step_Then  => Format.Output.Put ("Then ");
-      end case;
+      if Format.Has_Previous_Step and Format.Previous_Step_Type = Step then
+         Format.Output.Put ("And ");
+      else
+         case Step is
+            when Step_Given => Format.Output.Put ("Given ");
+            when Step_When  => Format.Output.Put ("When ");
+            when Step_Then  => Format.Output.Put ("Then ");
+         end case;
+      end if;
       Format.Output.Put (Name);
       Format.Output.New_Line;
       for I in Args.First_Text .. Args.Last_Text loop
@@ -84,6 +90,8 @@ package body AdaSpecLib.Format.Text is
          Format.Output.New_Line;
          Format.Output.Put_Line ("      """"""");
       end loop;
+      Format.Has_Previous_Step  := True;
+      Format.Previous_Step_Type := Step;
    end Put_Step;
 
    -----------------

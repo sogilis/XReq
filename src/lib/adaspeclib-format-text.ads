@@ -2,7 +2,7 @@
 
 package AdaSpecLib.Format.Text is
 
-   type Text_Format_Type is new Format_Type with null record;
+   type Text_Format_Type is new Format_Type with private;
    type Text_Format_Ptr  is access all Text_Format_Type;
 
    overriding
@@ -29,5 +29,12 @@ package AdaSpecLib.Format.Text is
 
    function  New_Text_Format return Text_Format_Ptr;
 
+private
+
+   type Text_Format_Type is new Format_Type with
+      record
+         Has_Previous_Step  : Boolean := False;
+         Previous_Step_Type : Step_Type;
+      end record;
 
 end AdaSpecLib.Format.Text;

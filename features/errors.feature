@@ -72,7 +72,7 @@ Feature: Error handling in steps
         Scenario: Run a bad step
           Given this step doesn't work
             ADASPECLIB.ERROR: Assertion failed
-          Given this step works
+          And this step works
 
         Scenario: Run a good step
           Given this step works
