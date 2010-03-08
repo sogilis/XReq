@@ -6,7 +6,6 @@ use  Text_IO;
 
 package body Sample1 is
 
-   --  @given (this step works)
    procedure This_Step_Works (Args : in out Arg_Type) is
       pragma Unreferenced (Args);
    begin
