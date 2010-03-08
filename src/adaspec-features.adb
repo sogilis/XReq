@@ -137,6 +137,7 @@ package body AdaSpec.Features is
       State        : Mode_Type         := M_Begin;
       State_Saved  : Mode_Type;
       Stanza_State : Prefix_Type_Maybe := Prefix_None;
+      Has_Stanza   : Boolean := False;
       File         : File_Type;
       Line_S       : Unbounded_String;
       Suffix       : Unbounded_String;
@@ -174,11 +175,12 @@ package body AdaSpec.Features is
 
       procedure Add_Stanza is
       begin
-         if Stanza_State /= Prefix_None then
+         if Has_Stanza then
 --             Put_Line ("Found Stanza: " & To_String (Current_Stanza));
             Append (Current_Scenario.Stanzas, Current_Stanza);
-            Current_Stanza := Null_Stanza;
+            Has_Stanza     := False;
          end if;
+         Current_Stanza := Null_Stanza;
       end Add_Stanza;
 
       procedure Add_Text is
@@ -188,6 +190,13 @@ package body AdaSpec.Features is
 --                    To_String (Long_String) & CurrentStr);
          Append (Current_Stanza.Texts, Long_String);
          Long_String := Null_Unbounded_String;
+      exception
+         --  GCOV_IGNORE_BEGIN
+         when Constraint_Error =>
+            Put_Line ("Error: long string error: """"""" &
+                      To_String (Long_String) & """""""");
+            Long_String := Null_Unbounded_String;
+         --  GCOV_IGNORE_END
       end Add_Text;
 
    begin
@@ -254,24 +263,28 @@ package body AdaSpec.Features is
                --  Found "Given ..."
                elsif Starts_With_K (K_Given) then
                   Add_Stanza;
+                  Has_Stanza := True;
                   Stanza_State := Prefix_Given;
                   Idx_Start := Idx_Start + K_Given'Length;
 
                --  Found "When ..."
                elsif Starts_With_K (K_When) then
                   Add_Stanza;
+                  Has_Stanza := True;
                   Stanza_State := Prefix_When;
                   Idx_Start := Idx_Start + K_When'Length;
 
                --  Found "Then ..."
                elsif Starts_With_K (K_Then) then
                   Add_Stanza;
+                  Has_Stanza := True;
                   Stanza_State := Prefix_Then;
                   Idx_Start := Idx_Start + K_Then'Length;
 
                --  Found "And ..."
                elsif Starts_With_K (K_And) then
                   Add_Stanza;
+                  Has_Stanza := True;
                   Idx_Start := Idx_Start + K_And'Length;
 
                --  Found """
@@ -295,7 +308,9 @@ package body AdaSpec.Features is
                      Line_End : Natural;
                   begin
                      Line_End := Index (Line_S, CurrentStr, Idx_Start);
-                     if Line_End = 0 then
+                     if Line_End = 0 or (Line_End > 1 and then
+                                         Element (Line_S, Line_End - 1) = '\')
+                     then
                         Line_End := Length (Line_S);
                      else
                         Line_End := Line_End - 1;
@@ -314,12 +329,16 @@ package body AdaSpec.Features is
                elsif Stanza_State /= Prefix_None then
                   Current_Stanza.Prefix := Stanza_State;
                   Suffix := Trimed_Suffix (Line_S, Idx_Start);
-                  if Current_Stanza.Stanza /= Null_Unbounded_String and
-                     Suffix                /= Null_Unbounded_String
-                  then
-                     Append (Current_Stanza.Stanza, " ");
+                  if Current_Stanza.Stanza /= Null_Unbounded_String then
+                     if Suffix /= Null_Unbounded_String then
+                        Append (Current_Stanza.Stanza, " ");
+                     end if;
                   end if;
-                  Append (Current_Stanza.Stanza, Suffix);
+                  if Suffix /= Null_Unbounded_String then
+                     Append (Current_Stanza.Stanza, Suffix);
+                  else
+                     Add_Stanza;
+                  end if;
                end if;
 
             when M_Str =>
@@ -335,7 +354,9 @@ package body AdaSpec.Features is
                   end if;
                   Line_End := Index (Line_S, CurrentStr, Line_First);
                   --  Look if there is the end of string marker
-                  if Line_End = 0 then
+                  if Line_End = 0 or (Line_End > 1 and then
+                                         Element (Line_S, Line_End - 1) = '\')
+                  then
                      --  Still in the string, slice till the end of line
                      Line_End := Length (Line_S);
                      Append (Long_String,

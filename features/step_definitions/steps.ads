@@ -29,6 +29,7 @@ package Steps is
    --  @when  ^I compile "(.*)" in (.*)$
    --  @when  ^I run "(.*)" in (.*)$
    --  @when  ^I run "(.*)"$
+   --  @when  ^I run '(.*)' aloud$
    --  @then  ^the output should contain$
    --  @then  ^"([^\"]*)" should contain$
    --  @then  ^"([^\"]*)" should exist$

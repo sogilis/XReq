@@ -1,7 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Fixed;
-with Ada.Text_IO;
 
 use Ada.Strings.Fixed;
 
@@ -276,13 +275,12 @@ package body Util.Strings is
                            Target  : in String) return String
    is
       use Ada.Strings;
-      use Ada.Text_IO;
       Num      : Integer := Ada.Strings.Fixed.Count (Target, "/") + 1;
       String_A : array (1 .. Num) of Unbounded_String;
       Target_2 : Unbounded_String := To_Unbounded_String (Target);
       Result   : Unbounded_String;
    begin
-      Put_Line ("--- " & Origin & " -- " & Target);
+--       Put_Line ("--- " & Origin & " -- " & Target);
       if Target (Target'First) = '/' then
          return Target;
       end if;
@@ -301,17 +299,17 @@ package body Util.Strings is
                                              Length (Target_2));
             Target_2     := Unbounded_Slice (Target_2, 1, Num - 1);
          end if;
-         Put_Line ("Read: " & To_String (String_A (I)) & " -- " &
-                   To_String (Target_2));
+--          Put_Line ("Read: " & To_String (String_A (I)) & " -- " &
+--                    To_String (Target_2));
       end loop;
-      Put_Line ("Result: " & To_String (Result));
+--       Put_Line ("Result: " & To_String (Result));
       for I in String_A'Range loop
          declare
             Elem : constant String := To_String (String_A (I));
          begin
             if Elem = "." then
                null;
-               Put_Line ("Found ""."", do nothing");
+--                Put_Line ("Found ""."", do nothing");
             elsif Elem = ".." then
                Num := Index (Result, "/", Backward);
                declare
@@ -321,20 +319,20 @@ package body Util.Strings is
                      (Num /= 0 and then (Res (Num + 1 .. Res'Last) = ".." or
                                          Res (Num + 1 .. Res'Last) = "."))
                   then
-                     Put_Line ("Found "".."", append /..");
+--                      Put_Line ("Found "".."", append /..");
                      Append (Result, "/..");
                   elsif Num = 0 then
-                     Put_Line ("Found "".."", dirname");
+--                      Put_Line ("Found "".."", dirname");
                      Result := To_Unbounded_String (".");
                   else
-                     Put_Line ("Found "".."", dirname");
+--                      Put_Line ("Found "".."", dirname");
                      Result := Unbounded_Slice (Result, 1, Num - 1);
                   end if;
                end;
             else
                Append (Result, "/" & Elem);
             end if;
-            Put_Line ("Result: " & To_String (Result));
+--             Put_Line ("Result: " & To_String (Result));
          end;
       end loop;
       if Length (Result) > 2 and Slice (Result, 1, 2) = "./" then
