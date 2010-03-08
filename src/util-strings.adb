@@ -342,7 +342,7 @@ package body Util.Strings is
       else
          return To_String (Result);
       end if;
-   end Relative_Path;
+   end Relative_Path; --  GCOV_IGNORE
 
    --------------------
    --  Reverse_Path  --
@@ -365,7 +365,7 @@ package body Util.Strings is
             return S (S'First .. S'Last - 1);
          end;
       end if;
-   end Reverse_Path;
+   end Reverse_Path; 
 
    --------------
    --  Buffer  --

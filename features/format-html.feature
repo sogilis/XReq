@@ -91,6 +91,7 @@ Feature: HTML reports
 
         Background: definitions
           Given this step works
+          And   match "this" and "that"
             \"""
             This is a long string
             that take two lines
@@ -140,6 +141,7 @@ Feature: HTML reports
       package Steps is
 
         --  @given ^this step (works)$
+        --  @given ^match "(.*)" and "(.*)"$
         procedure This_Step_Works (Args : in out Arg_Type);
 
         --  @given ^this (fails) periodically$
