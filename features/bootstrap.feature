@@ -6,7 +6,7 @@ Feature: Bootstrapping
   Background:
     Given adaspec is in the PATH
 
-  @wip
+  @bootstrap
   Scenario: Bootstrap
     Given I am in the adaspec directory
     When I run adaspec -x suite features/*.feature

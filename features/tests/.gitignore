@@ -1,2 +1,3 @@
 *.ad[bs]
 *.gpr
+/suite

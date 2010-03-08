@@ -160,27 +160,49 @@ body {
 }
 
 #summary {
+}
+
+#summary {
   position: fixed;
-  left: 0;
-  top: 0;
   bottom: 0;
+  left: 0;
   width: 15em;
   overflow: auto;
+  height: 100%;
+}
+
+#summary .report {
+  /*
+  top: 0;
+  left: 0;
+  width: 15em;
+  height: 8em;
+  overflow: visible;
+  z-index: 1;
+  */
 }
 
 #summary .menu {
-  font-size: 0.8em;
+  padding: 0.25em;
+  margin-right: 1em;
+  border-right: thin solid #EEEEEE;
+  background-color: white;
+  /*padding-top: 8em;*/
+}
+
+#summary .report > *, #summary .menu > * {
+  font-size: 0.7em;
 }
 
 .menu a {
   text-decoration: none;
 }
 
-.menu *.fail > a, .menu *.skip > a {
+.menu *.fail > a {
   font-weight: bold;
 }
 
-.menu ul, .menu ol {
+.menu > ul ul, .menu > ul ol {
   padding: 0;
   padding-left: 1em;
 }
@@ -188,12 +210,17 @@ body {
 .menu li {
   margin: 0;
   padding: 0;
+  margin-left: 1em;
 }
 
-ul.menu > li {
+.menu > ul {
+  margin: 0;
+  padding: 0;
+}
+.menu > ul > li {
   margin-top: 1em;
 }
-ul.menu > li > ul {
+.menu > ul > li > ul {
   margin-top: 0.5em;
 }
 
@@ -398,22 +425,24 @@ end Steps2;
         </ul>
       </div>
 <?var name="report-menu-begin"?>
-      <ul class="menu">
+      <div class="menu">
+        <ul>
 <?var name="report-menu-feature-begin"?>
-        <li class="<?placeholder name="status"?>">
-          <a href="#feature-<?placeholder name="feature_id"?>"><?placeholder name="name"?></a>
+          <li class="<?placeholder name="status"?>">
+            <a href="#feature-<?placeholder name="feature_id"?>"><?placeholder name="name"?></a>
 <?var name="report-menu-scenarios-begin"?>
-          <ul>
+            <ul>
 <?var name="report-menu-background"?>
-            <li class="title-background <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
+              <li class="title-background <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
 <?var name="report-menu-scenario"?>
-            <li class="title-scenario <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
+              <li class="title-scenario <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
 <?var name="report-menu-scenarios-end"?>
-          </ul>
+            </ul>
 <?var name="report-menu-feature-end"?>
-        </li>
+          </li>
 <?var name="report-menu-end"?>
-      </ul>
+        </ul>
+      </div>
 <?var name="report-end"?>
     </div>
 <?var name="page-end"?>

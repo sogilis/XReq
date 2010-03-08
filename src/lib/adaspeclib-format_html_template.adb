@@ -169,27 +169,49 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "#summary {" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "#summary {" & ASCII.LF);
       Put (File, "  position: fixed;" & ASCII.LF);
-      Put (File, "  left: 0;" & ASCII.LF);
-      Put (File, "  top: 0;" & ASCII.LF);
       Put (File, "  bottom: 0;" & ASCII.LF);
+      Put (File, "  left: 0;" & ASCII.LF);
       Put (File, "  width: 15em;" & ASCII.LF);
       Put (File, "  overflow: auto;" & ASCII.LF);
+      Put (File, "  height: 100%;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "#summary .report {" & ASCII.LF);
+      Put (File, "  /*" & ASCII.LF);
+      Put (File, "  top: 0;" & ASCII.LF);
+      Put (File, "  left: 0;" & ASCII.LF);
+      Put (File, "  width: 15em;" & ASCII.LF);
+      Put (File, "  height: 8em;" & ASCII.LF);
+      Put (File, "  overflow: visible;" & ASCII.LF);
+      Put (File, "  z-index: 1;" & ASCII.LF);
+      Put (File, "  */" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "#summary .menu {" & ASCII.LF);
-      Put (File, "  font-size: 0.8em;" & ASCII.LF);
+      Put (File, "  padding: 0.25em;" & ASCII.LF);
+      Put (File, "  margin-right: 1em;" & ASCII.LF);
+      Put (File, "  border-right: thin solid #EEEEEE;" & ASCII.LF);
+      Put (File, "  background-color: white;" & ASCII.LF);
+      Put (File, "  /*padding-top: 8em;*/" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "#summary .report > *, #summary .menu > * {" & ASCII.LF);
+      Put (File, "  font-size: 0.7em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, ".menu a {" & ASCII.LF);
       Put (File, "  text-decoration: none;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".menu *.fail > a, .menu *.skip > a {" & ASCII.LF);
+      Put (File, ".menu *.fail > a {" & ASCII.LF);
       Put (File, "  font-weight: bold;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".menu ul, .menu ol {" & ASCII.LF);
+      Put (File, ".menu > ul ul, .menu > ul ol {" & ASCII.LF);
       Put (File, "  padding: 0;" & ASCII.LF);
       Put (File, "  padding-left: 1em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -197,12 +219,17 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, ".menu li {" & ASCII.LF);
       Put (File, "  margin: 0;" & ASCII.LF);
       Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "  margin-left: 1em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, "ul.menu > li {" & ASCII.LF);
+      Put (File, ".menu > ul {" & ASCII.LF);
+      Put (File, "  margin: 0;" & ASCII.LF);
+      Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, ".menu > ul > li {" & ASCII.LF);
       Put (File, "  margin-top: 1em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
-      Put (File, "ul.menu > li > ul {" & ASCII.LF);
+      Put (File, ".menu > ul > li > ul {" & ASCII.LF);
       Put (File, "  margin-top: 0.5em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
@@ -496,7 +523,8 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure report_menu_begin
         (File : in out File_Type) is
    begin
-      Put (File, "      <ul class=""menu"">" & ASCII.LF);
+      Put (File, "      <div class=""menu"">" & ASCII.LF);
+      Put (File, "        <ul>" & ASCII.LF);
    end report_menu_begin;
 
    procedure report_menu_feature_begin
@@ -505,10 +533,10 @@ package body AdaSpecLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_name : in String) is
    begin
-      Put (File, "        <li class=""");
+      Put (File, "          <li class=""");
       Put (File, Param_status);
       Put (File, """>" & ASCII.LF);
-      Put (File, "          <a href=""#feature-");
+      Put (File, "            <a href=""#feature-");
       Put (File, Param_feature_id);
       Put (File, """>");
       Put (File, Param_name);
@@ -518,7 +546,7 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure report_menu_scenarios_begin
         (File : in out File_Type) is
    begin
-      Put (File, "          <ul>" & ASCII.LF);
+      Put (File, "            <ul>" & ASCII.LF);
    end report_menu_scenarios_begin;
 
    procedure report_menu_background
@@ -528,7 +556,7 @@ package body AdaSpecLib.Format_HTML_Template is
          Param_num : in String;
          Param_name : in String) is
    begin
-      Put (File, "            <li class=""title-background ");
+      Put (File, "              <li class=""title-background ");
       Put (File, Param_status);
       Put (File, """><a href=""#feature-");
       Put (File, Param_feature_id);
@@ -546,7 +574,7 @@ package body AdaSpecLib.Format_HTML_Template is
          Param_num : in String;
          Param_name : in String) is
    begin
-      Put (File, "            <li class=""title-scenario ");
+      Put (File, "              <li class=""title-scenario ");
       Put (File, Param_status);
       Put (File, """><a href=""#feature-");
       Put (File, Param_feature_id);
@@ -560,19 +588,20 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure report_menu_scenarios_end
         (File : in out File_Type) is
    begin
-      Put (File, "          </ul>" & ASCII.LF);
+      Put (File, "            </ul>" & ASCII.LF);
    end report_menu_scenarios_end;
 
    procedure report_menu_feature_end
         (File : in out File_Type) is
    begin
-      Put (File, "        </li>" & ASCII.LF);
+      Put (File, "          </li>" & ASCII.LF);
    end report_menu_feature_end;
 
    procedure report_menu_end
         (File : in out File_Type) is
    begin
-      Put (File, "      </ul>" & ASCII.LF);
+      Put (File, "        </ul>" & ASCII.LF);
+      Put (File, "      </div>" & ASCII.LF);
    end report_menu_end;
 
    procedure report_end

@@ -3,6 +3,7 @@
 with Ada.Directories;
 with Ada.Containers;
 with Ada.Text_IO;
+with Ada.Characters.Handling;
 with Util.IO;
 with AdaSpec.Steps;
 
@@ -34,19 +35,22 @@ package body AdaSpec.Generator.Ada05 is
                        Job : in     Job_Type;
                        Env : in     Job_Environment)
    is
-
-      Pkgname     : constant String := Base_Name (Feature_File (Job));
-      Basename    : constant String := Compose (Out_Dir (Env), Pkgname);
+      use Ada.Characters.Handling;
+      Basename    : Unbounded_String;
+      Pkgname     : constant String :=
+                     "Feature_" & Base_Name (Feature_File (Job));
       Generator   : Ada_Generator_Type := (
                      Feature  => Job.Result,
-                     Ads_File => To_Unbounded_String (Basename & ".ads"),
-                     Adb_File => To_Unbounded_String (Basename & ".adb"),
                      others   => <>);
    begin
       Get_Unique_String (
          Gen.Pool, To_Identifier (Pkgname),      Generator.Id_Pkgname);
       Get_Unique_String (
          Gen.Pool, To_Identifier ("Background"), Generator.Fn_Backgnd);
+      Basename := To_Unbounded_String (Compose (Out_Dir (Env),
+                  To_Lower (To_String (Generator.Id_Pkgname))));
+      Generator.Ads_File := Basename & ".ads";
+      Generator.Adb_File := Basename & ".adb";
       Gen := Generator;
    end Make;
 
@@ -422,7 +426,7 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Put_Line    ("Format.Start_Tests;");
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
-         With_B.Put_Line ("with " & E.Full_Name & ";");
+         With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
          Body_B.Put_Line (E.Full_Name & ".Run (Format, Report);");
          Next (I);
       end loop;

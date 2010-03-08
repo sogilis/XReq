@@ -157,6 +157,16 @@ run-cucumber: bin
 	@$(MAKE) run-wip-cucumber
 	cucumber -t "~@wip" features/*.feature
 
+run-adaspec: bin
+	@echo
+	@echo "###################"
+	@echo "##  Run AdaSpec  ##"
+	@echo "###################"
+	@echo
+	bin/adaspec -x suite features/*.feature
+	gnatmake -P features/tests/suite.gpr
+	features/tests/suite
+
 run-tests: tests bin
 	@echo
 	@echo "######################"
@@ -185,6 +195,7 @@ test-report:
 	-$(MAKE) coverage
 	-$(MAKE) test-report-unit
 	-$(MAKE) test-report-cucumber
+	-$(MAKE) test-report-adaspec
 
 test-report-unit: tests bin
 	@echo
@@ -207,6 +218,11 @@ test-report-cucumber: bin
 	-cucumber -t "~@wip"   -f html  -o reports/features.html      features/*.feature
 	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
 	-cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature
+
+test-report-adaspec: bin
+	bin/adaspec -x suite features/*.feature
+	gnatmake -P features/tests/suite.gpr
+	-features/tests/suite -f html -o reports/features-adaspec.html
 
 check: gnatcheck coverage run-cucumber run-tests
 
