@@ -22,6 +22,8 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Ada_string);
       Ret.Add_Test (new Test_Decode_Python);
       Ret.Add_Test (new Test_Decode_String);
+      Ret.Add_Test (new Test_Relative_Path);
+      Ret.Add_Test (new Test_Reverse_Path);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -300,6 +302,70 @@ package body Test_Suite.Strings is
       Compare ("abc\ndef", "abc" & ASCII.LF & "def");
       Compare ("abc\def",  "abc\def");
       Compare ("abcdef\",  "abcdef\");
+
+   end Run;
+
+   --  Test_Relative_Path  ----------------------------------------------------
+
+   function  Name (T : in Test_Relative_Path) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Relative_Path");
+   end Name;
+
+   procedure Run (T : in out Test_Relative_Path) is
+
+      procedure Check (Prefix, Element, Result : in String);
+      procedure Check (Prefix, Element, Result : in String) is
+         Res : constant String := Relative_Path (Prefix, Element);
+      begin
+         T.Assert (Result = Res,
+                   "Relative_Path (""" & Prefix & """, """ & Element & """) " &
+                   "= """ & Res & """ /= """ & Result & """");
+      end Check;
+
+   begin
+
+      Check ("toto/tata",       "titi",                 "toto/tata/titi");
+      Check ("toto/tata",       "ti/ta",                "toto/tata/ti/ta");
+      Check ("toto/tata",       "/ti/ta",               "/ti/ta");
+      Check ("toto/tata/",      "titi",                 "toto/tata/titi");
+      Check ("toto/tata/",      "ti/ta/",               "toto/tata/ti/ta/");
+      Check ("toto/tata/",      "/ti/ta",               "/ti/ta");
+      Check ("toto/tata",       "./a/ti",               "toto/tata/a/ti");
+      Check ("toto/tata/",      "./a/ti/",              "toto/tata/a/ti/");
+      Check ("toto/tata",       "../a/ti",              "toto/a/ti");
+      Check ("toto/tata/",      "../a/ti",              "toto/a/ti");
+      Check ("toto/tata/",      "./../../a/ti",         "a/ti");
+      Check ("toto/",           "./../../a/ti",         "../a/ti");
+
+   end Run;
+
+   --  Test_Reverse_Path  -----------------------------------------------------
+
+   function  Name (T : in Test_Reverse_Path) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Reverse_Path");
+   end Name;
+
+   procedure Run (T : in out Test_Reverse_Path) is
+
+      procedure Check (Path, Result : in String);
+      procedure Check (Path, Result : in String) is
+         Res : constant String := Reverse_Path (Path);
+      begin
+         T.Assert (Result = Res,
+                   "Reverse_Path (""" & Path & """) " &
+                   "= """ & Res & """ /= """ & Result & """");
+      end Check;
+
+   begin
+
+      Check ("toto/tata",       "../..");
+      Check ("toto/tata/",      "../..");
+      Check ("toto",            "..");
+      Check ("/toto",           "/");
 
    end Run;
 

@@ -18,6 +18,8 @@ package Test_Suite.Strings is
    type Test_Ada_string is new Test_Case_Type with null record;
    type Test_Decode_Python is new Test_Case_Type with null record;
    type Test_Decode_String is new Test_Case_Type with null record;
+   type Test_Relative_Path is new Test_Case_Type with null record;
+   type Test_Reverse_Path is new Test_Case_Type with null record;
 
    --  Operation on Test_Starts_With
    function  Name (T : in     Test_Starts_With) return String;
@@ -50,6 +52,14 @@ package Test_Suite.Strings is
    --  Operation on Test_Decode_String
    function  Name (T : in     Test_Decode_String) return String;
    procedure Run  (T : in out Test_Decode_String);
+
+   --  Operation on Test_Relative_Path
+   function  Name (T : in     Test_Relative_Path) return String;
+   procedure Run  (T : in out Test_Relative_Path);
+
+   --  Operation on Test_Reverse_Path
+   function  Name (T : in     Test_Reverse_Path) return String;
+   procedure Run  (T : in out Test_Reverse_Path);
 
 end Test_Suite.Strings;
 

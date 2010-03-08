@@ -59,10 +59,40 @@ Feature: The simplest works
     And   "features/tests/simplest.ads" should exist
     And   "features/tests/simplest.adb" should exist
     And   "features/tests/simplest_test.adb" should exist
+    And   "features/tests/simplest_test.gpr" should exist
     When  I compile "simplest_test" in features/tests
     Then  it should pass
     And   "features/tests/simplest_test" should exist
     When  I run "./simplest_test" in features/tests
+    Then  it should pass with
+      """
+      Feature: Sample
+
+        Background:
+      This step works
+          Given this step works
+
+        Scenario: Run a good step
+      This step works
+          Given this step works
+
+      1 scenario (1 passed)
+      2 steps (2 passed)
+
+      """
+
+
+  Scenario: Test the generation of the test suite with a project file
+    When  I run adaspec -x suite features/simplest.feature
+    Then  it should pass
+    And   "features/tests/simplest.ads" should exist
+    And   "features/tests/simplest.adb" should exist
+    And   "features/tests/suite.adb" should exist
+    And   "features/tests/suite.gpr" should exist
+    When  I run "gnatmake -Psuite.gpr" in features/tests
+    Then  it should pass
+    And   "features/tests/suite" should exist
+    When  I run "./suite" in features/tests
     Then  it should pass with
       """
       Feature: Sample

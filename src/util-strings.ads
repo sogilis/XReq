@@ -48,6 +48,11 @@ package Util.Strings is
    function Decode_String (Source  : in String) return Unbounded_String;
    function Decode_String (Source  : in String) return String;
 
+   function Relative_Path (Origin  : in String;
+                           Target  : in String) return String;
+
+   function Reverse_Path  (Path    : in String) return String;
+
 
    --------------
    --  Buffer  --
