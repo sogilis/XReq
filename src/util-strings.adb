@@ -365,7 +365,7 @@ package body Util.Strings is
             return S (S'First .. S'Last - 1);
          end;
       end if;
-   end Reverse_Path; 
+   end Reverse_Path;
 
    --------------
    --  Buffer  --
