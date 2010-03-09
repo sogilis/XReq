@@ -16,6 +16,7 @@ package body AdaSpecLib.Format.HTML is
 
    function To_String (N : in Integer) return String;
    function Status_Class (Success : in Status_Type) return String;
+   function HTML_Text (S : in String) return String;
 
    use Menu_Vectors_2;
    use Menu_Vectors;
@@ -34,7 +35,23 @@ package body AdaSpecLib.Format.HTML is
       end case;
    end Status_Class;
 
-
+   function HTML_Text (S : in String) return String is
+      Buffer : Unbounded_String;
+   begin
+      for I in S'Range loop
+         case S (I) is
+            when '&' =>
+               Append (Buffer, "&amp;");
+            when '<' =>
+               Append (Buffer, "&lt;");
+            when '>' =>
+               Append (Buffer, "&gt;");
+            when others =>
+               Append (Buffer, S (I));
+         end case;
+      end loop;
+      return To_String (Buffer);
+   end HTML_Text;
 
    -------------------
    --  Start_Tests  --
@@ -72,7 +89,7 @@ package body AdaSpecLib.Format.HTML is
       Format.Curr_Feature.Name := To_Unbounded_String (Feature);
       Tmpl.feature_begin (Format.Output,
          Param_id          => To_String (Format.Feature_ID),
-         Param_name        => Feature,
+         Param_name        => HTML_Text (Feature),
          Param_description => "");  --  TODO
       Format.Skip_Scenarios := False;
    end Put_Feature;
@@ -125,7 +142,7 @@ package body AdaSpecLib.Format.HTML is
       Tmpl.background_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Background_ID),
-         Param_title      => Background);
+         Param_title      => HTML_Text (Background));
    end Put_Background;
 
    -----------------------
@@ -183,7 +200,7 @@ package body AdaSpecLib.Format.HTML is
       Tmpl.scenario_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Scenario_ID),
-         Param_title      => Scenario);
+         Param_title      => HTML_Text (Scenario));
       if Scenario /= "" then
          Format.Curr_Scenario.Name := To_Unbounded_String (Scenario);
       else
@@ -240,7 +257,7 @@ package body AdaSpecLib.Format.HTML is
       end loop;
       for I in Name'Range loop
          Append (Stanza, Inserts (I));
-         Append (Stanza, Name (I));
+         Append (Stanza, HTML_Text ("" & Name (I)));
       end loop;
       Append (Stanza, Inserts (Inserts'Last));
       Tmpl.step_begin (Format.Output,
@@ -252,7 +269,7 @@ package body AdaSpecLib.Format.HTML is
          case Args.Elem_Type (I) is
             when Arg_Text =>
                Tmpl.step_string (Format.Output,
-                  Param_string => Args.Text (Args.Elem_Idx (I)));
+                  Param_string => HTML_Text (Args.Text (Args.Elem_Idx (I))));
             when Arg_Separator =>
                if Success /= Status_Failed and not Format.Debug_Mode then
                   exit Loop_Args;
@@ -262,7 +279,7 @@ package body AdaSpecLib.Format.HTML is
                end if;
             when Arg_Paragraph =>
                Tmpl.step_paragraph (Format.Output,
-                  Param_string => Args.Para (Args.Elem_Idx (I)));
+                  Param_string => HTML_Text (Args.Para (Args.Elem_Idx (I))));
          end case;
       end loop Loop_Args;
    end Put_Step;
@@ -282,14 +299,14 @@ package body AdaSpecLib.Format.HTML is
    begin
       if Format.Have_Background then
          Tmpl.step_error_background (Format.Output,
-            Param_error      => Error,
-            Param_trace      => Symbolic_Traceback (Err),
+            Param_error      => HTML_Text (Error),
+            Param_trace      => HTML_Text (Symbolic_Traceback (Err)),
             Param_feature_id => To_String (Format.Feature_ID),
             Param_num        => To_String (Format.Background_ID));
       else
          Tmpl.step_error_scenario (Format.Output,
-            Param_error      => Error,
-            Param_trace      => Symbolic_Traceback (Err),
+            Param_error      => HTML_Text (Error),
+            Param_trace      => HTML_Text (Symbolic_Traceback (Err)),
             Param_feature_id => To_String (Format.Feature_ID),
             Param_num        => To_String (Format.Scenario_ID));
       end if;
@@ -380,7 +397,7 @@ package body AdaSpecLib.Format.HTML is
          Tmpl.report_menu_feature_begin (Format.Output,
             Param_status     => Status_Class (E1.Status),
             Param_feature_id => To_String    (E1.Feature_ID),
-            Param_name       => To_String    (E1.Name));
+            Param_name       => HTML_Text (To_String (E1.Name)));
          if Length (E1.Sub_Menu) > 0 then
             Tmpl.report_menu_scenarios_begin (Format.Output);
             for J in 1 .. Integer (Length (E1.Sub_Menu)) loop
@@ -390,13 +407,13 @@ package body AdaSpecLib.Format.HTML is
                      Param_status     => Status_Class (E2.Status),
                      Param_feature_id => To_String    (E2.Feature_ID),
                      Param_num        => To_String    (E2.Scenario_ID),
-                     Param_name       => To_String    (E2.Name));
+                     Param_name       => HTML_Text (To_String (E2.Name)));
                else
                   Tmpl.report_menu_scenario (Format.Output,
                      Param_status     => Status_Class (E2.Status),
                      Param_feature_id => To_String    (E2.Feature_ID),
                      Param_num        => To_String    (E2.Scenario_ID),
-                     Param_name       => To_String    (E2.Name));
+                     Param_name       => HTML_Text (To_String (E2.Name)));
                end if;
             end loop;
             Tmpl.report_menu_scenarios_end (Format.Output);
