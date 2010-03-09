@@ -44,9 +44,11 @@ package Steps is
    --  @then  ^"([^\"]*)" (should not|shouldn't) exist$
    procedure Then_file_should_not_exist (Args : in out Arg_Type);
 
+   --  @then  ^the output should contain$
+   procedure Then_the_output_should_contain (Args : in out Arg_Type);
+
    --  @given ^the sources of adaspec are in ADA_INCLUDE_PATH$
    --  @when  ^I run '(.*)' aloud$
-   --  @then  ^the output should contain$
    --  @then  ^"([^\"]*)" should contain$
 
    procedure Not_Yet_Implemented (Args : in out Arg_Type);

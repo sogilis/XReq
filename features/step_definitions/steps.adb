@@ -149,9 +149,13 @@ package body Steps is
    procedure it_should_pass_fail (Args : in out Arg_Type) is
    begin
       if Args.Match (1) = "pass" then
-         Assert (Last_Exit_Code = 0, "failed with code" & Last_Exit_Code'Img);
+         Assert (Last_Exit_Code = 0, "failed with code" & Last_Exit_Code'Img &
+                 ASCII.LF & "Output:" & ASCII.LF &
+                 To_String (Last_Command_Output));
       else
-         Assert (Last_Exit_Code /= 0, "succeed");
+         Assert (Last_Exit_Code /= 0, "succeed" &
+                 ASCII.LF & "Output:" & ASCII.LF &
+                 To_String (Last_Command_Output));
       end if;
    end it_should_pass_fail;
 
@@ -195,6 +199,14 @@ package body Steps is
       Assert (not Exists (Args.Match (1)),
               "File should not exists: " & Args.Match (1));
    end Then_file_should_not_exist;
+
+   procedure Then_the_output_should_contain (Args : in out Arg_Type) is
+   begin
+      if Index (Last_Command_Output, Args.Text) = 0 then
+         Assert (False, "The output doesn't match:" & ASCII.LF &
+                 To_String (Last_Command_Output));
+      end if;
+   end Then_the_output_should_contain;
 
 
    procedure Not_Yet_Implemented (Args : in out Arg_Type) is
