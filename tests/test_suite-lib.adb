@@ -64,16 +64,41 @@ package body Test_Suite.Lib is
       T.Assert (Last  = 9, "Match (2, Last) incorrect");
 
       T.Assert (Args.Num_Text = 0, "No text until Add_Text is called");
+      T.Assert (Args.First = 0,    "First element should be 0");
+      T.Assert (Args.Last = -1,    "Last element should be -1");
 
       Args.Add_Text ("1st text");
       T.Assert (Args.Num_Text = 1, "1 text should be present");
 
       Args.Add_Text ("2nd text");
       T.Assert (Args.Num_Text = 2, "2 text should be present");
+      T.Assert (Args.First = 0,    "First element should be 0");
+      T.Assert (Args.Last = 1,     "Last element should be 1");
 
       T.Assert (Args.Text (0) = "1st text", "First text mismatch");
-
       T.Assert (Args.Text (1) = "2nd text", "Second text mismatch");
+
+      T.Assert (Args.First_Para = 0,    "First para should be 0");
+      T.Assert (Args.Last_Para = -1,    "Last para should be -1");
+      Args.Add_Para ("para");
+      T.Assert (Args.First_Para = 0,    "First para should be 0");
+      T.Assert (Args.Last_Para = 0,     "Last para should be 0");
+      T.Assert (Args.Para (0) = "para", "para text incorrect");
+      T.Assert (Args.Last = 2,          "Last element should be 2");
+
+      Args.Add_Sep (33);
+      T.Assert (Args.Last = 3,          "Last element should be 3");
+
+      T.Assert (Args.Elem_Idx (0) = 0,  "Element 0 should have index 0");
+      T.Assert (Args.Elem_Idx (1) = 1,  "Element 1 should have index 1");
+      T.Assert (Args.Elem_Idx (2) = 0,  "Element 2 should have index 0");
+      T.Assert (Args.Elem_Idx (3) = 33, "Element 3 should have index 33");
+      T.Assert (Args.Elem_Type (0) = Arg_Text, "Elem 0 should have type text");
+      T.Assert (Args.Elem_Type (1) = Arg_Text, "Elem 1 should have type text");
+      T.Assert (Args.Elem_Type (2) = Arg_Paragraph,
+                "Elem 2 should have type paragraph");
+      T.Assert (Args.Elem_Type (3) = Arg_Separator,
+                "Elem 3 should have type separator");
 
    end Run;
 

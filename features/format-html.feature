@@ -178,6 +178,9 @@ Feature: HTML reports
           if Num = 3 then
             Num := 1;
           end if;
+          Args.Add_Para ("Debug information:");
+          Args.Add_Text ("Num =" & Num'Img & ASCII.LF &
+                         "Success only when Num = 1");
           Assert (Num = 1, "Num =" & Num'Img & " /= 1");
         end Periodic_Fail;
 

@@ -22,7 +22,8 @@ package AdaSpecLib is
    --  Step_Type  --
    -----------------
 
-   type Step_Type is (Step_Given, Step_When, Step_Then);
+   type Step_Type is                            --  GCOV_IGNORE
+      (Step_Given, Step_When, Step_Then);       --  GCOV_IGNORE
 
    ----------------
    --  Arg_Type  --
@@ -31,7 +32,8 @@ package AdaSpecLib is
    type Arg_Type is tagged private;
    Null_Arg : constant Arg_Type;
 
-   type Arg_Element_Type is (Arg_Text, Arg_Separator, Arg_Paragraph);
+   type Arg_Element_Type is                     --  GCOV_IGNORE
+      (Arg_Text, Arg_Separator, Arg_Paragraph); --  GCOV_IGNORE
 
    procedure Make         (Self   : out    Arg_Type;
                            Stanza : in     String);
