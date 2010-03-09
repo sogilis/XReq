@@ -1,4 +1,4 @@
-Feature:
+Feature: Generated Test Suite Command Line
   In order to be able to generate different report formats
   As an adaspec user
   I want to have a command line interface for the reports generated with
@@ -45,6 +45,7 @@ Feature:
     When I compile "test_suite" in features/tests
     Then it should pass
     Given I am in "features/tests"
+    Then "test_suite" should exist
 
   Scenario: Help
     When I run "./test_suite -h"

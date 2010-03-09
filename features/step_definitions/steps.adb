@@ -104,6 +104,17 @@ package body Steps is
       end if;
    end AdaSpec_in_path;
 
+   procedure Given_the_sources_of_Adaspec_are_in_path (Args : in out Arg_Type)
+   is
+   begin
+      if ENV.Exists ("ADA_INCLUDE_PATH") then
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src:" &
+                  ENV.Value ("ADA_INCLUDE_PATH"));
+      else
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src");
+      end if;
+   end Given_the_sources_of_Adaspec_are_in_path;
+
    procedure Given_I_am_in_adaspec_dir (Args : in out Arg_Type) is
    begin
       Set_Directory (To_String (AdaSpec_Dir));

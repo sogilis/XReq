@@ -8,6 +8,9 @@ package Steps is
    --  @given ^adaspec is in the PATH$
    procedure AdaSpec_in_path (Args : in out Arg_Type);
 
+   --  @given ^the sources of adaspec are in ADA_INCLUDE_PATH$
+   procedure Given_the_sources_of_Adaspec_are_in_path (Args : in out Arg_Type);
+
    --  @given ^I am in the adaspec directory$
    procedure Given_I_am_in_adaspec_dir (Args : in out Arg_Type);
 
@@ -46,8 +49,6 @@ package Steps is
 
    --  @then  ^the output should contain$
    procedure Then_the_output_should_contain (Args : in out Arg_Type);
-
-   --  @given ^the sources of adaspec are in ADA_INCLUDE_PATH$
    --  @when  ^I run '(.*)' aloud$
    --  @then  ^"([^\"]*)" should contain$
 

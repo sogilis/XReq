@@ -151,6 +151,21 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.UnIndent;
       S.Adb.Put_Line ("begin"); -----------------------------------------------
       S.Adb.Indent;
+      --  Generate arguments
+      S.Adb.Put_Line ("Make (Args, " &
+                     Ada_String (To_String (Step.Step.Stanza)) & ");");
+      while Has_Element (I) loop
+         E := Element (I);
+         S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
+                                     E.Last'Img & ");");
+         Next (I);
+      end loop;
+      while Has_Element (I2) loop
+         E2 := Element (I2);
+         S.Adb.Put_Line ("Add_Text  (Args, " &
+                         Ada_String (To_String (E2)) & ");");
+         Next (I2);
+      end loop;
       --  Skip if failure
       S.Adb.Put_Line ("if Fail then");
       S.Adb.Indent;
@@ -169,21 +184,6 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.UnIndent;
       S.Adb.Put_Line ("else");
       S.Adb.Indent;
-      --  Generate arguments
-      S.Adb.Put_Line ("Make (Args, " &
-                     Ada_String (To_String (Step.Step.Stanza)) & ");");
-      while Has_Element (I) loop
-         E := Element (I);
-         S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
-                                     E.Last'Img & ");");
-         Next (I);
-      end loop;
-      while Has_Element (I2) loop
-         E2 := Element (I2);
-         S.Adb.Put_Line ("Add_Text  (Args, " &
-                         Ada_String (To_String (E2)) & ");");
-         Next (I2);
-      end loop;
       --  Generate with clause
       for K in reverse Procname'Range loop
          if Copy then

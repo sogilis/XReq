@@ -196,6 +196,7 @@ Feature: HTML reports
     When I compile "test_suite_fail" in features/tests
     Then it should pass
     Given I am in "features/tests"
+    Then "test_suite_fail" should exist
     When I run "./test_suite_fail -f html -o report-fail.html"
     Then it should fail
     And  "report-fail.html" should exist
@@ -211,6 +212,7 @@ Feature: HTML reports
     When I compile "test_suite_pass" in features/tests
     Then it should pass
     Given I am in "features/tests"
+    Then "test_suite_pass" should exist
     When I run "./test_suite_pass -f html -o report-pass.html"
     Then it should pass
     And  "report-pass.html" should exist
