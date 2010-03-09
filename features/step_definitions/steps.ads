@@ -49,8 +49,11 @@ package Steps is
 
    --  @then  ^the output should contain$
    procedure Then_the_output_should_contain (Args : in out Arg_Type);
-   --  @when  ^I run '(.*)' aloud$
+
    --  @then  ^"([^\"]*)" should contain$
+   procedure Then_the_file_should_contain (Args : in out Arg_Type);
+
+   --  @when  ^I run '(.*)' aloud$
 
    procedure Not_Yet_Implemented (Args : in out Arg_Type);
 

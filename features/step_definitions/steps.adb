@@ -122,7 +122,6 @@ package body Steps is
 
    procedure Given_I_am_in (Args : in out Arg_Type) is
    begin
-      Set_Directory (To_String (AdaSpec_Dir));
       Set_Directory (Args.Match (1));
    end Given_I_am_in;
 
@@ -236,6 +235,26 @@ package body Steps is
          Assert (False, "The output doesn't match");
       end if;
    end Then_the_output_should_contain;
+
+   procedure Then_the_file_should_contain (Args : in out Arg_Type) is
+      use Char_IO;
+      File      : Char_IO.File_Type;
+      File_Name : constant String := Args.Match (1);
+      Buffer    : Unbounded_String;
+      Char      : Character;
+   begin
+      Open (File, In_File, File_Name);
+      while not End_Of_File (File) loop
+         Read   (File, Char);
+         Append (Buffer, Char);
+      end loop;
+      Close (File);
+      Args.Add_Para ("File content:");
+      Args.Add_Text (To_String (Buffer));
+      if Index (Buffer, Args.Text) = 0 then
+         Assert (False, "The file doesn't match");
+      end if;
+   end Then_the_file_should_contain;
 
 
    procedure Not_Yet_Implemented (Args : in out Arg_Type) is
