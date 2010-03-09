@@ -15,14 +15,14 @@ package AdaSpecLib.CLI is
    procedure Free            (Arg  : in out Argument_List_Access)
       renames GNAT.OS_Lib.Free;
 
-   procedure Parse_Arguments (Args     : in out Argument_List_Access;
-                              Format   : out    Format_Ptr;
-                              Continue : out    Boolean;
-                              Name     : in     String := Command_Name);
+   procedure Parse_Arguments (Args       : in out Argument_List_Access;
+                              Format     : out    Format_Ptr;
+                              Continue   : out    Boolean;
+                              Name       : in     String := Command_Name);
 
-   procedure Parse_Arguments (Format   : out    Format_Ptr;
-                              Continue : out    Boolean;
-                              Name     : in     String := Command_Name);
+   procedure Parse_Arguments (Format     : out    Format_Ptr;
+                              Continue   : out    Boolean;
+                              Name       : in     String := Command_Name);
 
    procedure Help (Name : in String := Command_Name);
 

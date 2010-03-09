@@ -41,6 +41,9 @@ package body AdaSpecLib.CLI is
       Put_Line ("        File or directory used for the output. Specify - for the standard");
       Put_Line ("        output.");
       Put_Line ("");
+      Put_Line ("    -d, --debug");
+      Put_Line ("        Produce reports with extra information to ease debugging");
+      Put_Line ("");
 
       --         ---------------------------------------------------------------------------XXX
       --         0         10        20        30        40        50        60        70
@@ -58,19 +61,21 @@ package body AdaSpecLib.CLI is
       end loop;
    end Get_Arguments;
 
-   procedure Parse_Arguments (Args     : in out Argument_List_Access;
-                              Format   : out    Format_Ptr;
-                              Continue : out    Boolean;
-                              Name     : in     String := Command_Name)
+   procedure Parse_Arguments (Args       : in out Argument_List_Access;
+                              Format     : out    Format_Ptr;
+                              Continue   : out    Boolean;
+                              Name       : in     String := Command_Name)
    is
       Parser  : Opt_Parser;
-      Options : constant String := "help h -help f: -format= o: -output=";
+      Options : constant String := "help h -help f: -format= o: -output= " &
+                                   "-debug d";
       Output  : Unbounded_String := Null_Unbounded_String;
+      Debug_Mode : Boolean := False;
    begin
       Initialize_Option_Scan (Parser, Args);
-      Args     := null;  --  Parser takes ownership
-      Format   := null;
-      Continue := True;
+      Args       := null;  --  Parser takes ownership
+      Format     := null;
+      Continue   := True;
 
       Getopt_Loop :
       while Getopt (Options, True, Parser) /= ASCII.NUL loop
@@ -82,6 +87,11 @@ package body AdaSpecLib.CLI is
             Help (Name);
             Continue := False;
             exit Getopt_Loop;
+
+         elsif Full_Switch (Parser) = "d" or
+               Full_Switch (Parser) = "-debug"
+         then
+            Debug_Mode := True;
 
          elsif Full_Switch (Parser) = "f" or
                Full_Switch (Parser) = "-format"
@@ -114,6 +124,7 @@ package body AdaSpecLib.CLI is
          if Output /= Null_Unbounded_String then
             Format.Set_Output (To_String (Output));
          end if;
+         Format.Set_Debug (Debug_Mode);
       else
          Free (Format);
       end if;
@@ -145,9 +156,9 @@ package body AdaSpecLib.CLI is
       --  GCOV_IGNORE_END
    end Parse_Arguments;
 
-   procedure Parse_Arguments (Format   : out    Format_Ptr;
-                              Continue : out    Boolean;
-                              Name     : in     String := Command_Name)
+   procedure Parse_Arguments (Format     : out    Format_Ptr;
+                              Continue   : out    Boolean;
+                              Name       : in     String := Command_Name)
    is
       Args : Argument_List_Access;
    begin

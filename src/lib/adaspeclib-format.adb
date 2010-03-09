@@ -36,6 +36,13 @@ package body AdaSpecLib.Format is
       Format.Output.Create (Ada.Text_IO.Out_File, Output);
    end Set_Output;
 
+   procedure Set_Debug      (Format     : in out Format_Type;
+                             Debug_Mode : in     Boolean)
+   is
+   begin
+      Format.Debug_Mode := Debug_Mode;
+   end Set_Debug;
+
    -------------------
    --  New_Text_IO  --
    -------------------

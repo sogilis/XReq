@@ -254,7 +254,7 @@ package body AdaSpecLib.Format.HTML is
                Tmpl.step_string (Format.Output,
                   Param_string => Args.Text (Args.Elem_Idx (I)));
             when Arg_Separator =>
-               if Success /= Status_Failed then
+               if Success /= Status_Failed and not Format.Debug_Mode then
                   exit Loop_Args;
                end if;
                if I < Args.Last then

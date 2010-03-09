@@ -48,7 +48,8 @@ package AdaSpecLib.Format is
 
    type Format_Type is abstract tagged
       record
-         Output : New_Text_IO.File_Type;
+         Output     : New_Text_IO.File_Type;
+         Debug_Mode : Boolean := False;
       end record;
    type Format_Ptr  is access all Format_Type'Class;
 
@@ -75,6 +76,8 @@ package AdaSpecLib.Format is
                              is abstract;
    procedure Set_Output     (Format     : in out Format_Type;
                              Output     : in     String);
+   procedure Set_Debug      (Format     : in out Format_Type;
+                             Debug_Mode : in     Boolean);
 
    procedure Start_Tests    (Format     : in out Format_Type) --  GCOV_IGNORE
                              is null;
