@@ -124,25 +124,26 @@ package body AdaSpec.Features is
 
       type Mode_Type is (M_Begin, M_Feature, M_Background, M_Scenario, M_Str);
 
-      K_Feature    : constant String := "Feature:";
-      K_Background : constant String := "Background:";
-      K_Scenario   : constant String := "Scenario:";
-      K_Given      : constant String := "Given ";
-      K_When       : constant String := "When ";
-      K_Then       : constant String := "Then ";
-      K_And        : constant String := "And ";
-      K_StrDouble  : constant String := """""""";
-      K_StrSimple  : constant String := "'''";
-      CurrentStr   : String (1 .. 3);
-      State        : Mode_Type         := M_Begin;
-      State_Saved  : Mode_Type;
-      Stanza_State : Prefix_Type_Maybe := Prefix_None;
-      Has_Stanza   : Boolean := False;
-      File         : File_Type;
-      Line_S       : Unbounded_String;
-      Suffix       : Unbounded_String;
-      Long_String  : Unbounded_String;
-      Idx_Start    : Natural;
+      K_Feature     : constant String := "Feature:";
+      K_Background  : constant String := "Background:";
+      K_Scenario    : constant String := "Scenario:";
+      K_Given       : constant String := "Given ";
+      K_When        : constant String := "When ";
+      K_Then        : constant String := "Then ";
+      K_And         : constant String := "And ";
+      K_StrDouble   : constant String := """""""";
+      K_StrSimple   : constant String := "'''";
+      CurrentStr    : String (1 .. 3);
+      State         : Mode_Type         := M_Begin;
+      State_Saved   : Mode_Type;
+      Stanza_State  : Prefix_Type_Maybe := Prefix_None;
+      Has_Stanza    : Boolean := False;
+      File          : File_Type;
+      Line_S        : Unbounded_String;
+      Suffix        : Unbounded_String;
+      Long_String   : Unbounded_String;
+      Idx_Start     : Natural;
+      Idx_Start_Str : Natural;
 
       Current_Scenario : Scenario_Type;
       Current_Stanza   : Stanza_Type;
@@ -289,17 +290,19 @@ package body AdaSpec.Features is
 
                --  Found """
                elsif Starts_With_K (K_StrDouble) then
-                  State_Saved := State;
-                  State       := M_Str;
-                  CurrentStr  := K_StrDouble;
-                  Idx_Start   := Idx_Start + CurrentStr'Length;
+                  State_Saved  := State;
+                  State         := M_Str;
+                  CurrentStr    := K_StrDouble;
+                  Idx_Start_Str := Idx_Start;
+                  Idx_Start     := Idx_Start + CurrentStr'Length;
 
                --  Found '''
                elsif Starts_With_K (K_StrSimple) then
-                  State_Saved := State;
-                  State       := M_Str;
-                  CurrentStr  := K_StrSimple;
-                  Idx_Start   := Idx_Start + CurrentStr'Length;
+                  State_Saved   := State;
+                  State         := M_Str;
+                  CurrentStr    := K_StrSimple;
+                  Idx_Start_Str := Idx_Start;
+                  Idx_Start     := Idx_Start + CurrentStr'Length;
                end if;
 
                --  Record first line of long string
@@ -348,7 +351,7 @@ package body AdaSpec.Features is
                   Line_End   : Natural := 0;
                begin
                   Line_First := Natural'Min (Index_Non_Blank (Line_S),
-                                             Idx_Start);
+                                             Idx_Start_Str);
                   if Line_First = 0 then
                      Line_First := 1;
                   end if;
