@@ -16,6 +16,7 @@ package AdaSpecLib is
    Error : exception;
 
    procedure Assert (Cmp : in Boolean; Reason : in String := "");
+   procedure Equals (T1, T2 : in String; Reason : in String := "");
 
    -----------------
    --  Step_Type  --

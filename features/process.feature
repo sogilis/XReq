@@ -47,17 +47,17 @@ Feature: The simplest works
   Scenario: Test the generation of test packages
     When I run adaspec features/simplest.feature
     Then it should pass
-    And  "features/tests/simplest.ads" should exist
-    And  "features/tests/simplest.adb" should exist
-    When I compile "simplest" in features/tests
+    And  "features/tests/feature_simplest.ads" should exist
+    And  "features/tests/feature_simplest.adb" should exist
+    When I compile "feature_simplest" in features/tests
     Then it should pass
 
 
   Scenario: Test the generation of the test suite
     When  I run adaspec -x simplest_test features/simplest.feature
     Then  it should pass
-    And   "features/tests/simplest.ads" should exist
-    And   "features/tests/simplest.adb" should exist
+    And   "features/tests/feature_simplest.ads" should exist
+    And   "features/tests/feature_simplest.adb" should exist
     And   "features/tests/simplest_test.adb" should exist
     And   "features/tests/simplest_test.gpr" should exist
     When  I compile "simplest_test" in features/tests
@@ -85,8 +85,8 @@ Feature: The simplest works
   Scenario: Test the generation of the test suite with a project file
     When  I run adaspec -x suite features/simplest.feature
     Then  it should pass
-    And   "features/tests/simplest.ads" should exist
-    And   "features/tests/simplest.adb" should exist
+    And   "features/tests/feature_simplest.ads" should exist
+    And   "features/tests/feature_simplest.adb" should exist
     And   "features/tests/suite.adb" should exist
     And   "features/tests/suite.gpr" should exist
     When  I run "gnatmake -Psuite.gpr" in features/tests

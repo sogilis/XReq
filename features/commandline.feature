@@ -21,8 +21,8 @@ Feature: adaspec commandline
   Scenario: Compile a simple feature
     When I run adaspec tests/features/simplest.feature
     Then it should pass
-    And "tests/features/tests/simplest.adb" should exist
-    And "tests/features/tests/simplest.ads" should exist
+    And "tests/features/tests/feature_simplest.adb" should exist
+    And "tests/features/tests/feature_simplest.ads" should exist
 
   Scenario: Choose a step directory
     When I run adaspec -otmp --step tmp tests/features/simplest.feature
@@ -35,10 +35,10 @@ Feature: adaspec commandline
   Scenario: Compile two features
     When I run adaspec tests/features/simplest.feature tests/features/simplest2.feature
     Then it should pass
-    And "tests/features/tests/simplest.adb" should exist
-    And "tests/features/tests/simplest.ads" should exist
-    And "tests/features/tests/simplest2.adb" should exist
-    And "tests/features/tests/simplest2.ads" should exist
+    And "tests/features/tests/feature_simplest.adb" should exist
+    And "tests/features/tests/feature_simplest.ads" should exist
+    And "tests/features/tests/feature_simplest2.adb" should exist
+    And "tests/features/tests/feature_simplest2.ads" should exist
 
   Scenario: Run adaspec with no features but specify output
     When I run adaspec -o tmp
@@ -83,23 +83,23 @@ Feature: adaspec commandline
   Scenario: Compile a feature with a defined language and step directory
     When I run adaspec --lang=ada --step tests/features/step_definitions tests/features/simplest.feature
     Then it should pass
-    And "tests/features/tests/simplest.adb" should exist
-    And "tests/features/tests/simplest.ads" should exist
+    And "tests/features/tests/feature_simplest.adb" should exist
+    And "tests/features/tests/feature_simplest.ads" should exist
 
   @wip
   Scenario: Compile with two step directories
     When I run adaspec --step tmp --step tests/features/step_definitions tests/features/simplest.feature
     Then it should pass
-    And "tests/features/tests/simplest.adb" should exist
-    And "tests/features/tests/simplest.ads" should exist
+    And "tests/features/tests/feature_simplest.adb" should exist
+    And "tests/features/tests/feature_simplest.ads" should exist
 
   Scenario: Create an executable for all features
     When I run adaspec -x result1 -k tests/features/simplest.feature tests/features/simplest2.feature
     Then it should pass
-    And "tests/features/tests/simplest.adb" should exist
-    And "tests/features/tests/simplest.ads" should exist
-    And "tests/features/tests/simplest2.adb" should exist
-    And "tests/features/tests/simplest2.ads" should exist
+    And "tests/features/tests/feature_simplest.adb" should exist
+    And "tests/features/tests/feature_simplest.ads" should exist
+    And "tests/features/tests/feature_simplest2.adb" should exist
+    And "tests/features/tests/feature_simplest2.ads" should exist
     And "tests/features/tests/result1.adb" should exist
     When I compile "result1" in tests/features/tests
     Then it should pass

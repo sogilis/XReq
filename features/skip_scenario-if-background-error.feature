@@ -8,7 +8,6 @@ Feature: Skip scenarios after a background error
   first, just skip this scenario.
 
   Background: Set things up
-    When I run 'pwd' aloud
     Given adaspec is in the PATH
     And I am in an empty directory
     And a file "features/always_fail.feature":
