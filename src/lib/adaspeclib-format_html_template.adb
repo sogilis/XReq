@@ -141,6 +141,14 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  border-radius-bottomright: 1em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, ".trace {" & ASCII.LF);
+      Put (File, "  margin: 0.5em;" & ASCII.LF);
+      Put (File, "  margin-left: 2em;" & ASCII.LF);
+      Put (File, "  margin-right: 7em;" & ASCII.LF);
+      Put (File, "  padding: 0.5em 0 0.5em 0.5em;" & ASCII.LF);
+      Put (File, "  background-color: white;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "body {" & ASCII.LF);
@@ -384,12 +392,17 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure step_error_background
         (File : in out File_Type;
          Param_error : in String;
+         Param_trace : in String;
          Param_feature_id : in String;
          Param_num : in String) is
    begin
       Put (File, "          <hr />" & ASCII.LF);
       Put (File, "          <pre class=""error"">");
       Put (File, Param_error);
+      Put (File, "</pre>" & ASCII.LF);
+      Put (File, "          <p>Stack trace:</p>" & ASCII.LF);
+      Put (File, "          <pre class=""error trace"">");
+      Put (File, Param_trace);
       Put (File, "</pre>" & ASCII.LF);
       Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
       Put (File, "            document.getElementById(""feature-");
@@ -406,12 +419,17 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure step_error_scenario
         (File : in out File_Type;
          Param_error : in String;
+         Param_trace : in String;
          Param_feature_id : in String;
          Param_num : in String) is
    begin
       Put (File, "          <hr />" & ASCII.LF);
       Put (File, "          <pre class=""error"">");
       Put (File, Param_error);
+      Put (File, "</pre>" & ASCII.LF);
+      Put (File, "          <p>Stack trace:</p>" & ASCII.LF);
+      Put (File, "          <pre class=""error trace"">");
+      Put (File, Param_trace);
       Put (File, "</pre>" & ASCII.LF);
       Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
       Put (File, "            document.getElementById(""feature-");

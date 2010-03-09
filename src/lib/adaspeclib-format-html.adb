@@ -2,6 +2,8 @@
 
 with Ada.Strings;
 with Ada.Strings.Fixed;
+--  with Ada.Exceptions.Traceback;
+with GNAT.Traceback.Symbolic;
 with AdaSpecLib.Format_HTML_Template;
 
 use Ada.Strings;
@@ -257,18 +259,22 @@ package body AdaSpecLib.Format.HTML is
    procedure Put_Error      (Format     : in out HTML_Format_Type;
                              Err        : in Exception_Occurrence)
    is
+      --  use Ada.Exceptions.Traceback;
+      use GNAT.Traceback.Symbolic;
+      --  Trace : constant Tracebacks_Array := Tracebacks (Err);
       Error : constant String :=
-         Exception_Name (Err) & ": " & Exception_Message (Err) & ASCII.LF &
-         Exception_Information (Err);
+         Exception_Name (Err) & ": " & Exception_Message (Err) & ASCII.LF;
    begin
       if Format.Have_Background then
          Tmpl.step_error_background (Format.Output,
             Param_error      => Error,
+            Param_trace      => Symbolic_Traceback (Err),
             Param_feature_id => To_String (Format.Feature_ID),
             Param_num        => To_String (Format.Background_ID));
       else
          Tmpl.step_error_scenario (Format.Output,
             Param_error      => Error,
+            Param_trace      => Symbolic_Traceback (Err),
             Param_feature_id => To_String (Format.Feature_ID),
             Param_num        => To_String (Format.Scenario_ID));
       end if;

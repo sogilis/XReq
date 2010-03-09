@@ -48,12 +48,14 @@ package AdaSpecLib.Format_HTML_Template is
    procedure step_error_background
         (File : in out File_Type;
          Param_error : in String;
+         Param_trace : in String;
          Param_feature_id : in String;
          Param_num : in String);
 
    procedure step_error_scenario
         (File : in out File_Type;
          Param_error : in String;
+         Param_trace : in String;
          Param_feature_id : in String;
          Param_num : in String);
 

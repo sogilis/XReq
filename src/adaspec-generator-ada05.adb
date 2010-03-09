@@ -460,9 +460,15 @@ package body AdaSpec.Generator.Ada05 is
       Gpr_B.Put_Line ("for Source_Dirs use (""."", """ & Step_D & """);");
       Gpr_B.Put_Line ("package Compiler is");
       Gpr_B.Indent;
-      Gpr_B.Put_Line ("for Default_Switches (""Ada"") use (""-gnat05"");");
+      Gpr_B.Put_Line ("for Default_Switches (""Ada"") use " &
+                      "(""-gnat05"", ""-g"");");
       Gpr_B.UnIndent;
       Gpr_B.Put_Line ("end Compiler;");
+      Gpr_B.Put_Line ("package Binder is");
+      Gpr_B.Indent;
+      Gpr_B.Put_Line ("for Default_Switches (""Ada"") use (""-E"");");
+      Gpr_B.UnIndent;
+      Gpr_B.Put_Line ("end Binder;");
       Gpr_B.UnIndent;
       Gpr_B.Put_Line ("end " & Prc_Name & ";");
 

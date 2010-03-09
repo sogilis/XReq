@@ -87,6 +87,7 @@ package body Test_Suite.Lib is
 
    procedure Run (T : in out Test_Assert) is
    begin
+      AdaSpecLib.Assert (True, "This error shouldn't happen");
       begin
          AdaSpecLib.Assert (False, "errmsg");
          T.Assert (False, "Assert should raise AdaSpecLib.Error");
@@ -95,6 +96,21 @@ package body Test_Suite.Lib is
             T.Assert (Exception_Message (E) = "errmsg",
                       "Exception message not OK. Found: '" &
                       Exception_Message (E) & "'");
+      end;
+      AdaSpecLib.Equals ("a", "a", "This error shouldn't happen");
+      begin
+         AdaSpecLib.Equals ("a", "b", "errmsg");
+         T.Assert (False, "Assert should raise AdaSpecLib.Error");
+      exception
+         when AdaSpecLib.Error =>
+            T.Assert (True, "");
+      end;
+      begin
+         AdaSpecLib.Equals ("a", "b");
+         T.Assert (False, "Assert should raise AdaSpecLib.Error");
+      exception
+         when AdaSpecLib.Error =>
+            T.Assert (True, "");
       end;
    end Run;
 

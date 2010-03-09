@@ -132,6 +132,14 @@ pre.string {
   border-radius-bottomright: 1em;
 }
 
+.trace {
+  margin: 0.5em;
+  margin-left: 2em;
+  margin-right: 7em;
+  padding: 0.5em 0 0.5em 0.5em;
+  background-color: white;
+}
+
 
 
 body {
@@ -373,6 +381,8 @@ end Steps2;
 <?var name="step-error-background"?>
           <hr />
           <pre class="error"><?placeholder name="error"?></pre>
+          <p>Stack trace:</p>
+          <pre class="error trace"><?placeholder name="trace"?></pre>
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
@@ -380,6 +390,8 @@ end Steps2;
 <?var name="step-error-scenario"?>
           <hr />
           <pre class="error"><?placeholder name="error"?></pre>
+          <p>Stack trace:</p>
+          <pre class="error trace"><?placeholder name="trace"?></pre>
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
