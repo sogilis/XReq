@@ -52,9 +52,9 @@ package body Test_Suite.Generator.Ada05 is
       Run  (Job, Env);
       Generate (Job, Env);
 
-      Append (Output, "gnatmake " & Flags & " simplest.adb" &
+      Append (Output, "gnatmake " & Flags & " feature_simplest.adb" &
               ASCII.LF);
-      Spawn ("gnatmake", Flags & " simplest.adb",
+      Spawn ("gnatmake", Flags & " feature_simplest.adb",
              Output, Success, Result, "tests/features/tests");
 
       T.Assert (Success, "gnatmake did not succeed" & ASCII.LF &
