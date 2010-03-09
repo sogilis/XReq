@@ -1,7 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
+with Ada.Strings.Fixed;
 with Util.IO;
+
+use Ada.Strings.Fixed;
 
 package body AdaSpec.Features is
 
@@ -111,7 +114,8 @@ package body AdaSpec.Features is
    --  Feature_File_Type  --  Parse  --
    ------------------------------------
 
-   procedure Parse (F : in out Feature_File_Type) is
+   procedure Parse (F      : in out Feature_File_Type;
+                    Errors : out Boolean) is
 
       Self : constant access Feature_File_Type'Class := F'Access;
 
@@ -186,7 +190,6 @@ package body AdaSpec.Features is
 
       procedure Add_Text is
       begin
-         Long_String := Decode_Python (To_String (Long_String));
 --          Put_Line ("Found String: " & CurrentStr &
 --                    To_String (Long_String) & CurrentStr);
          Append (Current_Stanza.Texts, Long_String);
@@ -201,6 +204,7 @@ package body AdaSpec.Features is
       end Add_Text;
 
    begin
+      Errors := False;
       Open (File, In_File, To_String (Self.File_Name));
       while not End_Of_File (File) loop
          --
@@ -307,26 +311,12 @@ package body AdaSpec.Features is
 
                --  Record first line of long string
                if State = M_Str then
-                  declare
-                     Line_End : Natural;
-                  begin
-                     Line_End := Index (Line_S, CurrentStr, Idx_Start);
-                     if Line_End = 0 or (Line_End > 1 and then
-                                         Element (Line_S, Line_End - 1) = '\')
-                     then
-                        Line_End := Length (Line_S);
-                     else
-                        Line_End := Line_End - 1;
-                        State    := State_Saved;
-                     end if;
-                     Long_String := Unbounded_Slice
-                                       (Line_S, Idx_Start, Line_End);
-                     if State /= M_Str then
-                        Add_Text;
-                     elsif Length (Long_String) > 0 then
-                        Append (Long_String, ASCII.LF);
-                     end if;
-                  end;
+                  if Index_Non_Blank (Line_S, Idx_Start) /= 0 then
+                     Put_Line ("Error: PyString: found text after " &
+                               CurrentStr);
+                     Errors := True;
+                     State  := State_Saved;
+                  end if;
 
                --  Continue the stanza on the next line
                elsif Stanza_State /= Prefix_None then
@@ -347,35 +337,34 @@ package body AdaSpec.Features is
             when M_Str =>
 
                declare
-                  Line_First : Natural;
-                  Line_End   : Natural := 0;
+                  I    : Natural;
+                  Line : constant String := To_String (Line_S);
                begin
-                  Line_First := Natural'Min (Index_Non_Blank (Line_S),
-                                             Idx_Start_Str);
-                  if Line_First = 0 then
-                     Line_First := 1;
-                  end if;
-                  Line_End := Index (Line_S, CurrentStr, Line_First);
-                  --  Look if there is the end of string marker
-                  if Line_End = 0 or (Line_End > 1 and then
-                                         Element (Line_S, Line_End - 1) = '\')
-                  then
-                     --  Still in the string, slice till the end of line
-                     Line_End := Length (Line_S);
-                     Append (Long_String,
-                             Slice (Line_S, Line_First, Line_End) & ASCII.LF);
-                  else
-                     State := State_Saved;
-                     if Line_End > Line_First then
-                        --  There is text before the end of string marker
-                        Append (Long_String,
-                                Slice (Line_S, Line_First, Line_End - 1));
-                     else
-                        --  End of string in a line by itself, remove the last
-                        --  line feed.
+                  if Starts_With_K (CurrentStr) then
+                     Idx_Start := Idx_Start + CurrentStr'Length;
+                     if Index_Non_Blank (Line, Idx_Start) = 0 then
+                        State := State_Saved;
+                        --  End of string, remove the last line feed.
                         Head (Long_String, Length (Long_String) - 1);
+                        Add_Text;
                      end if;
-                     Add_Text;
+                  end if;
+
+                  if State = M_Str then
+                     I := Natural'Min (Index_Non_Blank (Line), Idx_Start_Str);
+                     I := Natural'Max (I, 1);
+                     while I <= Line'Last loop
+                        if I <= Line'Last - 1 and then
+                           Line (I .. I + 1) = "\" & CurrentStr (1)
+                        then
+                           Append (Long_String, CurrentStr (1));
+                           I := I + 2;
+                        else
+                           Append (Long_String, Line (I));
+                           I := I + 1;
+                        end if;
+                     end loop;
+                     Append (Long_String, ASCII.LF);
                   end if;
                end;
 

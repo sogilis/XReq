@@ -122,9 +122,13 @@ Feature: HTML reports
         Background: definitions
           Given this step works
           And this is ignored
-            \"""Sample\"""
-            \"""Second
-            String\"""
+            \"""
+            Sample
+            \"""
+            \"""
+            Second
+            String
+            \"""
 
         Scenario:
           Given this step works

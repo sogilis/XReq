@@ -75,7 +75,8 @@ package AdaSpec.Features is
                         File_Name : in     String);
    function  Create    (File_Name : in     String) return Feature_File_Type;
    function  File_Name (F         : in     Feature_File_Type) return String;
-   procedure Parse     (F         : in out Feature_File_Type);
+   procedure Parse     (F         : in out Feature_File_Type;
+                        Errors    : out    Boolean);
 
    overriding
    function  Parsed    (F         : in     Feature_File_Type) return Boolean;

@@ -35,9 +35,11 @@ Feature: Long strings
 
         Scenario: B
           Given the long string:
-            \"\"\"abc
-            def\"\"\"
-          When I compare it with "abc\ndef"
+            '''
+            abc '''
+            def \\'''
+            '''
+          When I compare it with "abc '''\ndef \\'''"
           Then they are equal
       """
     And   a file "features/step_definitions/steps.ads":
@@ -142,13 +144,26 @@ Feature: Long strings
         Scenario: B
           Given the long string:
             \"\"\"
-            abc
-            def
+            abc '''
+            def \'''
             \"\"\"
-          When I compare it with "abc\ndef"
+          When I compare it with "abc '''\ndef \\'''"
           Then they are equal
 
       2 scenarios (2 passed)
       8 steps (8 passed)
 
       """
+
+  Scenario: Test longstrings errors
+    Given a file "features/longstring_error.feature":
+      """
+        Feature: Sample
+
+          Scenario: A
+            Given the long string:
+              '''abc'''
+      """
+    When I run adaspec features/longstring_error.feature
+    Then "features/tests/longstring_error.adb" should not exist
+    Then "features/tests/longstring_error.ads" should not exist

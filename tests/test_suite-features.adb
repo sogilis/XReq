@@ -39,6 +39,7 @@ package body Test_Suite.Features is
       File     : constant String := "tests/features/simplest.feature";
       Scenario : Scenario_Type;
       Stanza   : Stanza_Type;
+      Errors   : Boolean;
 
       CRLF : constant String := ASCII.CR & ASCII.LF;
       Canonical_Feature_Text : constant String :=
@@ -95,7 +96,9 @@ package body Test_Suite.Features is
             Unparsed_Feature'Identity);
       end;
 
-      Parse (Feature);
+      Parse (Feature, Errors);
+
+      T.Assert (not Errors, "Parse error");
 
       T.Assert (Parsed (Feature),
               "Feature has not been parsed after invoking Parse");
@@ -166,6 +169,7 @@ package body Test_Suite.Features is
       Feature2 : Feature_File_Type;
       File     : constant String := "tests/features/simplest2.feature";
       Scenario : Scenario_Type;
+      Errors   : Boolean;
 
    begin
 
@@ -191,7 +195,9 @@ package body Test_Suite.Features is
       Append (Feature1, Scenario);
 
       Make  (Feature2, File);
-      Parse (Feature2);
+      Parse (Feature2, Errors);
+
+      T.Assert (not Errors, "Parse error");
 
       Put_Line ("Feature1:");
       Put_Line (To_String (Feature1));
