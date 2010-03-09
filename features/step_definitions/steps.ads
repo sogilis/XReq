@@ -35,6 +35,9 @@ package Steps is
    --  @when  ^I run "(.*)" in (.*)$
    procedure when_I_run_in (Args : in out Arg_Type);
 
+   --  @when  ^I run "(.*)"$
+   procedure when_I_run (Args : in out Arg_Type);
+
    --  @then  ^"([^\"]*)" should exist$
    procedure Then_file_should_exist (Args : in out Arg_Type);
 
@@ -42,7 +45,6 @@ package Steps is
    procedure Then_file_should_not_exist (Args : in out Arg_Type);
 
    --  @given ^the sources of adaspec are in ADA_INCLUDE_PATH$
-   --  @when  ^I run "(.*)"$
    --  @when  ^I run '(.*)' aloud$
    --  @then  ^the output should contain$
    --  @then  ^"([^\"]*)" should contain$

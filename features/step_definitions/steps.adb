@@ -5,6 +5,7 @@ with Ada.Strings.Fixed;
 with Ada.Environment_Variables;
 with Ada.Directories;
 with Ada.Sequential_IO;
+with Ada.IO_Exceptions;
 with GNAT.OS_Lib;
 
 use Ada.Strings.Unbounded;
@@ -22,6 +23,7 @@ package body Steps is
    procedure Execute (Command, Arguments : in String) is
       use Char_IO;
       use GNAT.OS_Lib;
+      use Ada.Strings.Fixed;
       Tmp_File      : Char_IO.File_Type;
       Argument_List : Argument_List_Access :=
                       Argument_String_To_List (Arguments);
@@ -31,13 +33,26 @@ package body Steps is
       Char          : Character;
    begin
       Create (Tmp_File);
-      Cmd_Path := Locate_Exec_On_Path (Command);
-      Spawn  (Cmd_Path.all,
-              Argument_List.all,
-              Name (Tmp_File),
-              Success,
-              Return_Code,
-              True);
+      if Index (Command, "/") not in Command'Range then
+         Cmd_Path := Locate_Exec_On_Path (Command);
+         if Cmd_Path = null then
+            raise Ada.IO_Exceptions.Name_Error
+               with "Cannot locate """ & Command & """ on the PATH";
+         end if;
+         Spawn  (Cmd_Path.all,
+                 Argument_List.all,
+                 Name (Tmp_File),
+                 Success,
+                 Return_Code,
+                 True);
+      else
+         Spawn  (Command,
+                 Argument_List.all,
+                 Name (Tmp_File),
+                 Success,
+                 Return_Code,
+                 True);
+      end if;
       Assert (Success, "Spawn failed");
       Free (Cmd_Path);
       Free (Argument_List);
@@ -163,6 +178,11 @@ package body Steps is
       Execute (Args.Match (1));
       Set_Directory (Dir);
    end when_I_run_in;
+
+   procedure when_I_run (Args : in out Arg_Type) is
+   begin
+      Execute (Args.Match (1));
+   end when_I_run;
 
    procedure Then_file_should_exist (Args : in out Arg_Type) is
    begin
