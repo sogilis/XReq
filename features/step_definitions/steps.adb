@@ -154,35 +154,46 @@ package body Steps is
 
    procedure I_run_adaspec (Args : in out Arg_Type) is
    begin
+      Args.Add_Para ("Current Directory:");
+      Args.Add_Text (Current_Directory);
       Execute ("adaspec", Args.Match (1));
    end I_run_adaspec;
 
    procedure it_should_pass_fail (Args : in out Arg_Type) is
    begin
+      Args.Add_Para ("Exit code:" & Last_Exit_Code'Img);
+      Args.Add_Para ("Command output:");
+      Args.Add_Text (To_String (Last_Command_Output));
       if Args.Match (1) = "pass" then
-         Assert (Last_Exit_Code = 0, "failed with code" & Last_Exit_Code'Img &
-                 ASCII.LF & "Output:" & ASCII.LF &
-                 To_String (Last_Command_Output));
+         Assert (Last_Exit_Code = 0, "failed with code" & Last_Exit_Code'Img);
       else
-         Assert (Last_Exit_Code /= 0, "succeed" &
-                 ASCII.LF & "Output:" & ASCII.LF &
-                 To_String (Last_Command_Output));
+         Assert (Last_Exit_Code /= 0, "succeed");
       end if;
    end it_should_pass_fail;
 
    procedure it_should_pass_fail_with (Args : in out Arg_Type) is
    begin
       it_should_pass_fail(Args);
-      Equals (Args.Text, To_String (Last_Command_Output),
+--       Args.Add_Para ("Expected output:");
+--       Args.Add_Text (Args.Text);
+      Args.Add_Para ("Command output:");
+      Args.Add_Text (To_String (Last_Command_Output));
+      Assert (Args.Text = To_String (Last_Command_Output),
               "Unexpected command output");
    end it_should_pass_fail_with;
 
    procedure when_I_compile_in (Args : in out Arg_Type) is
-      Dir : constant String := Current_Directory;
+      Dir      : constant String := Current_Directory;
+      Cmd_Line : constant String :=
+         "gnatmake -g -E -gnata -gnat05 -aI../step_definitions " &
+         Args.Match (1);
    begin
       Set_Directory (Args.Match (2));
-      Execute ("gnatmake", "-g -E -gnata -gnat05 -aI../step_definitions " &
-               Args.Match (1));
+      Args.Add_Para ("Current Directory:");
+      Args.Add_Text (Current_Directory);
+      Args.Add_Para ("Command Line:");
+      Args.Add_Text (Cmd_Line);
+      Execute (Cmd_Line);
       Set_Directory (Dir);
    end when_I_compile_in;
 
@@ -190,6 +201,8 @@ package body Steps is
       Dir : constant String := Current_Directory;
    begin
       Set_Directory (Args.Match (2));
+      Args.Add_Para ("Current Directory:");
+      Args.Add_Text (Current_Directory);
       Execute (Args.Match (1));
       Set_Directory (Dir);
    end when_I_run_in;
@@ -201,21 +214,26 @@ package body Steps is
 
    procedure Then_file_should_exist (Args : in out Arg_Type) is
    begin
+      Args.Add_Para ("Current Directory:");
+      Args.Add_Text (Current_Directory);
       Assert (Exists (Args.Match (1)),
               "File should exists: " & Args.Match (1));
    end Then_file_should_exist;
 
    procedure Then_file_should_not_exist (Args : in out Arg_Type) is
    begin
+      Args.Add_Para ("Current Directory:");
+      Args.Add_Text (Current_Directory);
       Assert (not Exists (Args.Match (1)),
               "File should not exists: " & Args.Match (1));
    end Then_file_should_not_exist;
 
    procedure Then_the_output_should_contain (Args : in out Arg_Type) is
    begin
+      Args.Add_Para ("Command output:");
+      Args.Add_Text (To_String (Last_Command_Output));
       if Index (Last_Command_Output, Args.Text) = 0 then
-         Assert (False, "The output doesn't match:" & ASCII.LF &
-                 To_String (Last_Command_Output));
+         Assert (False, "The output doesn't match");
       end if;
    end Then_the_output_should_contain;
 

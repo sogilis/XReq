@@ -246,10 +246,25 @@ package body AdaSpecLib.Format.HTML is
       Tmpl.step_begin (Format.Output,
             Param_status => Status_Class (Success),
             Param_stanza => To_String (Stanza));
-      for I in Args.First_Text .. Args.Last_Text loop
-         Tmpl.step_string (Format.Output,
-            Param_string => Args.Text (I));
-      end loop;
+
+      Loop_Args :
+      for I in Args.First .. Args.Last loop
+         case Args.Elem_Type (I) is
+            when Arg_Text =>
+               Tmpl.step_string (Format.Output,
+                  Param_string => Args.Text (Args.Elem_Idx (I)));
+            when Arg_Separator =>
+               if Success /= Status_Failed then
+                  exit Loop_Args;
+               end if;
+               if I < Args.Last then
+                  Tmpl.step_separator (Format.Output);
+               end if;
+            when Arg_Paragraph =>
+               Tmpl.step_paragraph (Format.Output,
+                  Param_string => Args.Para (Args.Elem_Idx (I)));
+         end case;
+      end loop Loop_Args;
    end Put_Step;
 
    -----------------

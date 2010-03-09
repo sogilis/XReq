@@ -166,6 +166,7 @@ package body AdaSpec.Generator.Ada05 is
                          Ada_String (To_String (E2)) & ");");
          Next (I2);
       end loop;
+      S.Adb.Put_Line ("Add_Sep   (Args, 1);");
       --  Skip if failure
       S.Adb.Put_Line ("if Fail then");
       S.Adb.Indent;

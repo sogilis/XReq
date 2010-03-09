@@ -146,8 +146,10 @@ package body AdaSpecLib is
                           Text   : in     String)
    is
       use String_Vectors;
+      use Elem_Vectors;
    begin
       Append (Self.Texts, To_Unbounded_String (Text));
+      Append (Self.Elems, Arg_Element_Record'(Arg_Text, Self.Last_Text));
    end Add_Text;
 
    --------------------------------
@@ -180,6 +182,105 @@ package body AdaSpecLib is
       return Natural (Length (Self.Texts));
    end Num_Text;
 
+   -----------------------------
+   --  Arg_Type  --  Add_Sep  --
+   -----------------------------
+
+   procedure Add_Sep      (Self   : in out Arg_Type;
+                           N      : in     Natural := 0)
+   is
+      use Elem_Vectors;
+   begin
+      Append (Self.Elems, Arg_Element_Record'(Arg_Separator, N));
+   end Add_Sep;
+
+   --------------------------
+   --  Arg_Type  --  Para  --
+   --------------------------
+
+   function  Para        (Self   : in     Arg_Type;
+                          N      : in     Natural := 0) return String
+   is
+      use String_Vectors;
+   begin
+      return To_String (Element (Self.Paragraphs, N));
+   end Para;
+
+   ------------------------------
+   --  Arg_Type  --  Add_Para  --
+   ------------------------------
+
+   procedure Add_Para    (Self   : in out Arg_Type;
+                          Text   : in     String)
+   is
+      use String_Vectors;
+      use Elem_Vectors;
+   begin
+      Append (Self.Paragraphs, To_Unbounded_String (Text));
+      Append (Self.Elems, Arg_Element_Record'(Arg_Paragraph, Self.Last_Para));
+   end Add_Para;
+
+   --------------------------------
+   --  Arg_Type  --  First_Para  --
+   --------------------------------
+
+   function  First_Para  (Self   : in     Arg_Type) return Natural is
+      pragma Unreferenced (Self);
+   begin
+      return 0;
+   end First_Para;
+
+   -------------------------------
+   --  Arg_Type  --  Last_Para  --
+   -------------------------------
+
+   function  Last_Para   (Self   : in     Arg_Type) return Integer is
+      use String_Vectors;
+   begin
+      return Natural (Length (Self.Paragraphs)) - 1;
+   end Last_Para;
+
+   ---------------------------
+   --  Arg_Type  --  First  --
+   ---------------------------
+
+   function  First        (Self   : in     Arg_Type) return Natural is
+      pragma Unreferenced (Self);
+   begin
+      return 0;
+   end First;
+
+   --------------------------
+   --  Arg_Type  --  Last  --
+   --------------------------
+
+   function  Last         (Self   : in     Arg_Type) return Integer is
+      use Elem_Vectors;
+   begin
+      return Natural (Length (Self.Elems)) - 1;
+   end Last;
+
+   -------------------------------
+   --  Arg_Type  --  Elem_Type  --
+   -------------------------------
+
+   function  Elem_Type    (Self   : in     Arg_Type;
+                           N      : in     Natural) return Arg_Element_Type is
+      use Elem_Vectors;
+   begin
+      return Element (Self.Elems, N).Element_Type;
+   end Elem_Type;
+
+   ------------------------------
+   --  Arg_Type  --  Elem_Idx  --
+   ------------------------------
+
+   function  Elem_Idx     (Self   : in     Arg_Type;
+                           N      : in     Natural) return Natural is
+      use Elem_Vectors;
+   begin
+      return Element (Self.Elems, N).Element_Idx;
+   end Elem_Idx;
 
 
 end AdaSpecLib;
