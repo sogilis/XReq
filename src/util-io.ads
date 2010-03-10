@@ -154,6 +154,22 @@ package Util.IO is
    procedure Put_Always    (Log : in out Standard_Logger_Type;
                             S   : in     String);
 
+   --------------------------
+   --  Buffer_Logger_Type  --
+   --------------------------
+
+   type Buffer_Logger_Type is new Logger_Type with
+      record
+         Buffer : Unbounded_String;
+      end record;
+   type Buffer_Logger_Ptr is access all Buffer_Logger_Type'Class;
+
+   function New_Buffer_Logger return Buffer_Logger_Ptr;
+
+   procedure Put_Always    (Log : in out Buffer_Logger_Type;
+                            S   : in     String);
+
+
 private
 
 --    type Logger_Type is abstract tagged

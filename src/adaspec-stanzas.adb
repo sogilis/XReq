@@ -8,9 +8,13 @@ package body AdaSpec.Stanzas is
    --  Stanza_Type  --  Stanza_Given  --
    -------------------------------------
 
-   function Stanza_Given (S : in String) return Stanza_Type is begin
+   function Stanza_Given (S    : in String;
+                          File : in String := "";
+                          Line : in Positive := 1) return Stanza_Type is
+   begin
       return Stanza_Type'(Prefix => Prefix_Given,
                           Stanza => To_Unbounded_String (S),
+                          Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
    end Stanza_Given;
 
@@ -18,9 +22,13 @@ package body AdaSpec.Stanzas is
    --  Stanza_Type  --  Stanza_When  --
    ------------------------------------
 
-   function Stanza_When  (S : in String) return Stanza_Type is begin
+   function Stanza_When  (S    : in String;
+                          File : in String := "";
+                          Line : in Positive := 1) return Stanza_Type is
+   begin
       return Stanza_Type'(Prefix => Prefix_When,
                           Stanza => To_Unbounded_String (S),
+                          Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
    end Stanza_When;
 
@@ -28,9 +36,13 @@ package body AdaSpec.Stanzas is
    --  Stanza_Type  --  Stanza_Then  --
    ------------------------------------
 
-   function Stanza_Then  (S : in String) return Stanza_Type is begin
+   function Stanza_Then  (S    : in String;
+                          File : in String := "";
+                          Line : in Positive := 1) return Stanza_Type is
+   begin
       return Stanza_Type'(Prefix => Prefix_Then,
                           Stanza => To_Unbounded_String (S),
+                          Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
    end Stanza_Then;
 
@@ -99,5 +111,17 @@ package body AdaSpec.Stanzas is
    begin
       return To_String (S.Pos);
    end Position;
+
+   ----------------------------
+   --  Stanza_Type  --  "="  --
+   ----------------------------
+
+--    function "=" (Left, Right : in Stanza_Type) return Boolean is
+--    begin
+--       return   Left.Prefix = Right.Prefix and
+--                Left.Stanza = Right.Stanza and
+--                Left.Texts  = Right.Texts  and
+--                Left.Pos    = Right.Pos;
+--    end "=";
 
 end AdaSpec.Stanzas;

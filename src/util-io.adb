@@ -159,6 +159,22 @@ package body Util.IO is
       Ada.Text_IO.Put (S);
    end Put_Always;
 
+   --------------------------
+   --  Buffer_Logger_Type  --
+   --------------------------
+
+   function New_Buffer_Logger return Buffer_Logger_Ptr is
+   begin
+      return new Buffer_Logger_Type;
+   end New_Buffer_Logger;
+
+   procedure Put_Always    (Log : in out Buffer_Logger_Type;
+                            S   : in     String)
+   is
+   begin
+      Append (Log.Buffer, S);
+   end Put_Always;
+
    -----------------
    --  Temp_Name  --
    -----------------

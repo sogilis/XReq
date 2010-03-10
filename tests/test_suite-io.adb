@@ -18,6 +18,7 @@ package body Test_Suite.IO is
       Ret.Add_Test (new Test_Spawn);
       Ret.Add_Test (new Test_Char_IO);
       Ret.Add_Test (new Test_Get_Set);
+      Ret.Add_Test (new Test_Logger);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
@@ -228,6 +229,55 @@ package body Test_Suite.IO is
               "Instead of:" & ASCII.LF &
               "<<<" & Content & Content2 & ">>>");
       end;
+
+   end Run;
+
+   --  Test_Logger  -----------------------------------------------------------
+
+   function  Name (T : in Test_Logger) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.IO.Logger_Type");
+   end Name;
+
+   procedure Run (T : in out Test_Logger) is
+      Log : Logger_Ptr;
+      Buf : Buffer_Logger_Ptr;
+      Should_See : constant String := "AAA" & ASCII.LF & "   BBB" &
+                   ASCII.LF & "DDD" & ASCII.LF & "MN" & ASCII.LF & "P" &
+                   ASCII.LF;
+   begin
+
+      Buf := New_Buffer_Logger;
+      Log := Logger_Ptr (Buf);
+
+      T.Assert (Log.Verbosity = 0, "default verbosity");
+
+      Log.Put_Line ("AAA");
+      Log.Indent;
+      Log.Put_Line (To_Unbounded_String ("BBB"));
+      Log.UnIndent;
+      Log.Put_Line ("CCC", 1);
+
+      Log.Set_Verbosity (1);
+      Log.Put_Line ("DDD", 1);
+      Log.Put_Line ("EEE", 2);
+
+      Log.Put ("M");
+      Log.Put (To_Unbounded_String ("N"));
+      Log.Put (2, To_Unbounded_String ("O"));
+      Log.New_Line;
+      Log.Put_Line (1, To_Unbounded_String ("P"));
+
+      T.Assert (To_String (Buf.Buffer) = Should_See,
+                "Saw <<<" & To_String (Buf.Buffer) & ">>> instead of <<<" &
+                Should_See & ">>>");
+
+      Free (Log);
+      Log := Logger_Ptr (New_Standard_Logger);
+      Free (Log);
+      Log := Logger_Ptr (New_Null_Logger);
+      Free (Log);
 
    end Run;
 

@@ -207,8 +207,6 @@ package body Test_Suite.Features is
       T.Assert (To_String (Feature1) = To_String (Feature_Type (Feature2)),
                 "The two features text representation must be the same");
 
-      T.Assert (Same (Feature1, Feature2),
-                "The two features must be the same");
 
    exception
       when Error : others =>

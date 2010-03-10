@@ -33,6 +33,17 @@ package body Test_Suite.Stanzas is
       T.Assert (To_String (Stanza_Then  ("C")) = "Then C",
               "Wrong stanza Then C");
 
+      declare
+         Expect : constant String :=
+            "@given ^Something ""([^""]*)"" dumb \(""\)$";
+         Found  : constant String :=
+            To_Regexp (Stanza_Given ("Something ""here"" dumb ("")"));
+      begin
+         T.Assert (Expect = Found, "To_Regexp not OK." & ASCII.LF &
+                  "Expected: " & Expect & ASCII.LF &
+                  "Found   : " & Found);
+      end;
+
    end Run;
 
 end Test_Suite.Stanzas;

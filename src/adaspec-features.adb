@@ -468,21 +468,6 @@ package body AdaSpec.Features is
       return To_String (Res);
    end To_String;
 
-   ------------------------------
-   --  Feature_Type  --  Same  --
-   ------------------------------
-
-   function Same (F1, F2 : in Feature_Type'Class) return Boolean is
-      use Util.Strings.Vectors;
-      use Scenario_Container;
-   begin
-      return
-         F1.Name        = F2.Name and
-         F1.Description = F2.Description and
-         F1.Background  = F2.Background and
-         F1.Scenarios   = F2.Scenarios;
-   end Same;
-
    --------------------------------
    --  Feature_Type  --  Append  --
    --------------------------------

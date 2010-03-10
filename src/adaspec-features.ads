@@ -60,8 +60,6 @@ package AdaSpec.Features is
 
    Null_Feature : constant Feature_Type := (others => <>);
 
-   function  Same           (F1, F2 : in Feature_Type'Class) return Boolean;
-
    ------------------------
    -- Feature_File_Type  --
    ------------------------
