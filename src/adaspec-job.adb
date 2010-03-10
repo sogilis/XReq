@@ -74,11 +74,14 @@ package body AdaSpec.Job is
          raise Invalid_Environment with "No step_definitions directory";
       end if;
       if Length (Env.Out_Dir) = 0 then
-         raise Invalid_Environment with "No output directory";
+         if not Fill_Steps then
+            raise Invalid_Environment with "No output directory";
+         end if;
+      else
+         Create_Path (Out_Dir (Env));
       end if;
 
       Create_Path (Step_Dir (Env));
-      Create_Path (Out_Dir (Env));
 
       Load (Env.Steps, Logger, Step_Dir (Env), Env.Language, Fill_Steps);
       Env.Loaded := True;
