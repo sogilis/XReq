@@ -79,6 +79,12 @@ Feature: Auto fill in of steps definitions
         --  @when ^I type on my keyboard "([^"]*)"$
         --  @then ^I should see "([^"]*)"$
         --  @todo
+
+        --  @when ^toto$
+        --  @todo
+
+        --  @then ^tata$
+        --  @todo
       end Steps;
       """
     When I run adaspec --fill-steps features/test.feature
@@ -99,6 +105,16 @@ Feature: Auto fill in of steps definitions
         --  @then ^I should see "([^"]*)"$
         procedure Mixed_Step (Args : in out Arg_Type);
       """
+    And "features/step_definitions/steps.ads" should contain
+      """
+        --  @when ^toto$
+        procedure When_toto (Args : in out Arg_Type);
+      """
+    And "features/step_definitions/steps.ads" should contain
+      """
+        --  @then ^tata$
+        procedure Then_tata (Args : in out Arg_Type);
+      """
     And "features/step_definitions/steps.adb" should exist
     And "features/step_definitions/steps.adb" should contain
       """
@@ -117,6 +133,20 @@ Feature: Auto fill in of steps definitions
     And "features/step_definitions/steps.adb" should contain
       """
          end Mixed_Step;
+
+         procedure When_toto (Args : in out Arg_Type) is
+         begin
+      """
+    And "features/step_definitions/steps.adb" should contain
+      """
+         end When_toto;
+
+         procedure Then_tata (Args : in out Arg_Type) is
+         begin
+      """
+    And "features/step_definitions/steps.adb" should contain
+      """
+         end Then_tata;
 
       end Steps;
       """
@@ -149,7 +179,7 @@ Feature: Auto fill in of steps definitions
 
       end Steps;
       """
-    When I run adaspec --fill-steps features/test.feature
+    When I run adaspec --fill-steps -s features/step_definitions
     Then it should pass
     And "features/step_definitions/steps.ads" should contain
       """
