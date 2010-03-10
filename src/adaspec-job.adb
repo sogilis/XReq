@@ -148,7 +148,7 @@ package body AdaSpec.Job is
 
       if not Errors then
          Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
-         Process_Feature (Job.Result, Job.Feature, Env.Steps);
+         Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger);
       end if;
    end Run;
 

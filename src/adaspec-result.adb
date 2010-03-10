@@ -1,6 +1,5 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Text_IO;
 with Util.Strings;
 
 use Util.Strings;
@@ -94,9 +93,9 @@ package body AdaSpec.Result is
    procedure Process_Scenario (Res      : out Result_Scenario_Type;
                                Scenario : in  Scenario_Type;
                                Steps    : in  Steps_Type;
+                               Log      : in  Logger_Ptr;
                                Errors   : out Boolean)
    is
-      use Ada.Text_IO;
       use Stanza_Container;
       use Result_Steps;
       I         : Stanza_Container.Cursor := First (Scenario.Stanzas);
@@ -114,14 +113,19 @@ package body AdaSpec.Result is
             Find (Steps, Stanza, Proc_Name, Matches, Found);
          exception
             when Ambiguous_Match =>
-               Put_Line ("Error: Ambiguous match for " &
+               Log.Put_Line ("Error: Ambiguous match for " &
                          To_String (Stanza));
                Errors := True;
          end;
          if not Found then
             --  TODO: better error reporting
-            Put_Line ("Error: Missing step definition for " &
-                      To_String (Stanza));
+            Log.Put_Line ("Error: Missing step definition in FILE:LINE for:");
+            Log.Put_Line ("  " & To_String (Stanza));
+            Log.Put_Line ("You can implement this step by adding on your " &
+                          "step definition file:");
+            Log.Put_Line ("  --  @...");
+            Log.Put_Line ("  --  @todo");
+            Log.New_Line;
             Errors := True;
          else
             Make   (Res_St, To_String (Proc_Name), Stanza, Matches);
@@ -140,7 +144,8 @@ package body AdaSpec.Result is
 
    procedure Process_Feature (Res     : out Result_Feature_Type;
                               Feature : in  Feature_Ptr;
-                              Steps   : in  Steps_Type)
+                              Steps   : in  Steps_Type;
+                              Log      : in  Logger_Ptr)
    is
       use Scenario_Container;
       I      : Scenario_Container.Cursor := First (Feature.all.Scenarios);
@@ -152,12 +157,12 @@ package body AdaSpec.Result is
          raise Unparsed_Feature;
       end if;
       Process_Scenario (Result.Background, Feature.all.Background,
-                        Steps, Errors);
+                        Steps, Log, Errors);
       if Errors then
          Result.Fail := True;
       end if;
       while Has_Element (I) loop
-         Process_Scenario (R_Scen, Element (I), Steps, Errors);
+         Process_Scenario (R_Scen, Element (I), Steps, Log, Errors);
          if Errors then
             Result.Fail := True;
          end if;
@@ -165,6 +170,10 @@ package body AdaSpec.Result is
          Next (I);
       end loop;
       Result.Name := Feature.Name;
+      if Result.Fail then
+         Log.Put_Line ("AdaSpec can create the procedures for you if you " &
+                       "use --fill-steps");
+      end if;
       Res := Result;
    end Process_Feature;
 

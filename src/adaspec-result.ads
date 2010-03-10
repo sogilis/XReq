@@ -2,11 +2,13 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
+with Util.IO;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use Util.IO;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
@@ -70,6 +72,7 @@ package AdaSpec.Result is
    procedure Process_Scenario (Res      : out    Result_Scenario_Type;
                                Scenario : in     Scenario_Type;
                                Steps    : in     Steps_Type;
+                               Log      : in     Logger_Ptr;
                                Errors   : out    Boolean);
 
    ---------------------------
@@ -96,6 +99,7 @@ package AdaSpec.Result is
                               Scenario : in     Result_Scenario_Type);
    procedure Process_Feature (Res      : out    Result_Feature_Type;
                               Feature  : in     Feature_Ptr;
-                              Steps    : in     Steps_Type);
+                              Steps    : in     Steps_Type;
+                              Log      : in     Logger_Ptr);
 
 end AdaSpec.Result;
