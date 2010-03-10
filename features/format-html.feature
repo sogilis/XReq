@@ -128,6 +128,7 @@ Feature: HTML reports
             \"""
             <strong>
             Second
+            &&
             String
             </strong>
             \"""
