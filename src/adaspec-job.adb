@@ -64,8 +64,9 @@ package body AdaSpec.Job is
    --  Job_Environment  --  Load  --
    ---------------------------------
 
-   procedure Load (Env      : in out Job_Environment;
-                   Logger   : in     Logger_Ptr)
+   procedure Load (Env        : in out Job_Environment;
+                   Logger     : in     Logger_Ptr;
+                   Fill_Steps : in     Boolean := False)
    is
    begin
 
@@ -79,7 +80,7 @@ package body AdaSpec.Job is
       Create_Path (Step_Dir (Env));
       Create_Path (Out_Dir (Env));
 
-      Load (Env.Steps, Logger, Step_Dir (Env), Env.Language);
+      Load (Env.Steps, Logger, Step_Dir (Env), Env.Language, Fill_Steps);
       Env.Loaded := True;
 
    end Load;

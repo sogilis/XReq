@@ -32,13 +32,15 @@ procedure Main is
    Job        : Job_Type;
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
-              "s: -step= o: -output= x: -executable= l: -lang=";
+              "s: -step= o: -output= x: -executable= l: -lang= " &
+              "-fill-steps";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
    Language   : Language_Type := Language_Type'First;
    Executable : Unbounded_String;
    Keep_Going : Boolean := False;
+   Fill_Steps : Boolean := False;
    Generators : Generator_Vectors.Vector;
    Generator  : Generator_Ptr;
 
@@ -64,6 +66,9 @@ begin
       then
          Keep_Going := True;
 
+      elsif Full_Switch = "-fill-steps" then
+         Fill_Steps := True;
+
       elsif Full_Switch = "x" or
          Full_Switch = "-executable"
       then
@@ -74,11 +79,9 @@ begin
             raise Not_Yet_Implemented with "multiple --step";
          end if;
          Step_Dir := To_Unbounded_String (Parameter);
-         --  Put_Line ("--step=" & Parameter);
 
       elsif Full_Switch = "o" or Full_Switch = "-output" then
          Out_Dir  := To_Unbounded_String (Parameter);
-         --  Put_Line ("--output=" & Parameter);
 
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
          Language := Get_Language (Parameter);
@@ -98,9 +101,20 @@ begin
 
       Arg := To_Unbounded_String (Get_Argument);
       if Length (Arg) = 0 then
-         Put_Line (Standard_Error, "Missing feature filename");
-         AdaSpec.CLI.Help;
-         Set_Exit_Status (Failure);
+         if Fill_Steps and Length (Step_Dir) /= 0 then
+            Put_Line ("--> Fill steps in: " & To_String (Step_Dir));
+            New_Line;
+            Make (Env,
+               Step_Dir => To_String (Step_Dir),
+               Out_Dir  => To_String (Out_Dir),
+               Language => Language);
+            Load (Env, Logger,
+               Fill_Steps => True);
+         else
+            Put_Line (Standard_Error, "Missing feature filename");
+            AdaSpec.CLI.Help;
+            Set_Exit_Status (Failure);
+         end if;
          Quit := True;
       end if;
 
@@ -124,7 +138,7 @@ begin
          Feature_File => To_String (Arg));
 
       Fill_Missing (Env, Feature_File (Job));
-      Load (Env, Logger);
+      Load (Env, Logger, Fill_Steps);
 
       ------------------------
       --  Compile Features  --

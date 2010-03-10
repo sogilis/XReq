@@ -32,16 +32,17 @@ package AdaSpec.Job is
       end record;
    Null_Job_Environment : constant Job_Environment := (others => <>);
 
-   procedure Make         (Env      : out    Job_Environment;
-                           Step_Dir : in     String := "";
-                           Out_Dir  : in     String := "";
-                           Language : in     Language_Type := Lang_Ada);
-   function  Step_Dir     (Env      : in     Job_Environment) return String;
-   function  Out_Dir      (Env      : in     Job_Environment) return String;
-   procedure Fill_Missing (Env      : in out Job_Environment;
-                           Feature  : in     String);
-   procedure Load         (Env      : in out Job_Environment;
-                           Logger   : in     Logger_Ptr);
+   procedure Make         (Env        : out    Job_Environment;
+                           Step_Dir   : in     String := "";
+                           Out_Dir    : in     String := "";
+                           Language   : in     Language_Type := Lang_Ada);
+   function  Step_Dir     (Env        : in     Job_Environment) return String;
+   function  Out_Dir      (Env        : in     Job_Environment) return String;
+   procedure Fill_Missing (Env        : in out Job_Environment;
+                           Feature    : in     String);
+   procedure Load         (Env        : in out Job_Environment;
+                           Logger     : in     Logger_Ptr;
+                           Fill_Steps : in     Boolean := False);
    --  IMPORTANT: don't forget to call UnLoad
    procedure UnLoad       (Env      : in out Job_Environment);
 

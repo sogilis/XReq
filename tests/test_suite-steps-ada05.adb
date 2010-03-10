@@ -3,6 +3,7 @@
 with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Ada.Directories;
+with Util.IO;
 with AdaSpec;
 with AdaSpec.Stanzas;
 with AdaSpec.Steps;
@@ -11,6 +12,7 @@ with AdaSpec.Steps.Ada05;
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Ada.Directories;
+use Util.IO;
 use AdaSpec;
 use AdaSpec.Stanzas;
 use AdaSpec.Steps;
@@ -77,7 +79,7 @@ package body Test_Suite.Steps.Ada05 is
             Unparsed_Step'Identity);
       end;
 
-      Parse (Step);
+      Parse (Step, Null_Logger);
 
       T.Assert (Parsed (Step),
               "Step has not been parsed after invoking Parse");
@@ -117,7 +119,7 @@ package body Test_Suite.Steps.Ada05 is
       I         : Integer := 0;
    begin
 
-      Parse_Directory (Steps, Directory);
+      Parse_Directory (Steps, Null_Logger, Directory);
 
       T.Assert (Length (Steps) >= 1,
               "Detected " & Length (Steps)'Img &

@@ -84,7 +84,6 @@ Feature: Auto fill in of steps definitions
       """
     When I run adaspec --fill-steps features/test.feature
     Then it should pass
-    And "features/step_definitions/steps.adb" should exist
     And "features/step_definitions/steps.ads" should contain
       """
       with AdaSpecLib;
@@ -97,10 +96,11 @@ Feature: Auto fill in of steps definitions
       """
     And "features/step_definitions/steps.ads" should contain
       """
-        --  @given ^I type on my keyboard "([^"]*)"$
-        --  @given ^I should see "([^"]*)"$
+        --  @when ^I type on my keyboard "([^"]*)"$
+        --  @then ^I should see "([^"]*)"$
         procedure Mixed_Step (Args : in out Arg_Type);
       """
+    And "features/step_definitions/steps.adb" should exist
     And "features/step_definitions/steps.adb" should contain
       """
       package body Steps is

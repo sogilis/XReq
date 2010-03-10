@@ -6,6 +6,7 @@ with Ada.Text_IO;
 with GNAT.Regpat;
 with Util.IO;
 with Util.Strings;
+with Util.Strings.Pool;
 with AdaSpec;
 
 use Ada.Strings.Unbounded;
@@ -14,6 +15,7 @@ use Ada.Text_IO;
 use GNAT.Regpat;
 use Util.IO;
 use Util.Strings;
+use Util.Strings.Pool;
 use AdaSpec;
 
 package body AdaSpec.Steps.Ada05 is
@@ -22,8 +24,10 @@ package body AdaSpec.Steps.Ada05 is
    --  Parse_Directory  --
    -----------------------
 
-   procedure Parse_Directory (Steps     : in out Steps_Type;
-                              Directory : in     String)
+   procedure Parse_Directory (Steps      : in out Steps_Type;
+                              Logger     : in     Logger_Ptr;
+                              Directory  : in     String;
+                              Fill_Steps : in     Boolean := False)
    is
       use Step_Vectors;
       Search  : Search_Type;
@@ -35,8 +39,8 @@ package body AdaSpec.Steps.Ada05 is
       while More_Entries (Search) loop
          Get_Next_Entry (Search, Element);
          Step := new Ada_Step_File_Type;
-         Make (Step.all, Full_Name (Element));
-         Parse (Step.all);
+         Step.Make  (Full_Name (Element), Fill_Steps);
+         Step.Parse (Logger);
          Step_Vectors.Append (Steps, Step_File_Ptr (Step));
       end loop;
       End_Search (Search);
@@ -46,12 +50,14 @@ package body AdaSpec.Steps.Ada05 is
    --  Make  --
    ------------
 
-   procedure Make (S         : out Ada_Step_File_Type;
-                   File_Name : in String) is
+   procedure Make (S          : out Ada_Step_File_Type;
+                   File_Name  : in  String;
+                   Fill_Steps : in  Boolean := False) is
    begin
-      S := (File_Name => To_Unbounded_String (File_Name),
-            Parsed    => False,
-            Steps     => <>);
+      S := (File_Name  => To_Unbounded_String (File_Name),
+            Parsed     => False,
+            Fill_Steps => Fill_Steps,
+            Steps      => <>);
    end Make;
 
    --------------
@@ -67,13 +73,16 @@ package body AdaSpec.Steps.Ada05 is
    --  Parse  --
    -------------
 
-   procedure Parse (S : in out Ada_Step_File_Type) is
+   procedure Parse (S          : in out Ada_Step_File_Type;
+                    Logger     : in     Logger_Ptr) is
+      use Ada.Containers;
       use Step_Container;
+      use Util.Strings.Vectors;
       File          : File_Type;
       Line_S        : Unbounded_String;
       Idx_Next      : Natural;
       Idx_Tk        : Natural;
-      Idx           : Natural;
+      Idx, Idx2     : Natural;
       Tokens        : constant String_List
                     := (To_Unbounded_String ("@given"),
                         To_Unbounded_String ("@when"),
@@ -94,6 +103,11 @@ package body AdaSpec.Steps.Ada05 is
       Current_Step  : Step_Type;
       Pending_Step  : Boolean := False;
       Char          : Character;
+      Buffer        : Unbounded_String;
+      Prc_Pool      : String_Pool;
+      Added_Prc     : Util.Strings.Vectors.Vector;
+      With_AdaSpecLib : Boolean := False;
+      Use_AdaSpecLib  : Boolean := False;
    begin
       Open (File, In_File, To_String (S.File_Name));
       while not End_Of_File (File) loop
@@ -101,6 +115,19 @@ package body AdaSpec.Steps.Ada05 is
          --  Read Line
          --
          Line_S := Get_Whole_Line (File);
+
+         if Package_S = Null_Unbounded_String then
+            Idx  := Index (Line_S, "with");
+            Idx2 := Index (Line_S, "AdaSpecLib");
+            if Idx > 0 and Idx < Idx2 then
+               With_AdaSpecLib := True;
+            end if;
+            Idx  := Index (Line_S, "use");
+            if Idx > 0 and Idx < Idx2 then
+               Use_AdaSpecLib := True;
+            end if;
+         end if;
+
          --
          --  Find Token
          --
@@ -181,6 +208,7 @@ package body AdaSpec.Steps.Ada05 is
                Char := Element (Line_S, Idx);
             end loop;
 --             Put_Line ("Procedure " & To_String (Procedure_S));
+            Add_Pool (Prc_Pool, To_String (Procedure_S));
             I := First (Current_Steps);
             while Has_Element (I) loop
                Current_Step := Element (I);
@@ -191,6 +219,33 @@ package body AdaSpec.Steps.Ada05 is
             Clear (Current_Steps);
             Pending_Step := False;
          elsif Found_TODO then
+            if S.Fill_Steps and Length (Current_Steps) > 0 then
+               --  Copy indentation
+               Idx := Index_Non_Blank (Line_S);
+               if Idx /= 0 then
+                  Append (Buffer, Slice (Line_S, 1, Idx - 1));
+               end if;
+               --  Create procedure specification
+               Append (Buffer, "procedure ");
+               if Length (Current_Steps) = 1 then
+                  Current_Step := First_Element (Current_Steps);
+                  Procedure_S := Null_Unbounded_String;
+                  case Current_Step.Prefix is
+                     when Prefix_Given => Append (Procedure_S, "Given_");
+                     when Prefix_When  => Append (Procedure_S, "When_");
+                     when Prefix_Then  => Append (Procedure_S, "Then_");
+                  end case;
+                  Append (Procedure_S,
+                     To_Identifier (To_String (Current_Step.Pattern_S)));
+               else
+                  Procedure_S := To_Unbounded_String ("Mixed_Step");
+               end if;
+               Get_Unique_String (Prc_Pool, To_String (Procedure_S),
+                                    Procedure_S);
+               Append (Added_Prc, Procedure_S);
+               Append (Buffer, Procedure_S);
+               Append (Buffer, " (Args : in out Arg_Type);" & ASCII.LF);
+            end if;
             I := First (Current_Steps);
             while Has_Element (I) loop
                Current_Step := Element (I);
@@ -201,15 +256,26 @@ package body AdaSpec.Steps.Ada05 is
             Clear (Current_Steps);
             Pending_Step := False;
          end if;
+         if S.Fill_Steps and not Found_TODO then
+            Append (Buffer, Line_S & ASCII.LF);
+         end if;
       end loop;
       if Pending_Step then
-         --  TODO: use better reporting method
-         Put_Line (Name (File) & ":" &
-                  Natural'Image (Natural (Line (File) - 1)) & ":" &
-                  Natural'Image (Idx_Next) & ": " &
-                  "Warning: expecting procedure for previous step");
+         Logger.Put_Line ("Warning: step definition with no matching " &
+                          "procedure in:");
+         Logger.Put_Line ("  " & Name (File) & " line" &
+                          Natural (Line (File) - 1)'Img);
       end if;
       Close (File);
+      if S.Fill_Steps then
+         if not Use_AdaSpecLib then
+            Buffer := "use  AdaSpecLib;" & ASCII.LF & Buffer;
+         end if;
+         if not With_AdaSpecLib then
+            Buffer := "with AdaSpecLib;" & ASCII.LF & Buffer;
+         end if;
+         Set_File (To_String (S.File_Name), To_String (Buffer));
+      end if;
       S.Parsed := True;
    end Parse;
 

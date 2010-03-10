@@ -4,6 +4,20 @@ with Ada.Strings.Fixed;
 
 package body Util.Strings.Pool is
 
+   ----------------
+   --  Add_Pool  --
+   ----------------
+
+   procedure Add_Pool          (Pool   : in out String_Pool;
+                                Str    : in     String)
+   is
+      S : constant Unbounded_String := To_Unbounded_String (Str);
+   begin
+      if not Pool.Set.Contains (S) then
+         Pool.Set.Insert (S);
+      end if;
+   end Add_Pool;
+
    -------------------------
    --  Get_Unique_String  --
    -------------------------

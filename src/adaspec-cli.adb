@@ -45,7 +45,12 @@ package body AdaSpec.CLI is
       Put_Line ("");
       Put_Line ("    -k, --keep-going");
       Put_Line ("        Keep going if there are errors for a feature and compile the next");
-      Put_Line ("        feature. ");
+      Put_Line ("        feature.");
+      Put_Line ("");
+      Put_Line ("    --fill-steps");
+      Put_Line ("        Replace @todo tags with a function skeleton that implement the");
+      Put_Line ("        step.  With this switch, you can omit the features files but you");
+      Put_Line ("        have to specify a step definition directory using --step.");
       Put_Line ("");
       Put_Line ("    -x, --executable TEST_NAME");
       Put_Line ("        Create a test program called TEST_NAME that will be able to run all");
