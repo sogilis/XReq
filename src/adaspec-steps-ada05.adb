@@ -100,6 +100,7 @@ package body AdaSpec.Steps.Ada05 is
       Procedure_S   : Unbounded_String;
       Current_Steps : Step_Container.Vector;
       I             : Step_Container.Cursor;
+      J             : Util.Strings.Vectors.Cursor;
       Current_Step  : Step_Type;
       Pending_Step  : Boolean := False;
       Char          : Character;
@@ -108,8 +109,12 @@ package body AdaSpec.Steps.Ada05 is
       Added_Prc     : Util.Strings.Vectors.Vector;
       With_AdaSpecLib : Boolean := False;
       Use_AdaSpecLib  : Boolean := False;
+      Steps_Ads_File  : constant String := To_String (S.File_Name);
+      Steps_Adb_File  : constant String :=
+         Steps_Ads_File (Steps_Ads_File'First .. Steps_Ads_File'Last - 3) &
+         "adb";
    begin
-      Open (File, In_File, To_String (S.File_Name));
+      Open (File, In_File, Steps_Ads_File);
       while not End_Of_File (File) loop
          --
          --  Read Line
@@ -241,8 +246,9 @@ package body AdaSpec.Steps.Ada05 is
                   Procedure_S := To_Unbounded_String ("Mixed_Step");
                end if;
                Get_Unique_String (Prc_Pool, To_String (Procedure_S),
-                                    Procedure_S);
+                                  Procedure_S);
                Append (Added_Prc, Procedure_S);
+               Logger.Put_Line ("App Added_Prc: " & To_String (Procedure_S));
                Append (Buffer, Procedure_S);
                Append (Buffer, " (Args : in out Arg_Type);" & ASCII.LF);
             end if;
@@ -263,10 +269,13 @@ package body AdaSpec.Steps.Ada05 is
       if Pending_Step then
          Logger.Put_Line ("Warning: step definition with no matching " &
                           "procedure in:");
-         Logger.Put_Line ("  " & Name (File) & " line" &
+         Logger.Put_Line ("  " & Steps_Ads_File & " line" &
                           Natural (Line (File) - 1)'Img);
       end if;
       Close (File);
+      ------------------
+      --  Fill Steps  --
+      ------------------
       if S.Fill_Steps then
          if not Use_AdaSpecLib then
             Buffer := "use  AdaSpecLib;" & ASCII.LF & Buffer;
@@ -274,7 +283,31 @@ package body AdaSpec.Steps.Ada05 is
          if not With_AdaSpecLib then
             Buffer := "with AdaSpecLib;" & ASCII.LF & Buffer;
          end if;
-         Set_File (To_String (S.File_Name), To_String (Buffer));
+         Logger.Put_Line ("Update: " & Steps_Ads_File);
+         Set_File (Steps_Ads_File, To_String (Buffer));
+         if not Exists (Steps_Adb_File) then
+            Logger.Put_Line ("Generate: " & Steps_Adb_File);
+            Create (File, Out_File, Steps_Adb_File);
+            Put_Line (File, "package body " & To_String (Package_S) & " is");
+            New_Line (File);
+            J := First (Added_Prc);
+            while Has_Element (J) loop
+               Procedure_S := Element (J);
+               Put_Line (File, "   procedure " & To_String (Procedure_S) &
+                              " (Args : in out Arg_Type) is");
+               Put_Line (File, "   begin");
+               Put_Line (File, "      raise AdaSpecLib.Not_Yet_Implemented");
+               Put_Line (File, "         with ""Procedure not implemented: " &
+                               """ & " & Ada_String (To_String (Procedure_S)));
+               Put_Line (File, "   end " & To_String (Procedure_S) & ";");
+               New_Line (File);
+               Next (J);
+            end loop;
+            Put_Line (File, "end " & To_String (Package_S) & ";");
+            Close (File);
+         else
+            Logger.Put_Line ("Update: " & Steps_Adb_File);
+         end if;
       end if;
       S.Parsed := True;
    end Parse;

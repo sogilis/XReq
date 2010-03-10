@@ -83,6 +83,7 @@ Feature: Auto fill in of steps definitions
       end Steps;
       """
     When I run adaspec --fill-steps features/test.feature
+    Then print output
     Then it should pass
     And "features/step_definitions/steps.ads" should contain
       """
@@ -105,15 +106,19 @@ Feature: Auto fill in of steps definitions
       """
       package body Steps is
 
-        procedure Given_a_computer (Args : in out Arg_Type) is
-        begin
-          raise AdaSpecLib.Not_Yet_Implemented;
-        end Given_a_computer;
+         procedure Given_a_computer (Args : in out Arg_Type) is
+         begin
+      """
+    And "features/step_definitions/steps.adb" should contain
+      """
+         end Given_a_computer;
 
-        procedure Mixed_Step (Args : in out Arg_Type) is
-        begin
-          raise AdaSpecLib.Not_Yet_Implemented;
-        end Mixed_Step;
+         procedure Mixed_Step (Args : in out Arg_Type) is
+         begin
+      """
+    And "features/step_definitions/steps.adb" should contain
+      """
+         end Mixed_Step;
 
       end Steps;
       """
