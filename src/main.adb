@@ -10,6 +10,7 @@ with AdaSpec.CLI;
 with AdaSpec.Lang;
 with AdaSpec.Job;
 with AdaSpec.Generator;
+with Util.Strings;
 
 use Ada.Text_IO;
 use Ada.Strings.Unbounded;
@@ -20,11 +21,13 @@ use AdaSpec;
 use AdaSpec.Lang;
 use AdaSpec.Job;
 use AdaSpec.Generator;
+use Util.Strings;
 
 procedure Main is
 
    use Generator_Vectors;
 
+   Logger     : Buffer_Type;
    Env        : Job_Environment;
    Job        : Job_Type;
    Quit       : Boolean := False;
@@ -112,7 +115,8 @@ begin
       Make (Env, To_String (Step_Dir), To_String (Out_Dir), Language);
       Make (Job, To_String (Arg));
       Fill_Missing (Env, Feature_File (Job));
-      Load (Env);
+      Load (Env, Logger);
+      Put_Line (Logger.Value); Logger.Clear;
 
       New_Line;
       Put_Line (Describe (Job, Env));

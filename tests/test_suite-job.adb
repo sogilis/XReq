@@ -2,9 +2,11 @@
 
 with Ada.Strings.Unbounded;
 with AdaSpec.Job;
+with Util.Strings;
 
 use Ada.Strings.Unbounded;
 use AdaSpec.Job;
+use Util.Strings;
 
 package body Test_Suite.Job is
 
@@ -68,6 +70,7 @@ package body Test_Suite.Job is
 
    procedure Run (T : in out Test_Job_Environment) is
       Env  : Job_Environment;
+      Log  : Buffer_Type;
    begin
 
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
@@ -86,7 +89,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Load (Env);
+            Load (Env, Log);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
@@ -103,7 +106,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Load (Env);
+            Load (Env, Log);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
@@ -114,7 +117,7 @@ package body Test_Suite.Job is
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       Make (Env, "tests/features/step_definitions", "tests/features/tests");
-      Load (Env);
+      Load (Env, Log);
 
       T.Assert (Env.Loaded, "Env should be loaded");
 
@@ -133,6 +136,7 @@ package body Test_Suite.Job is
    procedure Run (T : in out Test_Run) is
       Env  : Job_Environment;
       Job  : Job_Type;
+      Log  : Buffer_Type;
    begin
       Make (Job, "tests/features/simplest.feature");
       Fill_Missing (Env, Feature_File (Job));
@@ -148,7 +152,7 @@ package body Test_Suite.Job is
             Invalid_Environment'Identity);
       end;
 
-      Load (Env);
+      Load (Env, Log);
 
       T.Assert (Step_Dir (Env) = "tests/features/step_definitions",
               "incorrect step dir");

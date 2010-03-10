@@ -66,8 +66,10 @@ package body AdaSpec.Job is
    --  Job_Environment  --  Load  --
    ---------------------------------
 
-   procedure Load (Env : in out Job_Environment)
+   procedure Load (Env      : in out Job_Environment;
+                   Logger   : in out Buffer_Type)
    is
+      pragma Unreferenced (Logger);
    begin
 
       if Length (Env.Step_Dir) = 0 then
@@ -167,6 +169,7 @@ package body AdaSpec.Job is
 
    procedure Init (Env          : out    Job_Environment;
                    Job          : out    Job_Type;
+                   Logger       : in out Buffer_Type;
                    Feature_File : in     String;
                    Step_Dir     : in     String := "";
                    Out_Dir      : in     String := "")
@@ -177,7 +180,7 @@ package body AdaSpec.Job is
       Make (J, Feature_File);
       Make (E, Step_Dir, Out_Dir);
       Fill_Missing (E, Feature_File);
-      Load (E);
+      Load (E, Logger);
       Env := E;
       Job := J;
    end Init;

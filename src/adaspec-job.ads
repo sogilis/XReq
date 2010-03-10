@@ -5,12 +5,14 @@ with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Result;
+with Util.Strings;
 
 use Ada.Strings.Unbounded;
 use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Result;
+use Util.Strings;
 
 package AdaSpec.Job is
 
@@ -38,7 +40,8 @@ package AdaSpec.Job is
    function  Out_Dir      (Env      : in     Job_Environment) return String;
    procedure Fill_Missing (Env      : in out Job_Environment;
                            Feature  : in     String);
-   procedure Load         (Env      : in out Job_Environment);
+   procedure Load         (Env      : in out Job_Environment;
+                           Logger   : in out Buffer_Type);
    --  IMPORTANT: don't forget to call UnLoad
    procedure UnLoad       (Env      : in out Job_Environment);
 
@@ -70,6 +73,7 @@ package AdaSpec.Job is
 
    procedure Init (Env          : out    Job_Environment;
                    Job          : out    Job_Type;
+                   Logger       : in out Buffer_Type;
                    Feature_File : in     String;
                    Step_Dir     : in     String := "";
                    Out_Dir      : in     String := "");
