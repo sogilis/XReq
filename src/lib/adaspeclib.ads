@@ -9,6 +9,8 @@ use  Ada.Containers;
 
 package AdaSpecLib is
 
+   Not_Yet_Implemented : exception;
+
    --------------
    --  Assert  --
    --------------

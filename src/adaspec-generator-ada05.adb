@@ -184,32 +184,38 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.UnIndent;
       S.Adb.Put_Line ("else");
       S.Adb.Indent;
-      --  Generate with clause
-      for K in reverse Procname'Range loop
-         if Copy then
-            Pkgname := Procname (K) & Pkgname;
-         elsif Procname (K) = '.' then
-            Copy := True;
+      if Procname = "" then
+         S.Adb.Put_Line ("raise AdaSpecLib.Not_Yet_Implemented");
+         S.Adb.Put_Line ("   with ""The step definition cound not be " &
+                         "found"";");
+      else
+         --  Generate with clause
+         for K in reverse Procname'Range loop
+            if Copy then
+               Pkgname := Procname (K) & Pkgname;
+            elsif Procname (K) = '.' then
+               Copy := True;
+            end if;
+         end loop;
+         if not Contains (S.With_Pkg, Pkgname) then
+            Insert (S.With_Pkg, Pkgname);
          end if;
-      end loop;
-      if not Contains (S.With_Pkg, Pkgname) then
-         Insert (S.With_Pkg, Pkgname);
-      end if;
-      --  Call to step
-      S.Adb.Put_Line (Procname & " (Args);");
-      --  Count step
-      S.Adb.Put_Line ("Report.Count_Steps_Passed := " &
-                      "Report.Count_Steps_Passed + 1;");
-      --  Print the step
-      if Background then
-         S.Adb.Put_Line ("if First then");
-         S.Adb.Indent;
-      end if;
-      S.Adb.Put_Line ("Format.Put_Step (Prefix, Stanza, Args, " &
-                      "Status_Passed);");
-      if Background then
-         S.Adb.UnIndent;
-         S.Adb.Put_Line ("end if;");
+         --  Call to step
+         S.Adb.Put_Line (Procname & " (Args);");
+         --  Count step
+         S.Adb.Put_Line ("Report.Count_Steps_Passed := " &
+                        "Report.Count_Steps_Passed + 1;");
+         --  Print the step
+         if Background then
+            S.Adb.Put_Line ("if First then");
+            S.Adb.Indent;
+         end if;
+         S.Adb.Put_Line ("Format.Put_Step (Prefix, Stanza, Args, " &
+                        "Status_Passed);");
+         if Background then
+            S.Adb.UnIndent;
+            S.Adb.Put_Line ("end if;");
+         end if;
       end if;
       --  End if skip
       S.Adb.UnIndent;

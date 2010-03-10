@@ -43,7 +43,6 @@ Feature: Auto fill in of steps definitions
       AdaSpec can create the procedures for you if you use --fill-steps
       """
 
-  @wip
   Scenario: Executing @todo steps
     Given a file "features/step_definitions/steps.ads":
       """
@@ -58,14 +57,16 @@ Feature: Auto fill in of steps definitions
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
+    When I run "./suite" in features/tests
+    Then it should fail
     And the output should contain
       """
-      1 scenario (2 failed)
+      1 scenario (1 failed)
       3 steps (1 failed, 2 skipped)
       """
     And the output should contain
       """
-      ADASPECLIB.NOT_YET_IMPLEMENTED;
+      ADASPECLIB.NOT_YET_IMPLEMENTED
       """
 
   @wip

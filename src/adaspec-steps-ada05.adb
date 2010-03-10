@@ -78,11 +78,13 @@ package body AdaSpec.Steps.Ada05 is
                     := (To_Unbounded_String ("@given"),
                         To_Unbounded_String ("@when"),
                         To_Unbounded_String ("@then"),
+                        To_Unbounded_String ("@todo"),
                         To_Unbounded_String ("package "),
                         To_Unbounded_String ("procedure "));
       Prefix        : Prefix_Type;
       Found_Pkg     : Boolean;
       Found_Prc     : Boolean;
+      Found_TODO    : Boolean;
       Found         : Boolean;
       Pattern       : Unbounded_String;
       Package_S     : Unbounded_String;
@@ -102,17 +104,19 @@ package body AdaSpec.Steps.Ada05 is
          --
          --  Find Token
          --
-         Found_Pkg := False;
-         Found_Prc := False;
-         Found     := False;
+         Found_Pkg  := False;
+         Found_Prc  := False;
+         Found_TODO := False;
+         Found      := False;
 
          Find_Token (To_String (Line_S), Tokens, Idx_Next, Idx_Tk);
          case Idx_Tk is
             when 1 =>   Prefix := Prefix_Given; Found := True;
             when 2 =>   Prefix := Prefix_When;  Found := True;
             when 3 =>   Prefix := Prefix_Then;  Found := True;
-            when 4 =>   Found_Pkg := True;
-            when 5 =>   Found_Prc := True;
+            when 4 =>   Found_TODO := True;
+            when 5 =>   Found_Pkg  := True;
+            when 6 =>   Found_Prc  := True;
             when others => null;
          end case;
          --
@@ -181,6 +185,16 @@ package body AdaSpec.Steps.Ada05 is
             while Has_Element (I) loop
                Current_Step := Element (I);
                Current_Step.Proc_Name := Package_S & '.' & Procedure_S;
+               S.Steps.Append (Current_Step);
+               Next (I);
+            end loop;
+            Clear (Current_Steps);
+            Pending_Step := False;
+         elsif Found_TODO then
+            I := First (Current_Steps);
+            while Has_Element (I) loop
+               Current_Step := Element (I);
+               Current_Step.Proc_Name := Null_Unbounded_String;
                S.Steps.Append (Current_Step);
                Next (I);
             end loop;
