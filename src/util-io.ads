@@ -73,4 +73,93 @@ package Util.IO is
                              Return_Code   : out    Integer;
                              Directory     : in     String := "");
 
+
+   -------------------
+   --  Logger_Type  --
+   -------------------
+
+--    type Logger_Type is abstract tagged private;
+   type Logger_Type is abstract tagged
+      record
+         Verbosity_Level : Natural := 0;
+         Indent_Level    : Natural := 0;
+      end record;
+   type Logger_Ptr  is access all Logger_Type'Class;
+
+   procedure Set_Verbosity (Log : in out Logger_Type;
+                            V   : in     Natural);
+   function  Verbosity     (Log : in     Logger_Type)
+                                  return Natural;
+   procedure Put_Line      (Log : in out Logger_Type;
+                            S   : in     String;
+                            V   : in     Natural := 0);
+   procedure Put_Line      (Log : in out Logger_Type;
+                            S   : in     Unbounded_String;
+                            V   : in     Natural := 0);
+   procedure Put           (Log : in out Logger_Type;
+                            S   : in     String;
+                            V   : in     Natural := 0);
+   procedure Put           (Log : in out Logger_Type;
+                            S   : in     Unbounded_String;
+                            V   : in     Natural := 0);
+   procedure Put_Line      (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     String);
+   procedure Put_Line      (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     Unbounded_String);
+   procedure Put           (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     String);
+   procedure Put           (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     Unbounded_String);
+   procedure Put_Indent    (Log : in out Logger_Type;
+                            V   : in     Natural := 0);
+   procedure New_Line      (Log : in out Logger_Type;
+                            V   : in     Natural := 0);
+   procedure Indent        (Log : in out Logger_Type;
+                            N   : in     Natural := 3);
+   procedure UnIndent      (Log : in out Logger_Type;
+                            N   : in     Natural := 3);
+   procedure Put_Always    (Log : in out Logger_Type;
+                            S   : in     String) is abstract;
+
+   procedure Free          (Log : in out Logger_Ptr);
+
+   ------------------------
+   --  Null_Logger_Type  --
+   ------------------------
+
+   type Null_Logger_Type is new Logger_Type with null record;
+   type Null_Logger_Ptr is access all Null_Logger_Type'Class;
+
+   function New_Null_Logger return Null_Logger_Ptr;
+
+   procedure Put_Always    (Log : in out Null_Logger_Type;      --  GCOV_IGNORE
+                            S   : in     String) is null;       --  GCOV_IGNORE
+
+   Expanded_Null_Logger : aliased Null_Logger_Type;
+   Null_Logger : Logger_Ptr := Expanded_Null_Logger'Access;
+
+   ----------------------------
+   --  Standard_Logger_Type  --
+   ----------------------------
+
+   type Standard_Logger_Type is new Logger_Type with null record;
+   type Standard_Logger_Ptr is access all Standard_Logger_Type'Class;
+
+   function New_Standard_Logger return Standard_Logger_Ptr;
+
+   procedure Put_Always    (Log : in out Standard_Logger_Type;
+                            S   : in     String);
+
+private
+
+--    type Logger_Type is abstract tagged
+--       record
+--          Verbosity_Level : Natural := 0;
+--          Indent_Level    : Natural := 0;
+--       end record;
+
 end Util.IO;

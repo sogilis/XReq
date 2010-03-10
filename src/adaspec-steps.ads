@@ -3,10 +3,12 @@
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
+with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Stanzas;
 
@@ -72,6 +74,7 @@ package AdaSpec.Steps is
    --  IMPORTANT: deallocate Steps_Type
 
    procedure Load      (Steps     : in out Steps_Type;
+                        Logger    : in     Logger_Ptr;
                         Directory : in     String;
                         Language  : in     Language_Type);
    --  IMPORTANT: deallocate Steps_Type

@@ -5,29 +5,29 @@ with Ada.Strings.Unbounded;
 with Ada.Exceptions;
 with Ada.Command_Line;
 with GNAT.Command_Line;
+with Util.IO;
 with AdaSpec;
 with AdaSpec.CLI;
 with AdaSpec.Lang;
 with AdaSpec.Job;
 with AdaSpec.Generator;
-with Util.Strings;
 
 use Ada.Text_IO;
 use Ada.Strings.Unbounded;
 use Ada.Exceptions;
 use Ada.Command_Line;
 use GNAT.Command_Line;
+use Util.IO;
 use AdaSpec;
 use AdaSpec.Lang;
 use AdaSpec.Job;
 use AdaSpec.Generator;
-use Util.Strings;
 
 procedure Main is
 
    use Generator_Vectors;
 
-   Logger     : Buffer_Type;
+   Logger     : Logger_Ptr := Logger_Ptr (New_Standard_Logger);
    Env        : Job_Environment;
    Job        : Job_Type;
    Quit       : Boolean := False;
@@ -108,24 +108,29 @@ begin
 
    while not Quit and Length (Arg) > 0 loop
 
+      Put_Line ("--> Compile: " & To_String (Arg));
+      New_Line;
+
       ---------------------
       --  Get Parameter  --
       ---------------------
 
-      Make (Env, To_String (Step_Dir), To_String (Out_Dir), Language);
-      Make (Job, To_String (Arg));
+      Make (Env,
+         Step_Dir => To_String (Step_Dir),
+         Out_Dir  => To_String (Out_Dir),
+         Language => Language);
+
+      Make (Job,
+         Feature_File => To_String (Arg));
+
       Fill_Missing (Env, Feature_File (Job));
       Load (Env, Logger);
-      Put_Line (Logger.Value); Logger.Clear;
-
-      New_Line;
-      Put_Line (Describe (Job, Env));
 
       ------------------------
       --  Compile Features  --
       ------------------------
 
-      Run (Job, Env);
+      Run (Job, Env, Logger);
       if Job.Result.Fail then
          Put_Line (Standard_Error, "Failure to compile " & Feature_File (Job));
          Set_Exit_Status (Failure);
@@ -133,7 +138,7 @@ begin
             Quit := True;
          end if;
       else
-         Generate (Job, Env, Generator);
+         Generate (Job, Env, Logger, Generator);
          Append (Generators, Generator);
       end if;
 
@@ -145,10 +150,19 @@ begin
 
       Cleanup (Job);
 
+      -------------------
+
+      New_Line;
+
    end loop;
 
    if not Quit and Executable /= Null_Unbounded_String then
-      Generate_Suite (Generators, To_String (Executable), Env);
+
+      Put_Line ("--> Generate Test Suite: " & To_String (Executable));
+      New_Line;
+
+      Generate_Suite (Generators, To_String (Executable), Env, Logger);
+
    end if;
 
    -------------------
@@ -169,26 +183,32 @@ begin
       Clear (Generators);
    end;
 
+   Free (Logger);
+
 exception
 
    when Invalid_Switch =>
+      Free (Logger);
       Put_Line (Standard_Error,
                 "Invalid switch: -" & Full_Switch & " " & Parameter);
       AdaSpec.CLI.Help;
       Set_Exit_Status (Failure);
 
    when Invalid_Parameter =>
+      Free (Logger);
       Put_Line (Standard_Error, "Missing parameter for switch -" &
                 Full_Switch);
       AdaSpec.CLI.Help;
       Set_Exit_Status (Failure);
 
    when Invalid_Language =>
+      Free (Logger);
       Put_Line (Standard_Error, "Unknown language " & Parameter);
       AdaSpec.CLI.Help;
       Set_Exit_Status (Failure);
 
    when Error : Not_Yet_Implemented =>
+      Free (Logger);
       Put_Line (Standard_Error, "Not Yet Implemented: " &
                 Exception_Message (Error));
       Set_Exit_Status (Failure);

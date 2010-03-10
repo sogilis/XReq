@@ -3,8 +3,6 @@
 with Ada.Containers.Vectors;
 with GNAT.Regpat;
 
-use Ada.Containers;
-
 package AdaSpec.Steps.Ada05 is
 
 
@@ -47,7 +45,8 @@ private
          Proc_Name : Unbounded_String;
       end record;
 
-   package Step_Container is new Vectors (Natural, Step_Type);
+   package Step_Container is new
+      Ada.Containers.Vectors (Natural, Step_Type);
 
    type Ada_Step_File_Type is new Step_File_Type with
       record

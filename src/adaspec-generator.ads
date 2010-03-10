@@ -2,8 +2,10 @@
 
 with Ada.Unchecked_Deallocation;
 with Ada.Containers.Vectors;
+with Util.IO;
 with AdaSpec.Job;
 
+use Util.IO;
 use AdaSpec.Job;
 
 package AdaSpec.Generator is
@@ -12,10 +14,12 @@ package AdaSpec.Generator is
    type Generator_Ptr is access all Generator_Type'Class;
 
    procedure Generate  (Job : in  Job_Type;
-                        Env : in  Job_Environment);
+                        Env : in  Job_Environment;
+                        Log : in  Logger_Ptr);
 
    procedure Generate  (Job : in  Job_Type;
                         Env : in  Job_Environment;
+                        Log : in  Logger_Ptr;
                         Gen : out Generator_Ptr);
 
    procedure Make      (Gen : out Generator_Type;
@@ -24,7 +28,8 @@ package AdaSpec.Generator is
 
    function  Full_Name (Gen : in  Generator_Type) return String is abstract;
 
-   procedure Generate (Gen : in out Generator_Type) is abstract;
+   procedure Generate  (Gen : in out Generator_Type;
+                        Log : in     Logger_Ptr) is abstract;
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Generator_Type'Class, Generator_Ptr);
@@ -34,6 +39,7 @@ package AdaSpec.Generator is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment);
+                             Env  : in Job_Environment;
+                             Log  : in  Logger_Ptr);
 
 end AdaSpec.Generator;

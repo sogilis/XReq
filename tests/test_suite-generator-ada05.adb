@@ -3,14 +3,12 @@
 with Ada.Strings.Unbounded;
 with Ada.Directories;
 with Util.IO;
-with Util.Strings;
 with AdaSpec.Job;
 with AdaSpec.Generator;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
 use Util.IO;
-use Util.Strings;
 use AdaSpec.Job;
 use AdaSpec.Generator;
 
@@ -32,7 +30,6 @@ package body Test_Suite.Generator.Ada05 is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      Log     : Buffer_Type;
       Env     : Job_Environment;
       Job     : Job_Type;
       Gen     : Generator_Ptr;
@@ -51,9 +48,9 @@ package body Test_Suite.Generator.Ada05 is
          when others => null;
       end;
 
-      Init (Env, Job, Log, "tests/features/simplest.feature");
-      Run  (Job, Env);
-      Generate (Job, Env);
+      Init (Env, Job, Null_Logger, "tests/features/simplest.feature");
+      Run  (Job, Env, Null_Logger);
+      Generate (Job, Env, Null_Logger);
 
       Append (Output, "gnatmake " & Flags & " feature_simplest.adb" &
               ASCII.LF);

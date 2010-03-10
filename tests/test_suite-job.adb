@@ -2,11 +2,11 @@
 
 with Ada.Strings.Unbounded;
 with AdaSpec.Job;
-with Util.Strings;
+with Util.IO;
 
 use Ada.Strings.Unbounded;
 use AdaSpec.Job;
-use Util.Strings;
+use Util.IO;
 
 package body Test_Suite.Job is
 
@@ -70,7 +70,6 @@ package body Test_Suite.Job is
 
    procedure Run (T : in out Test_Job_Environment) is
       Env  : Job_Environment;
-      Log  : Buffer_Type;
    begin
 
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
@@ -89,7 +88,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Load (Env, Log);
+            Load (Env, Null_Logger);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
@@ -106,7 +105,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Load (Env, Log);
+            Load (Env, Null_Logger);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
@@ -117,7 +116,7 @@ package body Test_Suite.Job is
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       Make (Env, "tests/features/step_definitions", "tests/features/tests");
-      Load (Env, Log);
+      Load (Env, Null_Logger);
 
       T.Assert (Env.Loaded, "Env should be loaded");
 
@@ -136,7 +135,6 @@ package body Test_Suite.Job is
    procedure Run (T : in out Test_Run) is
       Env  : Job_Environment;
       Job  : Job_Type;
-      Log  : Buffer_Type;
    begin
       Make (Job, "tests/features/simplest.feature");
       Fill_Missing (Env, Feature_File (Job));
@@ -144,7 +142,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Run (Job, Env);
+            Run (Job, Env, Null_Logger);
          end P;
          procedure A is new Assert_Except (Test_Run, P);
       begin
@@ -152,7 +150,7 @@ package body Test_Suite.Job is
             Invalid_Environment'Identity);
       end;
 
-      Load (Env, Log);
+      Load (Env, Null_Logger);
 
       T.Assert (Step_Dir (Env) = "tests/features/step_definitions",
               "incorrect step dir");
@@ -160,7 +158,7 @@ package body Test_Suite.Job is
       T.Assert (Out_Dir (Env) = "tests/features/tests",
               "incorrect out dir");
 
-      Run (Job, Env);
+      Run (Job, Env, Null_Logger);
 
       Cleanup (Job);
       UnLoad (Env);

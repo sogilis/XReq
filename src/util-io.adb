@@ -3,12 +3,161 @@
 with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Strings.Fixed;
+with Ada.Unchecked_Deallocation;
 with GNAT.OS_Lib;
 
 use Ada.Strings.Fixed;
 use GNAT.OS_Lib;
 
 package body Util.IO is
+
+   -------------------
+   --  Logger_Type  --
+   -------------------
+
+   procedure Set_Verbosity (Log : in out Logger_Type;
+                            V   : in     Natural)
+   is
+   begin
+      Log.Verbosity_Level := V;
+   end Set_Verbosity;
+
+   function  Verbosity     (Log : in     Logger_Type)
+                                  return Natural
+   is
+   begin
+      return Log.Verbosity_Level;
+   end Verbosity;
+
+   procedure Put_Line      (Log : in out Logger_Type;
+                            S   : in     String;
+                            V   : in     Natural := 0)
+   is
+   begin
+      Log.Put_Line (V, S);
+   end Put_Line;
+
+   procedure Put_Line      (Log : in out Logger_Type;
+                            S   : in     Unbounded_String;
+                            V   : in     Natural := 0)
+   is
+   begin
+      Log.Put_Line (V, To_String (S));
+   end Put_Line;
+
+   procedure Put           (Log : in out Logger_Type;
+                            S   : in     String;
+                            V   : in     Natural := 0)
+   is
+   begin
+      Log.Put (V, S);
+   end Put;
+
+   procedure Put           (Log : in out Logger_Type;
+                            S   : in     Unbounded_String;
+                            V   : in     Natural := 0)
+   is
+   begin
+      Log.Put (V, To_String (S));
+   end Put;
+
+   procedure Put_Line      (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     String)
+   is
+   begin
+      Log.Put_Indent (V);
+      Log.Put        (V, S);
+      Log.New_Line   (V);
+   end Put_Line;
+
+   procedure Put_Line      (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     Unbounded_String)
+   is
+   begin
+      Log.Put_Line (V, To_String (S));
+   end Put_Line;
+
+   procedure Put           (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     String)
+   is
+      Self : constant Logger_Ptr := Log'Unchecked_Access;
+   begin
+      if V <= Log.Verbosity_Level then
+         Self.Put_Always (S);
+      end if;
+   end Put;
+
+   procedure Put           (Log : in out Logger_Type;
+                            V   : in     Natural;
+                            S   : in     Unbounded_String)
+   is
+   begin
+      Log.Put (V, To_String (S));
+   end Put;
+
+   procedure Put_Indent    (Log : in out Logger_Type;
+                            V   : in     Natural := 0)
+   is
+   begin
+      Log.Put (V, String'(Log.Indent_Level * " "));
+   end Put_Indent;
+
+   procedure New_Line      (Log : in out Logger_Type;
+                            V   : in     Natural := 0)
+   is
+   begin
+      Log.Put (V, "" & ASCII.LF);
+   end New_Line;
+
+   procedure Indent        (Log : in out Logger_Type;
+                            N   : in     Natural := 3)
+   is
+   begin
+      Log.Indent_Level := Log.Indent_Level + N;
+   end Indent;
+
+   procedure UnIndent      (Log : in out Logger_Type;
+                            N   : in     Natural := 3)
+   is
+   begin
+      Log.Indent_Level := Log.Indent_Level - N;
+   end UnIndent;
+
+   procedure Free          (Log : in out Logger_Ptr) is
+      procedure DeAlloc is new
+         Ada.Unchecked_Deallocation (Logger_Type'Class, Logger_Ptr);
+   begin
+      DeAlloc (Log);
+   end Free;
+
+   ------------------------
+   --  Null_Logger_Type  --
+   ------------------------
+
+   function New_Null_Logger return Null_Logger_Ptr is
+   begin
+      return new Null_Logger_Type;
+   end New_Null_Logger;
+
+   ----------------------------
+   --  Standard_Logger_Type  --
+   ----------------------------
+
+   function New_Standard_Logger return Standard_Logger_Ptr is
+   begin
+      return new Standard_Logger_Type;
+   end New_Standard_Logger;
+
+   procedure Put_Always    (Log : in out Standard_Logger_Type;
+                            S   : in     String)
+   is
+      pragma Unreferenced (Log);
+   begin
+      Ada.Text_IO.Put (S);
+   end Put_Always;
 
    -----------------
    --  Temp_Name  --

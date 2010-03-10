@@ -19,13 +19,15 @@ package AdaSpec.Generator.Ada05 is
                         Job : in     Job_Type;
                         Env : in     Job_Environment);
 
-   procedure Generate  (Gen : in out Ada_Generator_Type);
+   procedure Generate  (Gen : in out Ada_Generator_Type;
+                        Log : in     Logger_Ptr);
 
    function  Full_Name (Gen : in     Ada_Generator_Type) return String;
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment);
+                             Env  : in Job_Environment;
+                             Log  : in  Logger_Ptr);
 
 private
 

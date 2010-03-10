@@ -50,11 +50,13 @@ package body AdaSpec.Steps is
    ------------
 
    procedure Load (Steps     : in out Steps_Type;
+                   Logger    : in     Logger_Ptr;
                    Directory : in     String;
                    Language  : in     Language_Type) is
    begin
       case Language is
          when Lang_Ada =>
+            Logger.Put_Line ("Load Ada steps in: " & Directory);
             AdaSpec.Steps.Ada05.Parse_Directory (Steps, Directory);
       end case;
    end Load;
@@ -63,7 +65,7 @@ package body AdaSpec.Steps is
                    Language  : in     Language_Type) return Steps_Type is
       Result : Steps_Type;
    begin
-      Load (Result, Directory, Language);
+      Load (Result, Null_Logger, Directory, Language);
       return Result;
    end Load;
 

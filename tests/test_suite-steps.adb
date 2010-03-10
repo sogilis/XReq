@@ -2,12 +2,14 @@
 
 with Ada.Strings.Unbounded;
 with Ada.Containers;
+with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
+use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
@@ -41,7 +43,7 @@ package body Test_Suite.Steps is
       Loc     : Match_Location;
    begin
 
-      Load (Steps, Dir, Lang_Ada);
+      Load (Steps, Null_Logger, Dir, Lang_Ada);
 
       T.Assert (Contains (Steps, Stanza_Given ("this step works")),
               Dir & " should contains `Given this step works'");

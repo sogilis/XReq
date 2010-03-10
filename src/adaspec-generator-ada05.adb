@@ -2,14 +2,12 @@
 
 with Ada.Directories;
 with Ada.Containers;
-with Ada.Text_IO;
 with Ada.Characters.Handling;
 with Util.IO;
 with AdaSpec.Steps;
 
 use Ada.Directories;
 use Ada.Containers;
-use Ada.Text_IO;
 use Util.IO;
 use AdaSpec.Steps;
 
@@ -58,7 +56,8 @@ package body AdaSpec.Generator.Ada05 is
    --  Generate  --
    ----------------
 
-   procedure Generate (Gen : in out Ada_Generator_Type) is
+   procedure Generate (Gen : in out Ada_Generator_Type;
+                       Log : in     Logger_Ptr) is
       use Util.Strings.Vectors;
       First : Boolean := True;
    begin
@@ -108,8 +107,8 @@ package body AdaSpec.Generator.Ada05 is
 
       Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
       Set_File (To_String (Gen.Adb_File), To_String (Gen.Adb.Buffer));
-      Put_Line ("Generate: " & To_String (Gen.Ads_File));
-      Put_Line ("Generate: " & To_String (Gen.Adb_File));
+      Log.Put_Line ("Generate: " & To_String (Gen.Ads_File));
+      Log.Put_Line ("Generate: " & To_String (Gen.Adb_File));
    end Generate;
 
    ---------------------
@@ -383,7 +382,8 @@ package body AdaSpec.Generator.Ada05 is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment)
+                             Env  : in Job_Environment;
+                             Log  : in  Logger_Ptr)
    is
       use Generator_Vectors;
       Filename : constant String := Out_Dir (Env) & "/" & Name & ".adb";
@@ -475,9 +475,9 @@ package body AdaSpec.Generator.Ada05 is
 
       Set_File    (Filename, To_String (With_B.Buffer));
       Append_File (Filename, To_String (Body_B.Buffer));
-      Put_Line ("Generate: " & Filename);
+      Log.Put_Line ("Generate: " & Filename);
       Set_File    (Gpr_Name, To_String (Gpr_B.Buffer));
-      Put_Line ("Generate: " & Gpr_Name);
+      Log.Put_Line ("Generate: " & Gpr_Name);
    end Generate_Suite;
 
 end AdaSpec.Generator.Ada05;

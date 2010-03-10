@@ -1,10 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
-with Ada.Text_IO;
 
 use Ada.Directories;
-use Ada.Text_IO;
 
 package body AdaSpec.Job is
 
@@ -67,9 +65,8 @@ package body AdaSpec.Job is
    ---------------------------------
 
    procedure Load (Env      : in out Job_Environment;
-                   Logger   : in out Buffer_Type)
+                   Logger   : in     Logger_Ptr)
    is
-      pragma Unreferenced (Logger);
    begin
 
       if Length (Env.Step_Dir) = 0 then
@@ -82,7 +79,7 @@ package body AdaSpec.Job is
       Create_Path (Step_Dir (Env));
       Create_Path (Out_Dir (Env));
 
-      Load (Env.Steps, Step_Dir (Env), Env.Language);
+      Load (Env.Steps, Logger, Step_Dir (Env), Env.Language);
       Env.Loaded := True;
 
    end Load;
@@ -134,8 +131,9 @@ package body AdaSpec.Job is
    --  Job_Type  --  Run  --
    -------------------------
 
-   procedure Run (Job : in out Job_Type;
-                  Env : in     Job_Environment)
+   procedure Run (Job    : in out Job_Type;
+                  Env    : in     Job_Environment;
+                  Logger : in     Logger_Ptr)
    is
       F : constant Feature_File_Ptr := new Feature_File_Type;
       Errors : Boolean;
@@ -149,7 +147,7 @@ package body AdaSpec.Job is
       Job.Feature := Feature_Ptr (F);
 
       if not Errors then
-         Put_Line ("Compile: " & To_String (Job.Feature_File));
+         Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
          Process_Feature (Job.Result, Job.Feature, Env.Steps);
       end if;
    end Run;
@@ -169,7 +167,7 @@ package body AdaSpec.Job is
 
    procedure Init (Env          : out    Job_Environment;
                    Job          : out    Job_Type;
-                   Logger       : in out Buffer_Type;
+                   Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
                    Step_Dir     : in     String := "";
                    Out_Dir      : in     String := "")

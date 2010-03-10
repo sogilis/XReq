@@ -1,18 +1,18 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Result;
-with Util.Strings;
 
 use Ada.Strings.Unbounded;
+use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Result;
-use Util.Strings;
 
 package AdaSpec.Job is
 
@@ -41,7 +41,7 @@ package AdaSpec.Job is
    procedure Fill_Missing (Env      : in out Job_Environment;
                            Feature  : in     String);
    procedure Load         (Env      : in out Job_Environment;
-                           Logger   : in out Buffer_Type);
+                           Logger   : in     Logger_Ptr);
    --  IMPORTANT: don't forget to call UnLoad
    procedure UnLoad       (Env      : in out Job_Environment);
 
@@ -64,7 +64,8 @@ package AdaSpec.Job is
    procedure Make     (Job          : out    Job_Type;
                        Feature_File : in     String);
    procedure Run      (Job          : in out Job_Type;
-                       Env          : in     Job_Environment);
+                       Env          : in     Job_Environment;
+                       Logger       : in     Logger_Ptr);
    --  IMPORTANT: call Cleanup afterwards
    procedure Cleanup  (Job          : in out Job_Type);
    function  Describe (Job          : in     Job_Type;
@@ -73,7 +74,7 @@ package AdaSpec.Job is
 
    procedure Init (Env          : out    Job_Environment;
                    Job          : out    Job_Type;
-                   Logger       : in out Buffer_Type;
+                   Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
                    Step_Dir     : in     String := "";
                    Out_Dir      : in     String := "");

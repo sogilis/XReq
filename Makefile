@@ -219,9 +219,15 @@ test-report-cucumber: bin
 	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
 	-cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature
 
-test-report-adaspec: bin
-	bin/adaspec -x suite features/*.feature
+test-report-adaspec: bin reports/features-adaspec.html
+
+features/tests/suite.gpr: bin/adaspec $(wildcard features/*.feature)
+	bin/adaspec -x suite $(wildcard features/*.feature)
+
+features/tests/suite: features/tests/suite.gpr
 	gnatmake -P features/tests/suite.gpr
+
+reports/features-adaspec.html: features/tests/suite
 	-features/tests/suite -f html -o reports/features-adaspec.html
 
 check: gnatcheck coverage run-cucumber run-tests
