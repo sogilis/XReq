@@ -67,12 +67,12 @@ When /^I print the last exit code$/ do
 end
 
 When /^I run '(.*)'(?: and save its output)?$/ do |command|
-  @last_command_output = `#{command}`;
+  @last_command_output = `#{command} 2>&1`;
   @last_exit_code = $?.to_i;
 end
 
 When /^I run "(.*)"$/ do |command|
-  @last_command_output = `#{command}`;
+  @last_command_output = `#{command} 2>&1`;
   @last_exit_code = $?.to_i;
 end
 
@@ -80,7 +80,7 @@ When /^I run "(.*)" in (.*)$/ do |command, dir|
   olddir = FileUtils.pwd();
   #puts olddir
   FileUtils.cd(dir);
-  @last_command_output = `#{command}`;
+  @last_command_output = `#{command} 2>&1`;
   @last_exit_code = $?.to_i;
   FileUtils.cd(olddir);
 end
@@ -91,7 +91,7 @@ When /^I run '(.*)' aloud$/ do |command|
 end
 
 When /^I run '(.*)' silently$/ do |command|
-  foo = `#{command}`;
+  foo = `#{command} 2>&1`;
   @last_exit_code = $?.to_i;
 end
 

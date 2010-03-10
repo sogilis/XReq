@@ -126,14 +126,16 @@ Feature: HTML reports
             Sample
             \"""
             \"""
+            <strong>
             Second
             String
+            </strong>
             \"""
 
         Scenario:
           Given this step works
             \"""
-            Another multi-line string
+            Another "multi-line" string
             \"""
           And this is ignored
           Then do nothing

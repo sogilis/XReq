@@ -35,6 +35,7 @@ Feature: Generated Test Suite Command Line
         procedure This_Step_Works (Args : in out Arg_Type) is
           pragma Unreferenced (Args);
         begin
+          Args.Add_Text ("Debug text");
           Put_Line ("This step works");
         end This_Step_Works;
 
@@ -69,7 +70,7 @@ Feature: Generated Test Suite Command Line
       """
 
   Scenario: Unknown Format
-    When I run "./test_suite -f toto 2>&1"
+    When I run "./test_suite -f toto"
     Then it should pass
     And the output should contain
       """
@@ -82,7 +83,7 @@ Feature: Generated Test Suite Command Line
       """
 
   Scenario: Unknown Switch
-    When I run "./test_suite -toto 2>&1"
+    When I run "./test_suite -toto"
     Then it should fail
     And the output should contain
     """
@@ -90,7 +91,7 @@ Feature: Generated Test Suite Command Line
     """
 
   Scenario: Missing parameter
-    When I run "./test_suite --format 2>&1"
+    When I run "./test_suite --format"
     Then it should fail
     And the output should contain
     """
@@ -105,4 +106,12 @@ Feature: Generated Test Suite Command Line
       """
       1 scenario (1 passed)
       1 step (1 passed)
+      """
+
+  Scenario: Text with debug flag
+    When I run "./test_suite -f TexT -d"
+    Then it should pass
+    And  the output should contain
+      """
+      Debug text
       """
