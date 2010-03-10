@@ -148,6 +148,7 @@ package body AdaSpec.Features is
       Long_String   : Unbounded_String;
       Idx_Start     : Natural;
       Idx_Start_Str : Natural;
+      Position      : Position_Type;
 
       Current_Scenario : Scenario_Type;
       Current_Stanza   : Stanza_Type;
@@ -205,6 +206,9 @@ package body AdaSpec.Features is
 
    begin
       Errors := False;
+      Position := Position_Type'(
+         File => Self.File_Name,
+         Line => 1);
       Open (File, In_File, To_String (Self.File_Name));
       while not End_Of_File (File) loop
          --
@@ -270,6 +274,7 @@ package body AdaSpec.Features is
                   Add_Stanza;
                   Has_Stanza := True;
                   Stanza_State := Prefix_Given;
+                  Current_Stanza.Pos := Position;
                   Idx_Start := Idx_Start + K_Given'Length;
 
                --  Found "When ..."
@@ -277,6 +282,7 @@ package body AdaSpec.Features is
                   Add_Stanza;
                   Has_Stanza := True;
                   Stanza_State := Prefix_When;
+                  Current_Stanza.Pos := Position;
                   Idx_Start := Idx_Start + K_When'Length;
 
                --  Found "Then ..."
@@ -284,12 +290,14 @@ package body AdaSpec.Features is
                   Add_Stanza;
                   Has_Stanza := True;
                   Stanza_State := Prefix_Then;
+                  Current_Stanza.Pos := Position;
                   Idx_Start := Idx_Start + K_Then'Length;
 
                --  Found "And ..."
                elsif Starts_With_K (K_And) then
                   Add_Stanza;
                   Has_Stanza := True;
+                  Current_Stanza.Pos := Position;
                   Idx_Start := Idx_Start + K_And'Length;
 
                --  Found """
@@ -370,6 +378,8 @@ package body AdaSpec.Features is
 
          end case;
 --          Put_Line ("STATE: " & State'Img & " " & Stanza_State'Img);
+
+         Position.Line := Position.Line + 1;
       end loop;
       Add_Scenario;
       Close (File);

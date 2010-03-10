@@ -17,28 +17,27 @@ Feature: Auto fill in of steps definitions
           Then I should see "toto"
       """
 
-  @wip
   Scenario: Reporting of missing steps
     When I run adaspec features/test.feature
     Then it should fail
     And the output should contain
       """
-      ERROR: Missing step definition in features/test.feature:4 for:
+      Error: Missing step definition in features/test.feature:4 for:
         Given a computer
       You can implement this step by adding on your step definition file:
         --  @given ^a computer$
         --  @todo
 
-      ERROR: Missing step definition in features/test.feature:5 for:
+      Error: Missing step definition in features/test.feature:5 for:
         When I type on my keyboard "toto"
       You can implement this step by adding on your step definition file:
-        --  @given ^I type on my keyboard "([^"]*)"$
+        --  @when ^I type on my keyboard "([^"]*)"$
         --  @todo
 
-      ERROR: Missing step definition in features/test.feature:6 for:
+      Error: Missing step definition in features/test.feature:6 for:
         Then I should see "toto"
       You can implement this step by adding on your step definition file:
-        --  @given ^I should see "([^"]*)"$
+        --  @then ^I should see "([^"]*)"$
         --  @todo
 
       AdaSpec can create the procedures for you if you use --fill-steps
@@ -50,8 +49,8 @@ Feature: Auto fill in of steps definitions
       """
       package Steps is
         --  @given ^a computer$
-        --  @given ^I type on my keyboard "([^"]*)"$
-        --  @given ^I should see "([^"]*)"$
+        --  @when ^I type on my keyboard "([^"]*)"$
+        --  @then ^I should see "([^"]*)"$
         --  @todo
       end Steps;
       """
@@ -77,8 +76,8 @@ Feature: Auto fill in of steps definitions
         --  @given ^a computer$
         --  @todo
 
-        --  @given ^I type on my keyboard "([^"]*)"$
-        --  @given ^I should see "([^"]*)"$
+        --  @when ^I type on my keyboard "([^"]*)"$
+        --  @then ^I should see "([^"]*)"$
         --  @todo
       end Steps;
       """

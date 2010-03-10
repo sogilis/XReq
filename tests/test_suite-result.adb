@@ -2,6 +2,7 @@
 
 with Ada.Containers;
 with Ada.Strings.Unbounded;
+with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Steps;
@@ -9,6 +10,7 @@ with AdaSpec.Stanzas;
 with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
+use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Steps;
@@ -71,7 +73,7 @@ package body Test_Suite.Result is
       Append (Scenario, Stanza_Given ("this step works"));
       Append (Scenario, Stanza_When  ("this step works too"));
 
-      Process_Scenario (Result, Scenario, Steps, Errors);
+      Process_Scenario (Result, Scenario, Steps, Null_Logger, Errors);
 
       T.Assert (not Errors, "Errors happened while processing scenario (1)");
 
@@ -100,7 +102,7 @@ package body Test_Suite.Result is
               "Wrong scenario result (1)");
 
       Append (Scenario, Stanza_When  ("this step doesn't work"));
-      Process_Scenario (Result, Scenario, Steps, Errors);
+      Process_Scenario (Result, Scenario, Steps, Null_Logger, Errors);
       T.Assert (Errors, "No error while processing scenario (2)");
 
       T.Assert (Result.Steps = Ideal_Result,
@@ -147,7 +149,8 @@ package body Test_Suite.Result is
          procedure P;
          procedure P is
          begin
-            Process_Feature (Result, Feature_Ptr (Feature), Steps);
+            Process_Feature (Result, Feature_Ptr (Feature),
+                             Steps, Null_Logger);
          end P;
          procedure A is new Assert_Except (Test_Result_Feature_Type, P);
       begin
@@ -162,7 +165,7 @@ package body Test_Suite.Result is
       T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
               "Feature name incorrect");
 
-      Process_Feature (Result, Feature_Ptr (Feature), Steps);
+      Process_Feature (Result, Feature_Ptr (Feature), Steps, Null_Logger);
 
       T.Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");

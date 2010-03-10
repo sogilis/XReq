@@ -1,5 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings.Unbounded;
+
 package AdaSpec is
 
    Not_Yet_Implemented : exception;
@@ -9,5 +11,13 @@ package AdaSpec is
 
    subtype Prefix_Type is
       Prefix_Type_Maybe range Prefix_Given .. Prefix_Then; --  GCOV_IGNORE
+
+   type Position_Type is
+      record
+         File : Ada.Strings.Unbounded.Unbounded_String;
+         Line : Positive;
+      end record;
+
+   function To_String (Pos : in Position_Type) return String;
 
 end AdaSpec;

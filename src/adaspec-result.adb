@@ -113,17 +113,19 @@ package body AdaSpec.Result is
             Find (Steps, Stanza, Proc_Name, Matches, Found);
          exception
             when Ambiguous_Match =>
-               Log.Put_Line ("Error: Ambiguous match for " &
-                         To_String (Stanza));
+               --  TODO: better error reporting
+               Log.Put_Line (String'("Error: Ambiguous match in " &
+                             Position (Stanza) & " for:"));
+               Log.Put_Line ("  " & To_String (Stanza));
                Errors := True;
          end;
          if not Found then
-            --  TODO: better error reporting
-            Log.Put_Line ("Error: Missing step definition in FILE:LINE for:");
+            Log.Put_Line (String'("Error: Missing step definition in " &
+                          Position (Stanza) & " for:"));
             Log.Put_Line ("  " & To_String (Stanza));
             Log.Put_Line ("You can implement this step by adding on your " &
                           "step definition file:");
-            Log.Put_Line ("  --  @...");
+            Log.Put_Line ("  --  " & To_Regexp (Stanza));
             Log.Put_Line ("  --  @todo");
             Log.New_Line;
             Errors := True;

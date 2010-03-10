@@ -17,6 +17,7 @@ package AdaSpec.Stanzas is
          Prefix : Prefix_Type;
          Stanza : Unbounded_String;
          Texts  : Util.Strings.Vectors.Vector;
+         Pos    : Position_Type;
       end record;
    type Stanza_Ptr is access all Stanza_Type;
    Null_Stanza : Stanza_Type;
@@ -29,5 +30,7 @@ package AdaSpec.Stanzas is
    function Stanza_Then  (S : in String) return Stanza_Type;
 
    function To_String (S : in Stanza_Type) return String;
+   function To_Regexp (S : in Stanza_Type) return String;
+   function Position  (S : in Stanza_Type) return String;
 
 end AdaSpec.Stanzas;
