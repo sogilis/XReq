@@ -248,7 +248,6 @@ package body AdaSpec.Steps.Ada05 is
                Get_Unique_String (Prc_Pool, To_String (Procedure_S),
                                   Procedure_S);
                Append (Added_Prc, Procedure_S);
-               Logger.Put_Line ("App Added_Prc: " & To_String (Procedure_S));
                Append (Buffer, Procedure_S);
                Append (Buffer, " (Args : in out Arg_Type);" & ASCII.LF);
             end if;
@@ -285,6 +284,23 @@ package body AdaSpec.Steps.Ada05 is
          end if;
          Logger.Put_Line ("Update: " & Steps_Ads_File);
          Set_File (Steps_Ads_File, To_String (Buffer));
+         J := First (Added_Prc);
+         while Has_Element (J) loop
+            Procedure_S := Element (J);
+            Buffer := Null_Unbounded_String;
+            Append (Buffer, "   procedure " & To_String (Procedure_S) &
+                            " (Args : in out Arg_Type) is" & ASCII.LF);
+            Append (Buffer, "   begin" & ASCII.LF);
+            Append (Buffer, "      raise AdaSpecLib.Not_Yet_Implemented" &
+                            ASCII.LF);
+            Append (Buffer, "         with ""Procedure not implemented: " &
+                            """ & " & Ada_String (To_String (Procedure_S)) &
+                            ASCII.LF);
+            Append (Buffer, "   end " & To_String (Procedure_S) & ";" &
+                            ASCII.LF);
+            Replace_Element (Added_Prc, J, Buffer);
+            Next (J);
+         end loop;
          if not Exists (Steps_Adb_File) then
             Logger.Put_Line ("Generate: " & Steps_Adb_File);
             Create (File, Out_File, Steps_Adb_File);
@@ -292,21 +308,28 @@ package body AdaSpec.Steps.Ada05 is
             New_Line (File);
             J := First (Added_Prc);
             while Has_Element (J) loop
-               Procedure_S := Element (J);
-               Put_Line (File, "   procedure " & To_String (Procedure_S) &
-                              " (Args : in out Arg_Type) is");
-               Put_Line (File, "   begin");
-               Put_Line (File, "      raise AdaSpecLib.Not_Yet_Implemented");
-               Put_Line (File, "         with ""Procedure not implemented: " &
-                               """ & " & Ada_String (To_String (Procedure_S)));
-               Put_Line (File, "   end " & To_String (Procedure_S) & ";");
-               New_Line (File);
+               Put_Line (File, To_String (Element (J)));
                Next (J);
             end loop;
             Put_Line (File, "end " & To_String (Package_S) & ";");
             Close (File);
          else
             Logger.Put_Line ("Update: " & Steps_Adb_File);
+            Buffer := Null_Unbounded_String;
+            Open (File, In_File, Steps_Adb_File);
+            while not End_Of_File (File) loop
+               Line_S := Get_Whole_Line (File);
+               if Index (Line_S, "end") = 1 then
+                  J := First (Added_Prc);
+                  while Has_Element (J) loop
+                     Append (Buffer, Element (J) & ASCII.LF);
+                     Next (J);
+                  end loop;
+               end if;
+               Append (Buffer, Line_S & ASCII.LF);
+            end loop;
+            Close (File);
+            Set_File (Steps_Adb_File, To_String (Buffer));
          end if;
       end if;
       S.Parsed := True;

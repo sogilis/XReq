@@ -69,7 +69,6 @@ Feature: Auto fill in of steps definitions
       ADASPECLIB.NOT_YET_IMPLEMENTED
       """
 
-  @wip
   Scenario: Filling steps
     Given a file "features/step_definitions/steps.ads":
       """
@@ -83,7 +82,6 @@ Feature: Auto fill in of steps definitions
       end Steps;
       """
     When I run adaspec --fill-steps features/test.feature
-    Then print output
     Then it should pass
     And "features/step_definitions/steps.ads" should contain
       """
@@ -111,6 +109,63 @@ Feature: Auto fill in of steps definitions
       """
     And "features/step_definitions/steps.adb" should contain
       """
+         end Given_a_computer;
+
+         procedure Mixed_Step (Args : in out Arg_Type) is
+         begin
+      """
+    And "features/step_definitions/steps.adb" should contain
+      """
+         end Mixed_Step;
+
+      end Steps;
+      """
+
+  Scenario: Filling existing steps
+    Given a file "features/step_definitions/steps.ads":
+      """
+      with AdaSpecLib;
+      use  AdaSpecLib;
+      package Steps is
+
+         --  @given ^a computer$
+         procedure Given_a_computer (Args : in out Arg_Type);
+
+         --  @when ^I type on my keyboard "([^"]*)"$
+         --  @then ^I should see "([^"]*)"$
+         --  @todo
+
+      end Steps;
+      """
+    Given a file "features/step_definitions/steps.adb":
+      """
+      package body Steps is
+
+         procedure Given_a_computer (Args : in out Arg_Type) is
+         begin
+            raise AdaSpecLib.Not_Yet_Implemented
+               with "Procedure not implemented: " & "Given_a_computer"
+         end Given_a_computer;
+
+      end Steps;
+      """
+    When I run adaspec --fill-steps features/test.feature
+    Then it should pass
+    And "features/step_definitions/steps.ads" should contain
+      """
+         --  @when ^I type on my keyboard "([^"]*)"$
+         --  @then ^I should see "([^"]*)"$
+         procedure Mixed_Step (Args : in out Arg_Type);
+      """
+    And "features/step_definitions/steps.adb" should exist
+    And "features/step_definitions/steps.adb" should contain
+      """
+      package body Steps is
+
+         procedure Given_a_computer (Args : in out Arg_Type) is
+         begin
+            raise AdaSpecLib.Not_Yet_Implemented
+               with "Procedure not implemented: " & "Given_a_computer"
          end Given_a_computer;
 
          procedure Mixed_Step (Args : in out Arg_Type) is
