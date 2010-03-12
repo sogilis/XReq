@@ -129,7 +129,6 @@ package body Test_Suite.Result is
       Result   : Result_Feature_Type;
       Feature  : Feature_File_Ptr;
       Steps    : Steps_Type;
-      Errors   : Boolean;
       Exp_Str  : constant String :=
                "Feature Sample"                     & CRLF &
                "   Background "                     & CRLF &
@@ -158,9 +157,7 @@ package body Test_Suite.Result is
             Unparsed_Feature'Identity);
       end;
 
-      Parse (Feature.all, Errors);
-
-      T.Assert (not Errors, "Parse error");
+      Parse (Feature.all, Std_Logger);
 
       T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
               "Feature name incorrect");

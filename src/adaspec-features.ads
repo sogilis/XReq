@@ -4,12 +4,16 @@ with Ada.Unchecked_Deallocation;
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.Strings;
+with Util.IO;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use Util.IO;
 use AdaSpec.Stanzas;
 
 package AdaSpec.Features is
+
+   Parse_Error : exception;
 
    ---------------------
    --  Scenario_Type  --
@@ -20,6 +24,7 @@ package AdaSpec.Features is
          Name    : Unbounded_String;
          Stanzas : Stanza_Container.Vector;
       end record;
+   type Scenario_Ptr is access all Scenario_Type;
    Null_Scenario : Scenario_Type;
 
    package Scenario_Container is
@@ -74,7 +79,7 @@ package AdaSpec.Features is
    function  Create    (File_Name : in     String) return Feature_File_Type;
    function  File_Name (F         : in     Feature_File_Type) return String;
    procedure Parse     (F         : in out Feature_File_Type;
-                        Errors    : out    Boolean);
+                        Log       : in     Logger_Ptr);
 
    overriding
    function  Parsed    (F         : in     Feature_File_Type) return Boolean;

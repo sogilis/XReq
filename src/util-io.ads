@@ -154,6 +154,9 @@ package Util.IO is
    procedure Put_Always    (Log : in out Standard_Logger_Type;
                             S   : in     String);
 
+   Expanded_Std_Logger : aliased Standard_Logger_Type;
+   Std_Logger : Logger_Ptr := Expanded_Std_Logger'Access;
+
    --------------------------
    --  Buffer_Logger_Type  --
    --------------------------

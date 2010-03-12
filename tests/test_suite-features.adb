@@ -4,6 +4,7 @@ with Ada.Strings.Unbounded;
 with AdaSpec;
 with AdaSpec.Stanzas;
 with AdaSpec.Features;
+with Util.IO;
 with Util.Strings;
 
 use Ada.Strings.Unbounded;
@@ -12,6 +13,7 @@ use AdaSpec.Stanzas;
 use AdaSpec.Stanzas.Stanza_Container;
 use AdaSpec.Features;
 use AdaSpec.Features.Scenario_Container;
+use Util.IO;
 use Util.Strings.Vectors;
 
 package body Test_Suite.Features is
@@ -39,7 +41,6 @@ package body Test_Suite.Features is
       File     : constant String := "tests/features/simplest.feature";
       Scenario : Scenario_Type;
       Stanza   : Stanza_Type;
-      Errors   : Boolean;
 
       CRLF : constant String := ASCII.CR & ASCII.LF;
       Canonical_Feature_Text : constant String :=
@@ -96,9 +97,7 @@ package body Test_Suite.Features is
             Unparsed_Feature'Identity);
       end;
 
-      Parse (Feature, Errors);
-
-      T.Assert (not Errors, "Parse error");
+      Parse (Feature, Std_Logger);
 
       T.Assert (Parsed (Feature),
               "Feature has not been parsed after invoking Parse");
@@ -169,7 +168,6 @@ package body Test_Suite.Features is
       Feature2 : Feature_File_Type;
       File     : constant String := "tests/features/simplest2.feature";
       Scenario : Scenario_Type;
-      Errors   : Boolean;
 
    begin
 
@@ -195,9 +193,7 @@ package body Test_Suite.Features is
       Append (Feature1, Scenario);
 
       Make  (Feature2, File);
-      Parse (Feature2, Errors);
-
-      T.Assert (not Errors, "Parse error");
+      Parse (Feature2, Std_Logger);
 
       Put_Line ("Feature1:");
       Put_Line (To_String (Feature1));

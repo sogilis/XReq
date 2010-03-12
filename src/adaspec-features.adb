@@ -1,10 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
-with Ada.Strings.Fixed;
-with Util.IO;
-
-use Ada.Strings.Fixed;
 
 package body AdaSpec.Features is
 
@@ -115,19 +111,33 @@ package body AdaSpec.Features is
    ------------------------------------
 
    procedure Parse (F      : in out Feature_File_Type;
-                    Errors : out Boolean) is
+                    Log    : in     Logger_Ptr)
+   is
 
       Self : constant access Feature_File_Type'Class := F'Access;
 
       use Ada.Text_IO;
-      use Util.IO;
       use Util.Strings;
       use Util.Strings.Vectors;
       use Scenario_Container;
       use Stanza_Container;
 
-      type Mode_Type is (M_Begin, M_Feature, M_Background, M_Scenario, M_Str);
+      procedure Log_Error (Error : in String);
+      procedure Read_Line;
+      function  End_Of_File return Boolean;
+      function  Detect_Keyword (Keyword : in String) return Boolean;
 
+      procedure Read_All;
+      procedure Read_Feature  (Feature  : in out Feature_File_Type);
+      procedure Read_Scenario (Scenario : out    Scenario_Type);
+      procedure Read_Step     (Step     : in out Stanza_Type);
+      procedure Read_String   (Result   : out    Unbounded_String;
+                               Sep      : in     String);
+      procedure Read_Table;
+
+      pragma Unreferenced (Read_Table);
+
+      --  Keywords
       K_Feature     : constant String := "Feature:";
       K_Background  : constant String := "Background:";
       K_Scenario    : constant String := "Scenario:";
@@ -137,251 +147,272 @@ package body AdaSpec.Features is
       K_And         : constant String := "And ";
       K_StrDouble   : constant String := """""""";
       K_StrSimple   : constant String := "'''";
-      CurrentStr    : String (1 .. 3);
-      State         : Mode_Type         := M_Begin;
-      State_Saved   : Mode_Type;
-      Stanza_State  : Prefix_Type_Maybe := Prefix_None;
-      Has_Stanza    : Boolean := False;
-      File          : File_Type;
-      Line_S        : Unbounded_String;
-      Suffix        : Unbounded_String;
-      Long_String   : Unbounded_String;
-      Idx_Start     : Natural;
-      Idx_Start_Str : Natural;
-      Position      : Position_Type;
 
-      Current_Scenario : Scenario_Type;
-      Current_Stanza   : Stanza_Type;
+      --  Context variables
+      File          : File_Type;        --  Current opened file
+      Position      : Position_Type;    --  Current position
+      First_Line    : Boolean := True;  --  True on the first line;
+      Line_S        : Unbounded_String; --  Current line
+      Idx_Start     : Natural;          --  First non blank on current line
+      Idx_Data      : Natural;          --  Index where data starts
+      --                                --  (after the keyword generally)
+      Unread_Line   : Boolean := False; --  Unread the line;
 
-      function Starts_With_K (Keyword : in String) return Boolean;
-      function Starts_With_K (Keyword : in String) return Boolean is
+      -------------------------
+      --  Utility Functions  --
+      -------------------------
+
+      procedure Log_Error (Error : in String)
+      is
       begin
-         return Starts_With (To_String (Line_S), Keyword, Idx_Start);
-      end Starts_With_K;
+         Log.Put_Line (Error & " in " & To_String (Position.File) & " line" &
+                       Position.Line'Img);
+      end Log_Error;
 
-      procedure Add_Scenario;
-      procedure Add_Stanza;
-      procedure Add_Text;
-
-      procedure Add_Scenario is
+      procedure Read_Line is
       begin
-         Add_Stanza;
-         if State = M_Scenario then
-            Append (Self.Scenarios, Current_Scenario);
---             Put_Line ("Found Scenario: " &
---                       To_String (Current_Scenario.Name));
-         elsif State = M_Background then
-            Self.Background.Stanzas := Current_Scenario.Stanzas;
---             Put_Line ("Found Background: " &
---                       To_String (Current_Scenario.Name));
+         if Unread_Line then
+            Unread_Line := False;
+         else
+            if not First_Line then
+               Position.Line := Position.Line + 1;
+            end if;
+            First_Line := False;
+            Line_S     := Get_Whole_Line (File);
+            Idx_Start  := Index_Non_Blank (Line_S);
+            Idx_Data   := Idx_Start;
          end if;
-         Current_Scenario.Name := Null_Unbounded_String;
-         Clear (Current_Scenario.Stanzas);
-      end Add_Scenario;
+      end Read_Line;
 
-      procedure Add_Stanza is
+      function  End_Of_File return Boolean is
       begin
-         if Has_Stanza then
---             Put_Line ("Found Stanza: " & To_String (Current_Stanza));
-            Append (Current_Scenario.Stanzas, Current_Stanza);
-            Has_Stanza     := False;
+         return not Unread_Line and then End_Of_File (File);
+      end End_Of_File;
+
+      function  Detect_Keyword (Keyword : in String) return Boolean is
+         Detect : Boolean;
+      begin
+         Detect := Starts_With (To_String (Line_S), Keyword, Idx_Start);
+         if Detect then
+            Idx_Data := Idx_Start + Keyword'Length;
          end if;
-         Current_Stanza := Null_Stanza;
-      end Add_Stanza;
+         return Detect;
+      end Detect_Keyword;
 
-      procedure Add_Text is
+      ---------------------
+      --  Parsing Rules  --
+      ---------------------
+
+      --  ALL           -> FEATURE
+      procedure Read_All is
       begin
---          Put_Line ("Found String: " & CurrentStr &
---                    To_String (Long_String) & CurrentStr);
-         Append (Current_Stanza.Texts, Long_String);
-         Long_String := Null_Unbounded_String;
-      exception
-         --  GCOV_IGNORE_BEGIN
-         when Constraint_Error =>
-            Put_Line ("Error: long string error: """"""" &
-                      To_String (Long_String) & """""""");
-            Long_String := Null_Unbounded_String;
-         --  GCOV_IGNORE_END
-      end Add_Text;
+         Read_Line;
+         if Detect_Keyword (K_Feature) then
+            Read_Feature (F);
+         end if;
+      end Read_All;
+
+      --  FEATURE       -> "Feature:" name NL
+      --                    description NL
+      --                    { SCENARIO }
+      procedure Read_Feature (Feature : in out Feature_File_Type) is
+         Current_Scenario : Scenario_Type;
+         Beginning        : Boolean := True;
+         Had_Description  : Boolean := False;
+         Data             : Unbounded_String;
+         I                : Util.Strings.Vectors.Cursor;
+      begin
+         Feature.Name := Trimed_Suffix (Line_S, Idx_Data);
+         while not End_Of_File loop
+            Read_Line;
+            if Detect_Keyword (K_Background) then
+               Read_Scenario (Feature.Background);
+               Beginning := False;
+            elsif Detect_Keyword (K_Scenario) then
+               Current_Scenario := Null_Scenario;
+               Read_Scenario (Current_Scenario);
+               Append (Self.Scenarios, Current_Scenario);
+               Beginning := False;
+            elsif Beginning then
+               Data := Trimed_Suffix (Line_S, Idx_Data);
+               if Data /= Null_Unbounded_String or Had_Description then
+                  Append (Feature.Description, Data);
+                  Had_Description := True;
+               end if;
+            end if;
+         end loop;
+         --  Clean up desription
+         I := Last (Feature.Description);
+         while Has_Element (I) and then
+               Element (I) = Null_Unbounded_String
+         loop
+            Delete_Last (Feature.Description);
+            I := Last (Feature.Description);
+         end loop;
+      end Read_Feature;
+
+      --  SCENARIO      -> K_SCENARIO name NL
+      --                   { STANZA }
+      --  K_SCENARIO    -> "Background:"
+      --                 | "Scenario:"
+      procedure Read_Scenario (Scenario : out Scenario_Type) is
+         Current_Stanza : Stanza_Type;
+         Current_Prefix : Prefix_Type_Maybe := Prefix_None;
+         Detect         : Boolean;
+         Continue       : Boolean := True;
+      begin
+         Scenario := (Name   => Trimed_Suffix (Line_S, Idx_Data),
+                      others => <>);
+         while Continue and not End_Of_File loop
+
+            Read_Line;
+            Detect := True;
+
+            if Detect_Keyword (K_Background) or else
+               Detect_Keyword (K_Scenario)
+            then
+               Unread_Line := True;
+               Continue    := False;
+               Detect      := False;
+            elsif Detect_Keyword (K_Given) then
+               Current_Prefix := Prefix_Given;
+            elsif Detect_Keyword (K_When) then
+               Current_Prefix := Prefix_When;
+            elsif Detect_Keyword (K_Then) then
+               Current_Prefix := Prefix_Then;
+            elsif Detect_Keyword (K_And) then
+               if Current_Prefix = Prefix_None then
+                  Log_Error    ("ERROR: And keyword");
+                  Log.Put_Line ("       And keyword should be following " &
+                                       "another keyword");
+                  Log.Put_Line ("       Ignoring step");
+               end if;
+            else
+               Detect := False;
+            end if;
+
+            if Detect then
+               if Current_Prefix /= Prefix_None then
+                  Current_Stanza.Prefix := Current_Prefix;
+               end if;
+               Read_Step (Current_Stanza);
+               if Current_Prefix /= Prefix_None then
+                  Append (Scenario.Stanzas, Current_Stanza);
+               end if;
+            elsif Continue and then Trimed_Suffix (Line_S, Idx_Data) /= "" then
+               Log_Error    ("ERROR: invalid format");
+               raise Parse_Error;
+            end if;
+
+         end loop;
+      end Read_Scenario;
+
+      --  STANZA        -> K_STANZA text NL
+      --                   { STANZA_PARAM }
+      --  K_STANZA      -> "Given"
+      --                 | "When"
+      --                 | "Then"
+      --                 | "And"
+      --  STANZA_PARAM  -> STRING
+      --                   TABLE
+      procedure Read_Step (Step : in out Stanza_Type) is
+         Continue    : Boolean := True;
+         Long_String : Unbounded_String;
+      begin
+         Step := (
+            Prefix => Step.Prefix,
+            Stanza => Trimed_Suffix (Line_S, Idx_Data),
+            Pos    => Position,
+            others => <>);
+--          Log_Error ("Begin read step");
+         while Continue and not End_Of_File loop
+
+            Read_Line;
+
+            if Detect_Keyword (K_Background)    or else
+               Detect_Keyword (K_Scenario)      or else
+               Detect_Keyword (K_Given)         or else
+               Detect_Keyword (K_When)          or else
+               Detect_Keyword (K_Then)          or else
+               Detect_Keyword (K_And)
+            then
+               Unread_Line := True;
+               Continue    := False;
+            elsif Detect_Keyword (K_StrSimple) then
+               Read_String (Long_String, K_StrSimple);
+               Append (Step.Texts, Long_String);
+            elsif Detect_Keyword (K_StrDouble) then
+               Read_String (Long_String, K_StrDouble);
+               Append (Step.Texts, Long_String);
+            elsif Idx_Data > 0 then
+               Log_Error    ("ERROR: invalid format");
+               raise Parse_Error;
+            end if;
+
+         end loop;
+--          Log_Error ("End   read step");
+      end Read_Step;
+
+      --  STRING        -> """ NL { char | \" } NL { space } """ NL
+      --                 | ''' NL { char | \' } NL { space } ''' NL
+      procedure Read_String   (Result   : out    Unbounded_String;
+                               Sep      : in     String)
+      is
+         Indent   : constant Integer := Idx_Start;
+         Continue : Boolean := True;
+         Res      : Unbounded_String;
+         I        : Natural;
+      begin
+         Result := Null_Unbounded_String;
+         if Trimed_Suffix (Line_S, Idx_Data) /= "" then
+            Log_Error    ("ERROR: stray characers after " & Sep);
+         end if;
+         while Continue and not End_Of_File loop
+
+            Read_Line;
+
+            if Detect_Keyword (Sep) and then
+               Trimed_Suffix (Line_S, Idx_Data) = ""
+            then
+               Head (Res, Length (Res) - 1);
+               Continue := False;
+
+            else
+               declare
+                  Line : constant String := To_String (Line_S);
+               begin
+                  I := Natural'Max (Natural'Min (Idx_Start, Indent), 1);
+                  while I <= Line'Last loop
+                     if I <= Line'Last - 1 and then
+                        Line (I .. I + 1) = "\" & Sep (Sep'First)
+                     then
+                        Append (Res, Sep (Sep'First));
+                        I := I + 2;
+                     else
+                        Append (Res, Line (I));
+                        I := I + 1;
+                     end if;
+                  end loop;
+                  Append (Res, ASCII.LF);
+               end;
+            end if;
+
+         end loop;
+         Result := Res;
+      end Read_String;
+
+      --  TABLE         -> ???
+      procedure Read_Table is
+      begin
+         null;
+      end Read_Table;
 
    begin
-      Errors := False;
       Position := Position_Type'(
          File => Self.File_Name,
          Line => 1);
       Open (File, In_File, To_String (Self.File_Name));
-      while not End_Of_File (File) loop
-         --
-         --  Read Line
-         --
-         Line_S    := Get_Whole_Line (File);
-         Idx_Start := Index_Non_Blank (Line_S);
-
---          Put_Line ("READ: " & To_String (Line_S));
-         --
-         --  State Machine
-         --
-         case State is
-            when M_Begin =>
-
-               --  Found: "Feature: Name"
-               if Starts_With_K (K_Feature) then
-                  State := M_Feature;
-                  Stanza_State := Prefix_None;
-                  Self.Name := Trimed_Suffix (Line_S,
-                                           Idx_Start + K_Feature'Length);
-               end if;
-
-            when M_Feature =>
-
-               --  Found "Background:"
-               if Starts_With_K (K_Background) then
-                  Add_Scenario;
-                  State := M_Background;
-                  Stanza_State := Prefix_None;
-                  Self.Background.Name :=
-                     Trimed_Suffix (Line_S, Idx_Start + K_Background'Length);
-
-               --  Found "Scenario: Name"
-               elsif Starts_With_K (K_Scenario) then
-                  Add_Scenario;
-                  State := M_Scenario;
-                  Stanza_State := Prefix_None;
-                  Current_Scenario.Name :=
-                     Trimed_Suffix (Line_S, Idx_Start + K_Scenario'Length);
-               end if;
-
-            when M_Background | M_Scenario =>
-
-               --  Found "Background:"
-               if Starts_With_K (K_Background) then
-                  Add_Scenario;
-                  State := M_Background;
-                  Stanza_State := Prefix_None;
-                  Self.Background.Name :=
-                     Trimed_Suffix (Line_S, Idx_Start + K_Background'Length);
-
-               --  Found "Scenario: Name"
-               elsif Starts_With_K (K_Scenario) then
-                  Add_Scenario;
-                  State := M_Scenario;
-                  Stanza_State := Prefix_None;
-                  Current_Scenario.Name :=
-                     Trimed_Suffix (Line_S, Idx_Start + K_Scenario'Length);
-
-               --  Found "Given ..."
-               elsif Starts_With_K (K_Given) then
-                  Add_Stanza;
-                  Has_Stanza := True;
-                  Stanza_State := Prefix_Given;
-                  Current_Stanza.Pos := Position;
-                  Idx_Start := Idx_Start + K_Given'Length;
-
-               --  Found "When ..."
-               elsif Starts_With_K (K_When) then
-                  Add_Stanza;
-                  Has_Stanza := True;
-                  Stanza_State := Prefix_When;
-                  Current_Stanza.Pos := Position;
-                  Idx_Start := Idx_Start + K_When'Length;
-
-               --  Found "Then ..."
-               elsif Starts_With_K (K_Then) then
-                  Add_Stanza;
-                  Has_Stanza := True;
-                  Stanza_State := Prefix_Then;
-                  Current_Stanza.Pos := Position;
-                  Idx_Start := Idx_Start + K_Then'Length;
-
-               --  Found "And ..."
-               elsif Starts_With_K (K_And) then
-                  Add_Stanza;
-                  Has_Stanza := True;
-                  Current_Stanza.Pos := Position;
-                  Idx_Start := Idx_Start + K_And'Length;
-
-               --  Found """
-               elsif Starts_With_K (K_StrDouble) then
-                  State_Saved  := State;
-                  State         := M_Str;
-                  CurrentStr    := K_StrDouble;
-                  Idx_Start_Str := Idx_Start;
-                  Idx_Start     := Idx_Start + CurrentStr'Length;
-
-               --  Found '''
-               elsif Starts_With_K (K_StrSimple) then
-                  State_Saved   := State;
-                  State         := M_Str;
-                  CurrentStr    := K_StrSimple;
-                  Idx_Start_Str := Idx_Start;
-                  Idx_Start     := Idx_Start + CurrentStr'Length;
-               end if;
-
-               --  Record first line of long string
-               if State = M_Str then
-                  if Index_Non_Blank (Line_S, Idx_Start) /= 0 then
-                     Put_Line ("Error: PyString: found text after " &
-                               CurrentStr);
-                     Errors := True;
-                     State  := State_Saved;
-                  end if;
-
-               --  Continue the stanza on the next line
-               elsif Stanza_State /= Prefix_None then
-                  Current_Stanza.Prefix := Stanza_State;
-                  Suffix := Trimed_Suffix (Line_S, Idx_Start);
-                  if Current_Stanza.Stanza /= Null_Unbounded_String then
-                     if Suffix /= Null_Unbounded_String then
-                        Append (Current_Stanza.Stanza, " ");
-                     end if;
-                  end if;
-                  if Suffix /= Null_Unbounded_String then
-                     Append (Current_Stanza.Stanza, Suffix);
-                  else
-                     Add_Stanza;
-                  end if;
-               end if;
-
-            when M_Str =>
-
-               declare
-                  I    : Natural;
-                  Line : constant String := To_String (Line_S);
-               begin
-                  if Starts_With_K (CurrentStr) then
-                     Idx_Start := Idx_Start + CurrentStr'Length;
-                     if Index_Non_Blank (Line, Idx_Start) = 0 then
-                        State := State_Saved;
-                        --  End of string, remove the last line feed.
-                        Head (Long_String, Length (Long_String) - 1);
-                        Add_Text;
-                     end if;
-                  end if;
-
-                  if State = M_Str then
-                     I := Natural'Min (Index_Non_Blank (Line), Idx_Start_Str);
-                     I := Natural'Max (I, 1);
-                     while I <= Line'Last loop
-                        if I <= Line'Last - 1 and then
-                           Line (I .. I + 1) = "\" & CurrentStr (1)
-                        then
-                           Append (Long_String, CurrentStr (1));
-                           I := I + 2;
-                        else
-                           Append (Long_String, Line (I));
-                           I := I + 1;
-                        end if;
-                     end loop;
-                     Append (Long_String, ASCII.LF);
-                  end if;
-               end;
-
-         end case;
---          Put_Line ("STATE: " & State'Img & " " & Stanza_State'Img);
-
-         Position.Line := Position.Line + 1;
-      end loop;
-      Add_Scenario;
+      Read_All;
       Close (File);
       Self.Parsed := True;
    end Parse;

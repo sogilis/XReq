@@ -140,20 +140,22 @@ package body AdaSpec.Job is
                   Logger : in     Logger_Ptr)
    is
       F : constant Feature_File_Ptr := new Feature_File_Type;
-      Errors : Boolean;
    begin
       if not Env.Loaded then
          raise Invalid_Environment with "Must call Load (Env) first";
       end if;
 
-      Make (F.all, Feature_File (Job));
-      Parse (F.all, Errors);
+      F.Make (Feature_File (Job));
       Job.Feature := Feature_Ptr (F);
 
-      if not Errors then
-         Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
-         Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger);
-      end if;
+      F.Parse (Logger);
+
+      --  No Parse_Error
+      Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
+      Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger);
+   exception
+      when Parse_Error =>
+         null;  --  Already logged
    end Run;
 
    -----------------------------
