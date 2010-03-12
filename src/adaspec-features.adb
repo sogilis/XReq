@@ -231,6 +231,10 @@ package body AdaSpec.Features is
                Read_Scenario (Current_Scenario);
                Append (Self.Scenarios, Current_Scenario);
                Beginning := False;
+            elsif Detect_Keyword ("#") then
+               null;
+            elsif Detect_Keyword ("@") then
+               null; --  TODO: Read tag and store it for the next scenario
             elsif Beginning then
                Data := Trimed_Suffix (Line_S, Idx_Data);
                if Data /= Null_Unbounded_String or Had_Description then
@@ -267,11 +271,14 @@ package body AdaSpec.Features is
             Detect := True;
 
             if Detect_Keyword (K_Background) or else
-               Detect_Keyword (K_Scenario)
+               Detect_Keyword (K_Scenario)   or else
+               Detect_Keyword ("@")
             then
                Unread_Line := True;
                Continue    := False;
                Detect      := False;
+            elsif Detect_Keyword ("#") then
+               null;
             elsif Detect_Keyword (K_Given) then
                Current_Prefix := Prefix_Given;
             elsif Detect_Keyword (K_When) then
@@ -332,7 +339,8 @@ package body AdaSpec.Features is
                Detect_Keyword (K_Given)         or else
                Detect_Keyword (K_When)          or else
                Detect_Keyword (K_Then)          or else
-               Detect_Keyword (K_And)
+               Detect_Keyword (K_And)           or else
+               Detect_Keyword ("@")
             then
                Unread_Line := True;
                Continue    := False;
@@ -344,6 +352,8 @@ package body AdaSpec.Features is
                Append (Step.Texts, Long_String);
             elsif Detect_Keyword ("|") then
                Read_Table;
+            elsif Detect_Keyword ("#") then
+               null;
             elsif Idx_Data > 0 then
                Log_Error    ("ERROR: invalid format");
                raise Parse_Error;
