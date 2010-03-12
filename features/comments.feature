@@ -30,6 +30,7 @@ Feature: Tags
         # other comment
 
         Scenario: S
+          # Comment
           Given this step works
       """
     When I run adaspec features/comments.feature
