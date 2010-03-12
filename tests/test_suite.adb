@@ -23,6 +23,7 @@ with Test_Suite.Lib.Util;
 with Test_Suite.Lib.Report;
 with Test_Suite.Lib.Format;
 with Test_Suite.Lib.Format.Text;
+with Test_Suite.Lib.Tables;
 
 package body Test_Suite is
 
@@ -56,6 +57,7 @@ package body Test_Suite is
       Test_Suite.Lib.Report     .Add_Tests (Ret);
       Test_Suite.Lib.Format     .Add_Tests (Ret);
       Test_Suite.Lib.Format.Text.Add_Tests (Ret);
+      Test_Suite.Lib.Tables     .Add_Tests (Ret);
 
       return Ret;
 
