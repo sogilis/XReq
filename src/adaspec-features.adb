@@ -135,8 +135,6 @@ package body AdaSpec.Features is
                                Sep      : in     String);
       procedure Read_Table;
 
-      pragma Unreferenced (Read_Table);
-
       --  Keywords
       K_Feature     : constant String := "Feature:";
       K_Background  : constant String := "Background:";
@@ -344,6 +342,8 @@ package body AdaSpec.Features is
             elsif Detect_Keyword (K_StrDouble) then
                Read_String (Long_String, K_StrDouble);
                Append (Step.Texts, Long_String);
+            elsif Detect_Keyword ("|") then
+               Read_Table;
             elsif Idx_Data > 0 then
                Log_Error    ("ERROR: invalid format");
                raise Parse_Error;
@@ -401,10 +401,17 @@ package body AdaSpec.Features is
          Result := Res;
       end Read_String;
 
-      --  TABLE         -> ???
+      --  TABLE         -> { "|" { cell "|" } NL }
       procedure Read_Table is
+         Continue : Boolean := True;
       begin
-         null;
+         while Continue and not End_Of_File loop
+            Read_Line;
+            if Element (Line_S, Idx_Start) /= '|' then
+               Unread_Line := True;
+               Continue    := False;
+            end if;
+         end loop;
       end Read_Table;
 
    begin
