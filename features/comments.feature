@@ -24,7 +24,10 @@ Feature: Tags
         Background:
           Given this step works
 
+
         # Comment
+        @tag
+        # other comment
 
         Scenario: S
           Given this step works

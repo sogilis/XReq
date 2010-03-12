@@ -26,6 +26,7 @@ Feature: Tables
             | 2 |            4 |          5 |      6 |
             | 3 |            7 |          8 |      9 |
             | 4 |           10 |         11 |     12 |
+          Given this step works
       """
     When I run adaspec features/table.feature
     Then it should pass
