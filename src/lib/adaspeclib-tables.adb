@@ -1,4 +1,9 @@
+--                         Copyright (C) 2010, Sogilis                       --
+
 package body AdaSpecLib.Tables is
+
+   --  GCOV_IGNORE_BEGIN
+   --  Cannot cover generic package
 
    ---------
    -- "<" --

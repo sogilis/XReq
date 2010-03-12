@@ -9,6 +9,9 @@ generic
 
 package AdaSpecLib.Tables is
 
+   --  GCOV_IGNORE_BEGIN
+   --  Cannot cover generic package
+
    type Key_Type is
       record
          X : Integer;
