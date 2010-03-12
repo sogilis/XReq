@@ -1,6 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Text_IO;
+with Ada.Strings;
+with Ada.Strings.Fixed;
+with AdaSpecLib.String_Tables;
 
 package body AdaSpec.Features is
 
@@ -413,11 +416,34 @@ package body AdaSpec.Features is
 
       --  TABLE         -> { "|" { cell "|" } NL }
       procedure Read_Table is
+         use Ada.Strings.Fixed;
+         use Ada.Strings;
+         use AdaSpecLib.String_Tables;
+         X        : Natural := 0;
+         Y        : Natural := 0;
+         Table    : AdaSpecLib.String_Tables.Table;
          Continue : Boolean := True;
       begin
          while Continue and not End_Of_File loop
             Read_Line;
-            if Element (Line_S, Idx_Start) /= '|' then
+            if Detect_Keyword ("|") then
+               declare
+                  Line : constant String :=
+                         To_String (Trimed_Suffix (Line_S, Idx_Data));
+                  I, N : Integer;
+               begin
+                  I := Line'First;
+                  N := Index (Line, "|", I);
+                  while N > 0 loop
+                     Table.Put (X, Y,
+                        To_Unbounded_String (Trim (Line (I .. N - 1), Both)));
+                     I := N + 1;
+                     N := Index (Line, "|", I);
+                     X := X + 1;
+                  end loop;
+               end;
+               Y := Y + 1;
+            else
                Unread_Line := True;
                Continue    := False;
             end if;
