@@ -41,7 +41,7 @@ Feature: Parsing Errors
 
       """
     When I run adaspec features/error-and.feature
-    Then it should pass
+    Then it should fail
     And the output should contain
       """
       ERROR: invalid format in features/error-and.feature line 4
@@ -60,7 +60,7 @@ Feature: Parsing Errors
 
       """
     When I run adaspec features/error-and.feature
-    Then it should pass
+    Then it should fail
     And the output should contain
       """
       ERROR: invalid format in features/error-and.feature line 5

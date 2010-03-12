@@ -155,7 +155,7 @@ package body AdaSpec.Job is
       Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger);
    exception
       when Parse_Error =>
-         null;  --  Already logged
+         Job.Result.Fail := True;
    end Run;
 
    -----------------------------
