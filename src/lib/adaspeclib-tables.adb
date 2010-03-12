@@ -4,7 +4,7 @@ package body AdaSpecLib.Tables is
    -- "<" --
    ---------
 
-   function "<" (Left, Right : Key_Type) return Boolean is
+   function "<" (Left, Right : in Key_Type) return Boolean is
    begin
       return (Left.X < Right.X) or (Left.X = Right.X and Left.Y < Right.Y);
    end "<";
@@ -159,6 +159,7 @@ package body AdaSpecLib.Tables is
    exception
       when Constraint_Error =>
          Ok := False;
+         Elem := Elem;
    end Item;
 
    -------------

@@ -5,7 +5,7 @@ with Ada.Containers.Ordered_Maps;
 generic
 
    type Element_Type is private;
-   with function "=" (Left, Right : Element_Type) return Boolean is <>;
+   with function "=" (Left, Right : in Element_Type) return Boolean is <>;
 
 package AdaSpecLib.Tables is
 
@@ -15,7 +15,7 @@ package AdaSpecLib.Tables is
          Y : Integer;
       end record;
 
-   function "<" (Left, Right : Key_Type) return Boolean;
+   function "<" (Left, Right : in Key_Type) return Boolean;
 
    type Table is tagged private;
 

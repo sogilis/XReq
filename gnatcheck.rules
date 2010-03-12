@@ -18,6 +18,6 @@
 -- +RName_Clashes
 +RNon_Visible_Exceptions
 +ROuter_Loop_Exits
-+ROverloaded_Operators
+-- +ROverloaded_Operators  --  We need to overload operators sometimes
 +RUnassigned_OUT_Parameters
 +RUncommented_BEGIN_In_Package_Bodies
