@@ -8,7 +8,7 @@ Feature: Parsing Errors
     And I am in an empty directory
 
   Scenario: And keyword at beginning
-    And a file "features/error-and.feature":
+    Given a file "features/error-and.feature":
       """
       Feature: Sample
 
@@ -30,7 +30,7 @@ Feature: Parsing Errors
 
 
   Scenario: Invalid step
-    And a file "features/error-and.feature":
+    Given a file "features/error-and.feature":
       """
       Feature: Sample
 
@@ -49,7 +49,7 @@ Feature: Parsing Errors
 
 
   Scenario: Invalid step (2)
-    And a file "features/error-and.feature":
+    Given a file "features/error-and.feature":
       """
       Feature: Sample
 
