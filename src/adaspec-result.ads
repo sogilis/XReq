@@ -3,12 +3,14 @@
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.IO;
+with Util.Strings;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
+use Util.Strings;
 use AdaSpec.Features;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
@@ -86,10 +88,11 @@ package AdaSpec.Result is
 
    type Result_Feature_Type is
       record
-         Name       : Unbounded_String;
-         Background : Result_Scenario_Type;
-         Scenarios  : Result_Scenarios.Vector;
-         Fail       : Boolean := False;
+         Name        : Unbounded_String;
+         Description : Util.Strings.Vectors.Vector;
+         Background  : Result_Scenario_Type;
+         Scenarios   : Result_Scenarios.Vector;
+         Fail        : Boolean := False;
       end record;
 
    function  To_String       (Res      : in     Result_Feature_Type;

@@ -93,7 +93,9 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.Start_Feature;");
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
-                        Ada_String (To_String (Gen.Feature.Name)) & ");");
+                        Ada_String (To_String (Gen.Feature.Name)) & ", " &
+                        Ada_String (Join (Gen.Feature.Description,
+                                          "" & ASCII.LF)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          if First then
             Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &

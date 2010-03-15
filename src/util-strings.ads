@@ -19,6 +19,9 @@ package Util.Strings is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
 
+   function  Join         (Strings    : in Vectors.Vector;
+                           Sep        : in String) return String;
+
    procedure Find_Token   (Search     : in String;
                            Tokens     : in String_List;
                            Index_Next : out Natural;

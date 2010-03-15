@@ -323,9 +323,9 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "        <h2 class=""title-feature"">Feature: ");
       Put (File, Param_name);
       Put (File, "</h2>" & ASCII.LF);
-      Put (File, "        <p>");
+      Put (File, "        <pre>");
       Put (File, Param_description);
-      Put (File, "</p>" & ASCII.LF);
+      Put (File, "</pre>" & ASCII.LF);
       Put (File, "      </div>" & ASCII.LF);
    end feature_begin;
 

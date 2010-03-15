@@ -6,6 +6,26 @@ use Ada.Strings.Fixed;
 
 package body Util.Strings is
 
+   ------------
+   --  Join  --
+   ------------
+
+   function  Join         (Strings    : in Vectors.Vector;
+                           Sep        : in String) return String
+   is
+      use Vectors;
+      Buffer : Unbounded_String;
+      I      : Vectors.Cursor := First (Strings);
+   begin
+      while Has_Element (I) loop
+         Append (Buffer, Element (I));
+         Append (Buffer, Sep);
+         Next (I);
+      end loop;
+      return To_String (Buffer);
+   end Join;
+
+
    ------------------
    --  Find_Token  --
    ------------------

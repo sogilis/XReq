@@ -1,9 +1,5 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Util.Strings;
-
-use Util.Strings;
-
 package body AdaSpec.Result is
 
    ----------------------------------
@@ -147,7 +143,7 @@ package body AdaSpec.Result is
    procedure Process_Feature (Res     : out Result_Feature_Type;
                               Feature : in  Feature_Ptr;
                               Steps   : in  Steps_Type;
-                              Log      : in  Logger_Ptr)
+                              Log     : in  Logger_Ptr)
    is
       use Scenario_Container;
       I      : Scenario_Container.Cursor := First (Feature.all.Scenarios);
@@ -172,6 +168,7 @@ package body AdaSpec.Result is
          Next (I);
       end loop;
       Result.Name := Feature.Name;
+      Result.Description := Feature.Description;
       if Result.Fail then
          Log.Put_Line ("AdaSpec can create the procedures for you if you " &
                        "use --fill-steps");

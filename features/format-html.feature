@@ -123,6 +123,10 @@ Feature: HTML reports
     And a file "features/pass2.feature":
       """
       Feature: Feature that pass (2)
+        This is the feature description.
+        This is another line of description.
+
+        And another paragraph
 
         Background: definitions
           Given this step works

@@ -56,7 +56,8 @@ package AdaSpecLib.Format is
    type Format_Ptr  is access all Format_Type'Class;
 
    procedure Put_Feature    (Format     : in out Format_Type;
-                             Feature    : in     String)
+                             Feature    : in     String;
+                             Description : in String)
                              is abstract;
    procedure Put_Background (Format     : in out Format_Type;
                              Background : in     String)

@@ -83,14 +83,15 @@ package body AdaSpecLib.Format.HTML is
    -------------------
 
    procedure Put_Feature (Format  : in out HTML_Format_Type;
-                          Feature : in String)
+                          Feature : in String;
+                          Description : in String)
    is
    begin
       Format.Curr_Feature.Name := To_Unbounded_String (Feature);
       Tmpl.feature_begin (Format.Output,
          Param_id          => To_String (Format.Feature_ID),
          Param_name        => HTML_Text (Feature),
-         Param_description => "");  --  TODO
+         Param_description => HTML_Text (Description));
       Format.Skip_Scenarios := False;
    end Put_Feature;
 

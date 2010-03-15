@@ -18,10 +18,12 @@ package body AdaSpecLib.Format.Text is
    -------------------
 
    procedure Put_Feature (Format  : in out Text_Format_Type;
-                          Feature : in String)
+                          Feature : in String;
+                          Description : in String)
    is
    begin
       Format.Output.Put_Line ("Feature: " & Feature);
+      Format.Output.Put_Line (Description);
    end Put_Feature;
 
    procedure Put_Background (Format     : in out Text_Format_Type;

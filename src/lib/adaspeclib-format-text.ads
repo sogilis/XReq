@@ -7,7 +7,8 @@ package AdaSpecLib.Format.Text is
 
    overriding
    procedure Put_Feature    (Format     : in out Text_Format_Type;
-                             Feature    : in     String);
+                             Feature    : in     String;
+                             Description : in    String);
    overriding
    procedure Put_Background (Format     : in out Text_Format_Type;
                              Background : in     String);
