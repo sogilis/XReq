@@ -109,6 +109,11 @@ Feature: HTML reports
 
         Scenario: B
           Given this step works
+            | # | My  | Pretty | Table   |
+            | 1 | abc | def    | ghi jkl |
+            | 2 | fgh | Tggb   | ljIGB J |
+            | 3 | d   | khY    | Toto    |
+            | 4 | 6ty | JKHG   | Tata    |
           And this is ignored
           Then do nothing
             \"""

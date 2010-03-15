@@ -18,6 +18,15 @@ a {
   font-weight: bold;
 }
 
+table {
+  border-collapse: collapse;
+}
+
+td {
+  border-collapse: collapse;
+  border: solid thin black;
+}
+
 .fail {
   color: #c20000;
 }
@@ -60,6 +69,18 @@ a {
 
 .scenario.skip {
   background-color: #e0ffff;
+  border-color: aqua;
+}
+
+.scenario.fail td {
+  border-color: #c20000;
+}
+
+.scenario.pass td {
+  border-color: #65c400;
+}
+
+.scenario.skip td {
   border-color: aqua;
 }
 
