@@ -10,6 +10,9 @@ Feature: The simplest works
     And a file "features/simplest.feature":
       """
       Feature: Sample
+      Description Line 1
+      Description Line 2
+      Description Line 3
 
       Background:
         Given this step works
@@ -67,6 +70,9 @@ Feature: The simplest works
     Then  it should pass with
       """
       Feature: Sample
+        Description Line 1
+        Description Line 2
+        Description Line 3
 
         Background:
       This step works
@@ -96,6 +102,9 @@ Feature: The simplest works
     Then  it should pass with
       """
       Feature: Sample
+        Description Line 1
+        Description Line 2
+        Description Line 3
 
         Background:
       This step works

@@ -23,7 +23,20 @@ package body AdaSpecLib.Format.Text is
    is
    begin
       Format.Output.Put_Line ("Feature: " & Feature);
-      Format.Output.Put_Line (Description);
+      for I in Description'Range loop
+         if Description (I) = ASCII.LF then
+            if I < Description'Last then
+               Format.Output.New_Line;
+               Format.Output.Put ("  ");
+            end if;
+         else
+            if I = Description'First then
+               Format.Output.Put ("  ");
+            end if;
+            Format.Output.Put (Description (I));
+         end if;
+      end loop;
+      Format.Output.New_Line;
    end Put_Feature;
 
    procedure Put_Background (Format     : in out Text_Format_Type;
