@@ -62,6 +62,8 @@ package body Test_Suite.Lib.Args is
       T.Assert (First = 7, "Match (2, First) incorrect");
       T.Assert (Last  = 9, "Match (2, Last) incorrect");
 
+      T.Assert (Args.First_Text = 0, "First_Text should always be 0");
+
       T.Assert (Args.Num_Text = 0, "No text until Add_Text is called");
       T.Assert (Args.First = 0,    "First element should be 0");
       T.Assert (Args.Last = -1,    "Last element should be -1");
@@ -98,6 +100,8 @@ package body Test_Suite.Lib.Args is
                 "Elem 2 should have type paragraph");
       T.Assert (Args.Elem_Type (3) = Arg_Separator,
                 "Elem 3 should have type separator");
+
+      T.Assert (Args.First_Table = 0, "First_Table should always be 0");
 
    end Run;
 

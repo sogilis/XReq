@@ -68,9 +68,11 @@ Feature: Tables
           Given a table:
             | a | b |
             | c | d |
+            | e |
           Then the table should be equal to:
             | a | b |
             | c | d |
+            | e |
       """
     When I run adaspec -x equal_table features/equal_table.feature
     Then it should pass
@@ -85,9 +87,11 @@ Feature: Tables
           Given a table:
             | a | b |
             | c | d |
+            | e | |
           Then the table should be equal to:
             | a | b |
             | c | d |
+            | e | |
 
       1 scenario (1 passed)
       2 steps (2 passed)
@@ -106,6 +110,10 @@ Feature: Tables
                   <tr>
                     <td>c</td>
                     <td>d</td>
+                  </tr>
+                  <tr>
+                    <td>e</td>
+                    <td></td>
                   </tr>
                 </table>
       """

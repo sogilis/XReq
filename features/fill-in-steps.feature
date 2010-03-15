@@ -91,8 +91,8 @@ Feature: Auto fill in of steps definitions
     Then it should pass
     And "features/step_definitions/steps.ads" should contain
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       """
     And "features/step_definitions/steps.ads" should contain
       """
@@ -121,28 +121,24 @@ Feature: Auto fill in of steps definitions
       package body Steps is
 
          procedure Given_a_computer (Args : in out Arg_Type) is
-         begin
       """
     And "features/step_definitions/steps.adb" should contain
       """
          end Given_a_computer;
 
          procedure Mixed_Step (Args : in out Arg_Type) is
-         begin
       """
     And "features/step_definitions/steps.adb" should contain
       """
          end Mixed_Step;
 
          procedure When_toto (Args : in out Arg_Type) is
-         begin
       """
     And "features/step_definitions/steps.adb" should contain
       """
          end When_toto;
 
          procedure Then_tata (Args : in out Arg_Type) is
-         begin
       """
     And "features/step_definitions/steps.adb" should contain
       """
@@ -172,9 +168,10 @@ Feature: Auto fill in of steps definitions
       package body Steps is
 
          procedure Given_a_computer (Args : in out Arg_Type) is
+            Not_Yet_Implemented : exception;
          begin
-            raise AdaSpecLib.Not_Yet_Implemented
-               with "Procedure not implemented: " & "Given_a_computer"
+            raise Not_Yet_Implemented
+               with "Procedure " & "Given_a_computer" & " not implemented";
          end Given_a_computer;
 
       end Steps;
@@ -193,13 +190,13 @@ Feature: Auto fill in of steps definitions
       package body Steps is
 
          procedure Given_a_computer (Args : in out Arg_Type) is
+            Not_Yet_Implemented : exception;
          begin
-            raise AdaSpecLib.Not_Yet_Implemented
-               with "Procedure not implemented: " & "Given_a_computer"
+            raise Not_Yet_Implemented
+               with "Procedure " & "Given_a_computer" & " not implemented";
          end Given_a_computer;
 
          procedure Mixed_Step (Args : in out Arg_Type) is
-         begin
       """
     And "features/step_definitions/steps.adb" should contain
       """

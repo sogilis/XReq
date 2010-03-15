@@ -88,8 +88,8 @@ package body AdaSpecLib.Format.Text is
             Format.Output.Put ("      |");
             for X in T.First_X .. T.Last_X loop
                T.Item (X, Y, Cell, Cell_Ok);
-               Format.Output.Put (" ");
                if Cell_Ok then
+                  Format.Output.Put (" ");
                   Format.Output.Put (To_String (Cell));
                end if;
                Format.Output.Put (" |");
@@ -118,8 +118,7 @@ package body AdaSpecLib.Format.Text is
                Put_Long_String (Args.Text (Args.Elem_Idx (I)));
             when Arg_Table =>
                Put_Table (Args.Table (Args.Elem_Idx (I)));
-            when Arg_Separator =>       null;
-            when Arg_Paragraph =>       null;
+            when others => null;
          end case;
       end loop Loop_Args;
       Format.Has_Previous_Step  := True;
