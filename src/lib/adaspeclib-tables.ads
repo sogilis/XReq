@@ -21,6 +21,7 @@ package AdaSpecLib.Tables is
    function "<" (Left, Right : in Key_Type) return Boolean;
 
    type Table is tagged private;
+   type Cursor is private;
 
    function Length   (T    : in Table) return Key_Type;
    function Is_Empty (T    : in Table) return Boolean;
@@ -49,6 +50,12 @@ package AdaSpecLib.Tables is
    procedure Add_X   (T    : in out Table);
    procedure Add_Y   (T    : in out Table);
 
+   function  First       (T : in     Table) return Cursor;
+   procedure Next        (C : in out Cursor);
+   function  Element     (C : in     Cursor) return Element_Type;
+   function  Key         (C : in     Cursor) return Key_Type;
+   function  Has_Element (C : in     Cursor) return Boolean;
+
 --    Empty_Table : constant Table := <>;
 
 private
@@ -63,6 +70,11 @@ private
          First_Y : Integer :=  0;
          Last_X  : Integer := -1;
          Last_Y  : Integer := -1;
+      end record;
+
+   type Cursor is
+      record
+         C : Maps.Cursor;
       end record;
 
 end AdaSpecLib.Tables;

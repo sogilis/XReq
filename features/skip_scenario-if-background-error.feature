@@ -64,8 +64,8 @@ Feature: Skip scenarios after a background error
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       package Steps is
 
         --  @given ^this step works(.*)$
@@ -86,7 +86,9 @@ Feature: Skip scenarios after a background error
     And a file "features/step_definitions/steps.adb":
       """
       with Ada.Text_IO;
-      use Ada.Text_IO;
+      with AdaSpecLib.Asserts;
+      use  Ada.Text_IO;
+      use  AdaSpecLib.Asserts;
       package body Steps is
 
         Num : Positive := 2;
@@ -130,7 +132,7 @@ Feature: Skip scenarios after a background error
       This step works BACKGROUND
           Given this step works BACKGROUND
           And it fail
-            ADASPECLIB.ERROR: Error message
+            ADASPECLIB.ASSERTS.ERROR: Error message
           And this step works BACKGROUND
 
         Scenario: Run a good step 1
@@ -181,7 +183,7 @@ Feature: Skip scenarios after a background error
         Scenario: Run a good step 2
       This step works BACKGROUND
           Given this fails periodically
-            ADASPECLIB.ERROR: Num = 2 /= 1
+            ADASPECLIB.ASSERTS.ERROR: Num = 2 /= 1
           And this step works BACKGROUND
           And this step works STEP
           And this is ignored
@@ -197,7 +199,7 @@ Feature: Skip scenarios after a background error
         Scenario: Run a good step 4
       This step works BACKGROUND
           Given this fails periodically
-            ADASPECLIB.ERROR: Num = 2 /= 1
+            ADASPECLIB.ASSERTS.ERROR: Num = 2 /= 1
           And this step works BACKGROUND
           And this step works STEP
           And this is ignored

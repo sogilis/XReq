@@ -143,8 +143,8 @@ Feature: HTML reports
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       package Steps is
 
         --  @given ^this step (works)$
@@ -167,7 +167,9 @@ Feature: HTML reports
     And a file "features/step_definitions/steps.adb":
       """
       with Ada.Text_IO;
-      use Ada.Text_IO;
+      with AdaSpecLib.Asserts;
+      use  Ada.Text_IO;
+      use  AdaSpecLib.Asserts;
       package body Steps is
 
         Num : Positive := 2;

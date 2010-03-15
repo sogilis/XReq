@@ -45,9 +45,9 @@ Feature: Long strings
     And   a file "features/step_definitions/steps.ads":
       """
       with Ada.Strings.Unbounded;
-      with AdaSpecLib;
+      with AdaSpecLib.General;
       use  Ada.Strings.Unbounded;
-      use  AdaSpecLib;
+      use  AdaSpecLib.General;
 
       package Steps is
         First_String  : Unbounded_String;
@@ -68,6 +68,8 @@ Feature: Long strings
       """
     And   a file "features/step_definitions/steps.adb":
       """
+      with AdaSpecLib.Asserts;
+      use  AdaSpecLib.Asserts;
       package body Steps is
 
         function Decode (Str : in String) return String is

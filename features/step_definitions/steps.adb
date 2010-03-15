@@ -7,9 +7,11 @@ with Ada.Directories;
 with Ada.Sequential_IO;
 with Ada.IO_Exceptions;
 with GNAT.OS_Lib;
+with AdaSpecLib.Asserts;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
+use AdaSpecLib.Asserts;
 
 package body Steps is
 

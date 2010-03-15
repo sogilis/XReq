@@ -154,8 +154,8 @@ Feature: Auto fill in of steps definitions
   Scenario: Filling existing steps
     Given a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       package Steps is
 
          --  @given ^a computer$

@@ -363,6 +363,8 @@ package body AdaSpecLib.Format.HTML is
    procedure Put_Summary    (Format     : in out HTML_Format_Type;
                              Report     : in Report_Type)
    is
+      use Ada.Containers;
+
       Count_Scenarios : constant Natural := Report.Count_Scenario_Failed +
                                             Report.Count_Scenario_Passed;
       Count_Steps     : constant Natural := Report.Count_Steps_Failed +

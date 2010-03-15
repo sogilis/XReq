@@ -16,9 +16,9 @@ Feature: Run steps with arguments (captures)
     And   a file "features/step_definitions/steps.ads":
       """
       with Ada.Strings.Unbounded;
-      with AdaSpecLib;
+      with AdaSpecLib.General;
       use  Ada.Strings.Unbounded;
-      use  AdaSpecLib;
+      use  AdaSpecLib.General;
       package Steps is
         Result : Unbounded_String;
         --  @when ^I concatenate "(.*)" and "(.*)"$
@@ -29,6 +29,8 @@ Feature: Run steps with arguments (captures)
       """
     And   a file "features/step_definitions/steps.adb":
       """
+      with AdaSpecLib.Asserts;
+      use  AdaSpecLib.Asserts;
       package body Steps is
         procedure Concat (Args : in out Arg_Type) is
         begin

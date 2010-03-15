@@ -1,15 +1,19 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings;
+with Ada.Strings.Fixed;
 with Ada.Directories;
 with Ada.Containers;
 with Ada.Characters.Handling;
 with Util.IO;
+with AdaSpecLib.String_Tables;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 
 use Ada.Directories;
 use Ada.Containers;
 use Util.IO;
+use AdaSpecLib;
 use AdaSpec.Steps;
 use AdaSpec.Stanzas;
 
@@ -64,9 +68,11 @@ package body AdaSpec.Generator.Ada05 is
       First : Boolean := True;
    begin
       Gen.Ads.Put_Line ("with AdaSpecLib;");
+      Gen.Ads.Put_Line ("with AdaSpecLib.Args;");
       Gen.Ads.Put_Line ("with AdaSpecLib.Report;");
       Gen.Ads.Put_Line ("with AdaSpecLib.Format;");
       Gen.Ads.Put_Line ("use  AdaSpecLib;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib.Args;");
       Gen.Ads.Put_Line ("use  AdaSpecLib.Report;");
       Gen.Ads.Put_Line ("use  AdaSpecLib.Format;");
       Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
@@ -123,6 +129,9 @@ package body AdaSpec.Generator.Ada05 is
                                 Background : in     Boolean := False)
    is
       pragma Unreferenced (Scenario);
+      package T renames String_Tables;
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
       use Argument_Vectors;
       use String_Set;
       use Match_Vectors;
@@ -133,6 +142,7 @@ package body AdaSpec.Generator.Ada05 is
       E        : Match_Location;
       I2       : Argument_Vectors.Cursor := First (Step.Step.Args);
       E2       : Argument_Type;
+      I3       : String_Tables.Cursor;
    begin
       S.Adb.Put_Line ("Format.Start_Step;");
       --  Declare
@@ -168,7 +178,25 @@ package body AdaSpec.Generator.Ada05 is
                S.Adb.Put_Line ("Add_Text  (Args, " &
                                Ada_String (To_String (E2.Text)) & ");");
             when Table =>
-               null;  --  TODO
+               S.Adb.Put_Line ("declare");
+               S.Adb.Indent;
+               S.Adb.Put_Line ("Tble : Table_Type;");
+               S.Adb.UnIndent;
+               S.Adb.Put_Line ("begin");
+               S.Adb.Indent;
+               I3 := T.First (E2.Table);
+               while T.Has_Element (I3) loop
+                  S.Adb.Put_Indent;
+                  S.Adb.Put ("Tble.Put (");
+                  S.Adb.Put (Trim (T.Key (I3).X'Img, Left) & ", ");
+                  S.Adb.Put (Trim (T.Key (I3).Y'Img, Left) & ", ");
+                  S.Adb.Put (Ada_String (To_String (T.Element (I3))) & ");");
+                  S.Adb.New_Line;
+                  T.Next (I3);
+               end loop;
+               S.Adb.Put_Line ("Args.Add_Table (Tble);");
+               S.Adb.UnIndent;
+               S.Adb.Put_Line ("end;");
             when others =>
                null;
          end case;

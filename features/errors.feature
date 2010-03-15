@@ -24,8 +24,8 @@ Feature: Error handling in steps
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       package Steps is
 
         --  @given ^this step works$
@@ -38,6 +38,8 @@ Feature: Error handling in steps
       """
     And a file "features/step_definitions/steps.adb":
       """
+      with AdaSpecLib.Asserts;
+      use  AdaSpecLib.Asserts;
       package body Steps is
 
         procedure This_Step_Works (Args : in out Arg_Type) is
@@ -71,7 +73,7 @@ Feature: Error handling in steps
 
         Scenario: Run a bad step
           Given this step doesn't work
-            ADASPECLIB.ERROR: Assertion failed
+            ADASPECLIB.ASSERTS.ERROR: Assertion failed
           And this step works
 
         Scenario: Run a good step

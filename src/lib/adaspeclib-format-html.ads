@@ -1,6 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Containers.Vectors;
+with Ada.Strings.Unbounded;
+
+use Ada.Strings.Unbounded;
 
 package AdaSpecLib.Format.HTML is
 

@@ -1,12 +1,14 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Exceptions;
+with Ada.Strings.Unbounded;
 with Ada.Text_IO;
 with GNAT.OS_Lib;
 with GNAT.Command_Line;
 with AdaSpecLib.Format.Text;
 
 use Ada.Exceptions;
+use Ada.Strings.Unbounded;
 use Ada.Text_IO;
 use GNAT.OS_Lib;
 use GNAT.Command_Line;

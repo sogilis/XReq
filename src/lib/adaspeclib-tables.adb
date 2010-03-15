@@ -233,4 +233,49 @@ package body AdaSpecLib.Tables is
       T.Last_Y := T.Last_Y + 1;
    end Add_Y;
 
+   -------------
+   --  First  --
+   -------------
+
+   function  First       (T : in     Table) return Cursor is
+   begin
+      return Cursor'(C => Maps.First (T.Map));
+   end First;
+
+   ------------
+   --  Next  --
+   ------------
+
+   procedure Next        (C : in out Cursor) is
+   begin
+      Maps.Next (C.C);
+   end Next;
+
+   ---------------
+   --  Element  --
+   ---------------
+
+   function  Element     (C : in     Cursor) return Element_Type is
+   begin
+      return Maps.Element (C.C);
+   end Element;
+
+   -----------
+   --  Key  --
+   -----------
+
+   function  Key         (C : in     Cursor) return Key_Type is
+   begin
+      return Maps.Key (C.C);
+   end Key;
+
+   -------------------
+   --  Has_Element  --
+   -------------------
+
+   function  Has_Element (C : in     Cursor) return Boolean is
+   begin
+      return Maps.Has_Element (C.C);
+   end Has_Element;
+
 end AdaSpecLib.Tables;

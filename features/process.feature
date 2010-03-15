@@ -20,8 +20,8 @@ Feature: The simplest works
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       package Steps is
 
         --  @given ^this step works$

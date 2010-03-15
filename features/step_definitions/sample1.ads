@@ -1,7 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpecLib;
-use  AdaSpecLib;
+with AdaSpecLib.General;
+use  AdaSpecLib.General;
 
 package Sample1 is
 

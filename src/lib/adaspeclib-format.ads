@@ -2,11 +2,13 @@
 
 with Ada.Unchecked_Deallocation;
 with Ada.Exceptions;
+with AdaSpecLib.Args;
 with AdaSpecLib.Report;
 with Ada.Finalization;
 with Ada.Text_IO;
 
 use  Ada.Exceptions;
+use  AdaSpecLib.Args;
 use  AdaSpecLib.Report;
 
 package AdaSpecLib.Format is

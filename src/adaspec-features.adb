@@ -430,7 +430,9 @@ package body AdaSpec.Features is
          Continue : Boolean := True;
       begin
          while Continue and not End_Of_File loop
-            Read_Line;
+            if Y > 0 then
+               Read_Line;
+            end if;
             if Detect_Keyword ("|") then
                declare
                   Line : constant String :=
@@ -442,12 +444,15 @@ package body AdaSpec.Features is
                   while N > 0 loop
                      Table.Put (X, Y,
                         To_Unbounded_String (Trim (Line (I .. N - 1), Both)));
+                     Log.Put_Line ("Table (" & X'Img & Y'Img & " ) " &
+                                   Trim (Line (I .. N - 1), Both));
                      I := N + 1;
                      N := Index (Line, "|", I);
                      X := X + 1;
                   end loop;
                end;
                Y := Y + 1;
+               X := 0;
             else
                Unread_Line := True;
                Continue    := False;
