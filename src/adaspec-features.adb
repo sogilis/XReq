@@ -204,7 +204,7 @@ package body AdaSpec.Features is
       --  Parsing Rules  --
       ---------------------
 
-      --  ALL           -> FEATURE
+      --  ++ ALL           -> FEATURE
       procedure Read_All is
       begin
          Read_Line;
@@ -213,9 +213,9 @@ package body AdaSpec.Features is
          end if;
       end Read_All;
 
-      --  FEATURE       -> "Feature:" name NL
-      --                    description NL
-      --                    { SCENARIO }
+      --  ++ FEATURE       -> "Feature:" name NL
+      --  ++                   description NL
+      --  ++                   { SCENARIO }
       procedure Read_Feature (Feature : in out Feature_File_Type) is
          Current_Scenario : Scenario_Type;
          Beginning        : Boolean := True;
@@ -256,10 +256,10 @@ package body AdaSpec.Features is
          end loop;
       end Read_Feature;
 
-      --  SCENARIO      -> K_SCENARIO name NL
-      --                   { STANZA }
-      --  K_SCENARIO    -> "Background:"
-      --                 | "Scenario:"
+      --  ++ SCENARIO      -> K_SCENARIO name NL
+      --  ++                  { STANZA }
+      --  ++ K_SCENARIO    -> "Background:"
+      --  ++                | "Scenario:"
       procedure Read_Scenario (Scenario : out Scenario_Type) is
          Current_Stanza : Stanza_Type;
          Current_Prefix : Prefix_Type_Maybe := Prefix_None;
@@ -315,14 +315,14 @@ package body AdaSpec.Features is
          end loop;
       end Read_Scenario;
 
-      --  STANZA        -> K_STANZA text NL
-      --                   { STANZA_PARAM }
-      --  K_STANZA      -> "Given"
-      --                 | "When"
-      --                 | "Then"
-      --                 | "And"
-      --  STANZA_PARAM  -> STRING
-      --                   TABLE
+      --  ++ STANZA        -> K_STANZA text NL
+      --  ++                  { STANZA_PARAM }
+      --  ++ K_STANZA      -> "Given"
+      --  ++                | "When"
+      --  ++                | "Then"
+      --  ++                | "And"
+      --  ++ STANZA_PARAM  -> STRING
+      --  ++                  TABLE
       procedure Read_Step (Step : in out Stanza_Type) is
          Continue    : Boolean := True;
          Long_String : Unbounded_String;
@@ -366,8 +366,8 @@ package body AdaSpec.Features is
 --          Log_Error ("End   read step");
       end Read_Step;
 
-      --  STRING        -> """ NL { char | \" } NL { space } """ NL
-      --                 | ''' NL { char | \' } NL { space } ''' NL
+      --  ++ STRING        -> """ NL { char | \" } NL { space } """ NL
+      --  ++                | ''' NL { char | \' } NL { space } ''' NL
       procedure Read_String   (Result   : out    Unbounded_String;
                                Sep      : in     String)
       is
@@ -414,7 +414,7 @@ package body AdaSpec.Features is
          Result := Res;
       end Read_String;
 
-      --  TABLE         -> { "|" { cell "|" } NL }
+      --  ++ TABLE         -> { "|" { cell "|" } NL }
       procedure Read_Table is
          use Ada.Strings.Fixed;
          use Ada.Strings;
