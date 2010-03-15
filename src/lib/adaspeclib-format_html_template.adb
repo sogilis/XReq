@@ -389,6 +389,39 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "</pre>" & ASCII.LF);
    end step_string;
 
+   procedure step_table_begin
+        (File : in out File_Type) is
+   begin
+      Put (File, "          <table>" & ASCII.LF);
+   end step_table_begin;
+
+   procedure step_table_row_begin
+        (File : in out File_Type) is
+   begin
+      Put (File, "            <tr>" & ASCII.LF);
+   end step_table_row_begin;
+
+   procedure step_table_cell
+        (File : in out File_Type;
+         Param_string : in String) is
+   begin
+      Put (File, "              <td>");
+      Put (File, Param_string);
+      Put (File, "</td>" & ASCII.LF);
+   end step_table_cell;
+
+   procedure step_table_row_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "            </tr>" & ASCII.LF);
+   end step_table_row_end;
+
+   procedure step_table_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "          </table>" & ASCII.LF);
+   end step_table_end;
+
    procedure step_separator
         (File : in out File_Type) is
    begin

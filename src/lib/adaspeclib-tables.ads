@@ -58,6 +58,8 @@ package AdaSpecLib.Tables is
 
 --    Empty_Table : constant Table := <>;
 
+   function "=" (Left, Right : in Table) return Boolean;
+
 private
 
    package Maps is

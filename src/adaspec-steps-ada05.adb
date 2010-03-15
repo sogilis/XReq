@@ -123,7 +123,7 @@ package body AdaSpec.Steps.Ada05 is
 
          if Package_S = Null_Unbounded_String then
             Idx  := Index (Line_S, "with");
-            Idx2 := Index (Line_S, "AdaSpecLib");
+            Idx2 := Index (Line_S, "AdaSpecLib.General");
             if Idx > 0 and Idx < Idx2 then
                With_AdaSpecLib := True;
             end if;
@@ -277,10 +277,10 @@ package body AdaSpec.Steps.Ada05 is
       ------------------
       if S.Fill_Steps then
          if not Use_AdaSpecLib then
-            Buffer := "use  AdaSpecLib;" & ASCII.LF & Buffer;
+            Buffer := "use  AdaSpecLib.General;" & ASCII.LF & Buffer;
          end if;
          if not With_AdaSpecLib then
-            Buffer := "with AdaSpecLib;" & ASCII.LF & Buffer;
+            Buffer := "with AdaSpecLib.General;" & ASCII.LF & Buffer;
          end if;
          Logger.Put_Line ("Update: " & Steps_Ads_File);
          Set_File (Steps_Ads_File, To_String (Buffer));
@@ -290,14 +290,15 @@ package body AdaSpec.Steps.Ada05 is
             Buffer := Null_Unbounded_String;
             Append (Buffer, "   procedure " & To_String (Procedure_S) &
                             " (Args : in out Arg_Type) is" & ASCII.LF);
+            Append (Buffer, "      Not_Yet_Implemented : exception;" &
+                                   ASCII.LF);
             Append (Buffer, "   begin" & ASCII.LF);
-            Append (Buffer, "      raise AdaSpecLib.Not_Yet_Implemented" &
-                            ASCII.LF);
-            Append (Buffer, "         with ""Procedure not implemented: " &
-                            """ & " & Ada_String (To_String (Procedure_S)) &
-                            ASCII.LF);
+            Append (Buffer, "      raise Not_Yet_Implemented" & ASCII.LF);
+            Append (Buffer, "         with ""Procedure "" & " &
+                                      Ada_String (To_String (Procedure_S)) &
+                                      " & "" not implemented"";" & ASCII.LF);
             Append (Buffer, "   end " & To_String (Procedure_S) & ";" &
-                            ASCII.LF);
+                                ASCII.LF);
             Replace_Element (Added_Prc, J, Buffer);
             Next (J);
          end loop;

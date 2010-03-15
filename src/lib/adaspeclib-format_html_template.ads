@@ -45,6 +45,22 @@ package AdaSpecLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_string : in String);
 
+   procedure step_table_begin
+        (File : in out File_Type);
+
+   procedure step_table_row_begin
+        (File : in out File_Type);
+
+   procedure step_table_cell
+        (File : in out File_Type;
+         Param_string : in String);
+
+   procedure step_table_row_end
+        (File : in out File_Type);
+
+   procedure step_table_end
+        (File : in out File_Type);
+
    procedure step_separator
         (File : in out File_Type);
 

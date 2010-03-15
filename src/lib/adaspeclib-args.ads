@@ -13,14 +13,15 @@ package AdaSpecLib.Args is
    --  Arg_Type  --
    ----------------
 
-   package Table_Pkg  renames AdaSpecLib.String_Tables;
-   subtype Table_Type is AdaSpecLib.String_Tables.Table;
+   package Table_Pkg    renames AdaSpecLib.String_Tables;
+   subtype Table_Type   is AdaSpecLib.String_Tables.Table;
+   subtype Table_Cursor is AdaSpecLib.String_Tables.Cursor;
 
    type Arg_Type is tagged private;
    Null_Arg : constant Arg_Type;
 
-   type Arg_Element_Type is                     --  GCOV_IGNORE
-      (Arg_Text, Arg_Separator, Arg_Paragraph); --  GCOV_IGNORE
+   type Arg_Element_Type is                                     --  GCOV_IGNORE
+      (Arg_Text, Arg_Table, Arg_Separator, Arg_Paragraph);      --  GCOV_IGNORE
 
    procedure Make         (Self   : out    Arg_Type;
                            Stanza : in     String);
@@ -44,6 +45,13 @@ package AdaSpecLib.Args is
    function  First_Text   (Self   : in     Arg_Type) return Natural;
    function  Last_Text    (Self   : in     Arg_Type) return Integer;
    function  Num_Text     (Self   : in     Arg_Type) return Natural;
+   --  Table  --
+   function  Table        (Self   : in     Arg_Type;
+                           N      : in     Natural := 0) return Table_Type;
+   procedure Add_Table    (Self   : in out Arg_Type;
+                           Table  : in     Table_Type);
+   function  First_Table  (Self   : in     Arg_Type) return Natural;
+   function  Last_Table   (Self   : in     Arg_Type) return Integer;
    --  Separator  --
    procedure Add_Sep      (Self   : in out Arg_Type;
                            N      : in     Natural := 0);
@@ -79,6 +87,8 @@ private
    package Elem_Vectors is new Vectors (Natural, Arg_Element_Record, "=");
    package Match_Vectors is new Vectors (Positive, Match_Type, "=");
    package String_Vectors is new Vectors (Natural, Unbounded_String, "=");
+   package Table_Vectors is new Vectors (Natural, Table_Type,
+                                         AdaSpecLib.String_Tables."=");
 
    type Arg_Type is tagged
       record
@@ -86,6 +96,7 @@ private
          Matches    : Match_Vectors.Vector;
          Elems      : Elem_Vectors.Vector;
          Texts      : String_Vectors.Vector;
+         Tables     : Table_Vectors.Vector;
          Paragraphs : String_Vectors.Vector;
       end record;
 

@@ -2,9 +2,11 @@
 
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded;
 
 use Ada.Strings;
 use Ada.Strings.Fixed;
+use Ada.Strings.Unbounded;
 
 package body AdaSpecLib.Format.Text is
 
@@ -59,6 +61,43 @@ package body AdaSpecLib.Format.Text is
                              Success    : in     Status_Type)
    is
       pragma Unreferenced (Success);
+      procedure Put_Long_String (Text : in String);
+      procedure Put_Table (T : in Table_Type);
+
+      procedure Put_Long_String (Text : in String) is
+         J    : Natural := Text'First;
+      begin
+         Format.Output.Put_Line ("      """"""");
+         Format.Output.Put      ("      ");
+         while J <= Text'Last loop
+            Format.Output.Put (Text (J));
+            if Text (J) = ASCII.LF then
+               Format.Output.Put ("      ");
+            end if;
+            J := J + 1;
+         end loop;
+         Format.Output.New_Line;
+         Format.Output.Put_Line ("      """"""");
+      end Put_Long_String;
+
+      procedure Put_Table (T : in Table_Type) is
+         Cell    : Unbounded_String;
+         Cell_Ok : Boolean;
+      begin
+         for Y in T.First_Y .. T.Last_Y loop
+            Format.Output.Put ("      |");
+            for X in T.First_X .. T.Last_X loop
+               T.Item (X, Y, Cell, Cell_Ok);
+               Format.Output.Put (" ");
+               if Cell_Ok then
+                  Format.Output.Put (To_String (Cell));
+               end if;
+               Format.Output.Put (" |");
+            end loop;
+            Format.Output.New_Line;
+         end loop;
+      end Put_Table;
+
    begin
       Format.Output.Put ("    ");
       if Format.Has_Previous_Step and Format.Previous_Step_Type = Step then
@@ -72,24 +111,17 @@ package body AdaSpecLib.Format.Text is
       end if;
       Format.Output.Put (Name);
       Format.Output.New_Line;
-      for I in Args.First_Text .. Args.Last_Text loop
-         Format.Output.Put_Line ("      """"""");
-         Format.Output.Put      ("      ");
-         declare
-            Text : constant String := Args.Text (I);
-            J    : Natural := Text'First;
-         begin
-            while J <= Text'Last loop
-               Format.Output.Put (Text (J));
-               if Text (J) = ASCII.LF then
-                  Format.Output.Put ("      ");
-               end if;
-               J := J + 1;
-            end loop;
-         end;
-         Format.Output.New_Line;
-         Format.Output.Put_Line ("      """"""");
-      end loop;
+      Loop_Args :
+      for I in Args.First .. Args.Last loop
+         case Args.Elem_Type (I) is
+            when Arg_Text =>
+               Put_Long_String (Args.Text (Args.Elem_Idx (I)));
+            when Arg_Table =>
+               Put_Table (Args.Table (Args.Elem_Idx (I)));
+            when Arg_Separator =>       null;
+            when Arg_Paragraph =>       null;
+         end case;
+      end loop Loop_Args;
       Format.Has_Previous_Step  := True;
       Format.Previous_Step_Type := Step;
    end Put_Step;

@@ -67,6 +67,7 @@ package body AdaSpec.Generator.Ada05 is
       use Util.Strings.Vectors;
       First : Boolean := True;
    begin
+      Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with AdaSpecLib;");
       Gen.Ads.Put_Line ("with AdaSpecLib.Args;");
       Gen.Ads.Put_Line ("with AdaSpecLib.Report;");
@@ -190,7 +191,8 @@ package body AdaSpec.Generator.Ada05 is
                   S.Adb.Put ("Tble.Put (");
                   S.Adb.Put (Trim (T.Key (I3).X'Img, Left) & ", ");
                   S.Adb.Put (Trim (T.Key (I3).Y'Img, Left) & ", ");
-                  S.Adb.Put (Ada_String (To_String (T.Element (I3))) & ");");
+                  S.Adb.Put ("Ada.Strings.Unbounded.To_Unbounded_String (");
+                  S.Adb.Put (Ada_String (To_String (T.Element (I3))) & "));");
                   S.Adb.New_Line;
                   T.Next (I3);
                end loop;

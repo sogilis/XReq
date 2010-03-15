@@ -146,6 +146,52 @@ package body AdaSpecLib.Args is
       return Natural (Length (Self.Texts));
    end Num_Text;
 
+   ---------------------------
+   --  Arg_Type  --  Table  --
+   ---------------------------
+
+   function  Table        (Self   : in     Arg_Type;
+                           N      : in     Natural := 0) return Table_Type
+   is
+      use Table_Vectors;
+   begin
+      return Element (Self.Tables, N);
+   end Table;
+
+   -------------------------------
+   --  Arg_Type  --  Add_Table  --
+   -------------------------------
+
+   procedure Add_Table    (Self   : in out Arg_Type;
+                           Table  : in     Table_Type)
+   is
+      use Table_Vectors;
+      use Elem_Vectors;
+   begin
+      Append (Self.Tables, Table);
+      Append (Self.Elems,  Arg_Element_Record'(Arg_Table, Self.Last_Table));
+   end Add_Table;
+
+   ---------------------------------
+   --  Arg_Type  --  First_Table  --
+   ---------------------------------
+
+   function  First_Table  (Self   : in     Arg_Type) return Natural is
+      pragma Unreferenced (Self);
+   begin
+      return 0;
+   end First_Table;
+
+   --------------------------------
+   --  Arg_Type  --  Last_Table  --
+   --------------------------------
+
+   function  Last_Table   (Self   : in     Arg_Type) return Integer is
+      use Table_Vectors;
+   begin
+      return Natural (Length (Self.Tables)) - 1;
+   end Last_Table;
+
    -----------------------------
    --  Arg_Type  --  Add_Sep  --
    -----------------------------

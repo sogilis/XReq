@@ -8,13 +8,41 @@ Feature: Tables
     And I am in an empty directory
     Given a file "features/step_definitions/steps.ads":
       """
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
       package Steps is
         --  @given ^this step works$
         --  @todo
+
+        --  @given ^a table:$
+        procedure Given_a_table (Args : in out Arg_Type);
+
+        --  @then ^the table should be equal to:$
+        procedure Then_the_table_should_be_equal_to (Args : in out Arg_Type);
+      end Steps;
+      """
+    Given a file "features/step_definitions/steps.adb":
+      """
+      with AdaSpecLib.Asserts;
+      use  AdaSpecLib.Asserts;
+      package body Steps is
+
+         T : Table_Type;
+
+         procedure Given_a_table (Args : in out Arg_Type) is
+         begin
+            T := Args.Table;
+         end Given_a_table;
+
+         procedure Then_the_table_should_be_equal_to (Args : in out Arg_Type) is
+         begin
+            Assert (T = Args.Table);
+         end Then_the_table_should_be_equal_to;
+
       end Steps;
       """
 
-  Scenario:
+  Scenario: Parse a table
     Given a file "features/table.feature":
       """
       Feature: F
@@ -30,3 +58,54 @@ Feature: Tables
       """
     When I run adaspec features/table.feature
     Then it should pass
+
+  Scenario: Compare two equal tables
+    Given a file "features/equal_table.feature":
+      """
+      Feature: F
+
+        Scenario: S
+          Given a table:
+            | a | b |
+            | c | d |
+          Then the table should be equal to:
+            | a | b |
+            | c | d |
+      """
+    When I run adaspec -x equal_table features/equal_table.feature
+    Then it should pass
+    When I compile "equal_table" in features/tests
+    Then it should pass
+    When I run "./equal_table" in features/tests
+    Then it should pass with
+      """
+      Feature: F
+
+        Scenario: S
+          Given a table:
+            | a | b |
+            | c | d |
+          Then the table should be equal to:
+            | a | b |
+            | c | d |
+
+      1 scenario (1 passed)
+      2 steps (2 passed)
+
+      """
+    When I run "./equal_table -f html -o equal_table.html" in features/tests
+    Then it should pass
+    And "features/tests/equal_table.html" should exist
+    And "features/tests/equal_table.html" should contain
+      """
+                <table>
+                  <tr>
+                    <td>a</td>
+                    <td>b</td>
+                  </tr>
+                  <tr>
+                    <td>c</td>
+                    <td>d</td>
+                  </tr>
+                </table>
+      """

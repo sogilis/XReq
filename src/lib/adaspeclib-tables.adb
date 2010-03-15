@@ -278,4 +278,37 @@ package body AdaSpecLib.Tables is
       return Maps.Has_Element (C.C);
    end Has_Element;
 
+   -----------
+   --  "="  --
+   -----------
+
+   function "=" (Left, Right : in Table) return Boolean is
+
+      use Maps;
+
+--       function Equals (Left, Right : in Maps.Map) return Boolean is
+--          I  : Maps.Cursor := First (Left);
+--          K  : Key_Type;
+--          E1 : Element_Type;
+--          E2 : Element_Type;
+--       begin
+--          while Has_Element (I) loop
+--             K := Key (I);
+--             E1 := Element (I);
+--             E2 := Element (Right, K);
+--             Next (I);
+--          end loop;
+--          return True;
+--       end Equals;
+
+   begin
+      return Left.First_X = Right.First_X and then
+             Left.First_Y = Right.First_Y and then
+             Left.Last_X  = Right.Last_X  and then
+             Left.Last_Y  = Right.Last_Y  and then
+             Left.Count   = Right.Count   and then
+             Left.Map     = Right.Map;
+--              Equals (Left.Map, Right.Map);
+   end "=";
+
 end AdaSpecLib.Tables;

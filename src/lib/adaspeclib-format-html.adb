@@ -228,9 +228,36 @@ package body AdaSpecLib.Format.HTML is
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
    is
+      use Table_Pkg;
+      procedure Put_Table (T : in Table_Type);
+
       Inserts     : array (1 .. Name'Last + 1) of Unbounded_String;
       Stanza      : Unbounded_String;
       Left, Right : Natural; --  Left and right boundaries of matches
+
+
+      procedure Put_Table (T : in Table_Type) is
+         Cell    : Unbounded_String;
+         Cell_Ok : Boolean;
+      begin
+         Tmpl.step_table_begin (Format.Output);
+         for Y in T.First_Y .. T.Last_Y loop
+            Tmpl.step_table_row_begin (Format.Output);
+            for X in T.First_X .. T.Last_X loop
+               T.Item (X, Y, Cell, Cell_Ok);
+               if Cell_Ok then
+                  Tmpl.step_table_cell (Format.Output,
+                     Param_string => HTML_Text (To_String (Cell)));
+               else
+                  Tmpl.step_table_cell (Format.Output,
+                     Param_string => "");
+               end if;
+            end loop;
+            Tmpl.step_table_row_end (Format.Output);
+         end loop;
+         Tmpl.step_table_end (Format.Output);
+      end Put_Table;
+
    begin
       if Format.In_Background and
          (not Format.Have_Background) and
@@ -270,6 +297,8 @@ package body AdaSpecLib.Format.HTML is
             when Arg_Text =>
                Tmpl.step_string (Format.Output,
                   Param_string => HTML_Text (Args.Text (Args.Elem_Idx (I))));
+            when Arg_Table =>
+               Put_Table (Args.Table (Args.Elem_Idx (I)));
             when Arg_Separator =>
                if Success /= Status_Failed and not Format.Debug_Mode then
                   exit Loop_Args;
