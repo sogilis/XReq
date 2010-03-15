@@ -12,6 +12,7 @@ package AdaSpec.Stanzas is
 
    type Argument_Type (Typ : Argument_Kind := None) is
       record
+         --  GCOV_IGNORE_BEGIN
          case Typ is
             when Text =>
                Text : Unbounded_String;
@@ -20,6 +21,7 @@ package AdaSpec.Stanzas is
             when None =>
                null;
          end case;
+         --  GCOV_IGNORE_END
       end record;
 
    package Argument_Vectors is new

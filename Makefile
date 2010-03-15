@@ -183,11 +183,10 @@ gnatcheck: dir
 	@echo "##  Run GNAT-Check  ##"
 	@echo "######################"
 	@echo
-	cd reports && gnat check -P ../adaspec.gpr -rules -from=../gnatcheck.rules
+	cd reports && gnat check -P ../adaspec-release.gpr -U -rules -from=../gnatcheck.rules
 	cd reports && mv gnatcheck.out gnatcheck.adaspec.out
-	cd reports && gnat check -P ../adaspeclib.gpr -rules -from=../gnatcheck.rules
-	cd reports && mv gnatcheck.out gnatcheck.adaspeclib.out
-	# Doesn't work for some reason
+	#cd reports && gnat check -P ../adaspeclib-release.gpr -U -rules -from=../gnatcheck.rules
+	#cd reports && mv gnatcheck.out gnatcheck.adaspeclib.out
 	#cd reports && gnat check -P ../unit_tests-debug.gpr -rules -from=../gnatcheck.rules
 	#cd reports && mv gnatcheck.out gnatcheck.tests.out
 

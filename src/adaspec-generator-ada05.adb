@@ -198,7 +198,7 @@ package body AdaSpec.Generator.Ada05 is
                S.Adb.UnIndent;
                S.Adb.Put_Line ("end;");
             when others =>
-               null;
+               null;    --  GCOV_IGNORE (never happens)
          end case;
          Next (I2);
       end loop;
