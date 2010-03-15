@@ -2,11 +2,28 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
-with Util.Strings;
+with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
 
 package AdaSpec.Stanzas is
+
+   type Argument_Kind is (None, Text, Table);
+
+   type Argument_Type (Typ : Argument_Kind := None) is
+      record
+         case Typ is
+            when Text =>
+               Text : Unbounded_String;
+            when Table =>
+               Table : AdaSpecLib.String_Tables.Table;
+            when None =>
+               null;
+         end case;
+      end record;
+
+   package Argument_Vectors is new
+      Ada.Containers.Vectors (Natural, Argument_Type, "=");
 
    -------------------
    --  Stanza_Type  --
@@ -16,7 +33,7 @@ package AdaSpec.Stanzas is
       record
          Prefix : Prefix_Type;
          Stanza : Unbounded_String;
-         Texts  : Util.Strings.Vectors.Vector;
+         Args   : Argument_Vectors.Vector;
          Pos    : Position_Type;
       end record;
    type Stanza_Ptr is access all Stanza_Type;

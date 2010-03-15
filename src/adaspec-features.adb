@@ -5,6 +5,8 @@ with Ada.Strings;
 with Ada.Strings.Fixed;
 with AdaSpecLib.String_Tables;
 
+use AdaSpecLib;
+
 package body AdaSpec.Features is
 
    --------------------------
@@ -136,7 +138,7 @@ package body AdaSpec.Features is
       procedure Read_Step     (Step     : in out Stanza_Type);
       procedure Read_String   (Result   : out    Unbounded_String;
                                Sep      : in     String);
-      procedure Read_Table;
+      procedure Read_Table    (Result   : out    String_Tables.Table);
 
       --  Keywords
       K_Feature     : constant String := "Feature:";
@@ -324,8 +326,10 @@ package body AdaSpec.Features is
       --  ++ STANZA_PARAM  -> STRING
       --  ++                  TABLE
       procedure Read_Step (Step : in out Stanza_Type) is
+         use Argument_Vectors;
          Continue    : Boolean := True;
          Long_String : Unbounded_String;
+         Tble        : String_Tables.Table;
       begin
          Step := (
             Prefix => Step.Prefix,
@@ -349,12 +353,13 @@ package body AdaSpec.Features is
                Continue    := False;
             elsif Detect_Keyword (K_StrSimple) then
                Read_String (Long_String, K_StrSimple);
-               Append (Step.Texts, Long_String);
+               Append (Step.Args, Argument_Type'(Text, Long_String));
             elsif Detect_Keyword (K_StrDouble) then
                Read_String (Long_String, K_StrDouble);
-               Append (Step.Texts, Long_String);
+               Append (Step.Args, Argument_Type'(Text, Long_String));
             elsif Detect_Keyword ("|") then
-               Read_Table;
+               Read_Table (Tble);
+               Append (Step.Args, Argument_Type'(Table, Tble));
             elsif Detect_Keyword ("#") then
                null;
             elsif Idx_Data > 0 then
@@ -415,7 +420,7 @@ package body AdaSpec.Features is
       end Read_String;
 
       --  ++ TABLE         -> { "|" { cell "|" } NL }
-      procedure Read_Table is
+      procedure Read_Table (Result : out AdaSpecLib.String_Tables.Table) is
          use Ada.Strings.Fixed;
          use Ada.Strings;
          use AdaSpecLib.String_Tables;
@@ -448,6 +453,7 @@ package body AdaSpec.Features is
                Continue    := False;
             end if;
          end loop;
+         Result := Table;
       end Read_Table;
 
    begin

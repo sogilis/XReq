@@ -5,11 +5,13 @@ with Ada.Containers;
 with Ada.Characters.Handling;
 with Util.IO;
 with AdaSpec.Steps;
+with AdaSpec.Stanzas;
 
 use Ada.Directories;
 use Ada.Containers;
 use Util.IO;
 use AdaSpec.Steps;
+use AdaSpec.Stanzas;
 
 package body AdaSpec.Generator.Ada05 is
 
@@ -121,7 +123,7 @@ package body AdaSpec.Generator.Ada05 is
                                 Background : in     Boolean := False)
    is
       pragma Unreferenced (Scenario);
-      use Util.Strings.Vectors;
+      use Argument_Vectors;
       use String_Set;
       use Match_Vectors;
       Procname : constant String := Procedure_Name (Step);
@@ -129,8 +131,8 @@ package body AdaSpec.Generator.Ada05 is
       Copy     : Boolean := False;
       I        : Match_Vectors.Cursor := First (Step.Matches);
       E        : Match_Location;
-      I2       : Util.Strings.Vectors.Cursor := First (Step.Step.Texts);
-      E2       : Unbounded_String;
+      I2       : Argument_Vectors.Cursor := First (Step.Step.Args);
+      E2       : Argument_Type;
    begin
       S.Adb.Put_Line ("Format.Start_Step;");
       --  Declare
@@ -161,8 +163,15 @@ package body AdaSpec.Generator.Ada05 is
       end loop;
       while Has_Element (I2) loop
          E2 := Element (I2);
-         S.Adb.Put_Line ("Add_Text  (Args, " &
-                         Ada_String (To_String (E2)) & ");");
+         case E2.Typ is
+            when Text =>
+               S.Adb.Put_Line ("Add_Text  (Args, " &
+                               Ada_String (To_String (E2.Text)) & ");");
+            when Table =>
+               null;  --  TODO
+            when others =>
+               null;
+         end case;
          Next (I2);
       end loop;
       S.Adb.Put_Line ("Add_Sep   (Args, 1);");
