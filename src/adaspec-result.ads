@@ -61,6 +61,7 @@ package AdaSpec.Result is
       record
          Name  : Unbounded_String;
          Pos   : Position_Type;
+         Tags  : String_Vector;
          Steps : Result_Steps.Vector;
       end record;
 

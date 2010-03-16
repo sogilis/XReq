@@ -134,6 +134,7 @@ package body AdaSpec.Result is
       end loop;
       Res := (Name  => Scenario.Name,
               Pos   => Scenario.Pos,
+              Tags  => Scenario.Tags,
               Steps => StepsV);
    end Process_Scenario;
 

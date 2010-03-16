@@ -12,6 +12,8 @@ package Util.Strings is
    package Vectors is
       new Ada.Containers.Vectors (Natural, Unbounded_String, "=");
 
+   subtype String_Vector is Vectors.Vector;
+
    type String_List is  --  GCOV_IGNORE
       array (Positive range <>) of Unbounded_String;
 
@@ -19,7 +21,7 @@ package Util.Strings is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
 
-   function  Join         (Strings    : in Vectors.Vector;
+   function  Join         (Strings    : in String_Vector;
                            Sep        : in String) return String;
 
    procedure Find_Token   (Search     : in String;

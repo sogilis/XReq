@@ -35,6 +35,16 @@ package AdaSpecLib.Format_HTML_Template is
          Param_position : in String;
          Param_title : in String);
 
+   procedure scenario_tags_begin
+        (File : in out File_Type);
+
+   procedure scenario_tags_item
+        (File : in out File_Type;
+         Param_tag : in String);
+
+   procedure scenario_tags_end
+        (File : in out File_Type);
+
    procedure scenario_label
         (File : in out File_Type;
          Param_label : in String);

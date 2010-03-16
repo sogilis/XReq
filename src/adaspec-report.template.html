@@ -314,6 +314,22 @@ li.report-steps, li.report-scenarios {
   margin-right: 0.5em;
 }
 
+ul.tags {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin-left: 4.5em;
+  font-size: 0.8em;
+}
+
+ul.tags li {
+  margin: 0;
+  padding: 0;
+  display: inline;
+  padding-right: 1em;
+}
+
 p.position {
   color: transparent;
   float: right;
@@ -350,6 +366,11 @@ p.position {
       </div>
       <div id="feature-1-background-1" class="scenario skip">
         <h3 class="title-background">Background:</h3>
+        <ul class="tags">
+          <li>@tag1</li>
+          <li>@tag2</li>
+          <li>@tag3</li>
+        </ul>
         <div class="step pass"><p>Given adaspec is in the PATH</p></div>
         <div class="step pass"><p>And I am in an empty directory</p></div>
         <div class="step pass">
@@ -443,6 +464,12 @@ end Steps2;
           <h3 class="title-scenario">Scenario: <?placeholder name="title"?></h3>
           <hr class="clear hidden" />
         </div>
+<?var name="scenario-tags-begin"?>
+        <ul class="tags">
+<?var name="scenario-tags-item"?>
+          <li><?placeholder name="tag"?></li>
+<?var name="scenario-tags-end"?>
+        </ul>
 <?var name="scenario-label"?>
         <p><?placeholder name="label"?></p>
 <?var name="step-begin"?>

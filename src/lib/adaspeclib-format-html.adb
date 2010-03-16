@@ -133,7 +133,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Put_Background (Format     : in out HTML_Format_Type;
                              Background : in String;
-                             Position   : in String)
+                             Position   : in String;
+                             Tags       : in     Tag_Array_Type)
    is
    begin
       if Background /= "" then
@@ -148,6 +149,12 @@ package body AdaSpecLib.Format.HTML is
          Param_num        => To_String (Format.Background_ID),
          Param_position   => Position,
          Param_title      => HTML_Text (Background));
+      Tmpl.scenario_tags_begin (Format.Output);
+      for I in Tags'Range loop
+         Tmpl.scenario_tags_item (Format.Output,
+            Param_tag => HTML_Text (To_String (Tags (I))));
+      end loop;
+      Tmpl.scenario_tags_end (Format.Output);
    end Put_Background;
 
    -----------------------
@@ -200,7 +207,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Put_Scenario (Format   : in out HTML_Format_Type;
                            Scenario : in String;
-                           Position : in String)
+                           Position : in String;
+                           Tags     : in     Tag_Array_Type)
    is
    begin
       Tmpl.scenario_begin (Format.Output,
@@ -213,6 +221,12 @@ package body AdaSpecLib.Format.HTML is
       else
          Format.Curr_Scenario.Name := To_Unbounded_String ("Scenario");
       end if;
+      Tmpl.scenario_tags_begin (Format.Output);
+      for I in Tags'Range loop
+         Tmpl.scenario_tags_item (Format.Output,
+            Param_tag => HTML_Text (To_String (Tags (I))));
+      end loop;
+      Tmpl.scenario_tags_end (Format.Output);
    end Put_Scenario;
 
    ------------------

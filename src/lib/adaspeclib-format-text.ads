@@ -13,11 +13,13 @@ package AdaSpecLib.Format.Text is
    overriding
    procedure Put_Background (Format     : in out Text_Format_Type;
                              Background : in     String;
-                             Position   : in     String);
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type);
    overriding
    procedure Put_Scenario   (Format     : in out Text_Format_Type;
                              Scenario   : in     String;
-                             Position   : in     String);
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type);
    overriding
    procedure Put_Step       (Format     : in out Text_Format_Type;
                              Step       : in     Step_Type;

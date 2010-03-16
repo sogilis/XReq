@@ -99,6 +99,7 @@ Feature: HTML reports
             \"""
           And this is ignored
 
+        @tagA
         Scenario: A
           Given this step works
           And this is ignored
@@ -107,6 +108,7 @@ Feature: HTML reports
             \"""
           Then do nothing
 
+        @tagB
         Scenario: B
           Given this step works
             | # | My  | Pretty | Table   |

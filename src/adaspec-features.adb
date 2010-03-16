@@ -122,7 +122,6 @@ package body AdaSpec.Features is
       Self : constant access Feature_File_Type'Class := F'Access;
 
       use Ada.Text_IO;
-      use Util.Strings;
       use Util.Strings.Vectors;
       use Scenario_Container;
       use Stanza_Container;
@@ -133,6 +132,7 @@ package body AdaSpec.Features is
       function  Detect_Keyword (Keyword : in String) return Boolean;
 
       procedure Read_All;
+      procedure Read_Keywords;
       procedure Read_Feature  (Feature  : in out Feature_File_Type);
       procedure Read_Scenario (Scenario : out    Scenario_Type);
       procedure Read_Step     (Step     : in out Stanza_Type);
@@ -160,6 +160,7 @@ package body AdaSpec.Features is
       Idx_Data      : Natural;          --  Index where data starts
       --                                --  (after the keyword generally)
       Unread_Line   : Boolean := False; --  Unread the line;
+      Current_Tags  : String_Vector;
 
       -------------------------
       --  Utility Functions  --
@@ -215,6 +216,34 @@ package body AdaSpec.Features is
          end if;
       end Read_All;
 
+      --  ++  KEYWORDS     ->  { @[^\r\n\t ]+ }
+      procedure Read_Keywords is
+         Buffer     : Unbounded_String;
+         Line       : constant String := To_String (Line_S);
+         In_Keyword : Boolean := False;
+      begin
+         for I in Line'Range loop
+            case Line (I) is
+               when ASCII.CR | ASCII.LF | ASCII.HT | ' ' =>
+                  if In_Keyword then
+                     Append (Current_Tags, Buffer);
+                     In_Keyword := False;
+                  end if;
+               when '@' =>
+                  if not In_Keyword then
+                     In_Keyword := True;
+                     Buffer     := Null_Unbounded_String;
+                  end if;
+                  Append (Buffer, Line (I));
+               when others =>
+                  Append (Buffer, Line (I));
+            end case;
+         end loop;
+         if In_Keyword then
+            Append (Current_Tags, Buffer);
+         end if;
+      end Read_Keywords;
+
       --  ++ FEATURE       -> "Feature:" name NL
       --  ++                   description NL
       --  ++                   { SCENARIO }
@@ -240,7 +269,7 @@ package body AdaSpec.Features is
             elsif Detect_Keyword ("#") then
                null;
             elsif Detect_Keyword ("@") then
-               null; --  TODO: Read tag and store it for the next scenario
+               Read_Keywords;
             elsif Beginning then
                Data := Trimed_Suffix (Line_S, Idx_Data);
                if Data /= Null_Unbounded_String or Had_Description then
@@ -271,7 +300,9 @@ package body AdaSpec.Features is
       begin
          Scenario := (Name   => Trimed_Suffix (Line_S, Idx_Data),
                       Pos    => Position,
+                      Tags   => Current_Tags,
                       others => <>);
+         Clear (Current_Tags);
          while Continue and not End_Of_File loop
 
             Read_Line;

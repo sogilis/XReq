@@ -47,11 +47,15 @@ package body AdaSpecLib.Format.Text is
 
    procedure Put_Background (Format     : in out Text_Format_Type;
                              Background : in     String;
-                             Position   : in     String)
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type)
    is
       pragma Unreferenced (Position);
    begin
       Format.Output.New_Line;
+      for I in Tags'Range loop
+         Format.Output.Put_Line ("  " & To_String (Tags (I)));
+      end loop;
       Format.Output.Put ("  Background:");
       if Background /= "" then
          Format.Output.Put (" " & Background);
@@ -62,11 +66,15 @@ package body AdaSpecLib.Format.Text is
 
    procedure Put_Scenario (Format   : in out Text_Format_Type;
                            Scenario : in     String;
-                           Position : in     String)
+                           Position : in     String;
+                           Tags     : in     Tag_Array_Type)
    is
       pragma Unreferenced (Position);
    begin
       Format.Output.New_Line;
+      for I in Tags'Range loop
+         Format.Output.Put_Line ("  " & To_String (Tags (I)));
+      end loop;
       Format.Output.Put ("  Scenario:");
       if Scenario /= "" then
          Format.Output.Put (" " & Scenario);

@@ -323,6 +323,22 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  margin-right: 0.5em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, "ul.tags {" & ASCII.LF);
+      Put (File, "  display: block;" & ASCII.LF);
+      Put (File, "  margin: 0;" & ASCII.LF);
+      Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "  list-style-type: none;" & ASCII.LF);
+      Put (File, "  margin-left: 4.5em;" & ASCII.LF);
+      Put (File, "  font-size: 0.8em;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "ul.tags li {" & ASCII.LF);
+      Put (File, "  margin: 0;" & ASCII.LF);
+      Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "  display: inline;" & ASCII.LF);
+      Put (File, "  padding-right: 1em;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, "p.position {" & ASCII.LF);
       Put (File, "  color: transparent;" & ASCII.LF);
       Put (File, "  float: right;" & ASCII.LF);
@@ -438,6 +454,27 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
       Put (File, "        </div>" & ASCII.LF);
    end scenario_begin;
+
+   procedure scenario_tags_begin
+        (File : in out File_Type) is
+   begin
+      Put (File, "        <ul class=""tags"">" & ASCII.LF);
+   end scenario_tags_begin;
+
+   procedure scenario_tags_item
+        (File : in out File_Type;
+         Param_tag : in String) is
+   begin
+      Put (File, "          <li>");
+      Put (File, Param_tag);
+      Put (File, "</li>" & ASCII.LF);
+   end scenario_tags_item;
+
+   procedure scenario_tags_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "        </ul>" & ASCII.LF);
+   end scenario_tags_end;
 
    procedure scenario_label
         (File : in out File_Type;

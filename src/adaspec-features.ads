@@ -8,6 +8,7 @@ with Util.IO;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
+use Util.Strings;
 use Util.IO;
 use AdaSpec.Stanzas;
 
@@ -23,6 +24,7 @@ package AdaSpec.Features is
       record
          Name    : Unbounded_String;
          Pos     : Position_Type;
+         Tags    : String_Vector;
          Stanzas : Stanza_Container.Vector;
       end record;
    type Scenario_Ptr is access all Scenario_Type;
@@ -43,7 +45,7 @@ package AdaSpec.Features is
    type Feature_Type is tagged
       record
          Name        : Unbounded_String;
-         Description : Util.Strings.Vectors.Vector;
+         Description : String_Vector;
          Pos         : Position_Type;
          Background  : Scenario_Type;
          Scenarios   : Scenario_Container.Vector;

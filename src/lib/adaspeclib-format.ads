@@ -2,10 +2,11 @@
 
 with Ada.Unchecked_Deallocation;
 with Ada.Exceptions;
-with AdaSpecLib.Args;
-with AdaSpecLib.Report;
 with Ada.Finalization;
 with Ada.Text_IO;
+with Ada.Strings.Unbounded;
+with AdaSpecLib.Args;
+with AdaSpecLib.Report;
 
 use  Ada.Exceptions;
 use  AdaSpecLib.Args;
@@ -46,6 +47,9 @@ package AdaSpecLib.Format is
 
    ----------------------------------------------------------------------------
 
+   type Tag_Array_Type is array (Positive range <>)  --  GCOV_IGNORE
+      of Ada.Strings.Unbounded.Unbounded_String;
+
    type Status_Type is (Status_Passed, Status_Skipped, Status_Failed);
 
    type Format_Type is abstract tagged
@@ -62,11 +66,13 @@ package AdaSpecLib.Format is
                              is abstract;
    procedure Put_Background (Format     : in out Format_Type;
                              Background : in     String;
-                             Position   : in     String)
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type)
                              is abstract;
    procedure Put_Scenario   (Format     : in out Format_Type;
                              Scenario   : in     String;
-                             Position   : in     String)
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type)
                              is abstract;
    procedure Put_Step       (Format     : in out Format_Type;
                              Step       : in     Step_Type;
