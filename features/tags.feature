@@ -87,6 +87,67 @@ Feature: Tags
       @tag2
       """
 
+  Scenario: Show tags (2)
+    Given a file "features/tags.feature":
+      """
+      Feature: F
+
+        @tagB @tagC
+
+        Background:
+          Given this step doesn't work
+
+        @tag1 @tag2
+        Scenario: S
+          Given this step works
+      """
+    When I run adaspec -x suite features/tags.feature
+    Then it should pass
+
+    When I compile "suite" in features/tests
+    Then it should pass
+
+    When I run "./suite" in features/tests
+    Then it should fail with
+      """
+      Feature: F
+
+        @tagB
+        @tagC
+        Background:
+          Given this step doesn't work
+            ADASPECLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+
+        @tag1
+        @tag2
+        Scenario: S
+          Given this step works
+
+      1 scenario (1 failed)
+      2 steps (1 failed, 1 skipped)
+
+      """
+
+    When I run "./suite -f html -o report.html" in features/tests
+    Then it should fail
+    And "features/tests/report.html" should exist
+    And "features/tests/report.html" should contain
+      """
+      @tagB
+      """
+    And "features/tests/report.html" should contain
+      """
+      @tagC
+      """
+    And "features/tests/report.html" should contain
+      """
+      @tag1
+      """
+    And "features/tests/report.html" should contain
+      """
+      @tag2
+      """
+
   Scenario: Conditional execution
     Given a file "features/conditional.feature":
       """
@@ -97,11 +158,11 @@ Feature: Tags
         Background:
           Given this step works
 
-        @tag1
+        @tag1 @tag1a
         Scenario: S1
           Given this step works
 
-        @tag2
+        @tag2 @tag2a
         Scenario: S2
           Given this step works
       """
@@ -123,6 +184,7 @@ Feature: Tags
           Given this step works
 
         @tag1
+        @tag1a
         Scenario: S1
           Given this step works
 
@@ -142,11 +204,11 @@ Feature: Tags
         Background:
           Given this step works
 
-        @tag1
+        @tag1 @tag1a
         Scenario: S1
           Given this step works
 
-        @tag2
+        @tag2 @tag2a
         Scenario: S2
           Given this step works
       """
@@ -168,6 +230,7 @@ Feature: Tags
           Given this step works
 
         @tag2
+        @tag2a
         Scenario: S2
           Given this step works
 

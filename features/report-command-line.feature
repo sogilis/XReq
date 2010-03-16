@@ -83,7 +83,7 @@ Feature: Generated Test Suite Command Line
       """
 
   Scenario: Unknown Switch
-    When I run "./test_suite -toto"
+    When I run "./test_suite --toto"
     Then it should fail
     And the output should contain
     """
