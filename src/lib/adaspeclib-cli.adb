@@ -89,10 +89,10 @@ package body AdaSpecLib.CLI is
       Debug_Mode : Boolean := False;
    begin
       List_Mode  := False;
+      Tags       := Null_Tag_Expr;
       Initialize_Option_Scan (Parser, Args);
       Args       := null;  --  Parser takes ownership
       Format     := null;
-      Tags       := Null_Tag_Expr;
       Continue   := True;
 
       Getopt_Loop :
@@ -163,7 +163,9 @@ package body AdaSpecLib.CLI is
          Free (Format);
          Help (Name);
          Set_Exit_Status (Failure);
-         Continue := False;
+         Continue   := False;
+         List_Mode  := False;
+         Tags       := Null_Tag_Expr;
       when Invalid_Parameter =>
          Put_Line (Current_Error, "Missing parameter for switch -" &
                   Full_Switch (Parser));
@@ -171,12 +173,16 @@ package body AdaSpecLib.CLI is
          Free (Format);
          Help (Name);
          Set_Exit_Status (Failure);
-         Continue := False;
+         Continue   := False;
+         List_Mode  := False;
+         Tags       := Null_Tag_Expr;
       --  GCOV_IGNORE_BEGIN
       when E : others =>
-         Tags     := Null_Tag_Expr;
-         Format   := null;
-         Continue := True;
+         Tags       := Null_Tag_Expr;
+         Format     := null;
+         Continue   := False;
+         List_Mode  := False;
+         Tags       := Null_Tag_Expr;
          Free (Parser);
          Free (Format);
          Reraise_Occurrence (E);
