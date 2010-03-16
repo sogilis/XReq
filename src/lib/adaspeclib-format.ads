@@ -54,8 +54,9 @@ package AdaSpecLib.Format is
 
    type Format_Type is abstract tagged
       record
-         Output     : New_Text_IO.File_Type;
-         Debug_Mode : Boolean := False;
+         Output        : New_Text_IO.File_Type;
+         Debug_Mode    : Boolean := False;
+         First_Feature : Boolean := True;
       end record;
    type Format_Ptr  is access all Format_Type'Class;
 
@@ -120,6 +121,14 @@ package AdaSpecLib.Format is
                              is null;
    procedure Stop_Step      (Format     : in out Format_Type) --  GCOV_IGNORE
                              is null;
+
+   procedure List_Feature   (Format     : in out Format_Type;
+                             Name       : in     String);
+
+   procedure List_Scenario  (Format     : in out Format_Type;
+                             Name       : in     String;
+                             Filename   : in     String;
+                             Num        : in     Positive);
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Format_Type'Class, Format_Ptr);

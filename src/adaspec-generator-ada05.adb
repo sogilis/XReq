@@ -65,6 +65,9 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
       use Util.Strings.Vectors;
+      use Result_Scenarios;
+      I   : Result_Scenarios.Cursor := First (Gen.Feature.Scenarios);
+      Num : Positive := 1;
    begin
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with AdaSpecLib;");
@@ -80,18 +83,34 @@ package body AdaSpec.Generator.Ada05 is
       Indent (Gen.Ads);
       Indent (Gen.Adb);
       Generate_Feature (Gen);
-      Gen.Ads.Put_Line ("procedure Run (Format : in out Format_Ptr;");
-      Gen.Ads.Put_Line ("               Tags   : in Tag_Expr_Type;");
-      Gen.Ads.Put_Line ("               Report : in out Report_Type);");
-      Gen.Adb.Put_Line ("procedure Run (Format : in out Format_Ptr;");
-      Gen.Adb.Put_Line ("               Tags   : in Tag_Expr_Type;");
-      Gen.Adb.Put_Line ("               Report : in out Report_Type) is");
+      Gen.Ads.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
+      Gen.Ads.Put_Line ("               Tags      : in Tag_Expr_Type;");
+      Gen.Ads.Put_Line ("               Report    : in out Report_Type;");
+      Gen.Ads.Put_Line ("               List_Mode : in Boolean := False);");
+      Gen.Adb.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
+      Gen.Adb.Put_Line ("               Tags      : in Tag_Expr_Type;");
+      Gen.Adb.Put_Line ("               Report    : in out Report_Type;");
+      Gen.Adb.Put_Line ("               List_Mode : in Boolean := False) is");
       Gen.Adb.Indent;
-      Gen.Adb.Put_Line ("Stop  : Boolean := False;");
-      Gen.Adb.Put_Line ("First : Boolean := True;");
+      Gen.Adb.Put_Line ("Stop  : Boolean  := False;");
+      Gen.Adb.Put_Line ("First : Boolean  := True;");
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("begin");
-      Gen.Ads.Indent;
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("if List_Mode then");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Format.List_Feature (" &
+                        Ada_String (To_String (Gen.Feature.Name)) & ");");
+      while Has_Element (I) loop
+         Gen.Adb.Put_Line ("Format.List_Scenario (" &
+                           Ada_String (To_String (Element (I).Name)) & ", " &
+                           Ada_String (To_String (Element (I).Pos.File)) &
+                           "," & String'(Num'Img) & ");");
+         Next (I);
+         Num := Num + 1;
+      end loop;
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("else");
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.Start_Feature;");
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
@@ -104,7 +123,8 @@ package body AdaSpec.Generator.Ada05 is
                            " (Format, Report, First, Tags, Stop);");
       end loop;
       Gen.Adb.Put_Line ("Format.Stop_Feature;");
-      Gen.Ads.UnIndent;
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("end if;");
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("end Run;");
       Gen.Ads.UnIndent;
@@ -503,19 +523,24 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Put_Line ("Report    : Report_Type;");
       Body_B.Put_Line ("Format    : Format_Ptr;");
       Body_B.Put_Line ("Tags      : Tag_Expr_Type;");
+      Body_B.Put_Line ("List_Mode : Boolean;");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
       Body_B.Indent;
-      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Tags, Self_Name);");
+      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Tags, " &
+                                        "List_Mode, Self_Name);");
       Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
       Body_B.Put_Line    ("Format.Start_Tests;");
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
-         Body_B.Put_Line (E.Full_Name & ".Run (Format, Tags, Report);");
+         Body_B.Put_Line (E.Full_Name & ".Run (Format, Tags, Report, " &
+                                              "List_Mode);");
          Next (I);
       end loop;
+      Body_B.Put_Line    ("if not List_Mode then");
+      Body_B.Indent;
       Body_B.Put_Line    ("Format.Put_Summary (Report);");
       Body_B.Put_Line    ("if not Status (Report) then");
       Body_B.Indent;
@@ -524,6 +549,8 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.UnIndent;
       Body_B.Put_Line    ("end if;");
       Body_B.Put_Line    ("Format.Stop_Tests;");
+      Body_B.UnIndent;
+      Body_B.Put_Line    ("end if;");
       Body_B.UnIndent;
       Body_B.Put_Line ("end if;");
       Body_B.Put_Line ("Free (Format);");

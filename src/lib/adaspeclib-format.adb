@@ -39,12 +39,48 @@ package body AdaSpecLib.Format is
       Format.Output.Create (Ada.Text_IO.Out_File, Output);
    end Set_Output;
 
+   -----------------
+   --  Set_Debug  --
+   -----------------
+
    procedure Set_Debug      (Format     : in out Format_Type;
                              Debug_Mode : in     Boolean)
    is
    begin
       Format.Debug_Mode := Debug_Mode;
    end Set_Debug;
+
+   --------------------
+   --  List_Feature  --
+   --------------------
+
+   procedure List_Feature   (Format     : in out Format_Type;
+                             Name       : in     String) is
+   begin
+      if Format.First_Feature then
+         Format.First_Feature := False;
+      else
+         Format.Output.New_Line;
+      end if;
+      Format.Output.Put_Line ("Feature: " & Name);
+      Format.Output.New_Line;
+   end List_Feature;
+
+   ---------------------
+   --  List_Scenario  --
+   ---------------------
+
+   procedure List_Scenario  (Format     : in out Format_Type;
+                             Name       : in     String;
+                             Filename   : in     String;
+                             Num        : in     Positive)
+   is
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
+   begin
+      Format.Output.Put_Line ("  " & Filename & ":" & Trim (Num'Img, Left) &
+                                     " " & Name);
+   end List_Scenario;
 
    -------------------
    --  New_Text_IO  --

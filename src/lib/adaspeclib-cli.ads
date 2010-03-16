@@ -19,11 +19,13 @@ package AdaSpecLib.CLI is
                               Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
                               Tags       : out    Tag_Expr_Type;
+                              List_Mode  : out    Boolean;
                               Name       : in     String := Command_Name);
 
    procedure Parse_Arguments (Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
                               Tags       : out    Tag_Expr_Type;
+                              List_Mode  : out    Boolean;
                               Name       : in     String := Command_Name);
 
    procedure Help (Name : in String := Command_Name);
