@@ -124,7 +124,7 @@ package AdaSpecLib.Format is
    procedure Free is new Ada.Unchecked_Deallocation
       (Format_Type'Class, Format_Ptr);
 
-   function Get_Formatter (Name : in String) return Format_Ptr;
+   function Get_Formatter (Name : in String) return Format_Ptr; --  GCOV_IGNORE
 
 private
 
