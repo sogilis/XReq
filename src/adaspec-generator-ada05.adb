@@ -65,7 +65,6 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
       use Util.Strings.Vectors;
-      First : Boolean := True;
    begin
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with AdaSpecLib;");
@@ -82,11 +81,14 @@ package body AdaSpec.Generator.Ada05 is
       Indent (Gen.Adb);
       Generate_Feature (Gen);
       Gen.Ads.Put_Line ("procedure Run (Format : in out Format_Ptr;");
+      Gen.Ads.Put_Line ("               Tags   : in Tag_Expr_Type;");
       Gen.Ads.Put_Line ("               Report : in out Report_Type);");
       Gen.Adb.Put_Line ("procedure Run (Format : in out Format_Ptr;");
+      Gen.Adb.Put_Line ("               Tags   : in Tag_Expr_Type;");
       Gen.Adb.Put_Line ("               Report : in out Report_Type) is");
       Gen.Adb.Indent;
-      Gen.Adb.Put_Line ("Stop : Boolean := False;");
+      Gen.Adb.Put_Line ("Stop  : Boolean := False;");
+      Gen.Adb.Put_Line ("First : Boolean := True;");
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("begin");
       Gen.Ads.Indent;
@@ -98,14 +100,8 @@ package body AdaSpec.Generator.Ada05 is
                                           "" & ASCII.LF)) & ", " &
                         Ada_String (To_String (Gen.Feature.Pos)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
-         if First then
-            Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
-                              " (Format, Report, True, Stop);");
-            First := False;
-         else
-            Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
-                              " (Format, Report, False, Stop);");
-         end if;
+         Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
+                           " (Format, Report, First, Tags, Stop);");
       end loop;
       Gen.Adb.Put_Line ("Format.Stop_Feature;");
       Gen.Ads.UnIndent;
@@ -298,20 +294,24 @@ package body AdaSpec.Generator.Ada05 is
       Proc : constant String := "procedure " & To_String (Name) & " ";
    begin
       --  declaration
-      S.Ads.Put_Line (Proc & "(Format : in out Format_Ptr;");
-      S.Adb.Put_Line (Proc & "(Format : in out Format_Ptr;");
+      S.Ads.Put_Line (Proc & "(Format   : in out Format_Ptr;");
+      S.Adb.Put_Line (Proc & "(Format   : in out Format_Ptr;");
       S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
       S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
-      S.Ads.Put             (" Report : in out Report_Type;");
-      S.Adb.Put             (" Report : in out Report_Type;");
+      S.Ads.Put             (" Report   : in out Report_Type;");
+      S.Adb.Put             (" Report   : in out Report_Type;");
       S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
       S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
-      S.Ads.Put             (" First  : in     Boolean;");
-      S.Adb.Put             (" First  : in     Boolean;");
+      S.Ads.Put             (" First    : in out Boolean;");
+      S.Adb.Put             (" First    : in out Boolean;");
       S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
       S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
-      S.Ads.Put             (" Stop   : in out Boolean);");
-      S.Adb.Put             (" Stop   : in out Boolean)");
+      S.Ads.Put             (" Tag_Cond : in     Tag_Expr_Type;");
+      S.Adb.Put             (" Tag_Cond : in     Tag_Expr_Type;");
+      S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
+      S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
+      S.Ads.Put             (" Stop     : in out Boolean);");
+      S.Adb.Put             (" Stop     : in out Boolean)");
       S.Ads.New_Line;
       S.Adb.New_Line;
       S.Adb.Put_Line ("is");
@@ -345,6 +345,8 @@ package body AdaSpec.Generator.Ada05 is
       if Background then
          S.Adb.Put_Line ("Format.Start_Background (First);");
       else
+         S.Adb.Put_Line ("if Tag_Cond.Eval (Tags) then");
+         Indent (S.Adb);
          S.Adb.Put_Line ("Format.Enter_Scenario;");
          S.Adb.Put_Line ("if not First then");
          S.Adb.Indent;
@@ -354,7 +356,8 @@ package body AdaSpec.Generator.Ada05 is
                             "Tags);");
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
-         S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First, Fail);");
+         S.Adb.Put_Line (S.Fn_Backgnd &
+                         " (Format, Report, First, Tag_Cond, Fail);");
          S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
          S.Adb.Put_Line ("Format.Start_Scenario;");
       end if;
@@ -401,6 +404,9 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("Format.Stop_Background (First);");
       else
          S.Adb.Put_Line ("Format.Stop_Scenario;");
+         S.Adb.Put_Line ("First := False;");
+         S.Adb.UnIndent;
+         S.Adb.Put_Line ("end if;");
       end if;
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end " & Name & ";");
@@ -496,17 +502,18 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Put_Line ("Continue  : Boolean;");
       Body_B.Put_Line ("Report    : Report_Type;");
       Body_B.Put_Line ("Format    : Format_Ptr;");
+      Body_B.Put_Line ("Tags      : Tag_Expr_Type;");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
       Body_B.Indent;
-      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Self_Name);");
+      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Tags, Self_Name);");
       Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
       Body_B.Put_Line    ("Format.Start_Tests;");
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
-         Body_B.Put_Line (E.Full_Name & ".Run (Format, Report);");
+         Body_B.Put_Line (E.Full_Name & ".Run (Format, Tags, Report);");
          Next (I);
       end loop;
       Body_B.Put_Line    ("Format.Put_Summary (Report);");

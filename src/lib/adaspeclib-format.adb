@@ -1,9 +1,12 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Fixed;
+with Ada.Strings.Unbounded;
 with Ada.Strings.Maps.Constants;
 with AdaSpecLib.Format.Text;
 with AdaSpecLib.Format.HTML;
+
+use Ada.Strings.Unbounded;
 
 package body AdaSpecLib.Format is
 
@@ -114,5 +117,64 @@ package body AdaSpecLib.Format is
       end Finalize;
 
    end New_Text_IO;
+
+   ---------------------------------
+   --  Tag_Expr_Type  --  Create  --
+   ---------------------------------
+
+   function  Create (Expr : in String) return Tag_Expr_Type is
+   begin
+      return Tag_Expr_Type'(Expr => To_Unbounded_String (Expr));
+   end Create;
+
+   -------------------------------
+   --  Tag_Expr_Type  --  Eval  --
+   -------------------------------
+
+   function  Eval   (Tag_Expr : in Tag_Expr_Type;
+                     Tags     : in Tag_Array_Type) return Boolean
+   is
+
+      function Eval_Simple (Expr : in String) return Boolean;
+      function Eval_Not    (Expr : in String) return Boolean;
+      function Eval_And    (Expr : in String) return Boolean;
+      function Eval_Or     (Expr : in String) return Boolean;
+
+      function Eval_Simple (Expr : in String) return Boolean is
+      begin
+         if Expr'Length = 0 then
+            return True;
+         else
+            for I in Tags'Range loop
+               if Expr = To_String (Tags (I)) then
+                  return True;
+               end if;
+            end loop;
+            return False;
+         end if;
+      end Eval_Simple;
+
+      function Eval_Not    (Expr : in String) return Boolean is
+      begin
+         if Expr'Length >= 1 and then Expr (Expr'First) = '~' then
+            return not Eval_Simple (Expr (Expr'First + 1 .. Expr'Last));
+         else
+            return Eval_Simple (Expr);
+         end if;
+      end Eval_Not;
+
+      function Eval_And    (Expr : in String) return Boolean is
+      begin
+         return Eval_Not (Expr);
+      end Eval_And;
+
+      function Eval_Or     (Expr : in String) return Boolean is
+      begin
+         return Eval_And (Expr);
+      end Eval_Or;
+
+   begin
+      return Eval_Or (To_String (Tag_Expr.Expr));
+   end Eval;
 
 end AdaSpecLib.Format;

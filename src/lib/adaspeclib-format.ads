@@ -126,6 +126,22 @@ package AdaSpecLib.Format is
 
    function Get_Formatter (Name : in String) return Format_Ptr; --  GCOV_IGNORE
 
+   ---------------------
+   --  Tag_Expr_Type  --
+   ---------------------
+
+   type Tag_Expr_Type is tagged
+      record
+         Expr : Ada.Strings.Unbounded.Unbounded_String;
+      end record;
+
+   function  Create (Expr : in String) return Tag_Expr_Type;
+
+   function  Eval   (Tag_Expr : in Tag_Expr_Type;
+                     Tags     : in Tag_Array_Type) return Boolean;
+
+   Null_Tag_Expr : constant Tag_Expr_Type := (others => <>);
+
 private
 
    --  type Format_Type should be private but Ada is absolutely awful

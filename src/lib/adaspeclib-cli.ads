@@ -18,10 +18,12 @@ package AdaSpecLib.CLI is
    procedure Parse_Arguments (Args       : in out Argument_List_Access;
                               Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
+                              Tags       : out    Tag_Expr_Type;
                               Name       : in     String := Command_Name);
 
    procedure Parse_Arguments (Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
+                              Tags       : out    Tag_Expr_Type;
                               Name       : in     String := Command_Name);
 
    procedure Help (Name : in String := Command_Name);

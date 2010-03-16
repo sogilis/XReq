@@ -46,6 +46,15 @@ package body AdaSpecLib.CLI is
       Put_Line ("    -d, --debug");
       Put_Line ("        Produce reports with extra information to ease debugging");
       Put_Line ("");
+      Put_Line ("    -t, --tags TAGS");
+      Put_Line ("        Conditional execution using TAGS. Format is:");
+      Put_Line ("            @tag:        execute tag @tag");
+      Put_Line ("            ~@tag:       execute all but tag @tag");
+      Put_Line ("            @tag1+@tag2: execute scenarios with both @tag1 and @tag2");
+      Put_Line ("                         (not yet implemented)");
+      Put_Line ("            @tag1,@tag2: execute scenarios with either @tag1 or @tag2");
+      Put_Line ("                         (not yet implemented)");
+      Put_Line ("");
 
       --         ---------------------------------------------------------------------------XXX
       --         0         10        20        30        40        50        60        70
@@ -66,17 +75,19 @@ package body AdaSpecLib.CLI is
    procedure Parse_Arguments (Args       : in out Argument_List_Access;
                               Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
+                              Tags       : out    Tag_Expr_Type;
                               Name       : in     String := Command_Name)
    is
       Parser  : Opt_Parser;
       Options : constant String := "help h -help f: -format= o: -output= " &
-                                   "-debug d";
+                                   "-debug d -tags= t:";
       Output  : Unbounded_String := Null_Unbounded_String;
       Debug_Mode : Boolean := False;
    begin
       Initialize_Option_Scan (Parser, Args);
       Args       := null;  --  Parser takes ownership
       Format     := null;
+      Tags       := Null_Tag_Expr;
       Continue   := True;
 
       Getopt_Loop :
@@ -94,6 +105,11 @@ package body AdaSpecLib.CLI is
                Full_Switch (Parser) = "-debug"
          then
             Debug_Mode := True;
+
+         elsif Full_Switch (Parser) = "t" or
+               Full_Switch (Parser) = "-tags"
+         then
+            Tags := Create (Parameter (Parser));
 
          elsif Full_Switch (Parser) = "f" or
                Full_Switch (Parser) = "-format"
@@ -150,6 +166,7 @@ package body AdaSpecLib.CLI is
          Continue := False;
       --  GCOV_IGNORE_BEGIN
       when E : others =>
+         Tags     := Null_Tag_Expr;
          Format   := null;
          Continue := True;
          Free (Parser);
@@ -160,12 +177,13 @@ package body AdaSpecLib.CLI is
 
    procedure Parse_Arguments (Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
+                              Tags       : out    Tag_Expr_Type;
                               Name       : in     String := Command_Name)
    is
       Args : Argument_List_Access;
    begin
       Get_Arguments   (Args);
-      Parse_Arguments (Args, Format, Continue, Name);
+      Parse_Arguments (Args, Format, Continue, Tags, Name);
    end Parse_Arguments;
 
 end AdaSpecLib.CLI;

@@ -87,7 +87,6 @@ Feature: Tags
       @tag2
       """
 
-  @wip
   Scenario: Conditional execution
     Given a file "features/conditional.feature":
       """
@@ -115,7 +114,8 @@ Feature: Tags
     When I run "./suite -t @tag1" in features/tests
     Then it should pass with
       """
-      Feature: F
+      Feature: Feature
+        This is executed conditionnally
 
         @tagB1
         @tagB2
@@ -159,7 +159,8 @@ Feature: Tags
     When I run "./suite -t ~@tag1" in features/tests
     Then it should pass with
       """
-      Feature: F
+      Feature: Feature
+        This is executed conditionnally
 
         @tagB1
         @tagB2
