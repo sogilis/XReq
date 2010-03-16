@@ -43,17 +43,21 @@ package AdaSpecLib.Format.HTML is
    overriding
    procedure Put_Feature    (Format     : in out HTML_Format_Type;
                              Feature    : in     String;
-                             Description : in    String);
+                             Description : in    String;
+                             Position   : in     String);
    overriding
    procedure Put_Background (Format     : in out HTML_Format_Type;
-                             Background : in     String);
+                             Background : in     String;
+                             Position   : in     String);
    overriding
    procedure Put_Scenario   (Format     : in out HTML_Format_Type;
-                             Scenario   : in     String);
+                             Scenario   : in     String;
+                             Position   : in     String);
    overriding
    procedure Put_Step       (Format     : in out HTML_Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;
+                             Position   : in     String;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type);
    overriding

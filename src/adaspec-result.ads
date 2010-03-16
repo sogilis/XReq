@@ -60,6 +60,7 @@ package AdaSpec.Result is
    type Result_Scenario_Type is
       record
          Name  : Unbounded_String;
+         Pos   : Position_Type;
          Steps : Result_Steps.Vector;
       end record;
 
@@ -90,6 +91,7 @@ package AdaSpec.Result is
       record
          Name        : Unbounded_String;
          Description : Util.Strings.Vectors.Vector;
+         Pos         : Position_Type;
          Background  : Result_Scenario_Type;
          Scenarios   : Result_Scenarios.Vector;
          Fail        : Boolean := False;

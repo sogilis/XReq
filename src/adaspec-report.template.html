@@ -10,6 +10,10 @@ a {
   color: inherit;
 }
 
+hr.hidden {
+  visibility: hidden;
+}
+
 .clear {
   clear: both;
 }
@@ -39,6 +43,23 @@ td {
   color: #004444;
 }
 
+.feature {
+  border-left-width: 1em;
+  border-left-style: solid;
+}
+
+.feature.fail {
+  border-color: #fffbd3;
+}
+
+.feature.pass {
+  border-color: #dbffb4;
+}
+
+.feature.skip {
+  border-color: #e0ffff;
+}
+
 .feature.fail .feature-header {
   background-color: #fffbd3;
 }
@@ -52,7 +73,7 @@ td {
 }
 
 .scenario {
-  margin-left: 3em;
+  margin-left: 2em;
   border-left-width: thin;
   border-left-style: solid;
 }
@@ -84,17 +105,17 @@ td {
   border-color: aqua;
 }
 
-.scenario.fail h3 {
+.scenario.fail .title {
   color: #fffbd3;
   background-color: #c20000;
 }
 
-.scenario.pass h3 {
+.scenario.pass .title {
   color: #dbffb4;
   background-color: #65c400;
 }
 
-.scenario.skip h3 {
+.scenario.skip .title {
   color: #004444;
   background-color: aqua;
 }
@@ -293,6 +314,26 @@ li.report-steps, li.report-scenarios {
   margin-right: 0.5em;
 }
 
+p.position {
+  color: transparent;
+  float: right;
+  font-size: 0.7em;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.feature:hover .feature-header .position {
+  color: grey;
+}
+
+.scenario:hover .title .position {
+  color: white;
+}
+
+.step:hover .position {
+  color: grey;
+}
+
     </style>
   </head>
   <body>
@@ -375,12 +416,18 @@ end Steps2;
 <?var name="feature-begin"?>
     <div id="feature-<?placeholder name="id"?>" class="feature skip">
       <div class="feature-header">
+        <p class="position"><?placeholder name="position"?></p>
         <h2 class="title-feature">Feature: <?placeholder name="name"?></h2>
         <pre><?placeholder name="description"?></pre>
+        <hr class="clear hidden" />
       </div>
 <?var name="background-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>" class="scenario skip">
-        <h3 class="title-background">Background: <?placeholder name="title"?></h3>
+        <div class="title">
+          <p class="position"><?placeholder name="position"?></p>
+          <h3 class="title-background">Background: <?placeholder name="title"?></h3>
+          <hr class="clear hidden" />
+        </div>
 <?var name="background-end"?>
         <script type="text/javascript">/*<![CDATA[*/
           var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>");
@@ -391,12 +438,18 @@ end Steps2;
       </div> <!-- background -->
 <?var name="scenario-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
-        <h3 class="title-scenario">Scenario: <?placeholder name="title"?></h3>
+        <div class="title">
+          <p class="position"><?placeholder name="position"?></p>
+          <h3 class="title-scenario">Scenario: <?placeholder name="title"?></h3>
+          <hr class="clear hidden" />
+        </div>
 <?var name="scenario-label"?>
         <p><?placeholder name="label"?></p>
 <?var name="step-begin"?>
         <div class="step <?placeholder name="status"?>">
+          <p class="position"><?placeholder name="position"?></p>
           <p><?placeholder name="stanza"?></p>
+          <hr class="clear hidden" />
 <?var name="step-string"?>
           <pre class="string"><?placeholder name="string"?></pre>
 <?var name="step-table-begin"?>

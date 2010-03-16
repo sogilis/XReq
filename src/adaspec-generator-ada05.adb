@@ -95,7 +95,8 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
                         Ada_String (To_String (Gen.Feature.Name)) & ", " &
                         Ada_String (Join (Gen.Feature.Description,
-                                          "" & ASCII.LF)) & ");");
+                                          "" & ASCII.LF)) & ", " &
+                        Ada_String (To_String (Gen.Feature.Pos)) & ");");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          if First then
             Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
@@ -162,6 +163,8 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.New_Line;
       S.Adb.Put_Line ("Stanza : constant String    := " &
                       Ada_String (To_String (Step.Step.Stanza)) & ";");
+      S.Adb.Put_Line ("Pos    : constant String    := " &
+                      Ada_String (To_String (Step.Step.Pos)) & ";");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("begin"); -----------------------------------------------
       S.Adb.Indent;
@@ -216,7 +219,7 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("if not Stop then");
          S.Adb.Indent;
       end if;
-      S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Args, " &
+      S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Pos, Args, " &
                       "Status_Skipped);");
       if Background then
          S.Adb.UnIndent;
@@ -251,7 +254,7 @@ package body AdaSpec.Generator.Ada05 is
             S.Adb.Put_Line ("if First then");
             S.Adb.Indent;
          end if;
-         S.Adb.Put_Line ("Format.Put_Step (Prefix, Stanza, Args, " &
+         S.Adb.Put_Line ("Format.Put_Step (Prefix, Stanza, Pos, Args, " &
                         "Status_Passed);");
          if Background then
             S.Adb.UnIndent;
@@ -270,7 +273,7 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("Report.Count_Steps_Failed := " &
                       "Report.Count_Steps_Failed + 1;");
       S.Adb.Put_Line ("Fail := True;");
-      S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Args, " &
+      S.Adb.Put_Line ("Format.Put_Step  (Prefix, Stanza, Pos, Args, " &
                       "Status_Failed);");
       S.Adb.Put_Line ("Format.Put_Error (Err);");
       S.Adb.UnIndent;
@@ -324,7 +327,8 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("if not First then");
          S.Adb.Indent;
             S.Adb.Put_Line ("Format.Put_Scenario (" &
-                            Ada_String (To_String (Scenario.Name)) & ");");
+                            Ada_String (To_String (Scenario.Name)) & ", " &
+                            Ada_String (To_String (Scenario.Pos)) & ");");
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
          S.Adb.Put_Line (S.Fn_Backgnd & " (Format, Report, First, Fail);");
@@ -338,10 +342,12 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Indent;
          if Background then
             S.Adb.Put_Line ("Format.Put_Background (" &
-                            Ada_String (To_String (Scenario.Name)) & ");");
+                            Ada_String (To_String (Scenario.Name)) & ", " &
+                            Ada_String (To_String (Scenario.Pos)) & ");");
          else
             S.Adb.Put_Line ("Format.Put_Scenario (" &
-                            Ada_String (To_String (Scenario.Name)) & ");");
+                            Ada_String (To_String (Scenario.Name)) & ", " &
+                            Ada_String (To_String (Scenario.Pos)) & ");");
          end if;
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");

@@ -19,6 +19,10 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  color: inherit;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, "hr.hidden {" & ASCII.LF);
+      Put (File, "  visibility: hidden;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, ".clear {" & ASCII.LF);
       Put (File, "  clear: both;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -48,6 +52,23 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  color: #004444;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, ".feature {" & ASCII.LF);
+      Put (File, "  border-left-width: 1em;" & ASCII.LF);
+      Put (File, "  border-left-style: solid;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".feature.fail {" & ASCII.LF);
+      Put (File, "  border-color: #fffbd3;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".feature.pass {" & ASCII.LF);
+      Put (File, "  border-color: #dbffb4;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".feature.skip {" & ASCII.LF);
+      Put (File, "  border-color: #e0ffff;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, ".feature.fail .feature-header {" & ASCII.LF);
       Put (File, "  background-color: #fffbd3;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -61,7 +82,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, ".scenario {" & ASCII.LF);
-      Put (File, "  margin-left: 3em;" & ASCII.LF);
+      Put (File, "  margin-left: 2em;" & ASCII.LF);
       Put (File, "  border-left-width: thin;" & ASCII.LF);
       Put (File, "  border-left-style: solid;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -93,17 +114,17 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  border-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario.fail h3 {" & ASCII.LF);
+      Put (File, ".scenario.fail .title {" & ASCII.LF);
       Put (File, "  color: #fffbd3;" & ASCII.LF);
       Put (File, "  background-color: #c20000;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario.pass h3 {" & ASCII.LF);
+      Put (File, ".scenario.pass .title {" & ASCII.LF);
       Put (File, "  color: #dbffb4;" & ASCII.LF);
       Put (File, "  background-color: #65c400;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario.skip h3 {" & ASCII.LF);
+      Put (File, ".scenario.skip .title {" & ASCII.LF);
       Put (File, "  color: #004444;" & ASCII.LF);
       Put (File, "  background-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -302,6 +323,26 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  margin-right: 0.5em;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, "p.position {" & ASCII.LF);
+      Put (File, "  color: transparent;" & ASCII.LF);
+      Put (File, "  float: right;" & ASCII.LF);
+      Put (File, "  font-size: 0.7em;" & ASCII.LF);
+      Put (File, "  margin-left: 1%;" & ASCII.LF);
+      Put (File, "  margin-right: 1%;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".feature:hover .feature-header .position {" & ASCII.LF);
+      Put (File, "  color: grey;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".scenario:hover .title .position {" & ASCII.LF);
+      Put (File, "  color: white;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".step:hover .position {" & ASCII.LF);
+      Put (File, "  color: grey;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, "    </style>" & ASCII.LF);
       Put (File, "  </head>" & ASCII.LF);
       Put (File, "  <body>" & ASCII.LF);
@@ -313,6 +354,7 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure feature_begin
         (File : in out File_Type;
          Param_id : in String;
+         Param_position : in String;
          Param_name : in String;
          Param_description : in String) is
    begin
@@ -320,12 +362,16 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, Param_id);
       Put (File, """ class=""feature skip"">" & ASCII.LF);
       Put (File, "      <div class=""feature-header"">" & ASCII.LF);
+      Put (File, "        <p class=""position"">");
+      Put (File, Param_position);
+      Put (File, "</p>" & ASCII.LF);
       Put (File, "        <h2 class=""title-feature"">Feature: ");
       Put (File, Param_name);
       Put (File, "</h2>" & ASCII.LF);
       Put (File, "        <pre>");
       Put (File, Param_description);
       Put (File, "</pre>" & ASCII.LF);
+      Put (File, "        <hr class=""clear hidden"" />" & ASCII.LF);
       Put (File, "      </div>" & ASCII.LF);
    end feature_begin;
 
@@ -333,6 +379,7 @@ package body AdaSpecLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_feature_id : in String;
          Param_num : in String;
+         Param_position : in String;
          Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
@@ -340,9 +387,15 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "-background-");
       Put (File, Param_num);
       Put (File, """ class=""scenario skip"">" & ASCII.LF);
-      Put (File, "        <h3 class=""title-background"">Background: ");
+      Put (File, "        <div class=""title"">" & ASCII.LF);
+      Put (File, "          <p class=""position"">");
+      Put (File, Param_position);
+      Put (File, "</p>" & ASCII.LF);
+      Put (File, "          <h3 class=""title-background"">Background: ");
       Put (File, Param_title);
       Put (File, "</h3>" & ASCII.LF);
+      Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
+      Put (File, "        </div>" & ASCII.LF);
    end background_begin;
 
    procedure background_end
@@ -367,6 +420,7 @@ package body AdaSpecLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_feature_id : in String;
          Param_num : in String;
+         Param_position : in String;
          Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
@@ -374,9 +428,15 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "-scenario-");
       Put (File, Param_num);
       Put (File, """ class=""scenario skip"">" & ASCII.LF);
-      Put (File, "        <h3 class=""title-scenario"">Scenario: ");
+      Put (File, "        <div class=""title"">" & ASCII.LF);
+      Put (File, "          <p class=""position"">");
+      Put (File, Param_position);
+      Put (File, "</p>" & ASCII.LF);
+      Put (File, "          <h3 class=""title-scenario"">Scenario: ");
       Put (File, Param_title);
       Put (File, "</h3>" & ASCII.LF);
+      Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
+      Put (File, "        </div>" & ASCII.LF);
    end scenario_begin;
 
    procedure scenario_label
@@ -391,14 +451,19 @@ package body AdaSpecLib.Format_HTML_Template is
    procedure step_begin
         (File : in out File_Type;
          Param_status : in String;
+         Param_position : in String;
          Param_stanza : in String) is
    begin
       Put (File, "        <div class=""step ");
       Put (File, Param_status);
       Put (File, """>" & ASCII.LF);
+      Put (File, "          <p class=""position"">");
+      Put (File, Param_position);
+      Put (File, "</p>" & ASCII.LF);
       Put (File, "          <p>");
       Put (File, Param_stanza);
       Put (File, "</p>" & ASCII.LF);
+      Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
    end step_begin;
 
    procedure step_string

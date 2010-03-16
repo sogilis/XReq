@@ -57,17 +57,21 @@ package AdaSpecLib.Format is
 
    procedure Put_Feature    (Format     : in out Format_Type;
                              Feature    : in     String;
-                             Description : in String)
+                             Description : in String;
+                             Position   : in     String)
                              is abstract;
    procedure Put_Background (Format     : in out Format_Type;
-                             Background : in     String)
+                             Background : in     String;
+                             Position   : in     String)
                              is abstract;
    procedure Put_Scenario   (Format     : in out Format_Type;
-                             Scenario   : in     String)
+                             Scenario   : in     String;
+                             Position   : in     String)
                              is abstract;
    procedure Put_Step       (Format     : in out Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;
+                             Position   : in     String;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
                              is abstract;

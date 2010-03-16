@@ -22,6 +22,7 @@ package AdaSpec.Features is
    type Scenario_Type is
       record
          Name    : Unbounded_String;
+         Pos     : Position_Type;
          Stanzas : Stanza_Container.Vector;
       end record;
    type Scenario_Ptr is access all Scenario_Type;
@@ -43,6 +44,7 @@ package AdaSpec.Features is
       record
          Name        : Unbounded_String;
          Description : Util.Strings.Vectors.Vector;
+         Pos         : Position_Type;
          Background  : Scenario_Type;
          Scenarios   : Scenario_Container.Vector;
       end record;

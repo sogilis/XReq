@@ -37,7 +37,7 @@ package body Test_Suite.Features is
 
    procedure Run (T : in out Test_1) is
       use Text_IO;
-      Feature  : Feature_File_Type;
+      Feature  : Feature_File_Type := Null_Feature_File;
       File     : constant String := "tests/features/simplest.feature";
       Scenario : Scenario_Type;
       Stanza   : Stanza_Type;

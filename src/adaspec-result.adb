@@ -133,6 +133,7 @@ package body AdaSpec.Result is
          Next (I);
       end loop;
       Res := (Name  => Scenario.Name,
+              Pos   => Scenario.Pos,
               Steps => StepsV);
    end Process_Scenario;
 
@@ -154,6 +155,11 @@ package body AdaSpec.Result is
       if not Parsed (Feature.all) then
          raise Unparsed_Feature;
       end if;
+      Result := Result_Feature_Type'(
+         Name        => Feature.Name,
+         Description => Feature.Description,
+         Pos         => Feature.Pos,
+         others      => <>);
       Process_Scenario (Result.Background, Feature.all.Background,
                         Steps, Log, Errors);
       if Errors then
@@ -167,8 +173,6 @@ package body AdaSpec.Result is
          Append (Result, R_Scen);
          Next (I);
       end loop;
-      Result.Name := Feature.Name;
-      Result.Description := Feature.Description;
       if Result.Fail then
          Log.Put_Line ("AdaSpec can create the procedures for you if you " &
                        "use --fill-steps");

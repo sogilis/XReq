@@ -84,12 +84,14 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Put_Feature (Format  : in out HTML_Format_Type;
                           Feature : in String;
-                          Description : in String)
+                          Description : in String;
+                          Position    : in String)
    is
    begin
       Format.Curr_Feature.Name := To_Unbounded_String (Feature);
       Tmpl.feature_begin (Format.Output,
          Param_id          => To_String (Format.Feature_ID),
+         Param_position    => Position,
          Param_name        => HTML_Text (Feature),
          Param_description => HTML_Text (Description));
       Format.Skip_Scenarios := False;
@@ -130,7 +132,8 @@ package body AdaSpecLib.Format.HTML is
    ----------------------
 
    procedure Put_Background (Format     : in out HTML_Format_Type;
-                             Background : in String)
+                             Background : in String;
+                             Position   : in String)
    is
    begin
       if Background /= "" then
@@ -143,6 +146,7 @@ package body AdaSpecLib.Format.HTML is
       Tmpl.background_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Background_ID),
+         Param_position   => Position,
          Param_title      => HTML_Text (Background));
    end Put_Background;
 
@@ -195,12 +199,14 @@ package body AdaSpecLib.Format.HTML is
    --------------------
 
    procedure Put_Scenario (Format   : in out HTML_Format_Type;
-                           Scenario : in String)
+                           Scenario : in String;
+                           Position : in String)
    is
    begin
       Tmpl.scenario_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Scenario_ID),
+         Param_position   => Position,
          Param_title      => HTML_Text (Scenario));
       if Scenario /= "" then
          Format.Curr_Scenario.Name := To_Unbounded_String (Scenario);
@@ -226,6 +232,7 @@ package body AdaSpecLib.Format.HTML is
    procedure Put_Step       (Format     : in out HTML_Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;
+                             Position   : in     String;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
    is
@@ -289,8 +296,9 @@ package body AdaSpecLib.Format.HTML is
       end loop;
       Append (Stanza, Inserts (Inserts'Last));
       Tmpl.step_begin (Format.Output,
-            Param_status => Status_Class (Success),
-            Param_stanza => To_String (Stanza));
+            Param_status   => Status_Class (Success),
+            Param_position => Position,
+            Param_stanza   => To_String (Stanza));
 
       Loop_Args :
       for I in Args.First .. Args.Last loop

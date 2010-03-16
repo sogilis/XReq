@@ -17,10 +17,13 @@ package body AdaSpecLib.Format.Text is
    --  Put_Feature  --
    -------------------
 
-   procedure Put_Feature (Format  : in out Text_Format_Type;
-                          Feature : in String;
-                          Description : in String)
+   procedure Put_Feature (Format      : in out Text_Format_Type;
+                          Feature     : in     String;
+                          Description : in     String;
+                          Position    : in     String)
    is
+      pragma Unreferenced (Position);
+      Has_Description : Boolean := False;
    begin
       Format.Output.Put_Line ("Feature: " & Feature);
       for I in Description'Range loop
@@ -30,18 +33,23 @@ package body AdaSpecLib.Format.Text is
                Format.Output.Put ("  ");
             end if;
          else
+            Has_Description := True;
             if I = Description'First then
                Format.Output.Put ("  ");
             end if;
             Format.Output.Put (Description (I));
          end if;
       end loop;
-      Format.Output.New_Line;
+      if Has_Description then
+         Format.Output.New_Line;
+      end if;
    end Put_Feature;
 
    procedure Put_Background (Format     : in out Text_Format_Type;
-                             Background : in String)
+                             Background : in     String;
+                             Position   : in     String)
    is
+      pragma Unreferenced (Position);
    begin
       Format.Output.New_Line;
       Format.Output.Put ("  Background:");
@@ -53,8 +61,10 @@ package body AdaSpecLib.Format.Text is
    end Put_Background;
 
    procedure Put_Scenario (Format   : in out Text_Format_Type;
-                           Scenario : in String)
+                           Scenario : in     String;
+                           Position : in     String)
    is
+      pragma Unreferenced (Position);
    begin
       Format.Output.New_Line;
       Format.Output.Put ("  Scenario:");
@@ -72,9 +82,11 @@ package body AdaSpecLib.Format.Text is
    procedure Put_Step       (Format     : in out Text_Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;
+                             Position   : in     String;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
    is
+      pragma Unreferenced (Position);
       pragma Unreferenced (Success);
       procedure Put_Long_String (Text : in String);
       procedure Put_Table (T : in Table_Type);

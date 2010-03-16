@@ -80,7 +80,7 @@ package body AdaSpec.Features is
    ------------------------------------------------
 
    function Null_Feature_File return Feature_File_Type is
-      F : Feature_File_Type;
+      F : constant Feature_File_Type := (others => <>);
    begin
       return F;
    end Null_Feature_File;
@@ -226,6 +226,7 @@ package body AdaSpec.Features is
          I                : Util.Strings.Vectors.Cursor;
       begin
          Feature.Name := Trimed_Suffix (Line_S, Idx_Data);
+         Feature.Pos  := Position;
          while not End_Of_File loop
             Read_Line;
             if Detect_Keyword (K_Background) then
@@ -269,6 +270,7 @@ package body AdaSpec.Features is
          Continue       : Boolean := True;
       begin
          Scenario := (Name   => Trimed_Suffix (Line_S, Idx_Data),
+                      Pos    => Position,
                       others => <>);
          while Continue and not End_Of_File loop
 
