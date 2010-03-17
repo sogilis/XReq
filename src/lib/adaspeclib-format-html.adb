@@ -69,6 +69,7 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Feature  (Format     : in out HTML_Format_Type) is
    begin
+      Format.Run_Feature   := False;
       Format.Feature_ID    := Format.Feature_ID + 1;
       Format.Background_ID := 0;
       Format.Scenario_ID   := 0;
@@ -95,6 +96,7 @@ package body AdaSpecLib.Format.HTML is
          Param_name        => HTML_Text (Feature),
          Param_description => HTML_Text (Description));
       Format.Skip_Scenarios := False;
+      Format.Run_Feature    := True;
    end Put_Feature;
 
    ----------------------
@@ -394,9 +396,11 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Stop_Feature  (Format     : in out HTML_Format_Type) is
    begin
-      Tmpl.feature_end (Format.Output,
-         Param_feature_id => To_String (Format.Feature_ID));
-      Append (Format.Menu, Format.Curr_Feature);
+      if Format.Run_Feature then
+         Tmpl.feature_end (Format.Output,
+            Param_feature_id => To_String (Format.Feature_ID));
+         Append (Format.Menu, Format.Curr_Feature);
+      end if;
    end Stop_Feature;
 
    ------------------

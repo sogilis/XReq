@@ -103,6 +103,7 @@ private
          Have_Background : Boolean := False;
          Skip_Scenarios  : Boolean := False;
          Inline_Backgrnd : Boolean := False;
+         Run_Feature     : Boolean := False;
          Feature_ID      : Natural := 0;
          Background_ID   : Natural := 0;
          Scenario_ID     : Natural := 0;
