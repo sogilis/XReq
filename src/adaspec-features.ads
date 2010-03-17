@@ -6,6 +6,7 @@ with Ada.Strings.Unbounded;
 with Util.Strings;
 with Util.IO;
 with AdaSpec.Stanzas;
+with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
 use Util.Strings;
@@ -22,10 +23,12 @@ package AdaSpec.Features is
 
    type Scenario_Type is
       record
-         Name    : Unbounded_String;
-         Pos     : Position_Type;
-         Tags    : String_Vector;
-         Stanzas : Stanza_Container.Vector;
+         Name          : Unbounded_String;
+         Pos           : Position_Type;
+         Tags          : String_Vector;
+         Stanzas       : Stanza_Container.Vector;
+         Outline       : Boolean := False;
+         Outline_Table : AdaSpecLib.String_Tables.Table;
       end record;
    type Scenario_Ptr is access all Scenario_Type;
    Null_Scenario : Scenario_Type;

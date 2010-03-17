@@ -7,6 +7,7 @@ with Util.Strings;
 with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
+with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -35,6 +36,10 @@ package AdaSpec.Result is
    package Result_Steps is
       new Ada.Containers.Vectors (Natural, Result_Step_Type, "=");
 
+   package Result_Steps_Vectors2 is
+      new Ada.Containers.Vectors
+         (Natural, Result_Steps.Vector, Result_Steps."=");
+
    function  Create (Procedure_Name : in  String;
                      Step           : in  Stanza_Type;
                      Matches        : in  Match_Vectors.Vector
@@ -57,12 +62,19 @@ package AdaSpec.Result is
    --  Contain a list of procedure names matching the step definitions along
    --  with their parameters.
 
-   type Result_Scenario_Type is
+   type Result_Scenario_Type (Outline : Boolean := False) is
       record
          Name  : Unbounded_String;
          Pos   : Position_Type;
          Tags  : String_Vector;
          Steps : Result_Steps.Vector;
+         case Outline is
+            when True =>
+               Table     : AdaSpecLib.String_Tables.Table;
+               Scenarios : Result_Steps_Vectors2.Vector;
+            when False =>
+               null;
+         end case;
       end record;
 
    package Result_Scenarios is

@@ -3,9 +3,6 @@
 with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
-with AdaSpecLib.String_Tables;
-
-use AdaSpecLib;
 
 package body AdaSpec.Features is
 
@@ -125,6 +122,7 @@ package body AdaSpec.Features is
       use Util.Strings.Vectors;
       use Scenario_Container;
       use Stanza_Container;
+      use AdaSpecLib;
 
       procedure Log_Error (Error : in String);
       procedure Read_Line;
@@ -134,22 +132,25 @@ package body AdaSpec.Features is
       procedure Read_All;
       procedure Read_Keywords;
       procedure Read_Feature  (Feature  : in out Feature_File_Type);
-      procedure Read_Scenario (Scenario : out    Scenario_Type);
+      procedure Read_Scenario (Scenario : out    Scenario_Type;
+                               Outline  : in     Boolean := False);
       procedure Read_Step     (Step     : in out Stanza_Type);
       procedure Read_String   (Result   : out    Unbounded_String;
                                Sep      : in     String);
       procedure Read_Table    (Result   : out    String_Tables.Table);
 
       --  Keywords
-      K_Feature     : constant String := "Feature:";
-      K_Background  : constant String := "Background:";
-      K_Scenario    : constant String := "Scenario:";
-      K_Given       : constant String := "Given ";
-      K_When        : constant String := "When ";
-      K_Then        : constant String := "Then ";
-      K_And         : constant String := "And ";
-      K_StrDouble   : constant String := """""""";
-      K_StrSimple   : constant String := "'''";
+      K_Feature          : constant String := "Feature:";
+      K_Background       : constant String := "Background:";
+      K_Scenario         : constant String := "Scenario:";
+      K_Scenario_Outline : constant String := "Scenario Outline:";
+      K_Examples         : constant String := "Examples:";
+      K_Given            : constant String := "Given ";
+      K_When             : constant String := "When ";
+      K_Then             : constant String := "Then ";
+      K_And              : constant String := "And ";
+      K_StrDouble        : constant String := """""""";
+      K_StrSimple        : constant String := "'''";
 
       --  Context variables
       File          : File_Type;        --  Current opened file
@@ -266,6 +267,11 @@ package body AdaSpec.Features is
                Read_Scenario (Current_Scenario);
                Append (Self.Scenarios, Current_Scenario);
                Beginning := False;
+            elsif Detect_Keyword (K_Scenario_Outline) then
+               Current_Scenario := Null_Scenario;
+               Read_Scenario (Current_Scenario, True);
+               Append (Self.Scenarios, Current_Scenario);
+               Beginning := False;
             elsif Detect_Keyword ("#") then
                null;
             elsif Detect_Keyword ("@") then
@@ -290,17 +296,23 @@ package body AdaSpec.Features is
 
       --  ++ SCENARIO      -> K_SCENARIO name NL
       --  ++                  { STANZA }
+      --  ++                  [ SCENARIO_EX ]
       --  ++ K_SCENARIO    -> "Background:"
       --  ++                | "Scenario:"
-      procedure Read_Scenario (Scenario : out Scenario_Type) is
+      --  ++                | "Scenario Outline:"
+      --  ++ SCENARIO_EX   -> "Examples:" NL
+      --  ++                  TABLE
+      procedure Read_Scenario (Scenario : out Scenario_Type;
+                               Outline  : in  Boolean := False) is
          Current_Stanza : Stanza_Type;
          Current_Prefix : Prefix_Type_Maybe := Prefix_None;
          Detect         : Boolean;
          Continue       : Boolean := True;
       begin
-         Scenario := (Name   => Trimed_Suffix (Line_S, Idx_Data),
-                      Pos    => Position,
-                      Tags   => Current_Tags,
+         Scenario := (Name    => Trimed_Suffix (Line_S, Idx_Data),
+                      Pos     => Position,
+                      Tags    => Current_Tags,
+                      Outline => Outline,
                       others => <>);
          Clear (Current_Tags);
          while Continue and not End_Of_File loop
@@ -308,8 +320,9 @@ package body AdaSpec.Features is
             Read_Line;
             Detect := True;
 
-            if Detect_Keyword (K_Background) or else
-               Detect_Keyword (K_Scenario)   or else
+            if Detect_Keyword (K_Background)       or else
+               Detect_Keyword (K_Scenario)         or else
+               Detect_Keyword (K_Scenario_Outline) or else
                Detect_Keyword ("@")
             then
                Unread_Line := True;
@@ -317,6 +330,11 @@ package body AdaSpec.Features is
                Detect      := False;
             elsif Detect_Keyword ("#") then
                null;
+            elsif Detect_Keyword (K_Examples) then
+               Read_Line;
+               if not End_Of_File then
+                  Read_Table (Scenario.Outline_Table);
+               end if;
             elsif Detect_Keyword (K_Given) then
                Current_Prefix := Prefix_Given;
             elsif Detect_Keyword (K_When) then
@@ -374,12 +392,14 @@ package body AdaSpec.Features is
 
             Read_Line;
 
-            if Detect_Keyword (K_Background)    or else
-               Detect_Keyword (K_Scenario)      or else
-               Detect_Keyword (K_Given)         or else
-               Detect_Keyword (K_When)          or else
-               Detect_Keyword (K_Then)          or else
-               Detect_Keyword (K_And)           or else
+            if Detect_Keyword (K_Background)       or else
+               Detect_Keyword (K_Scenario)         or else
+               Detect_Keyword (K_Scenario_Outline) or else
+               Detect_Keyword (K_Examples)         or else
+               Detect_Keyword (K_Given)            or else
+               Detect_Keyword (K_When)             or else
+               Detect_Keyword (K_Then)             or else
+               Detect_Keyword (K_And)              or else
                Detect_Keyword ("@")
             then
                Unread_Line := True;
