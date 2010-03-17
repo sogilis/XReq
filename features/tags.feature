@@ -193,7 +193,6 @@ Feature: Tags
 
       """
 
-  @wip
   Scenario: Negative conditional execution
     Given a file "features/conditional.feature":
       """
@@ -232,6 +231,90 @@ Feature: Tags
         @tag2
         @tag2a
         Scenario: S2
+          Given this step works
+
+      1 scenario (1 passed)
+      2 steps (2 passed)
+
+      """
+
+  Scenario: And conditional execution
+    Given a file "features/conditional.feature":
+      """
+      Feature: Feature
+        This is executed conditionnally
+
+        @tagB1 @tagB2
+        Background:
+          Given this step works
+
+        @tag1 @tag1a
+        Scenario: S1
+          Given this step works
+
+        @tag2 @tag2a
+        Scenario: S2
+          Given this step works
+
+        @tag1 @t
+        Scenario: S3
+          Given this step works
+      """
+    When I run adaspec -x suite features/conditional.feature
+    Then it should pass
+
+    When I compile "suite" in features/tests
+    Then it should pass
+
+    When I run "./suite -t @tag1+@tag2" in features/tests
+    Then it should pass with
+      """
+      0 scenarios
+      0 steps
+
+      """
+
+    When I run "./suite -t @tag1+~@tag2" in features/tests
+    Then it should pass with
+      """
+      Feature: Feature
+        This is executed conditionnally
+
+        @tagB1
+        @tagB2
+        Background:
+          Given this step works
+
+        @tag1
+        @tag1a
+        Scenario: S1
+          Given this step works
+
+        @tag1
+        @t
+        Scenario: S3
+          Given this step works
+
+      2 scenarios (2 passed)
+      4 steps (4 passed)
+
+      """
+
+
+    When I run "./suite -t ~@t+~@tag2" in features/tests
+    Then it should pass with
+      """
+      Feature: Feature
+        This is executed conditionnally
+
+        @tagB1
+        @tagB2
+        Background:
+          Given this step works
+
+        @tag1
+        @tag1a
+        Scenario: S1
           Given this step works
 
       1 scenario (1 passed)

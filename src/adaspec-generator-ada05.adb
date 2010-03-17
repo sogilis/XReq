@@ -58,87 +58,6 @@ package body AdaSpec.Generator.Ada05 is
       Gen := Generator;
    end Make;
 
-   ----------------
-   --  Generate  --
-   ----------------
-
-   procedure Generate (Gen : in out Ada_Generator_Type;
-                       Log : in     Logger_Ptr) is
-      use Util.Strings.Vectors;
-      use Result_Scenarios;
-      I   : Result_Scenarios.Cursor := First (Gen.Feature.Scenarios);
-      Num : Positive := 1;
-   begin
-      Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
-      Gen.Ads.Put_Line ("with AdaSpecLib;");
-      Gen.Ads.Put_Line ("with AdaSpecLib.Args;");
-      Gen.Ads.Put_Line ("with AdaSpecLib.Report;");
-      Gen.Ads.Put_Line ("with AdaSpecLib.Format;");
-      Gen.Ads.Put_Line ("use  AdaSpecLib;");
-      Gen.Ads.Put_Line ("use  AdaSpecLib.Args;");
-      Gen.Ads.Put_Line ("use  AdaSpecLib.Report;");
-      Gen.Ads.Put_Line ("use  AdaSpecLib.Format;");
-      Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
-      Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
-      Indent (Gen.Ads);
-      Indent (Gen.Adb);
-      Generate_Feature (Gen);
-      Gen.Ads.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
-      Gen.Ads.Put_Line ("               Tags      : in Tag_Expr_Type;");
-      Gen.Ads.Put_Line ("               Report    : in out Report_Type;");
-      Gen.Ads.Put_Line ("               List_Mode : in Boolean := False);");
-      Gen.Adb.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
-      Gen.Adb.Put_Line ("               Tags      : in Tag_Expr_Type;");
-      Gen.Adb.Put_Line ("               Report    : in out Report_Type;");
-      Gen.Adb.Put_Line ("               List_Mode : in Boolean := False) is");
-      Gen.Adb.Indent;
-      Gen.Adb.Put_Line ("Stop  : Boolean  := False;");
-      Gen.Adb.Put_Line ("First : Boolean  := True;");
-      Gen.Adb.UnIndent;
-      Gen.Adb.Put_Line ("begin");
-      Gen.Adb.Indent;
-      Gen.Adb.Put_Line ("if List_Mode then");
-      Gen.Adb.Indent;
-      Gen.Adb.Put_Line ("Format.List_Feature (" &
-                        Ada_String (To_String (Gen.Feature.Name)) & ");");
-      while Has_Element (I) loop
-         Gen.Adb.Put_Line ("Format.List_Scenario (" &
-                           Ada_String (To_String (Element (I).Name)) & ", " &
-                           Ada_String (To_String (Element (I).Pos.File)) &
-                           "," & String'(Num'Img) & ");");
-         Next (I);
-         Num := Num + 1;
-      end loop;
-      Gen.Adb.UnIndent;
-      Gen.Adb.Put_Line ("else");
-      Gen.Adb.Indent;
-      Gen.Adb.Put_Line ("Format.Start_Feature;");
-      Gen.Adb.Put_Line ("Format.Put_Feature (" &
-                        Ada_String (To_String (Gen.Feature.Name)) & ", " &
-                        Ada_String (Join (Gen.Feature.Description,
-                                          "" & ASCII.LF)) & ", " &
-                        Ada_String (To_String (Gen.Feature.Pos)) & ");");
-      for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
-         Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
-                           " (Format, Report, First, Tags, Stop);");
-      end loop;
-      Gen.Adb.Put_Line ("Format.Stop_Feature;");
-      Gen.Adb.UnIndent;
-      Gen.Adb.Put_Line ("end if;");
-      Gen.Adb.UnIndent;
-      Gen.Adb.Put_Line ("end Run;");
-      Gen.Ads.UnIndent;
-      Gen.Adb.UnIndent;
-      Gen.Ads.Put_Line ("end " & Gen.Id_Pkgname & ";");
-      Gen.Adb.Put_Line ("end " & Gen.Id_Pkgname & ";");
-      Generate_With (Gen);
-
-      Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
-      Set_File (To_String (Gen.Adb_File), To_String (Gen.Adb.Buffer));
-      Log.Put_Line ("Generate: " & To_String (Gen.Ads_File));
-      Log.Put_Line ("Generate: " & To_String (Gen.Adb_File));
-   end Generate;
-
    ---------------------
    --  Generate_Step  --
    ---------------------
@@ -314,6 +233,7 @@ package body AdaSpec.Generator.Ada05 is
       Proc : constant String := "procedure " & To_String (Name) & " ";
    begin
       --  declaration
+      S.Adb.New_Line;
       S.Ads.Put_Line (Proc & "(Format   : in out Format_Ptr;");
       S.Adb.Put_Line (Proc & "(Format   : in out Format_Ptr;");
       S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
@@ -366,7 +286,12 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("Format.Start_Background (First);");
       else
          S.Adb.Put_Line ("if Tag_Cond.Eval (Tags) then");
-         Indent (S.Adb);
+         S.Adb.Indent;
+         S.Adb.Put_Line ("if First then");
+         S.Adb.Indent;
+         S.Adb.Put_Line ("Priv_Feature (Format);");
+         S.Adb.UnIndent;
+         S.Adb.Put_Line ("end if;");
          S.Adb.Put_Line ("Format.Enter_Scenario;");
          S.Adb.Put_Line ("if not First then");
          S.Adb.Indent;
@@ -479,6 +404,98 @@ package body AdaSpec.Generator.Ada05 is
    begin
       return To_String (Gen.Id_Pkgname);
    end Full_Name;
+
+   ----------------
+   --  Generate  --
+   ----------------
+
+   procedure Generate (Gen : in out Ada_Generator_Type;
+                       Log : in     Logger_Ptr) is
+      use Util.Strings.Vectors;
+      use Result_Scenarios;
+      I   : Result_Scenarios.Cursor := First (Gen.Feature.Scenarios);
+      Num : Positive := 1;
+   begin
+      Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
+      Gen.Ads.Put_Line ("with AdaSpecLib;");
+      Gen.Ads.Put_Line ("with AdaSpecLib.Args;");
+      Gen.Ads.Put_Line ("with AdaSpecLib.Report;");
+      Gen.Ads.Put_Line ("with AdaSpecLib.Format;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib.Args;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib.Report;");
+      Gen.Ads.Put_Line ("use  AdaSpecLib.Format;");
+      Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
+      Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
+      Gen.Ads.Indent;
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("procedure Priv_Feature " &
+                              "(Format : in out Format_Ptr);");
+      Gen.Adb.New_Line;
+      Gen.Adb.Put_Line ("procedure Priv_Feature " &
+                              "(Format : in out Format_Ptr) is");
+      Gen.Adb.Put_Line ("begin");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Format.Put_Feature (" &
+                        Ada_String (To_String (Gen.Feature.Name)) & ", " &
+                        Ada_String (Join (Gen.Feature.Description,
+                                          "" & ASCII.LF)) & ", " &
+                        Ada_String (To_String (Gen.Feature.Pos)) & ");");
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("end Priv_Feature;");
+      Generate_Feature (Gen);
+      Gen.Adb.New_Line;
+      Gen.Ads.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
+      Gen.Ads.Put_Line ("               Tags      : in Tag_Expr_Type;");
+      Gen.Ads.Put_Line ("               Report    : in out Report_Type;");
+      Gen.Ads.Put_Line ("               List_Mode : in Boolean := False);");
+      Gen.Adb.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
+      Gen.Adb.Put_Line ("               Tags      : in Tag_Expr_Type;");
+      Gen.Adb.Put_Line ("               Report    : in out Report_Type;");
+      Gen.Adb.Put_Line ("               List_Mode : in Boolean := False) is");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Stop  : Boolean  := False;");
+      Gen.Adb.Put_Line ("First : Boolean  := True;");
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("begin");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("if List_Mode then");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Format.List_Feature (" &
+                        Ada_String (To_String (Gen.Feature.Name)) & ");");
+      while Has_Element (I) loop
+         Gen.Adb.Put_Line ("Format.List_Scenario (" &
+                           Ada_String (To_String (Element (I).Name)) & ", " &
+                           Ada_String (To_String (Element (I).Pos.File)) &
+                           "," & String'(Num'Img) & ");");
+         Next (I);
+         Num := Num + 1;
+      end loop;
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("else");
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Format.Start_Feature;");
+      for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
+         Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
+                           " (Format, Report, First, Tags, Stop);");
+      end loop;
+      Gen.Adb.Put_Line ("Format.Stop_Feature;");
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("end if;");
+      Gen.Adb.UnIndent;
+      Gen.Adb.Put_Line ("end Run;");
+      Gen.Ads.UnIndent;
+      Gen.Adb.UnIndent;
+      Gen.Adb.New_Line;
+      Gen.Ads.Put_Line ("end " & Gen.Id_Pkgname & ";");
+      Gen.Adb.Put_Line ("end " & Gen.Id_Pkgname & ";");
+      Generate_With (Gen);
+
+      Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
+      Set_File (To_String (Gen.Adb_File), To_String (Gen.Adb.Buffer));
+      Log.Put_Line ("Generate: " & To_String (Gen.Ads_File));
+      Log.Put_Line ("Generate: " & To_String (Gen.Adb_File));
+   end Generate;
 
    ----------------------
    --  Generate_Suite  --

@@ -48,7 +48,6 @@ package body AdaSpecLib.CLI is
       Put_Line ("            @tag:        execute tag @tag");
       Put_Line ("            ~@tag:       execute all but tag @tag");
       Put_Line ("            @tag1+@tag2: execute scenarios with both @tag1 and @tag2");
-      Put_Line ("                         (not yet implemented)");
       Put_Line ("            @tag1,@tag2: execute scenarios with either @tag1 or @tag2");
       Put_Line ("                         (not yet implemented)");
       Put_Line ("");

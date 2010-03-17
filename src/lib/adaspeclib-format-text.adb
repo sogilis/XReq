@@ -25,6 +25,11 @@ package body AdaSpecLib.Format.Text is
       pragma Unreferenced (Position);
       Has_Description : Boolean := False;
    begin
+      if Format.First_Feature then
+         Format.First_Feature := False;
+      else
+         Format.Output.New_Line;
+      end if;
       Format.Output.Put_Line ("Feature: " & Feature);
       for I in Description'Range loop
          if Description (I) = ASCII.LF then
@@ -198,13 +203,20 @@ package body AdaSpecLib.Format.Text is
                                             Report.Count_Steps_Passed;
       Need_Comma : Boolean;
    begin
-      Format.Output.New_Line;
+      if Format.First_Feature then
+         Format.First_Feature := False;
+      else
+         Format.Output.New_Line;
+      end if;
       if Count_Scenarios > 1 then
          Format.Output.Put
             (Trim (Count_Scenarios'Img, Left) & " scenarios (");
-      else
+      elsif Count_Scenarios = 1 then
          Format.Output.Put
             (Trim (Count_Scenarios'Img, Left) & " scenario (");
+      else
+         Format.Output.Put
+            (Trim (Count_Scenarios'Img, Left) & " scenarios");
       end if;
       Need_Comma := False;
       if Report.Count_Scenario_Failed /= 0 then
@@ -218,14 +230,19 @@ package body AdaSpecLib.Format.Text is
             (Trim (Report.Count_Scenario_Passed'Img, Left) & " passed");
          Need_Comma := True;
       end if;
-      Format.Output.Put (")");
+      if Count_Scenarios > 0 then
+         Format.Output.Put (")");
+      end if;
       Format.Output.New_Line;
       if Count_Steps > 1 then
          Format.Output.Put
             (Trim (Count_Steps'Img, Left) & " steps (");
-      else
+      elsif Count_Steps = 1 then
          Format.Output.Put
             (Trim (Count_Steps'Img, Left) & " step (");
+      else
+         Format.Output.Put
+            (Trim (Count_Steps'Img, Left) & " steps");
       end if;
       Need_Comma := False;
       if Report.Count_Steps_Failed /= 0 then
@@ -245,7 +262,9 @@ package body AdaSpecLib.Format.Text is
             (Trim (Report.Count_Steps_Passed'Img, Left) & " passed");
          Need_Comma := True;
       end if;
-      Format.Output.Put (")");
+      if Count_Steps > 0 then
+         Format.Output.Put (")");
+      end if;
       Format.Output.New_Line;
    end Put_Summary;
 
