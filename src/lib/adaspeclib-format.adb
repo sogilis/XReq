@@ -154,20 +154,21 @@ package body AdaSpecLib.Format is
 
    end New_Text_IO;
 
-   ---------------------------------
-   --  Tag_Expr_Type  --  Create  --
-   ---------------------------------
+   ------------------------------------
+   --  Conditional_Type  --  Create  --
+   ------------------------------------
 
-   function  Create (Expr : in String) return Tag_Expr_Type is
+   function  Create (Expr : in String) return Conditional_Type is
    begin
-      return Tag_Expr_Type'(Expr => To_Unbounded_String (Expr));
+      return Conditional_Type'(Expr   => To_Unbounded_String (Expr),
+                               others => <>);
    end Create;
 
-   -------------------------------
-   --  Tag_Expr_Type  --  Eval  --
-   -------------------------------
+   ----------------------------------
+   --  Conditional_Type  --  Eval  --
+   ----------------------------------
 
-   function  Eval   (Tag_Expr : in Tag_Expr_Type;
+   function  Eval   (Tag_Expr : in Conditional_Type;
                      Tags     : in Tag_Array_Type) return Boolean
    is
 
@@ -235,6 +236,33 @@ package body AdaSpecLib.Format is
 
    begin
       return Eval_Or (To_String (Tag_Expr.Expr));
+   end Eval;
+
+   ----------------------------------
+   --  Conditional_Type  --  Eval  --
+   ----------------------------------
+
+   function  Eval   (Cond     : in Conditional_Type;
+                     File     : in String;
+                     Num      : in Integer) return Boolean
+   is
+      use String_Vectors;
+      use Ada.Strings.Fixed;
+      use Ada.Strings;
+      I   : String_Vectors.Cursor;
+      Pos : constant String := File & ":" & Trim (Num'Img, Left);
+   begin
+      if Integer (Length (Cond.Scenarios)) = 0 then
+         return True;
+      end if;
+      I := First (Cond.Scenarios);
+      while Has_Element (I) loop
+         if To_String (Element (I)) = Pos then
+            return True;
+         end if;
+         Next (I);
+      end loop;
+      return False;
    end Eval;
 
 end AdaSpecLib.Format;

@@ -28,7 +28,7 @@ package body AdaSpecLib.CLI is
       Put_Line ("");
       Put_Line ("SYNOPSIS");
       Put_Line ("");
-      Put_Line ("    " & Name & " [OPTIONS]");
+      Put_Line ("    " & Name & " [OPTIONS] [FEATURE:NUM ...]");
       Put_Line ("");
       Put_Line ("OPTIONS");
       Put_Line ("");
@@ -76,18 +76,20 @@ package body AdaSpecLib.CLI is
    procedure Parse_Arguments (Args       : in out Argument_List_Access;
                               Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
-                              Tags       : out    Tag_Expr_Type;
+                              Cond       : out    Conditional_Type;
                               List_Mode  : out    Boolean;
                               Name       : in     String := Command_Name)
    is
-      Parser  : Opt_Parser;
-      Options : constant String := "help h -help f: -format= o: -output= " &
+      use String_Vectors;
+      Parser     : Opt_Parser;
+      Options    : constant String := "help h -help f: -format= o: -output= " &
                                    "-debug d -tags= t: -list";
-      Output  : Unbounded_String := Null_Unbounded_String;
+      Output     : Unbounded_String := Null_Unbounded_String;
+      Arg        : Unbounded_String;
       Debug_Mode : Boolean := False;
    begin
       List_Mode  := False;
-      Tags       := Null_Tag_Expr;
+      Cond       := Null_Condition;
       Initialize_Option_Scan (Parser, Args);
       Args       := null;  --  Parser takes ownership
       Format     := null;
@@ -115,7 +117,7 @@ package body AdaSpecLib.CLI is
          elsif Full_Switch (Parser) = "t" or
                Full_Switch (Parser) = "-tags"
          then
-            Tags := Create (Parameter (Parser));
+            Cond := Create (Parameter (Parser));
 
          elsif Full_Switch (Parser) = "f" or
                Full_Switch (Parser) = "-format"
@@ -138,6 +140,13 @@ package body AdaSpecLib.CLI is
          end if;
 
       end loop Getopt_Loop;
+
+      Arg := To_Unbounded_String (Get_Argument (False, Parser));
+      while Length (Arg) > 0 loop
+         Append (Cond.Scenarios, Arg);
+         Arg := To_Unbounded_String (Get_Argument (False, Parser));
+      end loop;
+
       Free (Parser);
 
 
@@ -163,7 +172,7 @@ package body AdaSpecLib.CLI is
          Set_Exit_Status (Failure);
          Continue   := False;
          List_Mode  := False;
-         Tags       := Null_Tag_Expr;
+         Cond       := Null_Condition;
       when Invalid_Parameter =>
          Put_Line (Current_Error, "Missing parameter for switch -" &
                   Full_Switch (Parser));
@@ -173,14 +182,13 @@ package body AdaSpecLib.CLI is
          Set_Exit_Status (Failure);
          Continue   := False;
          List_Mode  := False;
-         Tags       := Null_Tag_Expr;
+         Cond       := Null_Condition;
       --  GCOV_IGNORE_BEGIN
       when E : others =>
-         Tags       := Null_Tag_Expr;
          Format     := null;
          Continue   := False;
          List_Mode  := False;
-         Tags       := Null_Tag_Expr;
+         Cond       := Null_Condition;
          Free (Parser);
          Free (Format);
          Reraise_Occurrence (E);
@@ -189,14 +197,14 @@ package body AdaSpecLib.CLI is
 
    procedure Parse_Arguments (Format     : out    Format_Ptr;
                               Continue   : out    Boolean;
-                              Tags       : out    Tag_Expr_Type;
+                              Cond       : out    Conditional_Type;
                               List_Mode  : out    Boolean;
                               Name       : in     String := Command_Name)
    is
       Args : Argument_List_Access;
    begin
       Get_Arguments   (Args);
-      Parse_Arguments (Args, Format, Continue, Tags, List_Mode, Name);
+      Parse_Arguments (Args, Format, Continue, Cond, List_Mode, Name);
    end Parse_Arguments;
 
 end AdaSpecLib.CLI;

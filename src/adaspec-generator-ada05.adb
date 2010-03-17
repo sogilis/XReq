@@ -27,7 +27,8 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate_Scenario (S          : in out Ada_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
                                 Name       : in     Unbounded_String;
-                                Background : in Boolean := False);
+                                Seq_Num    : in     Integer;
+                                Background : in     Boolean := False);
    procedure Generate_Feature  (S          : in out Ada_Generator_Type);
    procedure Generate_With     (S          : in out Ada_Generator_Type);
 
@@ -225,6 +226,7 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate_Scenario (S          : in out Ada_Generator_Type;
                                 Scenario   : in Result_Scenario_Type;
                                 Name       : in Unbounded_String;
+                                Seq_Num    : in Integer;
                                 Background : in Boolean := False)
    is
       use Util.Strings.Vectors;
@@ -246,8 +248,8 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put             (" First    : in out Boolean;");
       S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
       S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
-      S.Ads.Put             (" Tag_Cond : in     Tag_Expr_Type;");
-      S.Adb.Put             (" Tag_Cond : in     Tag_Expr_Type;");
+      S.Ads.Put             (" Cond     : in     Conditional_Type;");
+      S.Adb.Put             (" Cond     : in     Conditional_Type;");
       S.Ads.New_Line; S.Ads.Put_Indent; S.Ads.Put (Proc'Length * " ");
       S.Adb.New_Line; S.Adb.Put_Indent; S.Adb.Put (Proc'Length * " ");
       S.Ads.Put             (" Stop     : in out Boolean);");
@@ -285,7 +287,9 @@ package body AdaSpec.Generator.Ada05 is
       if Background then
          S.Adb.Put_Line ("Format.Start_Background (First);");
       else
-         S.Adb.Put_Line ("if Tag_Cond.Eval (Tags) then");
+         S.Adb.Put_Line ("if Cond.Eval (Tags) and then Cond.Eval (" &
+                         Ada_String (To_String (Scenario.Pos.File)) & "," &
+                         Seq_Num'Img & ") then");
          S.Adb.Indent;
          S.Adb.Put_Line ("if First then");
          S.Adb.Indent;
@@ -302,7 +306,7 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
          S.Adb.Put_Line (S.Fn_Backgnd &
-                         " (Format, Report, First, Tag_Cond, Fail);");
+                         " (Format, Report, First, Cond, Fail);");
          S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
          S.Adb.Put_Line ("Format.Start_Scenario;");
       end if;
@@ -367,15 +371,17 @@ package body AdaSpec.Generator.Ada05 is
       use Result_Scenarios;
       I   : Result_Scenarios.Cursor := First (S.Feature.Scenarios);
       Str : Unbounded_String;
+      N   : Positive := 1;
    begin
-      Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd, True);
+      Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd, 0, True);
       while Has_Element (I) loop
          Get_Unique_String (S.Pool,
             To_Identifier ("Scenario_" & To_String (Element (I).Name)),
             Str);
          Append (S.Fn_Steps, Str);
-         Generate_Scenario (S, Element (I), Str);
+         Generate_Scenario (S, Element (I), Str, N);
          Next (I);
+         N := N + 1;
       end loop;
    end Generate_Feature;
 
@@ -446,11 +452,11 @@ package body AdaSpec.Generator.Ada05 is
       Generate_Feature (Gen);
       Gen.Adb.New_Line;
       Gen.Ads.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
-      Gen.Ads.Put_Line ("               Tags      : in Tag_Expr_Type;");
+      Gen.Ads.Put_Line ("               Cond      : in Conditional_Type;");
       Gen.Ads.Put_Line ("               Report    : in out Report_Type;");
       Gen.Ads.Put_Line ("               List_Mode : in Boolean := False);");
       Gen.Adb.Put_Line ("procedure Run (Format    : in out Format_Ptr;");
-      Gen.Adb.Put_Line ("               Tags      : in Tag_Expr_Type;");
+      Gen.Adb.Put_Line ("               Cond      : in Conditional_Type;");
       Gen.Adb.Put_Line ("               Report    : in out Report_Type;");
       Gen.Adb.Put_Line ("               List_Mode : in Boolean := False) is");
       Gen.Adb.Indent;
@@ -477,7 +483,7 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Put_Line ("Format.Start_Feature;");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) &
-                           " (Format, Report, First, Tags, Stop);");
+                           " (Format, Report, First, Cond, Stop);");
       end loop;
       Gen.Adb.Put_Line ("Format.Stop_Feature;");
       Gen.Adb.UnIndent;
@@ -539,12 +545,12 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Put_Line ("Continue  : Boolean;");
       Body_B.Put_Line ("Report    : Report_Type;");
       Body_B.Put_Line ("Format    : Format_Ptr;");
-      Body_B.Put_Line ("Tags      : Tag_Expr_Type;");
+      Body_B.Put_Line ("Cond      : Conditional_Type;");
       Body_B.Put_Line ("List_Mode : Boolean;");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
       Body_B.Indent;
-      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Tags, " &
+      Body_B.Put_Line ("Parse_Arguments (Format, Continue, Cond, " &
                                         "List_Mode, Self_Name);");
       Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
@@ -552,7 +558,7 @@ package body AdaSpec.Generator.Ada05 is
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
-         Body_B.Put_Line (E.Full_Name & ".Run (Format, Tags, Report, " &
+         Body_B.Put_Line (E.Full_Name & ".Run (Format, Cond, Report, " &
                                               "List_Mode);");
          Next (I);
       end loop;

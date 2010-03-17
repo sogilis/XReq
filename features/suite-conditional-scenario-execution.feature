@@ -33,7 +33,6 @@ Feature: Run conditionally scenarios
       end Steps;
       """
 
-  @wip
   Scenario: Conditional run
     Given a file "features/a.feature":
       """
