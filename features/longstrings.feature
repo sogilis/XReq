@@ -28,9 +28,10 @@ Feature: Long strings
           Given the long string:
             '''
             abc
+              
             def
             '''
-          When I compare it with "abc\ndef"
+          When I compare it with "abc\n  \ndef"
           Then they are equal
 
         Scenario: B
@@ -138,9 +139,10 @@ Feature: Long strings
           Given the long string:
             \"\"\"
             abc
+              
             def
             \"\"\"
-          When I compare it with "abc\ndef"
+          When I compare it with "abc\n  \ndef"
           Then they are equal
 
         Scenario: B

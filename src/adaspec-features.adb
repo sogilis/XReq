@@ -409,7 +409,7 @@ package body AdaSpec.Features is
       procedure Read_String   (Result   : out    Unbounded_String;
                                Sep      : in     String)
       is
-         Indent   : constant Integer := Idx_Start;
+         Indent   : constant Integer := Integer'Max (Idx_Start, 1);
          Continue : Boolean := True;
          Res      : Unbounded_String;
          I        : Natural;
@@ -432,7 +432,10 @@ package body AdaSpec.Features is
                declare
                   Line : constant String := To_String (Line_S);
                begin
-                  I := Natural'Max (Natural'Min (Idx_Start, Indent), 1);
+                  I := Indent;
+                  if Idx_Start /= 0 then
+                     I := Natural'Min (Idx_Start, I);
+                  end if;
                   while I <= Line'Last loop
                      if I <= Line'Last - 1 and then
                         Line (I .. I + 1) = "\" & Sep (Sep'First)
