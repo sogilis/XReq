@@ -1,3 +1,3 @@
 *.ad[bs]
 *.gpr
-/suite
+/bootstrap_suite
