@@ -197,16 +197,8 @@ body {
   right: 0;
   overflow: hidden;
   height: 5em;
-  color: white;
-  z-index: 1;
-}
-
-#title-background {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 5em;
+  color: #004444;
+  background-color: aqua;
 }
 
 #summary {
@@ -292,17 +284,17 @@ body {
   list-style-type: none;
 }
 
-.report.fail, #title-background.fail {
+.report.fail, #title-background.fail, #title.fail {
   color: #fffbd3;
   background-color: #c20000;
 }
 
-.report.pass, #title-background.pass {
+.report.pass, #title-background.pass, #title.pass {
   color: #dbffb4;
   background-color: #65c400;
 }
 
-.report.skip, #title-background.skip {
+.report.skip, #title-background.skip, #title.skip {
   color: #004444;
   background-color: aqua;
 }
@@ -392,6 +384,7 @@ p.position {
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-1-background-1").className = "scenario fail";
             document.getElementById("feature-1").className = "feature fail";
+            document.getElementById("title").className = "fail";
           /*]]>*/</script>
           <p>And a file "<span class="capture">features/step_definitions/steps.ads</span>":</p>
           <pre class="string">with AdaSpecLib;
@@ -501,6 +494,7 @@ end Steps2;
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
+            document.getElementById("title").className = "fail";
           /*]]>*/</script>
 <?var name="step-error-scenario"?>
           <hr />
@@ -510,6 +504,7 @@ end Steps2;
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
+            document.getElementById("title").className = "fail";
           /*]]>*/</script>
 <?var name="step-end"?>
         </div> <!-- step -->
@@ -531,7 +526,12 @@ end Steps2;
       /*]]>*/</script>
     </div> <!-- feature -->
 <?var name="report-begin"?>
-    <div id="title-background" class="<?placeholder name="status"?>">&nbsp;</div>
+    <script tyme="text/javascript">/*<![CDATA[*/
+      var titleElement = document.getElementById("title");
+      if (titleElement.className != "fail") {
+        titleElement.className = "pass";
+      }
+    /*]]>*/</script>
     <div id="summary" class="<?placeholder name="status"?>">
       <div class="report <?placeholder name="status"?>">
         <ul>

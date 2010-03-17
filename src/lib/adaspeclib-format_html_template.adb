@@ -206,16 +206,8 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  right: 0;" & ASCII.LF);
       Put (File, "  overflow: hidden;" & ASCII.LF);
       Put (File, "  height: 5em;" & ASCII.LF);
-      Put (File, "  color: white;" & ASCII.LF);
-      Put (File, "  z-index: 1;" & ASCII.LF);
-      Put (File, "}" & ASCII.LF);
-      Put (File, "" & ASCII.LF);
-      Put (File, "#title-background {" & ASCII.LF);
-      Put (File, "  position: absolute;" & ASCII.LF);
-      Put (File, "  left: 0;" & ASCII.LF);
-      Put (File, "  right: 0;" & ASCII.LF);
-      Put (File, "  top: 0;" & ASCII.LF);
-      Put (File, "  height: 5em;" & ASCII.LF);
+      Put (File, "  color: #004444;" & ASCII.LF);
+      Put (File, "  background-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "#summary {" & ASCII.LF);
@@ -301,17 +293,17 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  list-style-type: none;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".report.fail, #title-background.fail {" & ASCII.LF);
+      Put (File, ".report.fail, #title-background.fail, #title.fail {" & ASCII.LF);
       Put (File, "  color: #fffbd3;" & ASCII.LF);
       Put (File, "  background-color: #c20000;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".report.pass, #title-background.pass {" & ASCII.LF);
+      Put (File, ".report.pass, #title-background.pass, #title.pass {" & ASCII.LF);
       Put (File, "  color: #dbffb4;" & ASCII.LF);
       Put (File, "  background-color: #65c400;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".report.skip, #title-background.skip {" & ASCII.LF);
+      Put (File, ".report.skip, #title-background.skip, #title.skip {" & ASCII.LF);
       Put (File, "  color: #004444;" & ASCII.LF);
       Put (File, "  background-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -584,6 +576,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "            document.getElementById(""feature-");
       Put (File, Param_feature_id);
       Put (File, """).className = ""feature fail"";" & ASCII.LF);
+      Put (File, "            document.getElementById(""title"").className = ""fail"";" & ASCII.LF);
       Put (File, "          /*]]>*/</script>" & ASCII.LF);
    end step_error_background;
 
@@ -611,6 +604,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "            document.getElementById(""feature-");
       Put (File, Param_feature_id);
       Put (File, """).className = ""feature fail"";" & ASCII.LF);
+      Put (File, "            document.getElementById(""title"").className = ""fail"";" & ASCII.LF);
       Put (File, "          /*]]>*/</script>" & ASCII.LF);
    end step_error_scenario;
 
@@ -667,9 +661,12 @@ package body AdaSpecLib.Format_HTML_Template is
          Param_num_steps_skip : in String;
          Param_num_steps_pass : in String) is
    begin
-      Put (File, "    <div id=""title-background"" class=""");
-      Put (File, Param_status);
-      Put (File, """>&nbsp;</div>" & ASCII.LF);
+      Put (File, "    <script tyme=""text/javascript"">" & ASCII.LF);
+      Put (File, "      var titleElement = document.getElementById(""title"");" & ASCII.LF);
+      Put (File, "      if (titleElement.className != ""fail"") {" & ASCII.LF);
+      Put (File, "        titleElement.className = ""pass"";" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
+      Put (File, "    </script>" & ASCII.LF);
       Put (File, "    <div id=""summary"" class=""");
       Put (File, Param_status);
       Put (File, """>" & ASCII.LF);
