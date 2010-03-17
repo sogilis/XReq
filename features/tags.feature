@@ -51,7 +51,7 @@ Feature: Tags
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite" in features/tests
+    When I run the test suite "./suite" in features/tests
     Then it should fail with
       """
       Feature: F
@@ -71,7 +71,7 @@ Feature: Tags
 
       """
 
-    When I run "./suite -f html -o report.html" in features/tests
+    When I run the test suite "./suite -f html -o report.html" in features/tests
     Then it should fail
     And "features/tests/report.html" should exist
     And "features/tests/report.html" should contain
@@ -107,7 +107,7 @@ Feature: Tags
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite" in features/tests
+    When I run the test suite "./suite" in features/tests
     Then it should fail with
       """
       Feature: F
@@ -128,7 +128,7 @@ Feature: Tags
 
       """
 
-    When I run "./suite -f html -o report.html" in features/tests
+    When I run the test suite "./suite -f html -o report.html" in features/tests
     Then it should fail
     And "features/tests/report.html" should exist
     And "features/tests/report.html" should contain
@@ -172,7 +172,7 @@ Feature: Tags
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite -t @tag1" in features/tests
+    When I run the test suite "./suite -t @tag1" in features/tests
     Then it should pass with
       """
       Feature: Feature
@@ -217,7 +217,7 @@ Feature: Tags
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite -t ~@tag1" in features/tests
+    When I run the test suite "./suite -t ~@tag1" in features/tests
     Then it should pass with
       """
       Feature: Feature
@@ -266,7 +266,7 @@ Feature: Tags
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite -t @tag1+@tag2" in features/tests
+    When I run the test suite "./suite -t @tag1+@tag2" in features/tests
     Then it should pass with
       """
       0 scenarios
@@ -274,7 +274,7 @@ Feature: Tags
 
       """
 
-    When I run "./suite -t @tag1+~@tag2" in features/tests
+    When I run the test suite "./suite -t @tag1+~@tag2" in features/tests
     Then it should pass with
       """
       Feature: Feature
@@ -301,7 +301,7 @@ Feature: Tags
       """
 
 
-    When I run "./suite -t ~@t+~@tag2" in features/tests
+    When I run the test suite "./suite -t ~@t+~@tag2" in features/tests
     Then it should pass with
       """
       Feature: Feature
@@ -351,7 +351,7 @@ Feature: Tags
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite -t @tag1a,@tag2" in features/tests
+    When I run the test suite "./suite -t @tag1a,@tag2" in features/tests
     Then it should pass with
       """
       Feature: Feature
@@ -377,7 +377,7 @@ Feature: Tags
 
       """
 
-    When I run "./suite -t ~@tag1,@t" in features/tests
+    When I run the test suite "./suite -t ~@tag1,@t" in features/tests
     Then it should pass with
       """
       Feature: Feature
@@ -404,7 +404,7 @@ Feature: Tags
       """
 
 
-    When I run "./suite -t ~@tag1,~@tag1a" in features/tests
+    When I run the test suite "./suite -t ~@tag1,~@tag1a" in features/tests
     Then it should pass with
       """
       Feature: Feature

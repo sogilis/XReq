@@ -257,7 +257,9 @@ package body AdaSpecLib.Format is
       end if;
       I := First (Cond.Scenarios);
       while Has_Element (I) loop
-         if To_String (Element (I)) = Pos then
+         if To_String (Element (I)) = Pos or else
+            To_String (Element (I)) = File
+         then
             return True;
          end if;
          Next (I);
@@ -276,12 +278,13 @@ package body AdaSpecLib.Format is
       Sec : Natural;
       Buf : Unbounded_String;
    begin
-      Min := Integer (D / 60);
+      Min := Integer (D) / 60;
       Sec := Integer (D) mod 60;
       if Min > 0 then
          Append (Buf, Trim (Min'Img, Left) & "m");
       end if;
       Append (Buf, Trim (Sec'Img, Left) & "s");
+      --  Append (Buf, " (" & Trim (D'Img, Left) & "s)");
       return To_String (Buf);
    end Get_Duration;
 

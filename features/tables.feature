@@ -78,7 +78,7 @@ Feature: Tables
     Then it should pass
     When I compile "equal_table" in features/tests
     Then it should pass
-    When I run "./equal_table" in features/tests
+    When I run the test suite "./equal_table" in features/tests
     Then it should pass with
       """
       Feature: F

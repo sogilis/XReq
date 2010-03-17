@@ -85,6 +85,11 @@ When /^I run "(.*)" in (.*)$/ do |command, dir|
   FileUtils.cd(olddir);
 end
 
+When /^I run the test suite "([^"]*)" in (.*)$/ do |command, dir|
+  When ("I run \"#{command}\" in #{dir}")
+  @last_command_output.sub!(/Finished in ([0-9]*m)?[0-9]*s\n$/, "");
+end
+
 When /^I run '(.*)' aloud$/ do |command|
   system(command);
   @last_exit_code = $?.to_i;

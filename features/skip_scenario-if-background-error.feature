@@ -123,7 +123,7 @@ Feature: Skip scenarios after a background error
     Then it should pass
     When I compile "always_fail_suite" in features/tests
     Then it should pass
-    When I run "./always_fail_suite" in features/tests
+    When I run the test suite "./always_fail_suite" in features/tests
     Then it should fail with
       """
       Feature: Always Fail
@@ -162,7 +162,7 @@ Feature: Skip scenarios after a background error
     Then it should pass
     When I compile "periodic_fail_suite" in features/tests
     Then it should pass
-    When I run "./periodic_fail_suite" in features/tests
+    When I run the test suite "./periodic_fail_suite" in features/tests
     Then it should fail with
       """
       Feature: Periodic Fail

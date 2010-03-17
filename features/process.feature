@@ -66,7 +66,7 @@ Feature: The simplest works
     When  I compile "simplest_test" in features/tests
     Then  it should pass
     And   "features/tests/simplest_test" should exist
-    When  I run "./simplest_test" in features/tests
+    When  I run the test suite "./simplest_test" in features/tests
     Then  it should pass with
       """
       Feature: Sample
@@ -98,7 +98,7 @@ Feature: The simplest works
     When  I run "gnatmake -Psuite.gpr" in features/tests
     Then  it should pass
     And   "features/tests/suite" should exist
-    When  I run "./suite" in features/tests
+    When  I run the test suite "./suite" in features/tests
     Then  it should pass with
       """
       Feature: Sample

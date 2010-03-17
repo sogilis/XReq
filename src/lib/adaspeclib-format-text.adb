@@ -267,7 +267,7 @@ package body AdaSpecLib.Format.Text is
          Format.Output.Put (")");
       end if;
       Format.Output.New_Line;
-      Format.Output.Put_Line (Get_Duration (D));
+      Format.Output.Put_Line ("Finished in " & Get_Duration (D));
    end Put_Summary;
 
    -----------------------

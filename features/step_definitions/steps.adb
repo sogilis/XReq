@@ -177,8 +177,8 @@ package body Steps is
       it_should_pass_fail(Args);
 --       Args.Add_Para ("Expected output:");
 --       Args.Add_Text (Args.Text);
-      Args.Add_Para ("Command output:");
-      Args.Add_Text (To_String (Last_Command_Output));
+--       Args.Add_Para ("Command output:");
+--       Args.Add_Text (To_String (Last_Command_Output));
       Assert (Args.Text = To_String (Last_Command_Output),
               "Unexpected command output");
    end it_should_pass_fail_with;
@@ -207,6 +207,29 @@ package body Steps is
       Execute (Args.Match (1));
       Set_Directory (Dir);
    end when_I_run_in;
+
+   procedure when_I_run_the_test_suite_in (Args : in out Arg_Type) is
+      use Ada.Strings.Fixed;
+      use Ada.Strings;
+   begin
+      when_I_run_in (Args);
+      declare
+         Output : constant String := To_String (Last_Command_Output);
+         I      : Integer;
+      begin
+         I := Index (Output, "Finished in ", Backward);
+         if I /= 0 and then Index (Output, "" & ASCII.LF, I) = Output'Last then
+            Args.Add_Para ("Removed last line from output:");
+            Args.Add_Text (Output (I .. Output'Last));
+            Last_Command_Output := To_Unbounded_String
+               (Output (Output'First .. I - 1));
+         else
+            Args.Add_Para ("Could not find ""Finished in "" in output");
+            Args.Add_Para ("Command output:");
+            Args.Add_Text (Output);
+         end if;
+      end;
+   end when_I_run_the_test_suite_in;
 
    procedure when_I_run (Args : in out Arg_Type) is
    begin

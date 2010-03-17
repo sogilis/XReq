@@ -80,7 +80,7 @@ Feature: Run conditionally scenarios
     When I compile "suite" in features/tests
     Then it should pass
 
-    When I run "./suite features/a.feature:1 features/b.feature:3" in features/tests
+    When I run the test suite "./suite features/a.feature:1 features/b.feature:3" in features/tests
     Then it should pass with
       """
       Feature: A

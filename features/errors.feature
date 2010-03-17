@@ -63,7 +63,7 @@ Feature: Error handling in steps
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
-    When I run "./suite" in features/tests
+    When I run the test suite "./suite" in features/tests
     Then it should fail with
       """
       Feature: Sample

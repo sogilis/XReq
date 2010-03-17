@@ -570,7 +570,7 @@ package body AdaSpec.Generator.Ada05 is
       end loop;
       Body_B.Put_Line    ("Time_Stop := Clock;");
       Body_B.Put_Line    ("Time_Delta := To_Duration " &
-                                             "(Time_Start - Time_Stop);");
+                                             "(Time_Stop - Time_Start);");
       Body_B.Put_Line    ("if not List_Mode then");
       Body_B.Indent;
       Body_B.Put_Line    ("Format.Put_Summary (Report, Time_Delta);");
