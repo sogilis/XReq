@@ -163,9 +163,10 @@ package AdaSpecLib.Format is
 
    Null_Condition : constant Conditional_Type := (others => <>);
 
-private
-
    function Get_Duration (D : in Duration) return String;
+   --  Need this to be public in order to be tested
+
+private
 
    --  type Format_Type should be private but Ada is absolutely awful
 

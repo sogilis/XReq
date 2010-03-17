@@ -1,5 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with AdaSpecLib.Format;
+
+use AdaSpecLib.Format;
+
 package body Test_Suite.Lib.Format is
 
    procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
@@ -18,7 +22,8 @@ package body Test_Suite.Lib.Format is
    procedure Run (T : in out Test_1) is
    begin
 
-      T.Assert (True, "Nothing to test");
+      T.Assert (Get_Duration (Duration (65)), "1m 5s",
+                "Get_Duration (65) /= 1m 5s");
 
    end Run;
 

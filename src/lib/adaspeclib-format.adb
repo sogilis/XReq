@@ -281,7 +281,7 @@ package body AdaSpecLib.Format is
       Min := Integer (D) / 60;
       Sec := Integer (D) mod 60;
       if Min > 0 then
-         Append (Buf, Trim (Min'Img, Left) & "m");
+         Append (Buf, Trim (Min'Img, Left) & "m ");
       end if;
       Append (Buf, Trim (Sec'Img, Left) & "s");
       --  Append (Buf, " (" & Trim (D'Img, Left) & "s)");
