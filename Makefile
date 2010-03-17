@@ -146,7 +146,8 @@ _gcov-gather-cucumber:
 
 
 run-wip-cucumber: bin
-	cucumber -w -t "@wip" features/*.feature
+	-$(RM) -f cucumber-rerun.txt
+	cucumber -w -t "@wip" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
 run-cucumber: bin
 	@echo
@@ -155,7 +156,21 @@ run-cucumber: bin
 	@echo "####################"
 	@echo
 	@$(MAKE) run-wip-cucumber
-	cucumber -t "~@wip" features/*.feature
+	-$(RM) -f cucumber-rerun.txt
+	cucumber -t "~@wip" -t "~@bootstrap" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
+
+rerun-cucumber: bin
+	@echo
+	@echo "##########################################"
+	@echo "##  Run cucumber scenarios that failed  ##"
+	@echo "##########################################"
+	@echo
+	touch cucumber-rerun.txt
+	@if [ -s cucumber-rerun.txt ]; then \
+		xargs echo cucumber < cucumber-rerun.txt; \
+		xargs cucumber < cucumber-rerun.txt; \
+	fi
+	-$(RM) -f cucumber-rerun.txt
 
 run-adaspec: bin
 	@echo
@@ -175,7 +190,7 @@ run-tests: tests bin
 	@echo
 	bin/unit_tests
 
-.PHONY: run-cucumber run-wip-cucumber run-tests
+.PHONY: run-cucumber rerun-cucumber run-wip-cucumber run-tests
 
 gnatcheck: dir
 	@echo
