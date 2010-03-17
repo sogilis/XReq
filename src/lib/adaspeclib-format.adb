@@ -217,8 +217,20 @@ package body AdaSpecLib.Format is
       end Eval_And;
 
       function Eval_Or     (Expr : in String) return Boolean is
+         Buffer : Unbounded_String;
       begin
-         return Eval_And (Expr);
+         for I in Expr'Range loop
+            case Expr (I) is
+               when ',' =>
+                  if Eval_And (To_String (Buffer)) then
+                     return True;
+                  end if;
+                  Buffer := Null_Unbounded_String;
+               when others =>
+                  Append (Buffer, Expr (I));
+            end case;
+         end loop;
+         return Eval_And (To_String (Buffer));
       end Eval_Or;
 
    begin
