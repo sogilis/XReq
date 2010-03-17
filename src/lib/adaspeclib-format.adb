@@ -214,7 +214,7 @@ package body AdaSpecLib.Format is
             end case;
          end loop;
          return Eval_Not (To_String (Buffer));
-      end Eval_And;
+      end Eval_And;  --  GCOV_IGNORE
 
       function Eval_Or     (Expr : in String) return Boolean is
          Buffer : Unbounded_String;
@@ -231,7 +231,7 @@ package body AdaSpecLib.Format is
             end case;
          end loop;
          return Eval_And (To_String (Buffer));
-      end Eval_Or;
+      end Eval_Or;  --  GCOV_IGNORE
 
    begin
       return Eval_Or (To_String (Tag_Expr.Expr));
