@@ -526,12 +526,14 @@ package body AdaSpec.Generator.Ada05 is
    begin
       With_B.Put_Line ("--  File: " & Filename);
       With_B.Put_Line ("with Ada.Command_Line;");
+      With_B.Put_Line ("with Ada.Real_Time;");
       With_B.Put_Line ("with AdaSpecLib;");
       With_B.Put_Line ("with AdaSpecLib.CLI;");
       With_B.Put_Line ("with AdaSpecLib.Util;");
       With_B.Put_Line ("with AdaSpecLib.Report;");
       With_B.Put_Line ("with AdaSpecLib.Format;");
       With_B.Put_Line ("with AdaSpecLib.Format.Text;");
+      With_B.Put_Line ("use  Ada.Real_Time;");
       With_B.Put_Line ("use  AdaSpecLib;");
       With_B.Put_Line ("use  AdaSpecLib.CLI;");
       With_B.Put_Line ("use  AdaSpecLib.Util;");
@@ -542,11 +544,14 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Indent;
       Body_B.Put_Line ("Self_Name : constant String := " &
                        Ada_String (Prc_Name) & ";");
-      Body_B.Put_Line ("Continue  : Boolean;");
-      Body_B.Put_Line ("Report    : Report_Type;");
-      Body_B.Put_Line ("Format    : Format_Ptr;");
-      Body_B.Put_Line ("Cond      : Conditional_Type;");
-      Body_B.Put_Line ("List_Mode : Boolean;");
+      Body_B.Put_Line ("Continue   : Boolean;");
+      Body_B.Put_Line ("Report     : Report_Type;");
+      Body_B.Put_Line ("Format     : Format_Ptr;");
+      Body_B.Put_Line ("Cond       : Conditional_Type;");
+      Body_B.Put_Line ("List_Mode  : Boolean;");
+      Body_B.Put_Line ("Time_Start : Time;");
+      Body_B.Put_Line ("Time_Stop  : Time;");
+      Body_B.Put_Line ("Time_Delta : Duration := Duration (0);");
       Body_B.UnIndent;
       Body_B.Put_Line ("begin");
       Body_B.Indent;
@@ -555,6 +560,7 @@ package body AdaSpec.Generator.Ada05 is
       Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
       Body_B.Put_Line    ("Format.Start_Tests;");
+      Body_B.Put_Line    ("Time_Start := Clock;");
       while Has_Element (I) loop
          E := Ada_Generator_Ptr (Element (I));
          With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
@@ -562,9 +568,12 @@ package body AdaSpec.Generator.Ada05 is
                                               "List_Mode);");
          Next (I);
       end loop;
+      Body_B.Put_Line    ("Time_Stop := Clock;");
+      Body_B.Put_Line    ("Time_Delta := To_Duration " &
+                                             "(Time_Start - Time_Stop);");
       Body_B.Put_Line    ("if not List_Mode then");
       Body_B.Indent;
-      Body_B.Put_Line    ("Format.Put_Summary (Report);");
+      Body_B.Put_Line    ("Format.Put_Summary (Report, Time_Delta);");
       Body_B.Put_Line    ("if not Status (Report) then");
       Body_B.Indent;
       Body_B.Put_Line       ("Ada.Command_Line.Set_Exit_Status " &

@@ -417,7 +417,8 @@ package body AdaSpecLib.Format.HTML is
    -------------------
 
    procedure Put_Summary    (Format     : in out HTML_Format_Type;
-                             Report     : in Report_Type)
+                             Report     : in     Report_Type;
+                             D          : in     Duration)
    is
       use Ada.Containers;
 
@@ -448,7 +449,8 @@ package body AdaSpecLib.Format.HTML is
          Param_num_steps          => To_String (Count_Steps),
          Param_num_steps_fail     => To_String (Report.Count_Steps_Failed),
          Param_num_steps_skip     => To_String (Report.Count_Steps_Skipped),
-         Param_num_steps_pass     => To_String (Report.Count_Steps_Passed));
+         Param_num_steps_pass     => To_String (Report.Count_Steps_Passed),
+         Param_duration           => Get_Duration (D));
       Tmpl.report_menu_begin (Format.Output);
       for I in 1 .. Integer (Length (Format.Menu)) loop
          E1 := Element (Format.Menu, I);

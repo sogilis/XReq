@@ -194,7 +194,8 @@ package body AdaSpecLib.Format.Text is
    -------------------
 
    procedure Put_Summary    (Format     : in out Text_Format_Type;
-                             Report     : in Report_Type)
+                             Report     : in Report_Type;
+                             D          : in     Duration)
    is
       Count_Scenarios : constant Natural := Report.Count_Scenario_Failed +
                                             Report.Count_Scenario_Passed;
@@ -266,6 +267,7 @@ package body AdaSpecLib.Format.Text is
          Format.Output.Put (")");
       end if;
       Format.Output.New_Line;
+      Format.Output.Put_Line (Get_Duration (D));
    end Put_Summary;
 
    -----------------------

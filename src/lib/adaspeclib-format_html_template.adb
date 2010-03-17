@@ -659,14 +659,15 @@ package body AdaSpecLib.Format_HTML_Template is
          Param_num_steps : in String;
          Param_num_steps_fail : in String;
          Param_num_steps_skip : in String;
-         Param_num_steps_pass : in String) is
+         Param_num_steps_pass : in String;
+         Param_duration : in String) is
    begin
-      Put (File, "    <script tyme=""text/javascript"">" & ASCII.LF);
+      Put (File, "    <script tyme=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
       Put (File, "      var titleElement = document.getElementById(""title"");" & ASCII.LF);
       Put (File, "      if (titleElement.className != ""fail"") {" & ASCII.LF);
       Put (File, "        titleElement.className = ""pass"";" & ASCII.LF);
       Put (File, "      }" & ASCII.LF);
-      Put (File, "    </script>" & ASCII.LF);
+      Put (File, "    /*]]>*/</script>" & ASCII.LF);
       Put (File, "    <div id=""summary"" class=""");
       Put (File, Param_status);
       Put (File, """>" & ASCII.LF);
@@ -701,7 +702,9 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, " passed</li>" & ASCII.LF);
       Put (File, "            </ul>" & ASCII.LF);
       Put (File, "          </li>" & ASCII.LF);
-      Put (File, "          <li class=""clear"">Finished in 0 seconds</li>" & ASCII.LF);
+      Put (File, "          <li class=""clear"">Finished in ");
+      Put (File, Param_duration);
+      Put (File, "</li>" & ASCII.LF);
       Put (File, "        </ul>" & ASCII.LF);
       Put (File, "      </div>" & ASCII.LF);
    end report_begin;

@@ -87,7 +87,8 @@ package AdaSpecLib.Format is
                              Err        : in     Exception_Occurrence)
                              is abstract;
    procedure Put_Summary    (Format     : in out Format_Type;
-                             Report     : in     Report_Type)
+                             Report     : in     Report_Type;
+                             D          : in     Duration)
                              is abstract;
    procedure Set_Output     (Format     : in out Format_Type;
                              Output     : in     String);
@@ -163,6 +164,8 @@ package AdaSpecLib.Format is
    Null_Condition : constant Conditional_Type := (others => <>);
 
 private
+
+   function Get_Duration (D : in Duration) return String;
 
    --  type Format_Type should be private but Ada is absolutely awful
 

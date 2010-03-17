@@ -265,4 +265,24 @@ package body AdaSpecLib.Format is
       return False;
    end Eval;  --  GCOV_IGNORE
 
+   --------------------
+   --  Get_Duration  --
+   --------------------
+
+   function Get_Duration (D : in Duration) return String is
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
+      Min : Natural;
+      Sec : Natural;
+      Buf : Unbounded_String;
+   begin
+      Min := Integer (D / 60);
+      Sec := Integer (D) mod 60;
+      if Min > 0 then
+         Append (Buf, Trim (Min'Img, Left) & "m");
+      end if;
+      Append (Buf, Trim (Sec'Img, Left) & "s");
+      return To_String (Buf);
+   end Get_Duration;
+
 end AdaSpecLib.Format;

@@ -67,7 +67,8 @@ package AdaSpecLib.Format.HTML is
                              Err        : in     Exception_Occurrence);
    overriding
    procedure Put_Summary    (Format     : in out HTML_Format_Type;
-                             Report     : in     Report_Type);
+                             Report     : in     Report_Type;
+                             D          : in     Duration);
 
    function  New_HTML_Format return HTML_Format_Ptr;
 

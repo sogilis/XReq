@@ -117,7 +117,8 @@ package AdaSpecLib.Format_HTML_Template is
          Param_num_steps : in String;
          Param_num_steps_fail : in String;
          Param_num_steps_skip : in String;
-         Param_num_steps_pass : in String);
+         Param_num_steps_pass : in String;
+         Param_duration : in String);
 
    procedure report_menu_begin
         (File : in out File_Type);

@@ -32,7 +32,8 @@ package AdaSpecLib.Format.Text is
                              Err        : in     Exception_Occurrence);
    overriding
    procedure Put_Summary    (Format     : in out Text_Format_Type;
-                             Report     : in     Report_Type);
+                             Report     : in     Report_Type;
+                             D          : in     Duration);
 
    function  New_Text_Format return Text_Format_Ptr;
 
