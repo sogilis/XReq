@@ -263,6 +263,6 @@ package body AdaSpecLib.Format is
          Next (I);
       end loop;
       return False;
-   end Eval;
+   end Eval;  --  GCOV_IGNORE
 
 end AdaSpecLib.Format;
