@@ -194,7 +194,7 @@ test-report:
 	-$(MAKE) coverage
 	-$(MAKE) test-report-unit
 	-$(MAKE) test-report-cucumber
-	-$(MAKE) test-report-adaspec
+	-#$(MAKE) test-report-adaspec # Not necessary, bootstrap.feature does it
 
 test-report-unit: tests bin
 	@echo
