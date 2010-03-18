@@ -94,13 +94,16 @@ package body AdaSpec.Result is
    is
       use Stanza_Container;
       use Result_Steps;
+      use Result_Steps_Vectors2;
       I         : Stanza_Container.Cursor := First (Scenario.Stanzas);
       Stanza    : Stanza_Type;
       Res_St    : Result_Step_Type;
       StepsV    : Result_Steps.Vector;
+      Steps_tmp : Result_Steps.Vector;
       Proc_Name : Unbounded_String;
       Matches   : Match_Vectors.Vector;
       Found     : Boolean;
+      Scenarios : Result_Steps_Vectors2.Vector;
    begin
       Errors := False;
       while Has_Element (I) loop
@@ -132,11 +135,40 @@ package body AdaSpec.Result is
          end if;
          Next (I);
       end loop;
-      Res := (Outline => False,
-              Name    => Scenario.Name,
-              Pos     => Scenario.Pos,
-              Tags    => Scenario.Tags,
-              Steps   => StepsV);
+      if not Scenario.Outline then
+         Res := (Outline => False,
+                 Name    => Scenario.Name,
+                 Pos     => Scenario.Pos,
+                 Tags    => Scenario.Tags,
+                 Steps   => StepsV);
+      else
+         for Y in Scenario.Table.First_Y + 1 .. Scenario.Table.Last_Y loop
+            Steps_tmp := StepsV;
+            for X in Scenario.Table.First_X .. Scenario.Table.Last_X loop
+               declare
+                  J     : Result_Steps.Cursor := First (Steps_tmp);
+                  Item  : constant String := Scenario.Table.Item (X, Y, "");
+                  Label : constant String := "<" & Scenario.Table.Item
+                                   (X, Scenario.Table.First_Y, "") & ">";
+               begin
+                  while Has_Element (J) loop
+                     Res_St := Element (J);
+                     Replace (Res_St.Step.Stanza, Label, Item);
+                     Replace_Element (Steps_tmp, J, Res_St);
+                     Next (J);
+                  end loop;
+               end;
+            end loop;
+            Append (Scenarios, Steps_tmp);
+         end loop;
+         Res := (Outline   => True,
+                 Name      => Scenario.Name,
+                 Pos       => Scenario.Pos,
+                 Tags      => Scenario.Tags,
+                 Steps     => StepsV,
+                 Table     => Scenario.Table,
+                 Scenarios => Scenarios);
+      end if;
    end Process_Scenario;
 
    ------------------------------------------------

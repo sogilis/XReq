@@ -24,6 +24,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Decode_String);
       Ret.Add_Test (new Test_Relative_Path);
       Ret.Add_Test (new Test_Reverse_Path);
+      Ret.Add_Test (new Test_Replace);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -368,6 +369,22 @@ package body Test_Suite.Strings is
       Check ("/toto",           "/");
 
    end Run;
+
+   --  Test_Replace  ----------------------------------------------------------
+
+   function  Name (T : in Test_Replace) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Replace");
+   end Name;
+
+   procedure Run (T : in out Test_Replace) is
+   begin
+
+      T.Assert (Replace ("abcabc", "abc", "Aabc") = "AabcAabc", "not OK");
+
+   end Run;
+
 
 end Test_Suite.Strings;
 

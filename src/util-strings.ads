@@ -24,6 +24,14 @@ package Util.Strings is
    function  Join         (Strings    : in String_Vector;
                            Sep        : in String) return String;
 
+   function  Replace      (Subject     : in String;
+                           Pattern     : in String;
+                           Replacement : in String) return String;
+
+   procedure Replace      (Subject     : in out Unbounded_String;
+                           Pattern     : in String;
+                           Replacement : in String);
+
    procedure Find_Token   (Search     : in String;
                            Tokens     : in String_List;
                            Index_Next : out Natural;

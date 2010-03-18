@@ -88,7 +88,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Load (Env, Null_Logger);
+            Load (Env, Std_Logger);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
@@ -105,7 +105,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Load (Env, Null_Logger);
+            Load (Env, Std_Logger);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
@@ -116,7 +116,7 @@ package body Test_Suite.Job is
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
       Make (Env, "tests/features/step_definitions", "tests/features/tests");
-      Load (Env, Null_Logger);
+      Load (Env, Std_Logger);
 
       T.Assert (Env.Loaded, "Env should be loaded");
 
@@ -142,7 +142,7 @@ package body Test_Suite.Job is
       declare
          procedure P;
          procedure P is begin
-            Run (Job, Env, Null_Logger);
+            Run (Job, Env, Std_Logger);
          end P;
          procedure A is new Assert_Except (Test_Run, P);
       begin
@@ -150,7 +150,7 @@ package body Test_Suite.Job is
             Invalid_Environment'Identity);
       end;
 
-      Load (Env, Null_Logger);
+      Load (Env, Std_Logger);
 
       T.Assert (Step_Dir (Env) = "tests/features/step_definitions",
               "incorrect step dir");
@@ -158,7 +158,7 @@ package body Test_Suite.Job is
       T.Assert (Out_Dir (Env) = "tests/features/tests",
               "incorrect out dir");
 
-      Run (Job, Env, Null_Logger);
+      Run (Job, Env, Std_Logger);
 
       Cleanup (Job);
       UnLoad (Env);

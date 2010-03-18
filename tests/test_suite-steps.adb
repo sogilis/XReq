@@ -43,7 +43,7 @@ package body Test_Suite.Steps is
       Loc     : Match_Location;
    begin
 
-      Load (Steps, Null_Logger, Dir, Lang_Ada);
+      Load (Steps, Std_Logger, Dir, Lang_Ada);
 
       T.Assert (Contains (Steps, Stanza_Given ("this step works")),
               Dir & " should contains `Given this step works'");

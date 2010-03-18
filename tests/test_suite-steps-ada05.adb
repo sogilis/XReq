@@ -79,7 +79,7 @@ package body Test_Suite.Steps.Ada05 is
             Unparsed_Step'Identity);
       end;
 
-      Parse (Step, Null_Logger);
+      Parse (Step, Std_Logger);
 
       T.Assert (Parsed (Step),
               "Step has not been parsed after invoking Parse");
@@ -119,15 +119,17 @@ package body Test_Suite.Steps.Ada05 is
       I         : Integer := 0;
    begin
 
-      Parse_Directory (Steps, Null_Logger, Directory);
+      Parse_Directory (Steps, Std_Logger, Directory);
 
       T.Assert (Length (Steps) >= 1,
               "Detected " & Length (Steps)'Img &
               " steps instead of >= 1");
 
       while I < Integer (Length (Steps)) and not Found loop
-         Step  := Element (Steps, 0);
+         Step  := Element (Steps, I);
          Found := Simple_Name (File_Name (Step.all)) = "sample1.ads";
+         Std_Logger.Put_Line ("Found step: " & File_Name (Step.all) & " (" &
+                              Simple_Name (File_Name (Step.all)) & ")");
          I     := I + 1;
       end loop;
 

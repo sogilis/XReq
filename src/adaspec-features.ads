@@ -21,14 +21,18 @@ package AdaSpec.Features is
    --  Scenario_Type  --
    ---------------------
 
-   type Scenario_Type is
+   type Scenario_Type (Outline : Boolean := False) is
       record
          Name          : Unbounded_String;
          Pos           : Position_Type;
          Tags          : String_Vector;
          Stanzas       : Stanza_Container.Vector;
-         Outline       : Boolean := False;
-         Outline_Table : AdaSpecLib.String_Tables.Table;
+         case Outline is
+            when True =>
+               Table   : AdaSpecLib.String_Tables.Table;
+            when False =>
+               null;
+         end case;
       end record;
    type Scenario_Ptr is access all Scenario_Type;
    Null_Scenario : Scenario_Type;

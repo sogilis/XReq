@@ -25,6 +25,37 @@ package body Util.Strings is
       return To_String (Buffer);
    end Join;
 
+   ---------------
+   --  Replace  --
+   ---------------
+
+   function  Replace      (Subject     : in String;
+                           Pattern     : in String;
+                           Replacement : in String) return String
+   is
+      Buffer : Unbounded_String := To_Unbounded_String (Subject);
+   begin
+      Replace (Buffer, Pattern, Replacement);
+      return To_String (Buffer);
+   end Replace;
+
+   ---------------
+   --  Replace  --
+   ---------------
+
+   procedure Replace      (Subject     : in out Unbounded_String;
+                           Pattern     : in String;
+                           Replacement : in String)
+   is
+      I : Natural := 1;
+   begin
+      I := Index (Subject, Pattern, I);
+      while I /= 0 loop
+         Replace_Slice (Subject, I, I + Pattern'Length - 1, Replacement);
+         I := I + Replacement'Length;
+         I := Index (Subject, Pattern, I);
+      end loop;
+   end Replace;
 
    ------------------
    --  Find_Token  --

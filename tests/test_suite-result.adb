@@ -8,6 +8,7 @@ with AdaSpec.Features;
 with AdaSpec.Steps;
 with AdaSpec.Stanzas;
 with AdaSpec.Result;
+with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -25,6 +26,7 @@ package body Test_Suite.Result is
    begin
       Ret.Add_Test (new Test_Result_Step_Type);
       Ret.Add_Test (new Test_Result_Scenario_Type);
+      Ret.Add_Test (new Test_Result_Scenario_Outline);
       Ret.Add_Test (new Test_Result_Feature_Type);
       Ret.Add_Test (new Test_To_String);
    end Add_Tests;
@@ -73,7 +75,7 @@ package body Test_Suite.Result is
       Append (Scenario, Stanza_Given ("this step works"));
       Append (Scenario, Stanza_When  ("this step works too"));
 
-      Process_Scenario (Result, Scenario, Steps, Null_Logger, Errors);
+      Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
 
       T.Assert (not Errors, "Errors happened while processing scenario (1)");
 
@@ -102,7 +104,7 @@ package body Test_Suite.Result is
               "Wrong scenario result (1)");
 
       Append (Scenario, Stanza_When  ("this step doesn't work"));
-      Process_Scenario (Result, Scenario, Steps, Null_Logger, Errors);
+      Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
       T.Assert (Errors, "No error while processing scenario (2)");
 
       T.Assert (Result.Steps = Ideal_Result,
@@ -149,7 +151,7 @@ package body Test_Suite.Result is
          procedure P is
          begin
             Process_Feature (Result, Feature_Ptr (Feature),
-                             Steps, Null_Logger);
+                             Steps, Std_Logger);
          end P;
          procedure A is new Assert_Except (Test_Result_Feature_Type, P);
       begin
@@ -162,7 +164,7 @@ package body Test_Suite.Result is
       T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
               "Feature name incorrect");
 
-      Process_Feature (Result, Feature_Ptr (Feature), Steps, Null_Logger);
+      Process_Feature (Result, Feature_Ptr (Feature), Steps, Std_Logger);
 
       T.Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");
@@ -229,6 +231,101 @@ package body Test_Suite.Result is
 
       T.Assert (To_String (Feature) = Expected,
               "To_String value not expected:" & CRLF & To_String (Feature));
+
+   end Run;
+
+   --  Test_Result_Scenario_Outline  ------------------------------------------
+
+   function  Name (T : in Test_Result_Scenario_Outline)
+                   return String is
+      pragma Unreferenced (T);
+   begin
+      return ("AdaSpec.Result.Result_Scenario_Type with Scenario Outline");
+   end Name;
+
+   procedure Run (T : in out Test_Result_Scenario_Outline) is
+      use Ada.Containers;
+      use AdaSpecLib.String_Tables;
+      use Result_Steps_Vectors2;
+      use Result_Steps;
+      Scenario  : Scenario_Type (True);
+      Result    : Result_Scenario_Type;
+      Steps     : Steps_Type
+                := Load ("tests/features/step_definitions", Lang_Ada);
+      Errors    : Boolean;
+      Steps_tmp : Result_Steps.Vector;
+
+      procedure Equals (Found : in Unbounded_String;
+                        Expect, Description : in String);
+      procedure Equals (Found : in Unbounded_String;
+                        Expect, Description : in String) is
+         S : constant String := To_String (Found);
+      begin
+         T.Assert (Found = Expect, "Expected """ & Expect & """ but found """ &
+                   S & """ for " & Description);
+      end Equals;
+   begin
+
+      Append (Scenario, Stanza_Given ("A is <A> and B is <B>"));
+      Append (Scenario, Stanza_When  ("A is '<A>' and B is '<B>'"));
+      Append (Scenario, Stanza_Then  ("C is <C>"));
+
+      Scenario.Table.Put (0, 0, "A");
+      Scenario.Table.Put (1, 0, "B");
+      Scenario.Table.Put (2, 0, "C");
+
+      Scenario.Table.Put (0, 1, "[a]");
+      Scenario.Table.Put (1, 1, "[b]");
+      Scenario.Table.Put (2, 1, "[c]");
+
+      Scenario.Table.Put (0, 2, "1");
+      Scenario.Table.Put (1, 2, "2");
+      Scenario.Table.Put (2, 2, "3");
+
+      Scenario.Table.Put (0, 3, "x");
+      Scenario.Table.Put (1, 3, "y");
+      Scenario.Table.Put (2, 3, "z");
+
+      Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
+
+      T.Assert (not Errors, "Errors while Process_Scenario");
+
+      T.Assert (Result.Outline, "The result should be an outline");
+      T.Assert (Length (Result.Scenarios) = 3, "Should find 3 sub scenarios");
+      T.Assert (Length (Result.Steps) = 3, "Should find 3 steps for outline" &
+                ". Found" & Length (Result.Steps)'Img);
+
+      Steps_tmp := Element (Result.Scenarios, 0);
+
+      T.Assert (Length (Steps_tmp) = 3, "3 steps in scenario 1");
+      Equals (Element (Steps_tmp, 0).Step.Stanza, "A is [a] and B is [b]",
+              "1st step of 1st scenario");
+      Equals (Element (Steps_tmp, 1).Step.Stanza, "A is '[a]' and B is '[b]'",
+              "2nd step of 1st scenario");
+      Equals (Element (Steps_tmp, 2).Step.Stanza, "C is [c]",
+              "3rd step of 1st scenario");
+
+      Steps_tmp := Element (Result.Scenarios, 1);
+
+      T.Assert (Length (Steps_tmp) = 3, "3 steps in scenario 2");
+      Equals (Element (Steps_tmp, 0).Step.Stanza, "A is 1 and B is 2",
+              "1st step of 2nd scenario");
+      Equals (Element (Steps_tmp, 1).Step.Stanza, "A is '1' and B is '2'",
+              "2nd step of 2nd scenario");
+      Equals (Element (Steps_tmp, 2).Step.Stanza, "C is 3",
+              "3rd step of 2nd scenario");
+
+      Steps_tmp := Element (Result.Scenarios, 2);
+
+      T.Assert (Length (Steps_tmp) = 3, "3 steps in scenario 3");
+      Equals (Element (Steps_tmp, 0).Step.Stanza, "A is x and B is y",
+              "1st step of 3rd scenario");
+      Equals (Element (Steps_tmp, 1).Step.Stanza, "A is 'x' and B is 'y'",
+              "2nd step of 3rd scenario");
+      Equals (Element (Steps_tmp, 2).Step.Stanza, "C is z",
+              "3rd step of 3rd scenario");
+
+      Free (Steps);
 
    end Run;
 

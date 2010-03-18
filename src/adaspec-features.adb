@@ -309,11 +309,19 @@ package body AdaSpec.Features is
          Detect         : Boolean;
          Continue       : Boolean := True;
       begin
-         Scenario := (Name    => Trimed_Suffix (Line_S, Idx_Data),
-                      Pos     => Position,
-                      Tags    => Current_Tags,
-                      Outline => Outline,
-                      others => <>);
+         if Outline then
+            Scenario := (Outline => True,
+                         Name    => Trimed_Suffix (Line_S, Idx_Data),
+                         Pos     => Position,
+                         Tags    => Current_Tags,
+                         others  => <>);
+         else
+            Scenario := (Outline => False,
+                         Name    => Trimed_Suffix (Line_S, Idx_Data),
+                         Pos     => Position,
+                         Tags    => Current_Tags,
+                         others  => <>);
+         end if;
          Clear (Current_Tags);
          while Continue and not End_Of_File loop
 
@@ -330,10 +338,10 @@ package body AdaSpec.Features is
                Detect      := False;
             elsif Detect_Keyword ("#") then
                null;
-            elsif Detect_Keyword (K_Examples) then
+            elsif Outline and then Detect_Keyword (K_Examples) then
                Read_Line;
                if not End_Of_File then
-                  Read_Table (Scenario.Outline_Table);
+                  Read_Table (Scenario.Table);
                end if;
             elsif Detect_Keyword (K_Given) then
                Current_Prefix := Prefix_Given;
@@ -500,8 +508,8 @@ package body AdaSpec.Features is
                   while N > 0 loop
                      Table.Put (X, Y,
                         To_Unbounded_String (Trim (Line (I .. N - 1), Both)));
-                     Log.Put_Line ("Table (" & X'Img & Y'Img & " ) " &
-                                   Trim (Line (I .. N - 1), Both));
+--                      Log.Put_Line ("Table (" & X'Img & Y'Img & " ) " &
+--                                    Trim (Line (I .. N - 1), Both));
                      I := N + 1;
                      N := Index (Line, "|", I);
                      X := X + 1;

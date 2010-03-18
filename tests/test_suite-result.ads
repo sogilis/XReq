@@ -10,14 +10,11 @@ package Test_Suite.Result is
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_Result_Step_Type is
-      new Test_Case_Type with null record;
-   type Test_Result_Scenario_Type is
-      new Test_Case_Type with null record;
-   type Test_Result_Feature_Type is
-      new Test_Case_Type with null record;
-   type Test_To_String is
-      new Test_Case_Type with null record;
+   type Test_Result_Step_Type           is new Test_Case_Type with null record;
+   type Test_Result_Scenario_Type       is new Test_Case_Type with null record;
+   type Test_Result_Scenario_Outline    is new Test_Case_Type with null record;
+   type Test_Result_Feature_Type        is new Test_Case_Type with null record;
+   type Test_To_String                  is new Test_Case_Type with null record;
 
    --  Operation on Test_Result_Step_Type
    function  Name (T : in     Test_Result_Step_Type)
@@ -25,9 +22,12 @@ package Test_Suite.Result is
    procedure Run  (T : in out Test_Result_Step_Type);
 
    --  Operation on Test_Result_Scenario_Type
-   function  Name (T : in     Test_Result_Scenario_Type)
-                           return String;
+   function  Name (T : in     Test_Result_Scenario_Type) return String;
    procedure Run  (T : in out Test_Result_Scenario_Type);
+
+   --  Operation on Test_Result_Scenario_Outline
+   function  Name (T : in     Test_Result_Scenario_Outline) return String;
+   procedure Run  (T : in out Test_Result_Scenario_Outline);
 
    --  Operation on Test_Result_Feature_Type
    function  Name (T : in     Test_Result_Feature_Type)

@@ -21,6 +21,9 @@ package AdaSpecLib.String_Tables is
 
    function  Item    (T    : in Table;
                       X, Y : in Integer) return String;
+   function  Item    (T    : in Table;
+                      X, Y : in Integer;
+                      Def  : in String) return String;
    procedure Put     (T    : in out Table;
                       X, Y : in     Integer;
                       Elem : in     String);

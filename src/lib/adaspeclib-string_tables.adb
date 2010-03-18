@@ -8,6 +8,16 @@ package body AdaSpecLib.String_Tables is
       return To_String (Item (T, X, Y));
    end Item;
 
+   function  Item    (T    : in Table;
+                      X, Y : in Integer;
+                      Def  : in String) return String is
+   begin
+      return To_String (Item (T, X, Y));
+   exception
+      when Constraint_Error =>
+         return Def;
+   end Item;
+
    procedure Put     (T    : in out Table;
                       X, Y : in     Integer;
                       Elem : in     String) is

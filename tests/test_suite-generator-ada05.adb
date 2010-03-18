@@ -48,9 +48,9 @@ package body Test_Suite.Generator.Ada05 is
          when others => null;
       end;
 
-      Init (Env, Job, Null_Logger, "tests/features/simplest.feature");
-      Run  (Job, Env, Null_Logger);
-      Generate (Job, Env, Null_Logger);
+      Init (Env, Job, Std_Logger, "tests/features/simplest.feature");
+      Run  (Job, Env, Std_Logger);
+      Generate (Job, Env, Std_Logger);
 
       Append (Output, "gnatmake " & Flags & " feature_simplest.adb" &
               ASCII.LF);
