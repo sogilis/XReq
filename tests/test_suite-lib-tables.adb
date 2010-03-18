@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with AdaSpecLib.Tables;
+with AdaSpecLib.String_Tables;
 
 package body Test_Suite.Lib.Tables is
 
@@ -9,6 +10,7 @@ package body Test_Suite.Lib.Tables is
    procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
    begin
       Ret.Add_Test (new Test_1);
+      Ret.Add_Test (new Test_2);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
@@ -127,6 +129,30 @@ package body Test_Suite.Lib.Tables is
       T.Assert (Ta.First_Y = 1,  "(F) First_Y /= 1");
 
       Check_Empty ("G", True);
+
+   end Run;
+
+
+   --  Test_2  ----------------------------------------------------------------
+
+   function  Name (T : in Test_2) return String is
+      pragma Unreferenced (T);
+   begin
+      return "AdaSpecLib.String_Tables";
+   end Name;
+
+   procedure Run (T : in out Test_2) is
+      Ta : AdaSpecLib.String_Tables.Table;
+   begin
+
+      Ta.Put (1, 1, "(1,1)");
+      Ta.Put (1, 2, "(1,2)");
+      Ta.Put (2, 1, "(2,1)");
+
+      T.Assert (Ta.Item (1, 1)           = "(1,1)",  "Item(1, 1) not OK");
+      T.Assert (Ta.Item (1, 2)           = "(1,2)",  "Item(1, 2) not OK");
+      T.Assert (Ta.Item (2, 1, "<none>") = "(2,1)",  "Item(2, 1) not OK");
+      T.Assert (Ta.Item (2, 2, "<none>") = "<none>", "Item(2, 2) not OK");
 
    end Run;
 

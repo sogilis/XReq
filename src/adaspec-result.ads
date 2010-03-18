@@ -64,6 +64,7 @@ package AdaSpec.Result is
 
    type Result_Scenario_Type (Outline : Boolean := False) is
       record
+         --  GCOV_IGNORE_BEGIN
          Name  : Unbounded_String;
          Pos   : Position_Type;
          Tags  : String_Vector;
@@ -75,6 +76,7 @@ package AdaSpec.Result is
             when False =>
                null;
          end case;
+         --  GCOV_IGNORE_END
       end record;
 
    package Result_Scenarios is
