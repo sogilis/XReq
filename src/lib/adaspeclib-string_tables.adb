@@ -16,7 +16,7 @@ package body AdaSpecLib.String_Tables is
    exception
       when Constraint_Error =>
          return Def;
-   end Item;
+   end Item; --  GCOV_IGNORE
 
    procedure Put     (T    : in out Table;
                       X, Y : in     Integer;

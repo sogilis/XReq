@@ -1,5 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings;
+with Ada.Strings.Fixed;
 with AdaSpecLib.Tables;
 with AdaSpecLib.String_Tables;
 
@@ -142,7 +144,20 @@ package body Test_Suite.Lib.Tables is
    end Name;
 
    procedure Run (T : in out Test_2) is
+      use AdaSpecLib.String_Tables;
+      use Ada.Strings.Fixed;
+      use Ada.Strings;
+
       Ta : AdaSpecLib.String_Tables.Table;
+      I  : AdaSpecLib.String_Tables.Cursor;
+
+      procedure Check_Key (K : Key_Type; Elem : in String);
+      procedure Check_Key (K : Key_Type; Elem : in String) is
+         Should : constant String := "(" & Trim (K.X'Img, Left) & "," &
+                  Trim (K.Y'Img, Left) & ")";
+      begin
+         T.Assert (Should = Elem, Elem & " should be " & Should);
+      end Check_Key;
    begin
 
       Ta.Put (1, 1, "(1,1)");
@@ -153,6 +168,21 @@ package body Test_Suite.Lib.Tables is
       T.Assert (Ta.Item (1, 2)           = "(1,2)",  "Item(1, 2) not OK");
       T.Assert (Ta.Item (2, 1, "<none>") = "(2,1)",  "Item(2, 1) not OK");
       T.Assert (Ta.Item (2, 2, "<none>") = "<none>", "Item(2, 2) not OK");
+
+      I := First (Ta);
+      T.Assert (Has_Element (I), "cursor should still have an element");
+      Check_Key (Key (I), Element (I));
+
+      Next (I);
+      T.Assert (Has_Element (I), "cursor should still have an element");
+      Check_Key (Key (I), Element (I));
+
+      Next (I);
+      T.Assert (Has_Element (I), "cursor should still have an element");
+      Check_Key (Key (I), Element (I));
+
+      Next (I);
+      T.Assert (not Has_Element (I), "cursor should not have an element");
 
    end Run;
 
