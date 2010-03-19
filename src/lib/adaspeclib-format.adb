@@ -10,6 +10,114 @@ use Ada.Strings.Unbounded;
 
 package body AdaSpecLib.Format is
 
+   ------------------------
+   --  Start/Stop_Tests  --
+   ------------------------
+
+   procedure Start_Tests    (Format      : in out Format_Type) is
+   begin
+      Format.In_Tests := True;
+   end Start_Tests;
+
+   procedure Stop_Tests     (Format      : in out Format_Type) is
+   begin
+      Format.In_Tests := False;
+   end Stop_Tests;
+
+   --------------------------
+   --  Start/Stop_Feature  --
+   --------------------------
+
+   procedure Start_Feature  (Format      : in out Format_Type) is
+   begin
+      Format.Feature_ID    := Format.Feature_ID + 1;
+      Format.Background_ID := 0;
+      Format.Scenario_ID   := 0;
+      Format.In_Feature    := True;
+   end Start_Feature;
+
+   procedure Stop_Feature   (Format      : in out Format_Type) is
+   begin
+      Format.In_Feature    := False;
+   end Stop_Feature;
+
+   --------------------------
+   --  Start/Stop_Outline  --
+   --------------------------
+
+   procedure Enter_Outline  (Format     : in out Format_Type) is
+   begin
+      Format.Scenario_ID := Format.Scenario_ID + 1;
+   end Enter_Outline;
+
+   procedure Start_Outline  (Format     : in out Format_Type) is
+   begin
+      Format.In_Outline := True;
+   end Start_Outline;
+
+   procedure Stop_Outline   (Format     : in out Format_Type) is
+   begin
+      Format.In_Outline := False;
+   end Stop_Outline;
+
+   ---------------------------
+   --  Start/Stop_Scenario  --
+   ---------------------------
+
+   procedure Enter_Scenario (Format     : in out Format_Type) is
+   begin
+      if not Format.In_Outline then
+         Format.Scenario_ID := Format.Scenario_ID + 1;
+      end if;
+   end Enter_Scenario;
+
+   procedure Start_Scenario (Format     : in out Format_Type) is
+   begin
+      if not Format.In_Outline then
+         Format.Step_ID  := 0;
+      end if;
+      Format.In_Scenario := True;
+   end Start_Scenario;
+
+   procedure Stop_Scenario  (Format     : in out Format_Type) is
+   begin
+      Format.In_Scenario := False;
+   end Stop_Scenario;
+
+   -----------------------------
+   --  Start/Stop_Background  --
+   -----------------------------
+
+   procedure Start_Background (Format     : in out Format_Type;
+                               First      : in Boolean) is
+      pragma Unreferenced (First);
+   begin
+      Format.Background_ID := Format.Background_ID + 1;
+      Format.In_Background := True;
+   end Start_Background;
+
+   procedure Stop_Background  (Format     : in out Format_Type;
+                               First      : in Boolean) is
+      pragma Unreferenced (First);
+   begin
+      Format.In_Background := False;
+   end Stop_Background;
+
+   -----------------------
+   --  Start/Stop_Step  --
+   -----------------------
+
+   procedure Start_Step     (Format     : in out Format_Type) is
+   begin
+      Format.Step_ID := Format.Step_ID + 1;
+      Format.In_Step := True;
+   end Start_Step;
+
+   procedure Stop_Step      (Format     : in out Format_Type) is
+   begin
+      Format.In_Step := False;
+   end Stop_Step;
+
    ---------------------
    --  Get_Formatter  --
    ---------------------

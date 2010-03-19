@@ -80,7 +80,6 @@ Feature: Scenario Outlines
 
       """
 
-  @wip
   Scenario: Simple Scenario Outline
     Given a file "features/outline.feature":
       """
@@ -118,6 +117,12 @@ Feature: Scenario Outlines
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
+
+    When I run the test suite "./suite -f html -o report.html" in features/tests
+    Then it should pass
+    When I run "cp features/tests/report.html ../reports/sample-html-outline-1.html"
+    Then it should pass
+
     When I run the test suite "./suite" in features/tests
     Then it should pass with
       """
@@ -130,10 +135,10 @@ Feature: Scenario Outlines
 
           Examples:
             | start | eat | left |
-            |  12   |  5  |  7   |
-            |  20   |  5  |  15  |
+            |    12 |   5 |    7 |
+            |    20 |   5 |   15 |
 
-      2 scenario (2 passed)
+      2 scenarios (2 passed)
       6 steps (6 passed)
 
       """

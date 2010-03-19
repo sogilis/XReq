@@ -19,6 +19,8 @@ package AdaSpecLib.String_Tables is
    type    Table  is new Unbounded_String_Tables.Table with null record;
    subtype Cursor is     Unbounded_String_Tables.Cursor;
 
+   function  Width   (T    : in Table;
+                      X    : in Integer) return Natural;
    function  Item    (T    : in Table;
                       X, Y : in Integer) return String;
    function  Item    (T    : in Table;

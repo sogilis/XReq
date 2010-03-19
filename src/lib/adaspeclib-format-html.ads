@@ -51,6 +51,15 @@ package AdaSpecLib.Format.HTML is
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type);
    overriding
+   procedure Put_Outline    (Format     : in out HTML_Format_Type;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type);
+   overriding
+   procedure Put_Outline_Report
+                            (Format     : in out HTML_Format_Type;
+                             Table      : in     Table_Type);
+   overriding
    procedure Put_Scenario   (Format     : in out HTML_Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;
@@ -100,15 +109,10 @@ private
    type HTML_Format_Type is new Format_Type with
       record
          Close_Step      : Boolean := False;
-         In_Background   : Boolean := False;
          Have_Background : Boolean := False;
          Skip_Scenarios  : Boolean := False;
          Inline_Backgrnd : Boolean := False;
          Run_Feature     : Boolean := False;
-         Feature_ID      : Natural := 0;
-         Background_ID   : Natural := 0;
-         Scenario_ID     : Natural := 0;
-         Step_ID         : Natural := 0;
          Curr_Scenario   : Menu_Item_2;
          Curr_Feature    : Menu_Item_1;
          Menu            : Menu_Vectors.Vector;

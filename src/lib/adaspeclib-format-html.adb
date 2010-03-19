@@ -32,6 +32,7 @@ package body AdaSpecLib.Format.HTML is
          when Status_Passed  => return "pass";
          when Status_Skipped => return "skip";
          when Status_Failed  => return "fail";
+         when Status_Outline => return "outline";
       end case;
    end Status_Class;
 
@@ -59,6 +60,7 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Tests    (Format     : in out HTML_Format_Type) is
    begin
+      Format_Type (Format).Start_Tests;  --  resend
       Tmpl.page_begin (Format.Output,
          Param_title => "Test Results");  --  TODO
    end Start_Tests;
@@ -69,10 +71,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Feature  (Format     : in out HTML_Format_Type) is
    begin
+      Format_Type (Format).Start_Feature;  --  resend
       Format.Run_Feature   := False;
-      Format.Feature_ID    := Format.Feature_ID + 1;
-      Format.Background_ID := 0;
-      Format.Scenario_ID   := 0;
       Format.Curr_Feature  := (
          Name          => To_Unbounded_String ("Feature"),
          Feature_ID    => Format.Feature_ID,
@@ -106,7 +106,7 @@ package body AdaSpecLib.Format.HTML is
    procedure Enter_Scenario (Format     : in out HTML_Format_Type)
    is
    begin
-      Format.Scenario_ID := Format.Scenario_ID + 1;
+      Format_Type (Format).Enter_Scenario;  --  resend
       Format.Inline_Backgrnd := False;
    end Enter_Scenario;
 
@@ -117,10 +117,8 @@ package body AdaSpecLib.Format.HTML is
    procedure Start_Background (Format   : in out HTML_Format_Type;
                                First    : in Boolean)
    is
-      pragma Unreferenced (First);
    begin
-      Format.Background_ID := Format.Background_ID + 1;
-      Format.In_Background := True;
+      Format_Type (Format).Start_Background (First);  --  resend
       Format.Curr_Scenario := (
          Is_Background => True,
          Name          => Format.Curr_Scenario.Name,
@@ -166,7 +164,6 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Background  (Format   : in out HTML_Format_Type;
                                First    : in Boolean)
    is
-      pragma Unreferenced (First);
    begin
       if Format.Have_Background then
          Format.Skip_Scenarios := Format.Curr_Scenario.Status = Status_Failed;
@@ -176,7 +173,7 @@ package body AdaSpecLib.Format.HTML is
          Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
       end if;
       Format.Have_Background := False;
-      Format.In_Background   := False;
+      Format_Type (Format).Stop_Background (First);  --  resend
    end Stop_Background;
 
    ----------------------
@@ -186,7 +183,7 @@ package body AdaSpecLib.Format.HTML is
    procedure Start_Scenario (Format     : in out HTML_Format_Type)
    is
    begin
-      Format.Step_ID := 0;
+      Format_Type (Format).Start_Scenario;  --  resend
       Format.Curr_Scenario := (
          Name          => Format.Curr_Scenario.Name,
          Status        => Format.Curr_Scenario.Status,
@@ -202,6 +199,34 @@ package body AdaSpecLib.Format.HTML is
             Param_label => "Scenario:");
       end if;
    end Start_Scenario;
+
+   -------------------
+   --  Put_Outline  --
+   -------------------
+
+   procedure Put_Outline  (Format   : in out HTML_Format_Type;
+                           Scenario : in String;
+                           Position : in String;
+                           Tags     : in     Tag_Array_Type)
+   is
+   begin
+      Tmpl.scenario_begin (Format.Output,
+         Param_feature_id => To_String (Format.Feature_ID),
+         Param_num        => To_String (Format.Scenario_ID),
+         Param_position   => Position,
+         Param_title      => HTML_Text (Scenario));
+      if Scenario /= "" then
+         Format.Curr_Scenario.Name := To_Unbounded_String (Scenario);
+      else
+         Format.Curr_Scenario.Name := To_Unbounded_String ("Scenario Outline");
+      end if;
+      Tmpl.scenario_tags_begin (Format.Output);
+      for I in Tags'Range loop
+         Tmpl.scenario_tags_item (Format.Output,
+            Param_tag => HTML_Text (To_String (Tags (I))));
+      end loop;
+      Tmpl.scenario_tags_end (Format.Output);
+   end Put_Outline;
 
    --------------------
    --  Put_Scenario  --
@@ -237,8 +262,8 @@ package body AdaSpecLib.Format.HTML is
 
    procedure Start_Step     (Format     : in out HTML_Format_Type) is
    begin
+      Format_Type (Format).Start_Step;  --  resend
       Format.Close_Step := False;
-      Format.Step_ID    := Format.Step_ID + 1;
    end Start_Step;
 
    ----------------
@@ -375,6 +400,7 @@ package body AdaSpecLib.Format.HTML is
       if Format.Close_Step then
          Tmpl.step_end (Format.Output);
       end if;
+      Format_Type (Format).Stop_Step;  --  resend
    end Stop_Step;
 
    ---------------------
@@ -388,7 +414,21 @@ package body AdaSpecLib.Format.HTML is
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Scenario_ID));
       Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
+      Format_Type (Format).Stop_Scenario;  --  resend
    end Stop_Scenario;
+
+   --------------------------
+   --  Put_Outline_Report  --
+   --------------------------
+
+   procedure Put_Outline_Report
+                            (Format     : in out HTML_Format_Type;
+                             Table      : in     Table_Type)
+   is
+      pragma Unreferenced (Format, Table);
+   begin
+      null;
+   end Put_Outline_Report;
 
    --------------------
    --  Stop_Feature  --
@@ -401,6 +441,7 @@ package body AdaSpecLib.Format.HTML is
             Param_feature_id => To_String (Format.Feature_ID));
          Append (Format.Menu, Format.Curr_Feature);
       end if;
+      Format_Type (Format).Stop_Feature;  --  resend
    end Stop_Feature;
 
    ------------------
@@ -410,6 +451,7 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Tests     (Format     : in out HTML_Format_Type) is
    begin
       Tmpl.page_end (Format.Output);
+      Format_Type (Format).Stop_Tests;  --  resend
    end Stop_Tests;
 
    -------------------

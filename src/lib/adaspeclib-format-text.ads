@@ -16,6 +16,15 @@ package AdaSpecLib.Format.Text is
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type);
    overriding
+   procedure Put_Outline    (Format     : in out Text_Format_Type;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type);
+   overriding
+   procedure Put_Outline_Report
+                            (Format     : in out Text_Format_Type;
+                             Table      : in     Table_Type);
+   overriding
    procedure Put_Scenario   (Format     : in out Text_Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;

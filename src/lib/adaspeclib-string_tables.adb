@@ -2,6 +2,17 @@
 
 package body AdaSpecLib.String_Tables is
 
+   function  Width   (T    : in Table;
+                      X    : in Integer) return Natural
+   is
+      W : Natural := 0;
+   begin
+      for Y in T.First_Y .. T.Last_Y loop
+         W := Natural'Max (W, T.Item (X, Y, "")'Length);
+      end loop;
+      return W;
+   end Width;
+
    function  Item    (T    : in Table;
                       X, Y : in Integer) return String is
    begin
@@ -29,6 +40,5 @@ package body AdaSpecLib.String_Tables is
    begin
       return To_String (Element (C));
    end Element;
-
 
 end AdaSpecLib.String_Tables;

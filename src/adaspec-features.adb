@@ -343,6 +343,7 @@ package body AdaSpec.Features is
                if not End_Of_File then
                   Read_Table (Scenario.Table);
                end if;
+               Detect := False;
             elsif Detect_Keyword (K_Given) then
                Current_Prefix := Prefix_Given;
             elsif Detect_Keyword (K_When) then
@@ -356,6 +357,9 @@ package body AdaSpec.Features is
                                        "another keyword");
                   Log.Put_Line ("       Ignoring step");
                end if;
+            elsif Trimed_Suffix (Line_S, Idx_Data) /= "" then
+               Log_Error    ("ERROR: invalid format");
+               raise Parse_Error;
             else
                Detect := False;
             end if;
@@ -368,9 +372,6 @@ package body AdaSpec.Features is
                if Current_Prefix /= Prefix_None then
                   Append (Scenario.Stanzas, Current_Stanza);
                end if;
-            elsif Continue and then Trimed_Suffix (Line_S, Idx_Data) /= "" then
-               Log_Error    ("ERROR: invalid format");
-               raise Parse_Error;
             end if;
 
          end loop;

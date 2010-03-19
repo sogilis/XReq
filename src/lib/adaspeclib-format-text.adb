@@ -13,6 +13,55 @@ package body AdaSpecLib.Format.Text is
 --    procedure Free is
 --       new Ada.Unchecked_Deallocation (File_Type, File_Ptr);
 
+   procedure Put_Table      (Format     : in out Text_Format_Type;
+                             T          : in     Table_Type;
+                             Indent     : in     String);
+   procedure Put_Table      (Format     : in out Text_Format_Type;
+                             T          : in     Table_Type;
+                             Indent     : in     String)
+   is
+      function Is_Num (S : in String) return Boolean;
+      function Is_Num (S : in String) return Boolean is
+         I : Integer;
+      begin
+         I := Integer'Value (S);
+         return I = 0 or I /= 0 or True;
+      exception
+         when others =>
+            return False;
+      end Is_Num;
+
+      Cell    : Unbounded_String;
+      Cell_Ok : Boolean;
+      Num     : Boolean;
+      Pad     : Integer;
+      Width   : array (T.First_X .. T.Last_X) of Natural;
+   begin
+      for X in Width'Range loop
+         Width (X) := T.Width (X);
+      end loop;
+      for Y in T.First_Y .. T.Last_Y loop
+         Format.Output.Put (Indent & "|");
+         for X in T.First_X .. T.Last_X loop
+            T.Item (X, Y, Cell, Cell_Ok);
+            if Cell_Ok then
+               Num := Is_Num (To_String (Cell));
+               Format.Output.Put (" ");
+               Pad := Width (X) - Length (Cell);
+               if Num and Pad > 0 then
+                  Format.Output.Put (Pad * " ");
+               end if;
+               Format.Output.Put (To_String (Cell));
+               if not Num and Pad > 0 then
+                  Format.Output.Put (Pad * " ");
+               end if;
+            end if;
+            Format.Output.Put (" |");
+         end loop;
+         Format.Output.New_Line;
+      end loop;
+   end Put_Table;
+
    -------------------
    --  Put_Feature  --
    -------------------
@@ -69,10 +118,10 @@ package body AdaSpecLib.Format.Text is
       Format.Has_Previous_Step := False;
    end Put_Background;
 
-   procedure Put_Scenario (Format   : in out Text_Format_Type;
-                           Scenario : in     String;
-                           Position : in     String;
-                           Tags     : in     Tag_Array_Type)
+   procedure Put_Outline    (Format     : in out Text_Format_Type;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type)
    is
       pragma Unreferenced (Position);
    begin
@@ -80,11 +129,42 @@ package body AdaSpecLib.Format.Text is
       for I in Tags'Range loop
          Format.Output.Put_Line ("  " & To_String (Tags (I)));
       end loop;
-      Format.Output.Put ("  Scenario:");
+      Format.Output.Put ("  Scenario Outline:");
       if Scenario /= "" then
          Format.Output.Put (" " & Scenario);
       end if;
       Format.Output.New_Line;
+      Format.Has_Previous_Step := False;
+   end Put_Outline;
+
+   procedure Put_Outline_Report
+                            (Format     : in out Text_Format_Type;
+                             Table      : in     Table_Type)
+   is
+   begin
+      Format.Output.New_Line;
+      Format.Output.Put_Line ("    Examples:");
+      Put_Table (Format, Table, "      ");
+   end Put_Outline_Report;
+
+   procedure Put_Scenario (Format   : in out Text_Format_Type;
+                           Scenario : in     String;
+                           Position : in     String;
+                           Tags     : in     Tag_Array_Type)
+   is
+      pragma Unreferenced (Position);
+   begin
+      if not Format.In_Outline then
+         Format.Output.New_Line;
+         for I in Tags'Range loop
+            Format.Output.Put_Line ("  " & To_String (Tags (I)));
+         end loop;
+         Format.Output.Put ("  Scenario:");
+         if Scenario /= "" then
+            Format.Output.Put (" " & Scenario);
+         end if;
+         Format.Output.New_Line;
+      end if;
       Format.Has_Previous_Step := False;
    end Put_Scenario;
 
@@ -100,9 +180,7 @@ package body AdaSpecLib.Format.Text is
                              Success    : in     Status_Type)
    is
       pragma Unreferenced (Position);
-      pragma Unreferenced (Success);
       procedure Put_Long_String (Text : in String);
-      procedure Put_Table (T : in Table_Type);
 
       procedure Put_Long_String (Text : in String) is
          J    : Natural := Text'First;
@@ -120,49 +198,44 @@ package body AdaSpecLib.Format.Text is
          Format.Output.Put_Line ("      """"""");
       end Put_Long_String;
 
-      procedure Put_Table (T : in Table_Type) is
-         Cell    : Unbounded_String;
-         Cell_Ok : Boolean;
-      begin
-         for Y in T.First_Y .. T.Last_Y loop
-            Format.Output.Put ("      |");
-            for X in T.First_X .. T.Last_X loop
-               T.Item (X, Y, Cell, Cell_Ok);
-               if Cell_Ok then
-                  Format.Output.Put (" ");
-                  Format.Output.Put (To_String (Cell));
-               end if;
-               Format.Output.Put (" |");
-            end loop;
-            Format.Output.New_Line;
-         end loop;
-      end Put_Table;
+      Indent : Integer := 2;
 
    begin
-      Format.Output.Put ("    ");
-      if Format.Has_Previous_Step and Format.Previous_Step_Type = Step then
-         Format.Output.Put ("And ");
-      else
-         case Step is
-            when Step_Given => Format.Output.Put ("Given ");
-            when Step_When  => Format.Output.Put ("When ");
-            when Step_Then  => Format.Output.Put ("Then ");
-         end case;
+      if not (Format.In_Outline  and
+              Format.In_Scenario and
+              Success = Status_Passed)
+      then
+         if Format.In_Outline and Format.In_Scenario then
+            Indent := Indent + 1;
+         end if;
+         Format.Output.Put (Indent * "  ");
+         if Format.Has_Previous_Step and Format.Previous_Step_Type = Step then
+            Format.Output.Put ("And ");
+         else
+            case Step is
+               when Step_Given => Format.Output.Put ("Given ");
+               when Step_When  => Format.Output.Put ("When ");
+               when Step_Then  => Format.Output.Put ("Then ");
+            end case;
+         end if;
+         Format.Output.Put (Name);
+         Format.Output.New_Line;
+         Indent := Indent + 1;
+         Loop_Args :
+         for I in Args.First .. Args.Last loop
+            case Args.Elem_Type (I) is
+               when Arg_Text =>
+                  Put_Long_String (Args.Text (Args.Elem_Idx (I)));
+               when Arg_Table =>
+                  Put_Table (Format,
+                             Args.Table (Args.Elem_Idx (I)),
+                             Indent * "  ");
+               when others => null;
+            end case;
+         end loop Loop_Args;
+         Format.Has_Previous_Step  := True;
+         Format.Previous_Step_Type := Step;
       end if;
-      Format.Output.Put (Name);
-      Format.Output.New_Line;
-      Loop_Args :
-      for I in Args.First .. Args.Last loop
-         case Args.Elem_Type (I) is
-            when Arg_Text =>
-               Put_Long_String (Args.Text (Args.Elem_Idx (I)));
-            when Arg_Table =>
-               Put_Table (Args.Table (Args.Elem_Idx (I)));
-            when others => null;
-         end case;
-      end loop Loop_Args;
-      Format.Has_Previous_Step  := True;
-      Format.Previous_Step_Type := Step;
    end Put_Step;
 
    -----------------
@@ -204,9 +277,7 @@ package body AdaSpecLib.Format.Text is
                                             Report.Count_Steps_Passed;
       Need_Comma : Boolean;
    begin
-      if Format.First_Feature then
-         Format.First_Feature := False;
-      else
+      if not Format.First_Feature then
          Format.Output.New_Line;
       end if;
       if Count_Scenarios > 1 then

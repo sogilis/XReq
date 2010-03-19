@@ -82,6 +82,49 @@ package body AdaSpec.Result is
       Append (Res.Steps, Step);
    end Append;
 
+   ------------------------------------------
+   --  Result_Step_Type  --  Process_Step  --
+   ------------------------------------------
+
+   procedure Process_Step     (Res      : out Result_Step_Type;
+                               Stanza   : in  Stanza_Type;
+                               Steps    : in  Steps_Type;
+                               Log      : in  Logger_Ptr;
+                               Errors   : out Boolean);
+   procedure Process_Step     (Res      : out Result_Step_Type;
+                               Stanza   : in  Stanza_Type;
+                               Steps    : in  Steps_Type;
+                               Log      : in  Logger_Ptr;
+                               Errors   : out Boolean)
+   is
+      Proc_Name : Unbounded_String;
+      Matches   : Match_Vectors.Vector;
+      Found     : Boolean;
+   begin
+      Errors := False;
+      begin
+         Find (Steps, Stanza, Proc_Name, Matches, Found);
+      exception
+         when Ambiguous_Match =>
+            Log.Put_Line (String'("Error: Ambiguous match in " &
+                        Position (Stanza) & " for:"));
+            Log.Put_Line ("  " & To_String (Stanza));
+            Errors := True;
+      end;
+      if not Found then
+         Log.Put_Line (String'("Error: Missing step definition in " &
+                       Position (Stanza) & " for:"));
+         Log.Put_Line ("  " & To_String (Stanza));
+         Log.Put_Line ("You can implement this step by adding on your " &
+                       "step definition file:");
+         Log.Put_Line ("  --  " & To_Regexp (Stanza));
+         Log.Put_Line ("  --  @todo");
+         Log.New_Line;
+         Errors := True;
+      end if;
+      Make (Res, To_String (Proc_Name), Stanza, Matches);
+   end Process_Step;
+
    --------------------------------------------------
    --  Result_Scenario_Type  --  Process_Scenario  --
    --------------------------------------------------
@@ -95,43 +138,29 @@ package body AdaSpec.Result is
       use Stanza_Container;
       use Result_Steps;
       use Result_Steps_Vectors2;
-      I         : Stanza_Container.Cursor := First (Scenario.Stanzas);
+      I         : Stanza_Container.Cursor;
+      J         : Result_Steps.Cursor;
       Stanza    : Stanza_Type;
       Res_St    : Result_Step_Type;
       StepsV    : Result_Steps.Vector;
       Steps_tmp : Result_Steps.Vector;
-      Proc_Name : Unbounded_String;
-      Matches   : Match_Vectors.Vector;
-      Found     : Boolean;
+      Err       : Boolean;
       Scenarios : Result_Steps_Vectors2.Vector;
    begin
       Errors := False;
+      I := First (Scenario.Stanzas);
       while Has_Element (I) loop
          Stanza := Element (I);
-         begin
-            Find (Steps, Stanza, Proc_Name, Matches, Found);
-         exception
-            when Ambiguous_Match =>
-               --  TODO: better error reporting
-               Log.Put_Line (String'("Error: Ambiguous match in " &
-                             Position (Stanza) & " for:"));
-               Log.Put_Line ("  " & To_String (Stanza));
-               Errors := True;
-         end;
-         if not Found then
-            Log.Put_Line (String'("Error: Missing step definition in " &
-                          Position (Stanza) & " for:"));
-            Log.Put_Line ("  " & To_String (Stanza));
-            Log.Put_Line ("You can implement this step by adding on your " &
-                          "step definition file:");
-            Log.Put_Line ("  --  " & To_Regexp (Stanza));
-            Log.Put_Line ("  --  @todo");
-            Log.New_Line;
+         if Scenario.Outline then
+            Err := False;
+            Make (Res_St, "", Stanza, Match_Vectors.Empty_Vector);
+         else
+            Process_Step (Res_St, Stanza, Steps, Log, Err);
+         end if;
+         if Err then
             Errors := True;
          else
-            Make   (Res_St, To_String (Proc_Name), Stanza, Matches);
             Append (StepsV, Res_St);
-            --  Put_Line ("Add in step: " & Proc_Name);
          end if;
          Next (I);
       end loop;
@@ -146,11 +175,11 @@ package body AdaSpec.Result is
             Steps_tmp := StepsV;
             for X in Scenario.Table.First_X .. Scenario.Table.Last_X loop
                declare
-                  J     : Result_Steps.Cursor := First (Steps_tmp);
                   Item  : constant String := Scenario.Table.Item (X, Y, "");
                   Label : constant String := "<" & Scenario.Table.Item
                                    (X, Scenario.Table.First_Y, "") & ">";
                begin
+                  J := First (Steps_tmp);
                   while Has_Element (J) loop
                      Res_St := Element (J);
                      Replace (Res_St.Step.Stanza, Label, Item);
@@ -158,6 +187,17 @@ package body AdaSpec.Result is
                      Next (J);
                   end loop;
                end;
+            end loop;
+            J := First (Steps_tmp);
+            while Has_Element (J) loop
+               Res_St := Element (J);
+               Log.Put_Line (To_String (Res_St.Step));
+               Process_Step (Res_St, Res_St.Step, Steps, Log, Err);
+               if Err then
+                  Errors := True;
+               end if;
+               Replace_Element (Steps_tmp, J, Res_St);
+               Next (J);
             end loop;
             Append (Scenarios, Steps_tmp);
          end loop;

@@ -51,31 +51,82 @@ package AdaSpecLib.Format is
    type Tag_Array_Type is array (Positive range <>)  --  GCOV_IGNORE
       of Ada.Strings.Unbounded.Unbounded_String;
 
-   type Status_Type is (Status_Passed, Status_Skipped, Status_Failed);
+   type Status_Type is (Status_Passed, Status_Skipped, Status_Failed,
+                        Status_Outline);
 
    type Format_Type is abstract tagged
       record
          Output        : New_Text_IO.File_Type;
-         Debug_Mode    : Boolean := False;
-         First_Feature : Boolean := True;
+         Debug_Mode    : Boolean := False; --  Debug mode, extra information
+         First_Feature : Boolean := True;  --  True for the first feature only
+         In_Tests      : Boolean := False; --  True between Start/Stop_Tests
+         In_Feature    : Boolean := False; --  True between Start/Stop_Feature
+         In_Outline    : Boolean := False; --  True between Start/Stop_Outline
+         In_Background : Boolean := False; --  True between Start/S_Background
+         In_Scenario   : Boolean := False; --  True between Start/Stop_Scenario
+         In_Step       : Boolean := False; --  True between Start/Stop_Step
+         Feature_ID    : Natural := 0;     --  Feature number, start at 1
+         Background_ID : Natural := 0;     --  Background number in feature
+         Scenario_ID   : Natural := 0;     --  Scenario (outline) n. in feature
+         Step_ID       : Natural := 0;     --  Step num. in scenario (outline)
       end record;
    type Format_Ptr  is access all Format_Type'Class;
 
-   procedure Put_Feature    (Format     : in out Format_Type;
-                             Feature    : in     String;
-                             Description : in String;
-                             Position   : in     String)
-                             is abstract;
-   procedure Put_Background (Format     : in out Format_Type;
-                             Background : in     String;
+   ----------------------------------------------------------------------------
+
+   procedure Start_Tests    (Format      : in out Format_Type);
+   procedure Put_Summary    (Format      : in out Format_Type;
+                             Report      : in     Report_Type;
+                             D           : in     Duration) is abstract;
+   procedure Stop_Tests     (Format      : in out Format_Type);
+
+   ----------------------------------------------------------------------------
+
+   procedure Start_Feature  (Format      : in out Format_Type);
+   procedure Put_Feature    (Format      : in out Format_Type;
+                             Feature     : in     String;
+                             Description : in     String;
+                             Position    : in     String) is abstract;
+   procedure Stop_Feature   (Format      : in out Format_Type);
+
+   ----------------------------------------------------------------------------
+
+
+   procedure Start_Background (Format     : in out Format_Type;
+                               First      : in Boolean);
+   procedure Put_Background   (Format     : in out Format_Type;
+                               Background : in     String;
+                               Position   : in     String;
+                               Tags       : in     Tag_Array_Type) is abstract;
+   procedure Stop_Background  (Format     : in out Format_Type;
+                               First      : in Boolean);
+
+   ----------------------------------------------------------------------------
+
+   procedure Enter_Outline  (Format     : in out Format_Type);
+   procedure Start_Outline  (Format     : in out Format_Type);
+   procedure Put_Outline    (Format     : in out Format_Type;
+                             Scenario   : in     String;
                              Position   : in     String;
-                             Tags       : in     Tag_Array_Type)
-                             is abstract;
+                             Tags       : in     Tag_Array_Type) is abstract;
+   procedure Put_Outline_Report
+                            (Format     : in out Format_Type;
+                             Table      : in     Table_Type) is abstract;
+   procedure Stop_Outline   (Format     : in out Format_Type);
+
+   ----------------------------------------------------------------------------
+
+   procedure Enter_Scenario (Format     : in out Format_Type);
+   procedure Start_Scenario (Format     : in out Format_Type);
    procedure Put_Scenario   (Format     : in out Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;
-                             Tags       : in     Tag_Array_Type)
-                             is abstract;
+                             Tags       : in     Tag_Array_Type) is abstract;
+   procedure Stop_Scenario  (Format     : in out Format_Type);
+
+   ----------------------------------------------------------------------------
+
+   procedure Start_Step     (Format     : in out Format_Type);
    procedure Put_Step       (Format     : in out Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;
@@ -86,43 +137,14 @@ package AdaSpecLib.Format is
    procedure Put_Error      (Format     : in out Format_Type;
                              Err        : in     Exception_Occurrence)
                              is abstract;
-   procedure Put_Summary    (Format     : in out Format_Type;
-                             Report     : in     Report_Type;
-                             D          : in     Duration)
-                             is abstract;
+   procedure Stop_Step      (Format     : in out Format_Type);
+
+   ----------------------------------------------------------------------------
+
    procedure Set_Output     (Format     : in out Format_Type;
                              Output     : in     String);
    procedure Set_Debug      (Format     : in out Format_Type;
                              Debug_Mode : in     Boolean);
-
-   procedure Start_Tests    (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-   procedure Stop_Tests     (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-
-   procedure Start_Feature  (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-   procedure Stop_Feature   (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-
-   procedure Start_Background (Format     : in out Format_Type; --  GCOV_IGNORE
-                               First      : in Boolean)
-                               is null;
-   procedure Stop_Background  (Format     : in out Format_Type; --  GCOV_IGNORE
-                               First      : in Boolean)
-                               is null;
-
-   procedure Enter_Scenario (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-   procedure Start_Scenario (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-   procedure Stop_Scenario  (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-
-   procedure Start_Step     (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
-   procedure Stop_Step      (Format     : in out Format_Type) --  GCOV_IGNORE
-                             is null;
 
    procedure List_Feature   (Format     : in out Format_Type;
                              Name       : in     String);
@@ -131,6 +153,8 @@ package AdaSpecLib.Format is
                              Name       : in     String;
                              Filename   : in     String;
                              Num        : in     Positive);
+
+   ----------------------------------------------------------------------------
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Format_Type'Class, Format_Ptr);
