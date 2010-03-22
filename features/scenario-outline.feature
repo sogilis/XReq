@@ -85,6 +85,13 @@ Feature: Scenario Outlines
       """
       Feature: eating
 
+        Scenario Outline:
+          Given there are <start> cucumbers
+
+          Examples:
+            | start |
+            |  12   |
+
         Scenario Outline: eating
           Given there are <start> cucumbers
           When I eat <eat> cucumbers
@@ -128,6 +135,13 @@ Feature: Scenario Outlines
       """
       Feature: eating
 
+        Scenario Outline:
+          Given there are <start> cucumbers
+
+          Examples:
+            | start |
+            |    12 |
+
         Scenario Outline: eating
           Given there are <start> cucumbers
           When I eat <eat> cucumbers
@@ -138,8 +152,8 @@ Feature: Scenario Outlines
             |    12 |   5 |    7 |
             |    20 |   5 |   15 |
 
-      2 scenarios (2 passed)
-      6 steps (6 passed)
+      3 scenarios (3 passed)
+      7 steps (7 passed)
 
       """
 
@@ -148,6 +162,7 @@ Feature: Scenario Outlines
       """
       Feature: eating
 
+        @tag1 @tag2
         Scenario Outline: eating
           Given there are <start> cucumbers
           When I eat <eat> cucumbers
@@ -163,7 +178,7 @@ Feature: Scenario Outlines
     Then it should fail
     And the output should contain
       """
-      Error: Missing step definition in features/outline.feature:6 for:
+      Error: Missing step definition in features/outline.feature:7 for:
         Then I should have NaN cucumbers
       You can implement this step by adding on your step definition file:
         --  @then ^I should have NaN cucumbers$
@@ -196,6 +211,8 @@ Feature: Scenario Outlines
       """
       Feature: eating
 
+        @tag1
+        @tag2
         Scenario Outline: eating
           Given there are <start> cucumbers
           When I eat <eat> cucumbers

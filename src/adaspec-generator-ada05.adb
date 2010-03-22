@@ -386,10 +386,16 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("if not First then");
          S.Adb.Put_Line ("   --  Background has already been shown, " &
                                 "show scenario");
-         S.Adb.Put_Line ("   Format.Put_Scenario (" &
-                             Ada_String (To_String (Scenario.Name)) & ", " &
-                             Ada_String (To_String (Scenario.Pos)) & ", " &
-                             "Tags);");
+         S.Adb.Put_Indent; S.Adb.Put ("  Format.");
+         if Scenario.Outline then
+            S.Adb.Put ("Put_Outline");
+         else
+            S.Adb.Put ("Put_Scenario");
+         end if;
+         S.Adb.Put (" (" & Ada_String (To_String (Scenario.Name)) & ", " &
+                           Ada_String (To_String (Scenario.Pos)) & ", " &
+                           "Tags);");
+         S.Adb.New_Line;
          S.Adb.Put_Line ("end if;");
          S.Adb.Put_Line ("------------------");
          S.Adb.Put_Line ("--  Background  --");

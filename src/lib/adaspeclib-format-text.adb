@@ -170,9 +170,11 @@ package body AdaSpecLib.Format.Text is
          Indent := Indent + 2;
       end if;
       Format.Output.New_Line;
-      for I in Tags'Range loop
-         Format.Output.Put_Line ((Indent * " ") & To_String (Tags (I)));
-      end loop;
+      if not Format.In_Outline then
+         for I in Tags'Range loop
+            Format.Output.Put_Line ((Indent * " ") & To_String (Tags (I)));
+         end loop;
+      end if;
       Format.Output.Put ((Indent * " ") & "Scenario");
       if Num > 0 then
          Format.Output.Put (Num'Img);

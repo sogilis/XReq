@@ -26,6 +26,8 @@ Feature: The simplest works
       Feature: Empty
 
         Scenario: Empty
+          # empty
+
 
       """
     And a file "features/step_definitions/steps.ads":
