@@ -21,6 +21,13 @@ Feature: The simplest works
         Given this step works
 
       """
+    And a file "features/empty.feature":
+      """
+      Feature: Empty
+
+        Scenario: Empty
+
+      """
     And a file "features/step_definitions/steps.ads":
       """
       with AdaSpecLib.General;
@@ -116,6 +123,23 @@ Feature: The simplest works
 
       1 scenario (1 passed)
       2 steps (2 passed)
+
+      """
+
+  Scenario: Test an empty feature
+    When I run adaspec -x empty_suite features/empty.feature
+    Then it should pass
+    When I compile "empty_suite" in features/tests
+    Then it should pass
+    When I run the test suite "./empty_suite" in features/tests
+    Then it should pass with
+      """
+      Feature: Empty
+
+        Scenario: Empty
+
+      1 scenario (1 passed)
+      0 steps
 
       """
 

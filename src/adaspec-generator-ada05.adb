@@ -401,7 +401,7 @@ package body AdaSpec.Generator.Ada05 is
             S.Adb.Put_Line ("Format.Start_Scenario;");
          end if;
       end if;
-      if Length (Scenario.Steps) /= 0 then
+      if not Background or else Length (Scenario.Steps) /= 0 then
          if Background then
             S.Adb.Put_Line ("------------------");
             S.Adb.Put_Line ("--  Background  --");
@@ -419,19 +419,19 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Indent;
          if Background then
             S.Adb.Put_Line ("Format.Put_Background (" &
-                            Ada_String (To_String (Scenario.Name)) & ", " &
-                            Ada_String (To_String (Scenario.Pos)) & ", " &
-                            "Tags);");
+                              Ada_String (To_String (Scenario.Name)) & ", " &
+                              Ada_String (To_String (Scenario.Pos)) & ", " &
+                              "Tags);");
          elsif Scenario.Outline then
             S.Adb.Put_Line ("Format.Put_Outline (" &
-                            Ada_String (To_String (Scenario.Name)) & ", " &
-                            Ada_String (To_String (Scenario.Pos)) & ", " &
-                            "Tags);");
+                              Ada_String (To_String (Scenario.Name)) & ", " &
+                              Ada_String (To_String (Scenario.Pos)) & ", " &
+                              "Tags);");
          else
             S.Adb.Put_Line ("Format.Put_Scenario (" &
-                            Ada_String (To_String (Scenario.Name)) & ", " &
-                            Ada_String (To_String (Scenario.Pos)) & ", " &
-                            "Tags);");
+                              Ada_String (To_String (Scenario.Name)) & ", " &
+                              Ada_String (To_String (Scenario.Pos)) & ", " &
+                              "Tags);");
          end if;
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
