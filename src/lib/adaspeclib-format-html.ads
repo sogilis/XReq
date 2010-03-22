@@ -65,6 +65,13 @@ package AdaSpecLib.Format.HTML is
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type);
    overriding
+   procedure Put_Scenario_Outline
+                            (Format     : in out HTML_Format_Type;
+                             Num        : in     Natural;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type);
+   overriding
    procedure Put_Step       (Format     : in out HTML_Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;

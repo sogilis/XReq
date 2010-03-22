@@ -30,6 +30,13 @@ package AdaSpecLib.Format.Text is
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type);
    overriding
+   procedure Put_Scenario_Outline
+                            (Format     : in out Text_Format_Type;
+                             Num        : in     Natural;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type);
+   overriding
    procedure Put_Step       (Format     : in out Text_Format_Type;
                              Step       : in     Step_Type;
                              Name       : in     String;

@@ -142,3 +142,75 @@ Feature: Scenario Outlines
       6 steps (6 passed)
 
       """
+
+  Scenario: Failing Scenario Outline
+    Given a file "features/outline.feature":
+      """
+      Feature: eating
+
+        Scenario Outline: eating
+          Given there are <start> cucumbers
+          When I eat <eat> cucumbers
+          Then I should have <left> cucumbers
+
+          Examples:
+            | start | eat | left |
+            |  12   |  5  |  7   |
+            |  20   |  5  |  NaN |
+
+      """
+    When I run adaspec -x suite features/outline.feature
+    Then it should fail
+    And the output should contain
+      """
+      Error: Missing step definition in features/outline.feature:6 for:
+        Then I should have NaN cucumbers
+      You can implement this step by adding on your step definition file:
+        --  @then ^I should have NaN cucumbers$
+        --  @todo
+      """
+
+    Given a file "features/step_definitions/steps2.ads":
+      """
+      with AdaSpecLib.General;
+      use  AdaSpecLib.General;
+      package Steps2 is
+         --  @then ^I should have NaN cucumbers$
+         --  @todo
+      end Steps2;
+      """
+
+    When I run adaspec -x suite features/outline.feature
+    Then it should pass
+
+    When I compile "suite" in features/tests
+    Then it should pass
+
+    When I run the test suite "./suite -f html -o report.html" in features/tests
+    Then it should fail
+    When I run "cp features/tests/report.html ../reports/sample-html-outline-2.html"
+    Then it should pass
+
+    When I run the test suite "./suite" in features/tests
+    Then it should fail with
+      """
+      Feature: eating
+
+        Scenario Outline: eating
+          Given there are <start> cucumbers
+          When I eat <eat> cucumbers
+          Then I should have <left> cucumbers
+
+          Scenario 2: eating
+            Then I should have NaN cucumbers
+              ADASPECLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+
+          Examples:
+            | start | eat | left |
+            |    12 |   5 |    7 |
+            |    20 |   5 | NaN  |
+
+      2 scenarios (1 failed, 1 passed)
+      6 steps (1 failed, 5 passed)
+
+      """

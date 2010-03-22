@@ -152,21 +152,38 @@ package body AdaSpecLib.Format.Text is
                            Position : in     String;
                            Tags     : in     Tag_Array_Type)
    is
-      pragma Unreferenced (Position);
    begin
-      if not Format.In_Outline then
-         Format.Output.New_Line;
-         for I in Tags'Range loop
-            Format.Output.Put_Line ("  " & To_String (Tags (I)));
-         end loop;
-         Format.Output.Put ("  Scenario:");
-         if Scenario /= "" then
-            Format.Output.Put (" " & Scenario);
-         end if;
-         Format.Output.New_Line;
-      end if;
-      Format.Has_Previous_Step := False;
+      Put_Scenario_Outline (Format, 0, Scenario, Position, Tags);
    end Put_Scenario;
+
+   procedure Put_Scenario_Outline
+                            (Format     : in out Text_Format_Type;
+                             Num        : in     Natural;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type)
+   is
+      pragma Unreferenced (Position);
+      Indent : Integer := 2;
+   begin
+      if Format.In_Outline then
+         Indent := Indent + 2;
+      end if;
+      Format.Output.New_Line;
+      for I in Tags'Range loop
+         Format.Output.Put_Line ((Indent * " ") & To_String (Tags (I)));
+      end loop;
+      Format.Output.Put ((Indent * " ") & "Scenario");
+      if Num > 0 then
+         Format.Output.Put (Num'Img);
+      end if;
+      Format.Output.Put (":");
+      if Scenario /= "" then
+         Format.Output.Put (" " & Scenario);
+      end if;
+      Format.Output.New_Line;
+      Format.Has_Previous_Step := False;
+   end Put_Scenario_Outline;
 
    ----------------
    --  Put_Step  --
@@ -248,6 +265,9 @@ package body AdaSpecLib.Format.Text is
 --       Info : constant String := Exception_Information (Err);
 --       Line : Positive := 1;
    begin
+      if Format.In_Outline then
+         Format.Output.Put ("  ");
+      end if;
       Format.Output.Put_Line ("      " & Exception_Name (Err) &
                 ": " & Exception_Message (Err));
 --       Format.Output.Put ("      ");

@@ -256,6 +256,22 @@ package body AdaSpecLib.Format.HTML is
       Tmpl.scenario_tags_end (Format.Output);
    end Put_Scenario;
 
+   ----------------------------
+   --  Put_Scenario_Outline  --
+   ----------------------------
+
+   procedure Put_Scenario_Outline
+                            (Format     : in out HTML_Format_Type;
+                             Num        : in     Natural;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type)
+   is
+      pragma Unreferenced (Format, Num, Scenario, Position, Tags);
+   begin
+      null;
+   end Put_Scenario_Outline;
+
    ------------------
    --  Start_Step  --
    ------------------

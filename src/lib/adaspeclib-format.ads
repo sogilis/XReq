@@ -122,6 +122,12 @@ package AdaSpecLib.Format is
                              Scenario   : in     String;
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type) is abstract;
+   procedure Put_Scenario_Outline
+                            (Format     : in out Format_Type;
+                             Num        : in     Natural;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type) is abstract;
    procedure Stop_Scenario  (Format     : in out Format_Type);
 
    ----------------------------------------------------------------------------
