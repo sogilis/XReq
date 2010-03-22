@@ -35,7 +35,10 @@ package AdaSpecLib.Format_HTML_Template is
          Param_position : in String;
          Param_title : in String);
 
-   procedure outline_examples
+   procedure outline_examples_begin
+        (File : in out File_Type);
+
+   procedure outline_examples_end
         (File : in out File_Type);
 
    procedure outline_end

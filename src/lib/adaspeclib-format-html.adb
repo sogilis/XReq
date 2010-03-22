@@ -19,6 +19,8 @@ package body AdaSpecLib.Format.HTML is
    function HTML_Text (S : in String) return String;
    procedure Start_Scenario_Or_Outline (Format : in out HTML_Format_Type;
                                         Name   : in     String);
+   procedure Put_Table (Format : in out HTML_Format_Type;
+                        T      : in     Table_Type);
 
    use Menu_Vectors_2;
    use Menu_Vectors;
@@ -55,6 +57,30 @@ package body AdaSpecLib.Format.HTML is
       end loop;
       return To_String (Buffer);
    end HTML_Text;
+
+   procedure Put_Table (Format : in out HTML_Format_Type;
+                        T      : in     Table_Type) is
+      use Table_Pkg;
+      Cell    : Unbounded_String;
+      Cell_Ok : Boolean;
+   begin
+      Tmpl.step_table_begin (Format.Output);
+      for Y in T.First_Y .. T.Last_Y loop
+         Tmpl.step_table_row_begin (Format.Output);
+         for X in T.First_X .. T.Last_X loop
+            T.Item (X, Y, Cell, Cell_Ok);
+            if Cell_Ok then
+               Tmpl.step_table_cell (Format.Output,
+                  Param_string => HTML_Text (To_String (Cell)));
+            else
+               Tmpl.step_table_cell (Format.Output,
+                  Param_string => "");
+            end if;
+         end loop;
+         Tmpl.step_table_row_end (Format.Output);
+      end loop;
+      Tmpl.step_table_end (Format.Output);
+   end Put_Table;
 
    -------------------
    --  Start_Tests  --
@@ -337,89 +363,72 @@ package body AdaSpecLib.Format.HTML is
                              Success    : in     Status_Type)
    is
       use Table_Pkg;
-      procedure Put_Table (T : in Table_Type);
 
       Inserts     : array (1 .. Name'Last + 1) of Unbounded_String;
       Stanza      : Unbounded_String;
       Left, Right : Natural; --  Left and right boundaries of matches
 
-
-      procedure Put_Table (T : in Table_Type) is
-         Cell    : Unbounded_String;
-         Cell_Ok : Boolean;
-      begin
-         Tmpl.step_table_begin (Format.Output);
-         for Y in T.First_Y .. T.Last_Y loop
-            Tmpl.step_table_row_begin (Format.Output);
-            for X in T.First_X .. T.Last_X loop
-               T.Item (X, Y, Cell, Cell_Ok);
-               if Cell_Ok then
-                  Tmpl.step_table_cell (Format.Output,
-                     Param_string => HTML_Text (To_String (Cell)));
-               else
-                  Tmpl.step_table_cell (Format.Output,
-                     Param_string => "");
-               end if;
-            end loop;
-            Tmpl.step_table_row_end (Format.Output);
-         end loop;
-         Tmpl.step_table_end (Format.Output);
-      end Put_Table;
-
    begin
-      if Format.In_Background and
-         (not Format.Have_Background) and
-         (not Format.Inline_Backgrnd)
+      if not (Format.In_Outline  and
+              Format.In_Scenario and
+              Success = Status_Passed)
       then
-         Tmpl.scenario_label (Format.Output,
-            Param_label => "Background:");
-         Format.Inline_Backgrnd := True;
-      end if;
-      if Success = Status_Failed then
-         Format.Curr_Feature.Status := Status_Failed;
-         Format.Curr_Scenario.Status := Status_Failed;
-      end if;
-      Format.Close_Step := True;
-      case Step is
-         when Step_Given => Append (Stanza, "Given ");
-         when Step_When  => Append (Stanza, "When ");
-         when Step_Then  => Append (Stanza, "Then ");
-      end case;
-      for I in 1 .. Args.Last_Match loop
-         Args.Match (I, Left, Right);
-         Append (Inserts (Left), "<span class=""capture"">");
-         Insert (Inserts (Right + 1), 1, "</span>");
-      end loop;
-      for I in Name'Range loop
-         Append (Stanza, Inserts (I));
-         Append (Stanza, HTML_Text ("" & Name (I)));
-      end loop;
-      Append (Stanza, Inserts (Inserts'Last));
-      Tmpl.step_begin (Format.Output,
-            Param_status   => Status_Class (Success),
-            Param_position => Position,
-            Param_stanza   => To_String (Stanza));
-
-      Loop_Args :
-      for I in Args.First .. Args.Last loop
-         case Args.Elem_Type (I) is
-            when Arg_Text =>
-               Tmpl.step_string (Format.Output,
-                  Param_string => HTML_Text (Args.Text (Args.Elem_Idx (I))));
-            when Arg_Table =>
-               Put_Table (Args.Table (Args.Elem_Idx (I)));
-            when Arg_Separator =>
-               if Success /= Status_Failed and not Format.Debug_Mode then
-                  exit Loop_Args;
-               end if;
-               if I < Args.Last then
-                  Tmpl.step_separator (Format.Output);
-               end if;
-            when Arg_Paragraph =>
-               Tmpl.step_paragraph (Format.Output,
-                  Param_string => HTML_Text (Args.Para (Args.Elem_Idx (I))));
+         if Format.In_Background and
+            (not Format.Have_Background) and
+            (not Format.Inline_Backgrnd)
+         then
+            Tmpl.scenario_label (Format.Output,
+               Param_label => "Background:");
+            Format.Inline_Backgrnd := True;
+         end if;
+         if Success = Status_Failed then
+            Format.Curr_Feature.Status := Status_Failed;
+            Format.Curr_Scenario.Status := Status_Failed;
+         end if;
+         Format.Close_Step := True;
+         case Step is
+            when Step_Given => Append (Stanza, "Given ");
+            when Step_When  => Append (Stanza, "When ");
+            when Step_Then  => Append (Stanza, "Then ");
          end case;
-      end loop Loop_Args;
+         for I in 1 .. Args.Last_Match loop
+            Args.Match (I, Left, Right);
+            Append (Inserts (Left), "<span class=""capture"">");
+            Insert (Inserts (Right + 1), 1, "</span>");
+         end loop;
+         for I in Name'Range loop
+            Append (Stanza, Inserts (I));
+            Append (Stanza, HTML_Text ("" & Name (I)));
+         end loop;
+         Append (Stanza, Inserts (Inserts'Last));
+         Tmpl.step_begin (Format.Output,
+               Param_status   => Status_Class (Success),
+               Param_position => Position,
+               Param_stanza   => To_String (Stanza));
+
+         Loop_Args :
+         for I in Args.First .. Args.Last loop
+            case Args.Elem_Type (I) is
+               when Arg_Text =>
+                  Tmpl.step_string (Format.Output,
+                     Param_string => HTML_Text (
+                        Args.Text (Args.Elem_Idx (I))));
+               when Arg_Table =>
+                  Put_Table (Format, Args.Table (Args.Elem_Idx (I)));
+               when Arg_Separator =>
+                  if Success /= Status_Failed and not Format.Debug_Mode then
+                     exit Loop_Args;
+                  end if;
+                  if I < Args.Last then
+                     Tmpl.step_separator (Format.Output);
+                  end if;
+               when Arg_Paragraph =>
+                  Tmpl.step_paragraph (Format.Output,
+                     Param_string => HTML_Text (
+                        Args.Para (Args.Elem_Idx (I))));
+            end case;
+         end loop Loop_Args;
+      end if;
    end Put_Step;
 
    -----------------
@@ -478,6 +487,20 @@ package body AdaSpecLib.Format.HTML is
       end if;
    end Stop_Scenario;
 
+   --------------------------
+   --  Put_Outline_Report  --
+   --------------------------
+
+   procedure Put_Outline_Report
+                            (Format     : in out HTML_Format_Type;
+                             Table      : in     Table_Type)
+   is
+   begin
+      Tmpl.outline_examples_begin (Format.Output);
+      Put_Table (Format, Table);
+      Tmpl.outline_examples_end (Format.Output);
+   end Put_Outline_Report;
+
    --------------------
    --  Stop_Outline  --
    --------------------
@@ -491,19 +514,6 @@ package body AdaSpecLib.Format.HTML is
       Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
       Format_Type (Format).Stop_Outline;  --  resend
    end Stop_Outline;
-
-   --------------------------
-   --  Put_Outline_Report  --
-   --------------------------
-
-   procedure Put_Outline_Report
-                            (Format     : in out HTML_Format_Type;
-                             Table      : in     Table_Type)
-   is
-      pragma Unreferenced (Format, Table);
-   begin
-      null;
-   end Put_Outline_Report;
 
    --------------------
    --  Stop_Feature  --

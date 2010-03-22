@@ -129,6 +129,15 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  background-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, ".outline-examples {" & ASCII.LF);
+      Put (File, "  margin-left: 4em;" & ASCII.LF);
+      Put (File, "  margin-top: 0.25em;" & ASCII.LF);
+      Put (File, "  padding-top: 0.25em;" & ASCII.LF);
+      Put (File, "  padding-bottom: 0.25em;" & ASCII.LF);
+      Put (File, "  padding-left: 0.5em;" & ASCII.LF);
+      Put (File, "  font-size: 0.8em;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, ".step {" & ASCII.LF);
       Put (File, "  margin-left: 3em;" & ASCII.LF);
       Put (File, "  border-left: 1em solid transparent;" & ASCII.LF);
@@ -440,18 +449,25 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "          <p class=""position"">");
       Put (File, Param_position);
       Put (File, "</p>" & ASCII.LF);
-      Put (File, "          <h3 class=""title-background"">Background: ");
+      Put (File, "          <h3 class=""title-background"">Scenario Outline: ");
       Put (File, Param_title);
       Put (File, "</h3>" & ASCII.LF);
       Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
       Put (File, "        </div>" & ASCII.LF);
    end outline_begin;
 
-   procedure outline_examples
+   procedure outline_examples_begin
         (File : in out File_Type) is
    begin
       Put (File, "        <h4>Examples:</h4>" & ASCII.LF);
-   end outline_examples;
+      Put (File, "        <div class=""outline-examples"">" & ASCII.LF);
+   end outline_examples_begin;
+
+   procedure outline_examples_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "        </div>" & ASCII.LF);
+   end outline_examples_end;
 
    procedure outline_end
         (File : in out File_Type;
@@ -468,7 +484,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
       Put (File, "          };" & ASCII.LF);
       Put (File, "        /*]]>*/</script>" & ASCII.LF);
-      Put (File, "      </div> <!-- background -->" & ASCII.LF);
+      Put (File, "      </div> <!-- scenario outline -->" & ASCII.LF);
    end outline_end;
 
    procedure scenario_begin

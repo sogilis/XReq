@@ -120,6 +120,15 @@ td {
   background-color: aqua;
 }
 
+.outline-examples {
+  margin-left: 4em;
+  margin-top: 0.25em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  padding-left: 0.5em;
+  font-size: 0.8em;
+}
+
 .step {
   margin-left: 3em;
   border-left: 1em solid transparent;
@@ -455,11 +464,14 @@ end Steps2;
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
         <div class="title">
           <p class="position"><?placeholder name="position"?></p>
-          <h3 class="title-background">Background: <?placeholder name="title"?></h3>
+          <h3 class="title-background">Scenario Outline: <?placeholder name="title"?></h3>
           <hr class="clear hidden" />
         </div>
-<?var name="outline-examples"?>
+<?var name="outline-examples-begin"?>
         <h4>Examples:</h4>
+        <div class="outline-examples">
+<?var name="outline-examples-end"?>
+        </div>
 <?var name="outline-end"?>
         <script type="text/javascript">/*<![CDATA[*/
           var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
@@ -467,7 +479,7 @@ end Steps2;
             scenario.className = "scenario pass"
           };
         /*]]>*/</script>
-      </div> <!-- background -->
+      </div> <!-- scenario outline -->
 <?var name="scenario-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
         <div class="title">
