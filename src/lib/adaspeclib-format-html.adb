@@ -17,6 +17,8 @@ package body AdaSpecLib.Format.HTML is
    function To_String (N : in Integer) return String;
    function Status_Class (Success : in Status_Type) return String;
    function HTML_Text (S : in String) return String;
+   procedure Start_Scenario_Or_Outline (Format : in out HTML_Format_Type;
+                                        Name   : in     String);
 
    use Menu_Vectors_2;
    use Menu_Vectors;
@@ -110,6 +112,17 @@ package body AdaSpecLib.Format.HTML is
       Format.Inline_Backgrnd := False;
    end Enter_Scenario;
 
+   ---------------------
+   --  Enter_Outline  --
+   ---------------------
+
+   procedure Enter_Outline  (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Format_Type (Format).Enter_Outline;  --  resend
+      Format.Inline_Backgrnd := False;
+   end Enter_Outline;
+
    ------------------------
    --  Start_Background  --
    ------------------------
@@ -176,14 +189,13 @@ package body AdaSpecLib.Format.HTML is
       Format_Type (Format).Stop_Background (First);  --  resend
    end Stop_Background;
 
-   ----------------------
-   --  Start_Scenario  --
-   ----------------------
+   ---------------------------------
+   --  Start_Scenario_Or_Outline  --
+   ---------------------------------
 
-   procedure Start_Scenario (Format     : in out HTML_Format_Type)
-   is
+   procedure Start_Scenario_Or_Outline (Format : in out HTML_Format_Type;
+                                        Name   : in     String) is
    begin
-      Format_Type (Format).Start_Scenario;  --  resend
       Format.Curr_Scenario := (
          Name          => Format.Curr_Scenario.Name,
          Status        => Format.Curr_Scenario.Status,
@@ -196,9 +208,33 @@ package body AdaSpecLib.Format.HTML is
       end if;
       if Format.Inline_Backgrnd then
          Tmpl.scenario_label (Format.Output,
-            Param_label => "Scenario:");
+            Param_label => Name & ":");
+      end if;
+   end Start_Scenario_Or_Outline;
+
+   ----------------------
+   --  Start_Scenario  --
+   ----------------------
+
+   procedure Start_Scenario (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Format_Type (Format).Start_Scenario;  --  resend
+      if not Format.In_Outline then
+         Start_Scenario_Or_Outline (Format, "Scenario");
       end if;
    end Start_Scenario;
+
+   ---------------------
+   --  Start_Outline  --
+   ---------------------
+
+   procedure Start_Outline (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Format_Type (Format).Start_Outline;  --  resend
+      Start_Scenario_Or_Outline (Format, "Scenario Outline");
+   end Start_Outline;
 
    -------------------
    --  Put_Outline  --
@@ -210,7 +246,7 @@ package body AdaSpecLib.Format.HTML is
                            Tags     : in     Tag_Array_Type)
    is
    begin
-      Tmpl.scenario_begin (Format.Output,
+      Tmpl.outline_begin (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Scenario_ID),
          Param_position   => Position,
@@ -267,9 +303,16 @@ package body AdaSpecLib.Format.HTML is
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type)
    is
-      pragma Unreferenced (Format, Num, Scenario, Position, Tags);
+      pragma Unreferenced (Position, Tags);
+      Title : Unbounded_String;
    begin
-      null;
+      Append (Title, "Scenario");
+      if Num > 0 then
+         Append (Title, Num'Img);
+      end if;
+      Append (Title, ": " & Scenario);
+      Tmpl.outline_scenario (Format.Output,
+         Param_title      => HTML_Text (To_String (Title)));
    end Put_Scenario_Outline;
 
    ------------------
@@ -426,12 +469,28 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Scenario  (Format     : in out HTML_Format_Type)
    is
    begin
-      Tmpl.scenario_end (Format.Output,
+      if not Format.In_Outline then
+         Tmpl.scenario_end (Format.Output,
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Scenario_ID));
+         Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
+         Format_Type (Format).Stop_Scenario;  --  resend
+      end if;
+   end Stop_Scenario;
+
+   --------------------
+   --  Stop_Outline  --
+   --------------------
+
+   procedure Stop_Outline   (Format     : in out HTML_Format_Type)
+   is
+   begin
+      Tmpl.outline_end (Format.Output,
          Param_feature_id => To_String (Format.Feature_ID),
          Param_num        => To_String (Format.Scenario_ID));
       Append (Format.Curr_Feature.Sub_Menu, Format.Curr_Scenario);
-      Format_Type (Format).Stop_Scenario;  --  resend
-   end Stop_Scenario;
+      Format_Type (Format).Stop_Outline;  --  resend
+   end Stop_Outline;
 
    --------------------------
    --  Put_Outline_Report  --

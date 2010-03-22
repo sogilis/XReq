@@ -424,6 +424,7 @@ end Steps2;
       <div id="feature-1-scenario-2" class="scenario skip">
         <h3 class="title-scenario">Scenario: </h3>
         <div class="step skip"><p>When I run <span class="capture">adaspec features/ambiguous2.feature</span></p></div>
+        <h4>Scenario 1:</h4>
         <div class="step skip"><p>Then it should <span class="capture">fail</span></p></div>
       </div> <!-- scenario -->
     </div> <!-- feature -->
@@ -450,6 +451,23 @@ end Steps2;
           };
         /*]]>*/</script>
       </div> <!-- background -->
+<?var name="outline-begin"?>
+      <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
+        <div class="title">
+          <p class="position"><?placeholder name="position"?></p>
+          <h3 class="title-background">Background: <?placeholder name="title"?></h3>
+          <hr class="clear hidden" />
+        </div>
+<?var name="outline-examples"?>
+        <h4>Examples:</h4>
+<?var name="outline-end"?>
+        <script type="text/javascript">/*<![CDATA[*/
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
+          if (scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
+      </div> <!-- background -->
 <?var name="scenario-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
         <div class="title">
@@ -465,6 +483,8 @@ end Steps2;
         </ul>
 <?var name="scenario-label"?>
         <p><?placeholder name="label"?></p>
+<?var name="outline-scenario"?>
+        <h4><?placeholder name="title"?></h4>
 <?var name="step-begin"?>
         <div class="step <?placeholder name="status"?>">
           <p class="position"><?placeholder name="position"?></p>

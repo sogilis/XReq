@@ -424,6 +424,53 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "      </div> <!-- background -->" & ASCII.LF);
    end background_end;
 
+   procedure outline_begin
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String;
+         Param_position : in String;
+         Param_title : in String) is
+   begin
+      Put (File, "      <div id=""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-scenario-");
+      Put (File, Param_num);
+      Put (File, """ class=""scenario skip"">" & ASCII.LF);
+      Put (File, "        <div class=""title"">" & ASCII.LF);
+      Put (File, "          <p class=""position"">");
+      Put (File, Param_position);
+      Put (File, "</p>" & ASCII.LF);
+      Put (File, "          <h3 class=""title-background"">Background: ");
+      Put (File, Param_title);
+      Put (File, "</h3>" & ASCII.LF);
+      Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
+      Put (File, "        </div>" & ASCII.LF);
+   end outline_begin;
+
+   procedure outline_examples
+        (File : in out File_Type) is
+   begin
+      Put (File, "        <h4>Examples:</h4>" & ASCII.LF);
+   end outline_examples;
+
+   procedure outline_end
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String) is
+   begin
+      Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "          var scenario = document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-scenario-");
+      Put (File, Param_num);
+      Put (File, """);" & ASCII.LF);
+      Put (File, "          if (scenario.className != ""scenario fail"") {" & ASCII.LF);
+      Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
+      Put (File, "          };" & ASCII.LF);
+      Put (File, "        /*]]>*/</script>" & ASCII.LF);
+      Put (File, "      </div> <!-- background -->" & ASCII.LF);
+   end outline_end;
+
    procedure scenario_begin
         (File : in out File_Type;
          Param_feature_id : in String;
@@ -476,6 +523,15 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, Param_label);
       Put (File, "</p>" & ASCII.LF);
    end scenario_label;
+
+   procedure outline_scenario
+        (File : in out File_Type;
+         Param_title : in String) is
+   begin
+      Put (File, "        <h4>");
+      Put (File, Param_title);
+      Put (File, "</h4>" & ASCII.LF);
+   end outline_scenario;
 
    procedure step_begin
         (File : in out File_Type;

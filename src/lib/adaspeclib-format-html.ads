@@ -34,6 +34,14 @@ package AdaSpecLib.Format.HTML is
 
 
    overriding
+   procedure Enter_Outline  (Format     : in out HTML_Format_Type);
+   overriding
+   procedure Start_Outline  (Format     : in out HTML_Format_Type);
+   overriding
+   procedure Stop_Outline   (Format     : in out HTML_Format_Type);
+
+
+   overriding
    procedure Enter_Scenario (Format     : in out HTML_Format_Type);
    overriding
    procedure Start_Scenario (Format     : in out HTML_Format_Type);

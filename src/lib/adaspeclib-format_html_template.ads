@@ -28,6 +28,21 @@ package AdaSpecLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_num : in String);
 
+   procedure outline_begin
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String;
+         Param_position : in String;
+         Param_title : in String);
+
+   procedure outline_examples
+        (File : in out File_Type);
+
+   procedure outline_end
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String);
+
    procedure scenario_begin
         (File : in out File_Type;
          Param_feature_id : in String;
@@ -48,6 +63,10 @@ package AdaSpecLib.Format_HTML_Template is
    procedure scenario_label
         (File : in out File_Type;
          Param_label : in String);
+
+   procedure outline_scenario
+        (File : in out File_Type;
+         Param_title : in String);
 
    procedure step_begin
         (File : in out File_Type;
