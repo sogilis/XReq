@@ -10,6 +10,6 @@ package body AdaSpecLib.ANSI is
       else
          return "";
       end if;
-   end ANSI;  --  GCOV_INGORE
+   end ANSI;  --  GCOV_IGNORE
 
 end AdaSpecLib.ANSI;
