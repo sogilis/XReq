@@ -3,6 +3,7 @@
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
+with AdaSpecLib.ANSI;
 
 use Ada.Strings;
 use Ada.Strings.Fixed;
@@ -10,12 +11,65 @@ use Ada.Strings.Unbounded;
 
 package body AdaSpecLib.Format.Text is
 
---    procedure Free is
---       new Ada.Unchecked_Deallocation (File_Type, File_Ptr);
-
    procedure Put_Table      (Format     : in out Text_Format_Type;
                              T          : in     Table_Type;
                              Indent     : in     String);
+
+   function ANSI (Sequence : in String) return String
+      renames AdaSpecLib.ANSI.ANSI;
+   function ANSI_G return String;
+   function ANSI_R return String;
+   function ANSI_C return String;
+   function ANSI_X return String;
+
+   function Color (Success : in Status_Type) return String;
+
+   -------------
+   --  Color  --
+   -------------
+
+   function Color (Success : in Status_Type) return String is
+   begin
+      case Success is
+         when Status_Passed =>
+            return ANSI_G;
+         when Status_Skipped =>
+            return ANSI_C;
+         when Status_Failed =>
+            return ANSI_R;
+         when others =>
+            return ANSI_X;
+      end case;
+   end Color;
+
+   ------------
+   --  ANSI  --
+   ------------
+
+   function ANSI_G return String is
+   begin
+      return ANSI ("32m");
+   end ANSI_G;
+
+   function ANSI_R return String is
+   begin
+      return ANSI ("31m");
+   end ANSI_R;
+
+   function ANSI_C return String is
+   begin
+      return ANSI ("36m");
+   end ANSI_C;
+
+   function ANSI_X return String is
+   begin
+      return ANSI ("m");
+   end ANSI_X;
+
+   -----------------
+   --  Put_Table  --
+   -----------------
+
    procedure Put_Table      (Format     : in out Text_Format_Type;
                              T          : in     Table_Type;
                              Indent     : in     String)
@@ -99,6 +153,10 @@ package body AdaSpecLib.Format.Text is
       end if;
    end Put_Feature;
 
+   ----------------------
+   --  Put_Background  --
+   ----------------------
+
    procedure Put_Background (Format     : in out Text_Format_Type;
                              Background : in     String;
                              Position   : in     String;
@@ -108,7 +166,8 @@ package body AdaSpecLib.Format.Text is
    begin
       Format.Output.New_Line;
       for I in Tags'Range loop
-         Format.Output.Put_Line ("  " & To_String (Tags (I)));
+         Format.Output.Put_Line
+            ("  " & ANSI_C & To_String (Tags (I)) & ANSI_X);
       end loop;
       Format.Output.Put ("  Background:");
       if Background /= "" then
@@ -117,6 +176,10 @@ package body AdaSpecLib.Format.Text is
       Format.Output.New_Line;
       Format.Has_Previous_Step := False;
    end Put_Background;
+
+   -------------------
+   --  Put_Outline  --
+   -------------------
 
    procedure Put_Outline    (Format     : in out Text_Format_Type;
                              Scenario   : in     String;
@@ -127,7 +190,8 @@ package body AdaSpecLib.Format.Text is
    begin
       Format.Output.New_Line;
       for I in Tags'Range loop
-         Format.Output.Put_Line ("  " & To_String (Tags (I)));
+         Format.Output.Put_Line
+            ("  " & ANSI_C & To_String (Tags (I)) & ANSI_X);
       end loop;
       Format.Output.Put ("  Scenario Outline:");
       if Scenario /= "" then
@@ -136,6 +200,10 @@ package body AdaSpecLib.Format.Text is
       Format.Output.New_Line;
       Format.Has_Previous_Step := False;
    end Put_Outline;
+
+   --------------------------
+   --  Put_Outline_Report  --
+   --------------------------
 
    procedure Put_Outline_Report
                             (Format     : in out Text_Format_Type;
@@ -147,6 +215,10 @@ package body AdaSpecLib.Format.Text is
       Put_Table (Format, Table, "      ");
    end Put_Outline_Report;
 
+   --------------------
+   --  Put_Scenario  --
+   --------------------
+
    procedure Put_Scenario (Format   : in out Text_Format_Type;
                            Scenario : in     String;
                            Position : in     String;
@@ -155,6 +227,10 @@ package body AdaSpecLib.Format.Text is
    begin
       Put_Scenario_Outline (Format, 0, Scenario, Position, Tags);
    end Put_Scenario;
+
+   ----------------------------
+   --  Put_Scenario_Outline  --
+   ----------------------------
 
    procedure Put_Scenario_Outline
                             (Format     : in out Text_Format_Type;
@@ -172,7 +248,8 @@ package body AdaSpecLib.Format.Text is
       Format.Output.New_Line;
       if not Format.In_Outline then
          for I in Tags'Range loop
-            Format.Output.Put_Line ((Indent * " ") & To_String (Tags (I)));
+            Format.Output.Put_Line
+               ((Indent * " ") & ANSI_C & To_String (Tags (I)) & ANSI_X);
          end loop;
       end if;
       Format.Output.Put ((Indent * " ") & "Scenario");
@@ -199,25 +276,28 @@ package body AdaSpecLib.Format.Text is
                              Success    : in     Status_Type)
    is
       pragma Unreferenced (Position);
-      procedure Put_Long_String (Text : in String);
+      procedure Put_Long_String (Indent, Text : in String);
 
-      procedure Put_Long_String (Text : in String) is
+      procedure Put_Long_String (Indent, Text : in String) is
          J    : Natural := Text'First;
       begin
-         Format.Output.Put_Line ("      """"""");
-         Format.Output.Put      ("      ");
+         Format.Output.Put_Line (Indent & """""""");
+         Format.Output.Put      (Indent);
          while J <= Text'Last loop
             Format.Output.Put (Text (J));
             if Text (J) = ASCII.LF then
-               Format.Output.Put ("      ");
+               Format.Output.Put (Indent);
             end if;
             J := J + 1;
          end loop;
          Format.Output.New_Line;
-         Format.Output.Put_Line ("      """"""");
+         Format.Output.Put_Line (Indent & """""""");
       end Put_Long_String;
 
-      Indent : Integer := 2;
+      Indent  : Integer := 2;
+      Inserts : array (1 .. Name'Last + 1) of Unbounded_String;
+      Left    : Integer;
+      Right   : Integer;
 
    begin
       if not (Format.In_Outline  and
@@ -228,6 +308,7 @@ package body AdaSpecLib.Format.Text is
             Indent := Indent + 1;
          end if;
          Format.Output.Put (Indent * "  ");
+         Format.Output.Put (Color (Success));
          if Format.Has_Previous_Step and Format.Previous_Step_Type = Step then
             Format.Output.Put ("And ");
          else
@@ -237,19 +318,49 @@ package body AdaSpecLib.Format.Text is
                when Step_Then  => Format.Output.Put ("Then ");
             end case;
          end if;
-         Format.Output.Put (Name);
+         for I in 1 .. Args.Last_Match loop
+            Args.Match (I, Left, Right);
+            Append (Inserts (Left), ANSI ("1m"));
+            Insert (Inserts (Right + 1), 1, ANSI ("22m"));
+         end loop;
+         for I in Name'Range loop
+            Format.Output.Put (To_String (Inserts (I)));
+            Format.Output.Put ("" & Name (I));
+         end loop;
+         Format.Output.Put (To_String (Inserts (Inserts'Last)));
+         Format.Output.Put (ANSI_X);
          Format.Output.New_Line;
          Indent := Indent + 1;
+
          Loop_Args :
          for I in Args.First .. Args.Last loop
             case Args.Elem_Type (I) is
                when Arg_Text =>
-                  Put_Long_String (Args.Text (Args.Elem_Idx (I)));
+                  Format.Output.Put (Color (Success));
+                  Put_Long_String (Indent * "  ",
+                                   Args.Text (Args.Elem_Idx (I)));
+                  Format.Output.Put (ANSI_X);
                when Arg_Table =>
                   Put_Table (Format,
                              Args.Table (Args.Elem_Idx (I)),
                              Indent * "  ");
-               when others => null;
+               when Arg_Separator =>
+                  if Success /= Status_Failed and not Format.Debug_Mode then
+                     exit Loop_Args;
+                  end if;
+                  if I < Args.Last then
+                     Format.Output.Put (Indent * "  ");
+                     Format.Output.Put (Color (Success));
+                     Format.Output.Put ((79 - 2 * Indent) * "-");
+                     Format.Output.Put (ANSI_X);
+                     Format.Output.New_Line;
+                  end if;
+               when Arg_Paragraph =>
+                  Format.Output.Put (Indent * "  ");
+                  Format.Output.Put (Color (Success));
+                  Format.Output.Put (String'(Args.Para (Args.Elem_Idx (I))));
+                  Format.Output.Put (ANSI_X);
+                  Format.Output.New_Line;
             end case;
          end loop Loop_Args;
          Format.Has_Previous_Step  := True;
@@ -315,13 +426,17 @@ package body AdaSpecLib.Format.Text is
       Need_Comma := False;
       if Report.Count_Scenario_Failed /= 0 then
          Format.Output.Put
-            (Trim (Report.Count_Scenario_Failed'Img, Left) & " failed");
+            (ANSI_R &
+             Trim (Report.Count_Scenario_Failed'Img, Left) & " failed" &
+             ANSI_X);
          Need_Comma := True;
       end if;
       if Report.Count_Scenario_Passed /= 0 then
          if Need_Comma then Format.Output.Put (", "); end if;
          Format.Output.Put
-            (Trim (Report.Count_Scenario_Passed'Img, Left) & " passed");
+            (ANSI_G &
+             Trim (Report.Count_Scenario_Passed'Img, Left) & " passed" &
+             ANSI_X);
          Need_Comma := True;
       end if;
       if Count_Scenarios > 0 then
@@ -341,19 +456,25 @@ package body AdaSpecLib.Format.Text is
       Need_Comma := False;
       if Report.Count_Steps_Failed /= 0 then
          Format.Output.Put
-            (Trim (Report.Count_Steps_Failed'Img, Left) & " failed");
+            (ANSI_R &
+             Trim (Report.Count_Steps_Failed'Img, Left) & " failed" &
+             ANSI_X);
          Need_Comma := True;
       end if;
       if Report.Count_Steps_Skipped /= 0 then
          if Need_Comma then Format.Output.Put (", "); end if;
          Format.Output.Put
-            (Trim (Report.Count_Steps_Skipped'Img, Left) & " skipped");
+            (ANSI_C &
+             Trim (Report.Count_Steps_Skipped'Img, Left) & " skipped" &
+             ANSI_X);
          Need_Comma := True;
       end if;
       if Report.Count_Steps_Passed /= 0 then
          if Need_Comma then Format.Output.Put (", "); end if;
          Format.Output.Put
-            (Trim (Report.Count_Steps_Passed'Img, Left) & " passed");
+            (ANSI_G &
+             Trim (Report.Count_Steps_Passed'Img, Left) & " passed" &
+             ANSI_X);
          Need_Comma := True;
       end if;
       if Count_Steps > 0 then

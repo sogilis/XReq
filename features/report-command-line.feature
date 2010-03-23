@@ -35,7 +35,7 @@ Feature: Generated Test Suite Command Line
         procedure This_Step_Works (Args : in out Arg_Type) is
           pragma Unreferenced (Args);
         begin
-          Args.Add_Text ("Debug text");
+          Args.Add_Para ("Debug text");
           Put_Line ("This step works");
         end This_Step_Works;
 
@@ -49,7 +49,7 @@ Feature: Generated Test Suite Command Line
     Then "test_suite" should exist
 
   Scenario: Help
-    When I run "./test_suite -h"
+    When I run the test suite "./test_suite -h"
     Then it should pass
     And the output should contain
       """
@@ -61,7 +61,7 @@ Feature: Generated Test Suite Command Line
       """
 
   Scenario: Text Format
-    When I run "./test_suite -f TexT"
+    When I run the test suite "./test_suite -f TexT"
     Then it should pass
     And the output should contain
       """
@@ -70,7 +70,7 @@ Feature: Generated Test Suite Command Line
       """
 
   Scenario: Unknown Format
-    When I run "./test_suite -f toto"
+    When I run the test suite "./test_suite -f toto"
     Then it should pass
     And the output should contain
       """
@@ -99,7 +99,7 @@ Feature: Generated Test Suite Command Line
     """
 
   Scenario: Text with output
-    When I run "./test_suite -f TexT -o report.txt"
+    When I run the test suite "./test_suite -f TexT -o report.txt"
     Then it should pass
     And  "report.txt" should exist
     And  "report.txt" should contain
@@ -109,7 +109,7 @@ Feature: Generated Test Suite Command Line
       """
 
   Scenario: Text with debug flag
-    When I run "./test_suite -f TexT -d"
+    When I run the test suite "./test_suite -f TexT -d"
     Then it should pass
     And  the output should contain
       """

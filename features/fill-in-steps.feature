@@ -57,7 +57,7 @@ Feature: Auto fill in of steps definitions
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
-    When I run "./suite" in features/tests
+    When I run "./suite --no-color" in features/tests
     Then it should fail
     And the output should contain
       """

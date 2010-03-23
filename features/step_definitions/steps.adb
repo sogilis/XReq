@@ -211,8 +211,18 @@ package body Steps is
    procedure when_I_run_the_test_suite_in (Args : in out Arg_Type) is
       use Ada.Strings.Fixed;
       use Ada.Strings;
+      Dir : constant String := Current_Directory;
    begin
-      when_I_run_in (Args);
+      begin
+         Set_Directory (Args.Match (2));
+         Args.Add_Para ("Current Directory:");
+         Args.Add_Text (Current_Directory);
+      exception
+         when Constraint_Error =>
+            null;
+      end;
+      Execute (Args.Match (1) & " --no-color");
+      Set_Directory (Dir);
       declare
          Output : constant String := To_String (Last_Command_Output);
          I      : Integer;

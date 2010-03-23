@@ -39,6 +39,7 @@ package Steps is
    procedure when_I_run_in (Args : in out Arg_Type);
 
    --  @when  ^I run the test suite "(.*)" in (.*)$
+   --  @when  ^I run the test suite "(.*)"$
    procedure when_I_run_the_test_suite_in (Args : in out Arg_Type);
 
    --  @when  ^I run "(.*)"$

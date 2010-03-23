@@ -6,6 +6,7 @@ with Ada.Text_IO;
 with GNAT.OS_Lib;
 with GNAT.Command_Line;
 with AdaSpecLib.Format.Text;
+with AdaSpecLib.ANSI;
 
 use Ada.Exceptions;
 use Ada.Strings.Unbounded;
@@ -56,6 +57,9 @@ package body AdaSpecLib.CLI is
       Put_Line ("    -d, --debug");
       Put_Line ("        Produce reports with extra information to ease debugging");
       Put_Line ("");
+      Put_Line ("    --no-color");
+      Put_Line ("        Don't show colors on terminal output");
+      Put_Line ("");
 
       --         ---------------------------------------------------------------------------XXX
       --         0         10        20        30        40        50        60        70
@@ -83,7 +87,7 @@ package body AdaSpecLib.CLI is
       use String_Vectors;
       Parser     : Opt_Parser;
       Options    : constant String := "help h -help f: -format= o: -output= " &
-                                   "-debug d -tags= t: -list";
+                                   "-debug d -tags= t: -list -no-color";
       Output     : Unbounded_String := Null_Unbounded_String;
       Arg        : Unbounded_String;
       Debug_Mode : Boolean := False;
@@ -133,6 +137,9 @@ package body AdaSpecLib.CLI is
                Full_Switch (Parser) = "-output"
          then
             Output := To_Unbounded_String (Parameter (Parser));
+
+         elsif Full_Switch (Parser) = "-no-color" then
+            AdaSpecLib.ANSI.Use_ANSI_Sequences := False;
 
          else  --  Never happen unless a bug in Getopt     --  GCOV_IGNORE
             raise Invalid_Switch;                          --  GCOV_IGNORE

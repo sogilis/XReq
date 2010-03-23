@@ -159,6 +159,9 @@ run-cucumber: bin
 	-$(RM) -f cucumber-rerun.txt
 	cucumber -t "~@wip" -t "~@bootstrap" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
+run-bootstrap: bin
+	cucumber -t "~@wip" -t "@bootstrap" features/*.feature
+
 rerun-cucumber: bin
 	@echo
 	@echo "##########################################"
