@@ -1,0 +1,13 @@
+--                         Copyright (C) 2010, Sogilis                       --
+
+library project AdaSpecLib is
+
+   for Library_Name     use "adaspeclib";
+   for Source_Dirs      use ("../../include/adaspeclib");
+   for Library_Dir      use "../../lib/adaspeclib";
+   for Library_Kind     use "static";
+   for Externally_Built use "true";
+
+end AdaSpecLib;
+
+--  kate: hl Ada

@@ -4,6 +4,21 @@ GNATMAKE=gnatmake
 TEST_SUITES=test coverage
 CONFIG=dbg
 
+GPRBUILD=gprbuild
+INSTALL=install
+
+DESTDIR    =
+PREFIX     =$(shell which $(GPRBUILD) 2> /dev/null | sed -e's/\/bin\/[^/]*//')
+ifeq ($(PREFIX),)
+PREFIX     =/usr/local
+endif
+BINDIR     = $(PREFIX)/bin
+INCLUDEDIR = $(PREFIX)/include
+LIBDIR     = $(PREFIX)/lib
+GPRDIR     = $(PREFIX)/lib/gnat
+DATADIR    = $(PREFIX)/share
+DOCDIR     = $(DATADIR)/doc/AdaSpec
+
 all: bin tests doc
 	@echo
 	@echo "####################################################"
@@ -251,6 +266,35 @@ check: gnatcheck coverage run-cucumber run-tests
 
 .PHONY: gnatcheck test-report test-report-cucumber test-report-unit check
 
+install: bin/adaspec.rel
+	$(INSTALL) -D bin/adaspec.rel $(DESTDIR)$(BINDIR)/adaspec
+	$(INSTALL) -D data/adaspeclib.gpr $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
+	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/adaspeclib
+	$(INSTALL) -t $(DESTDIR)$(INCLUDEDIR)/adaspeclib src/lib/*.ad[bs]
+	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/adaspeclib
+	$(INSTALL) -t $(DESTDIR)$(LIBDIR)/adaspeclib lib/release/*
+	@echo '------------------------------------------------------------------'
+	@echo '--  AdaSpec has now been installed.'
+	@echo '------------------------------------------------------------------'
+	@echo '--  To be able to use the adaspec binary, you may need to update'
+	@echo '--  your PATH to point to'
+	@echo '--  $(DESTDIR)$(BINDIR)'
+	@echo '------------------------------------------------------------------'
+	@echo '--  To be able to use the library, you may need to update your'
+	@echo '--  ADA_PROJECT_PATH or GPR_PROJECT_PATH to point to the path'
+	@echo '--  $(DESTDIR)$(GPRDIR)'
+	@echo '------------------------------------------------------------------'
+
+uninstall:
+	-$(RM) -rf $(DESTDIR)$(BINDIR)/adaspec
+	-$(RM) -rf $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
+	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/adaspeclib
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/adaspeclib
+	-$(RM) -rf $(DESTDIR)$(DOCDIR)
+	-$(RM) -rf $(DESTDIR)$(DATADIR)/AdaSpec
+
+.PHONY: install uninstall
+
 show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
 
@@ -269,8 +313,22 @@ help:
 	@echo "    run-tests:      Run all unit tests"
 	@echo "    run-cucumber:   Run all cucumber tests"
 	@echo "    clean:          Clean project"
+	@echo "    install:        Install AdaSpec"
+	@echo "    unnstall:       Uninstall AdaSpec"
 	@echo "    show-ignored-coverage:"
 	@echo "                    Show lines that are ignored by gcov"
+	@echo
+	@echo "Variables:"
+	@echo
+	@echo "    DESTDIR         root for all installation [$(DESTDIR)]"
+	@echo "    PREFIX          prefix for installation   [$(PREFIX)]"
+	@echo "    BINDIR          user executables          [$(BINDIR)]"
+	@echo "    INCLUDEDIR      ???                       [$(INCLUDEDIR)]"
+	@echo "    LIBDIR          ???                       [$(LIBDIR)]"
+	@echo "    GPRDIR          GNAT Project files        [$(GPRDIR)]"
+	@echo "    DOCDIR          Documentation directory   [$(DOCDIR)]"
+	@echo "    DATADIR         Read only architecture-independant data"
+	@echo "    DATADIR                                   [$(DATADIR)]"
 
 .PHONY: help show-ignored-coverage
 
