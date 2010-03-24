@@ -268,11 +268,11 @@ check: gnatcheck coverage run-cucumber run-tests
 
 install: bin/adaspec.rel
 	$(INSTALL) -D bin/adaspec.rel $(DESTDIR)$(BINDIR)/adaspec
-	$(INSTALL) -D data/adaspeclib.gpr $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
+	$(INSTALL) -m644 -D data/adaspeclib.gpr $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/adaspeclib
-	$(INSTALL) -t $(DESTDIR)$(INCLUDEDIR)/adaspeclib src/lib/*.ad[bs]
+	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/adaspeclib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/adaspeclib
-	$(INSTALL) -t $(DESTDIR)$(LIBDIR)/adaspeclib lib/release/*
+	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/adaspeclib
 	@echo '------------------------------------------------------------------'
 	@echo '--  AdaSpec has now been installed.'
 	@echo '------------------------------------------------------------------'
