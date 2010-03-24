@@ -1,0 +1,16 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "unit_tests.gpr";
+with "adaspec.gpr";
+with "adaspeclib.gpr";
+
+project Full is
+
+   for Languages   use ("Ada");
+   for Source_Dirs use (
+      "features",
+      "features/step_definitions",
+      "features/tests");
+
+end Full;
