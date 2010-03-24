@@ -123,11 +123,7 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
   FileUtils::rm_rf("#{dir}/obj");
   FileUtils::mkdir_p("#{dir}/obj");
   f = File.new("#{dir}/main.gpr", "w");
-  if ENV['COVERAGE'] then
-    f.write("with \"adaspeclib-coverage.gpr\";\n");
-  else
-    f.write("with \"adaspeclib-debug.gpr\";\n");
-  end
+  f.write("with \"adaspeclib.gpr\";\n");
   f.write("project Main is\n");
   f.write("   for Main        use (\"#{name}\");\n");
   f.write("   for Source_Dirs use (\".\", \"../step_definitions\");\n");

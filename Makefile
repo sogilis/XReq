@@ -44,26 +44,26 @@ dir:
 bin: bin/adaspec
 
 bin/adaspec.cov: dir
-	$(GNATMAKE) -P adaspec-coverage.gpr
+	$(GPRBUILD) -Padaspec.gpr -Xmode=coverage
 
 bin/adaspec.rel: dir
-	$(GNATMAKE) -P adaspec-release.gpr
+	$(GPRBUILD) -Padaspec.gpr -Xmode=release
 
 bin/adaspec.dbg: dir
-	$(GNATMAKE) -P adaspec-debug.gpr
+	$(GPRBUILD) -Padaspec.gpr -Xmode=debug
 
 bin/adaspec: bin/adaspec.$(CONFIG)
 	-rm -f bin/adaspec
 	ln -s adaspec.$(CONFIG) bin/adaspec
 
 bin/unit_tests: dir
-	$(GNATMAKE) -P unit_tests-debug.gpr
+	$(GPRBUILD) -Punit_tests.gpr -Xmode=debug
 
 bin/unit_tests.cov: dir
-	$(GNATMAKE) -P unit_tests-coverage.gpr
+	$(GPRBUILD) -Punit_tests.gpr -Xmode=coverage
 
 tests: dir
-	$(GNATMAKE) -P unit_tests-debug.gpr
+	$(GPRBUILD) -Punit_tests.gpr
 
 doc: dir README.html src/README.html reports/index.html
 	
@@ -101,6 +101,7 @@ gcov-report: dir bin/unit_tests
 	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '*~*'    -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '*__*'   -o coverage/lcov.info
 	#perl gcov-ignore.pl coverage/lcov.info > coverage/ignore.lcov.info
 	genhtml --show-details --no-function-coverage -o coverage coverage/lcov.info || \
 	genhtml --show-details -o coverage coverage/lcov.info
@@ -121,7 +122,7 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	@echo "##  Run coverage tests  ##"
 	@echo "##########################"
 	@echo
-	gnatmake -P adaspec-coverage.gpr
+	$(GPRBUILD) -P adaspec.gpr -Xmode=coverage
 	-$(RM) -f bin/adaspec
 	$(MAKE) clean-gcov
 	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
@@ -141,11 +142,11 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	lcov -q -d obj/coverage --zerocounters
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
+	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
 	cucumber -t "~@wip"   -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" \
+	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
 	cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature >/dev/null 2>&1
 	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
 	$(MAKE) _gcov-gather-cucumber
@@ -197,7 +198,7 @@ run-adaspec: bin
 	@echo "###################"
 	@echo
 	bin/adaspec -x suite features/*.feature
-	gnatmake -P features/tests/suite.gpr
+	$(GPRBUILD) -Pfeatures/tests/suite.gpr
 	features/tests/suite
 
 run-tests: tests bin
@@ -216,11 +217,11 @@ gnatcheck: dir
 	@echo "##  Run GNAT-Check  ##"
 	@echo "######################"
 	@echo
-	cd reports && gnat check -P ../adaspec-release.gpr -U -rules -from=../gnatcheck.rules
+	cd reports && gnat check -P../adaspec.gpr -U -rules -from=../gnatcheck.rules
 	cd reports && mv gnatcheck.out gnatcheck.adaspec.out
-	#cd reports && gnat check -P ../adaspeclib-release.gpr -U -rules -from=../gnatcheck.rules
+	#cd reports && gnat check -P../adaspeclib.gpr -U -rules -from=../gnatcheck.rules
 	#cd reports && mv gnatcheck.out gnatcheck.adaspeclib.out
-	#cd reports && gnat check -P ../unit_tests-debug.gpr -rules -from=../gnatcheck.rules
+	#cd reports && gnat check -P../unit_tests.gpr -rules -from=../gnatcheck.rules
 	#cd reports && mv gnatcheck.out gnatcheck.tests.out
 
 test-report:
@@ -257,7 +258,7 @@ features/tests/suite.gpr: bin/adaspec $(wildcard features/*.feature)
 	bin/adaspec -x suite $(wildcard features/*.feature)
 
 features/tests/suite: features/tests/suite.gpr
-	gnatmake -P features/tests/suite.gpr
+	$(GPRBUILD) -Pfeatures/tests/suite.gpr
 
 reports/features-adaspec.html: features/tests/suite
 	-features/tests/suite -f html -o reports/features-adaspec.html

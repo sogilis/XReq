@@ -2,21 +2,61 @@
 -- kate: hl Ada; indent-width 3;
 
 with "config.gpr";
+with "adaspeclib.gpr";
 
 project AdaSpec is
+
+   type Mode_Type is ("debug", "release", "coverage");
+   Mode : Mode_Type := external ("mode", "debug");
 
    for Languages   use ("Ada");
    for Main        use ("main");
    for Source_Dirs use ("src");
-   for Object_Dir  use "obj";
+   for Object_Dir  use "obj/" & Mode;
    for Exec_Dir    use "bin";
 
    package Builder is
-      for Executable ("main") use "adaspec";
+      case Mode is
+         when "debug" =>
+            for Executable ("main.adb") use "adaspec.dbg";
+         when "release" =>
+            for Executable ("main.adb") use "adaspec.rel";
+         when "coverage" =>
+            for Executable ("main.adb") use "adaspec.cov";
+      end case;
    end Builder;
 
    package Compiler is
-      for Default_Switches ("Ada") use Config.Ada_Switches;
+      case Mode is
+         when "debug" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
+         when "release" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Release;
+         when "coverage" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage;
+      end case;
    end Compiler;
+
+   package Binder is
+      case Mode is
+         when "debug" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Debug;
+         when "coverage" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Coverage;
+         when others =>
+            null;
+      end case;
+   end Binder;
+
+   package Linker is
+      case Mode is
+         when "debug" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug;
+         when "coverage" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
+         when others =>
+            null;
+      end case;
+   end Linker;
 
 end AdaSpec;
