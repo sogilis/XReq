@@ -41,6 +41,24 @@ Feature: adaspec commandline
     And "tests/features/tests/suite.adb" should not exist
     And "tests/features/tests/suite.gpr" should not exist
 
+  Scenario: Compile a simple feature with --partial --step-matching
+    When I run adaspec -x suite --partial --step-matching --step features/step_definitions tests/features/simplest.feature
+    Then it should pass with
+    """
+    --> Compile: tests/features/simplest.feature
+
+    Load Ada steps in: features/step_definitions
+    Compile: tests/features/simplest.feature
+    Step Matching: "tests/features/simplest.feature:4" matches "features/step_definitions/sample1.ads:8" procedure Sample1.This_Step_Works
+    Step Matching: "tests/features/simplest.feature:7" matches "features/step_definitions/sample1.ads:8" procedure Sample1.This_Step_Works
+
+
+    """
+    And "tests/features/tests/feature_simplest.adb" should not exist
+    And "tests/features/tests/feature_simplest.ads" should not exist
+    And "tests/features/tests/suite.adb" should not exist
+    And "tests/features/tests/suite.gpr" should not exist
+
   Scenario: Choose a step directory
     When I run adaspec -otmp --step tmp tests/features/simplest.feature
     Then it should fail
