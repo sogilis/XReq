@@ -15,7 +15,7 @@ package AdaSpec is
    type Position_Type is
       record
          File : Ada.Strings.Unbounded.Unbounded_String;
-         Line : Positive;
+         Line : Natural := 0;
       end record;
 
    function To_String (Pos : in Position_Type) return String;

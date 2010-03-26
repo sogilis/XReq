@@ -36,6 +36,24 @@ package body AdaSpec.Steps is
       end if;
    end Find;
 
+   ------------
+   --  Find  --
+   ------------
+
+   procedure Find      (S       : in  Step_File_Type;
+                        Stanza  : in  Stanza_Type;
+                        Proc    : out Unbounded_String;
+                        Matches : out Match_Vectors.Vector;
+                        Found   : out Boolean)
+   is
+      This   : constant access constant Step_File_Type'Class := S'Access;
+      Result : constant Step_Match_Type := This.Find (Stanza);
+   begin
+      Found   := Result.Match;
+      Proc    := Result.Proc_Name;
+      Matches := Result.Matches;
+   end Find;
+
    -----------------
    --  File_Name  --
    -----------------
@@ -105,30 +123,47 @@ package body AdaSpec.Steps is
    --  Find  --
    ------------
 
+   function  Find      (Steps     : in Steps_Type;
+                        Stanza    : in Stanza_Type) return Step_Match_Type
+   is
+      use Step_Vectors;
+      Result : Step_Match_Type;
+      I      : Step_Vectors.Cursor := First (Steps);
+      Step   : Step_File_Ptr;
+      Res2   : Step_Match_Type;
+   begin
+      while Has_Element (I) loop
+         Step := Element (I);
+         Res2 := Find (Step.all, Stanza);
+         if Res2.Match then
+            if Result.Match then
+               raise Ambiguous_Match;
+            else
+               Result := Res2;
+            end if;
+         end if;
+         Next (I);
+      end loop;
+      return Result;
+   end Find;  --  GCOV_IGNORE
+
+   ------------
+   --  Find  --
+   ------------
+
    procedure Find      (Steps     : in  Steps_Type;
                         Stanza    : in  Stanza_Type;
                         Proc      : out Unbounded_String;
                         Matches   : out Match_Vectors.Vector;
                         Found     : out Boolean)
    is
-      use Step_Vectors;
-      I    : Step_Vectors.Cursor := First (Steps);
-      Step : Step_File_Ptr;
-      Found2 : Boolean := False;
+      Res : constant Step_Match_Type := Find (Steps, Stanza);
    begin
-      Found := False;
-      while Has_Element (I) loop
-         Step := Element (I);
-         Find (Step.all, Stanza, Proc, Matches, Found2);
-         if Found2 then
-            if Found then
-               raise Ambiguous_Match;
-            else
-               Found := True;
-            end if;
-         end if;
-         Next (I);
-      end loop;
+      Found := Res.Match;
+      if Found then
+         Proc    := Res.Proc_Name;
+         Matches := Res.Matches;
+      end if;
    end Find;
 
    ------------

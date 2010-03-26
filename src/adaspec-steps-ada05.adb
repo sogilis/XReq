@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Ada.Strings.Fixed;
 with Ada.Directories;
 with Ada.Text_IO;
 with GNAT.Regpat;
@@ -39,7 +40,7 @@ package body AdaSpec.Steps.Ada05 is
       while More_Entries (Search) loop
          Get_Next_Entry (Search, Element);
          Step := new Ada_Step_File_Type;
-         Step.Make  (Full_Name (Element), Fill_Steps);
+         Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
          Step_Vectors.Append (Steps, Step_File_Ptr (Step));
       end loop;
@@ -76,6 +77,8 @@ package body AdaSpec.Steps.Ada05 is
    procedure Parse (S          : in out Ada_Step_File_Type;
                     Logger     : in     Logger_Ptr) is
       use Ada.Containers;
+      use Ada.Strings.Fixed;
+      use Ada.Strings;
       use Step_Container;
       use Util.Strings.Vectors;
       File          : File_Type;
@@ -113,13 +116,16 @@ package body AdaSpec.Steps.Ada05 is
       Steps_Adb_File  : constant String :=
          Steps_Ads_File (Steps_Ads_File'First .. Steps_Ads_File'Last - 3) &
          "adb";
+      Position      : Position_Type;
    begin
+      Position.File := S.File_Name;
       Open (File, In_File, Steps_Ads_File);
       while not End_Of_File (File) loop
          --
          --  Read Line
          --
          Line_S := Get_Whole_Line (File);
+         Position.Line := Position.Line + 1;
 
          if Package_S = Null_Unbounded_String then
             Idx  := Index (Line_S, "with");
@@ -171,15 +177,16 @@ package body AdaSpec.Steps.Ada05 is
                   Pattern_R => new Pattern_Matcher'(
                                Compile (To_String (Pattern))),
                   Pattern_S => Pattern,
+                  Position  => Position,
                   others    => <>);
                Append (Current_Steps, Current_Step);
                Pending_Step := True;
             else
                --  TODO: use better reporting method
-               Put_Line (Name (File) & ":" &
-                         Natural'Image (Natural (Line (File) - 1)) & ":" &
-                         Natural'Image (Idx_Next) & ": " &
-                         "Warning: expecting argument");
+               Logger.Put_Line (String'(
+                  "WARNING: Expecting argument in " &
+                  To_String (Position) & ":" &
+                  Trim (Idx_Next'Img, Left)));
             end if;
          elsif Found_Pkg then
             Idx       := Index_Non_Blank (Line_S, Idx_Next);
@@ -340,17 +347,15 @@ package body AdaSpec.Steps.Ada05 is
    --  Find  --
    ------------
 
-   procedure Find      (S       : in     Ada_Step_File_Type;
-                        Stanza  : in     Stanza_Type;
-                        Proc    : out    Unbounded_String;
-                        Matches : out    Match_Vectors.Vector;
-                        Found   : out    Boolean)
+   function  Find      (S       : in     Ada_Step_File_Type;
+                        Stanza  : in     Stanza_Type)
+                                  return Step_Match_Type
    is
       use Match_Vectors;
+      Result   : Step_Match_Type;
       Step     : Step_Type;
       Matches2 : Match_Vectors.Vector;
    begin
-      Found := False;
 
       --  Error if not parsed
       if not S.Parsed then
@@ -369,15 +374,16 @@ package body AdaSpec.Steps.Ada05 is
 --                          To_String (Step.Pattern_S) & "|");
                Match (Step.Pattern_R.all, To_String (Stanza.Stanza), Matched);
                if Matched (0) /= No_Match then
-                  if Found then
+                  if Result.Match then
                      raise Ambiguous_Match;
                   end if;
 --                   Put_Line ("Matched (0) = " &
 --                             Slice (Stanza.Stanza,
 --                                    Matched (0).First,
 --                                    Matched (0).Last));
-                  Proc  := Step.Proc_Name;
-                  Found := True;
+                  Result.Proc_Name := Step.Proc_Name;
+                  Result.Position  := Step.Position;
+                  Result.Match     := True;
                   for J in Matched'First + 1 .. Matched'Last loop
 --                      Put_Line ("Matched (" & J'Img & ") = " &
 --                               Slice (Stanza.Stanza,
@@ -388,7 +394,7 @@ package body AdaSpec.Steps.Ada05 is
                                                           Matched (J).Last));
                      end if;
                   end loop;  --  GCOV_IGNORE
-                  Matches := Matches2;
+                  Result.Matches := Matches2;
 --                else
 --                   Put_Line ("Matched (0) = No_Match");
                end if;
@@ -404,6 +410,7 @@ package body AdaSpec.Steps.Ada05 is
 
       --  No match
 --       Put_Line ("AdaSpec.Steps.Ada.Find: Not found");
+      return Result;
    end Find;
 
 

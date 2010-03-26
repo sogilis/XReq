@@ -33,7 +33,7 @@ procedure Main is
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
-              "-fill-steps -progress -partial";
+              "-fill-steps -progress -partial -step-matching";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
@@ -45,6 +45,7 @@ procedure Main is
    Generator  : Generator_Ptr;
    Progress   : Boolean := False;
    Partial    : Boolean := False;
+   Step_Match : Boolean := False;
    I          : Natural;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
@@ -79,6 +80,9 @@ begin
 
       elsif Full_Switch = "-partial" then
          Partial := True;
+
+      elsif Full_Switch = "-step-matching" then
+         Step_Match := True;
 
       elsif Full_Switch = "x" or
          Full_Switch = "-executable"
@@ -163,7 +167,7 @@ begin
       --  Compile Features  --
       ------------------------
 
-      Run (Job, Env, Logger);
+      Run (Job, Env, Logger, Step_Match);
       if Job.Result.Fail then
          Put_Line (Standard_Error, "Failure to compile " & Feature_File (Job));
          Set_Exit_Status (Failure);

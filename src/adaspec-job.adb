@@ -137,7 +137,8 @@ package body AdaSpec.Job is
 
    procedure Run (Job    : in out Job_Type;
                   Env    : in     Job_Environment;
-                  Logger : in     Logger_Ptr)
+                  Logger : in     Logger_Ptr;
+                  Step_Matching : in Boolean := False)
    is
       F : constant Feature_File_Ptr := new Feature_File_Type;
    begin
@@ -152,7 +153,8 @@ package body AdaSpec.Job is
 
       --  No Parse_Error
       Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
-      Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger);
+      Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger,
+                       Step_Matching);
    exception
       when Parse_Error =>
          Job.Result.Fail := True;

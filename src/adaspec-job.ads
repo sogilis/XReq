@@ -62,15 +62,16 @@ package AdaSpec.Job is
 
    function  Feature_File (Job : in Job_Type) return String;
 
-   procedure Make     (Job          : out    Job_Type;
-                       Feature_File : in     String);
-   procedure Run      (Job          : in out Job_Type;
-                       Env          : in     Job_Environment;
-                       Logger       : in     Logger_Ptr);
+   procedure Make     (Job           : out    Job_Type;
+                       Feature_File  : in     String);
+   procedure Run      (Job           : in out Job_Type;
+                       Env           : in     Job_Environment;
+                       Logger        : in     Logger_Ptr;
+                       Step_Matching : in     Boolean := False);
    --  IMPORTANT: call Cleanup afterwards
-   procedure Cleanup  (Job          : in out Job_Type);
-   function  Describe (Job          : in     Job_Type;
-                       Env          : in     Job_Environment) return String;
+   procedure Cleanup  (Job           : in out Job_Type);
+   function  Describe (Job           : in     Job_Type;
+                       Env           : in     Job_Environment) return String;
 
 
    procedure Init (Env          : out    Job_Environment;

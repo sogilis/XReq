@@ -25,6 +25,14 @@ package AdaSpec.Steps is
    package Match_Vectors is
       new Ada.Containers.Vectors (Natural, Match_Location, "=");
 
+   type Step_Match_Type is
+      record
+         Match     : Boolean := False;
+         Proc_Name : Unbounded_String;
+         Matches   : Match_Vectors.Vector;
+         Position  : Position_Type;
+      end record;
+
    ----------------------
    --  Step_File_Type  --
    ----------------------
@@ -53,11 +61,14 @@ package AdaSpec.Steps is
 
    function  Find      (S       : in  Step_File_Type;
                         Stanza  : in  Stanza_Type) return String;
+   function  Find      (S       : in  Step_File_Type;
+                        Stanza  : in  Stanza_Type)
+                        return Step_Match_Type is abstract;
    procedure Find      (S       : in  Step_File_Type;
                         Stanza  : in  Stanza_Type;
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
-                        Found   : out Boolean) is abstract;
+                        Found   : out Boolean);
    procedure Finalize  (S       : in out Step_File_Type)  --  GCOV_IGNORE
                         is null;
 
@@ -86,6 +97,8 @@ package AdaSpec.Steps is
                         Stanza     : in  Stanza_Type) return Boolean;
    function  Find      (Steps      : in  Steps_Type;
                         Stanza     : in  Stanza_Type) return String;
+   function  Find      (Steps      : in  Steps_Type;
+                        Stanza     : in  Stanza_Type) return Step_Match_Type;
    procedure Find      (Steps      : in  Steps_Type;
                         Stanza     : in  Stanza_Type;
                         Proc       : out Unbounded_String;

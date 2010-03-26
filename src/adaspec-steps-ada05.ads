@@ -26,11 +26,9 @@ package AdaSpec.Steps.Ada05 is
    overriding procedure Parse     (S          : in out Ada_Step_File_Type;
                                    Logger     : in     Logger_Ptr);
 
-   overriding procedure Find      (S       : in     Ada_Step_File_Type;
-                                   Stanza  : in     Stanza_Type;
-                                   Proc    : out    Unbounded_String;
-                                   Matches : out    Match_Vectors.Vector;
-                                   Found   : out    Boolean);
+   overriding function  Find      (S       : in     Ada_Step_File_Type;
+                                   Stanza  : in     Stanza_Type)
+                                             return Step_Match_Type;
 
    overriding procedure Finalize  (S       : in out Ada_Step_File_Type);
 
@@ -47,6 +45,7 @@ private
          Pattern_R : Pattern_Matcher_Ptr;
          Pattern_S : Unbounded_String;
          Proc_Name : Unbounded_String;
+         Position  : Position_Type;
       end record;
 
    package Step_Container is new

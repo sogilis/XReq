@@ -90,20 +90,20 @@ package body AdaSpec.Result is
                                Stanza   : in  Stanza_Type;
                                Steps    : in  Steps_Type;
                                Log      : in  Logger_Ptr;
-                               Errors   : out Boolean);
+                               Errors   : out Boolean;
+                               Step_Matching : in Boolean);
    procedure Process_Step     (Res      : out Result_Step_Type;
                                Stanza   : in  Stanza_Type;
                                Steps    : in  Steps_Type;
                                Log      : in  Logger_Ptr;
-                               Errors   : out Boolean)
+                               Errors   : out Boolean;
+                               Step_Matching : in Boolean)
    is
-      Proc_Name : Unbounded_String;
-      Matches   : Match_Vectors.Vector;
-      Found     : Boolean;
+      Match : Step_Match_Type;
    begin
       Errors := False;
       begin
-         Find (Steps, Stanza, Proc_Name, Matches, Found);
+         Match := Find (Steps, Stanza);
       exception
          when Ambiguous_Match =>
             Log.Put_Line (String'("Error: Ambiguous match in " &
@@ -111,7 +111,7 @@ package body AdaSpec.Result is
             Log.Put_Line ("  " & To_String (Stanza));
             Errors := True;
       end;
-      if not Found then
+      if not Match.Match then
          Log.Put_Line (String'("Error: Missing step definition in " &
                        Position (Stanza) & " for:"));
          Log.Put_Line ("  " & To_String (Stanza));
@@ -121,8 +121,12 @@ package body AdaSpec.Result is
          Log.Put_Line ("  --  @todo");
          Log.New_Line;
          Errors := True;
+      elsif Step_Matching then
+         Log.Put_Line ("Step Matching: """ & Position (Stanza) &
+                       """ matches """ & To_String (Match.Position) &
+                       """ procedure " & To_String (Match.Proc_Name));
       end if;
-      Make (Res, To_String (Proc_Name), Stanza, Matches);
+      Make (Res, To_String (Match.Proc_Name), Stanza, Match.Matches);
    end Process_Step;
 
    --------------------------------------------------
@@ -133,7 +137,8 @@ package body AdaSpec.Result is
                                Scenario : in  Scenario_Type;
                                Steps    : in  Steps_Type;
                                Log      : in  Logger_Ptr;
-                               Errors   : out Boolean)
+                               Errors   : out Boolean;
+                               Step_Matching : in Boolean := False)
    is
       use Stanza_Container;
       use Result_Steps;
@@ -155,7 +160,7 @@ package body AdaSpec.Result is
             Err := False;
             Make (Res_St, "", Stanza, Match_Vectors.Empty_Vector);
          else
-            Process_Step (Res_St, Stanza, Steps, Log, Err);
+            Process_Step (Res_St, Stanza, Steps, Log, Err, Step_Matching);
          end if;
          if Err then
             Errors := True;
@@ -192,7 +197,8 @@ package body AdaSpec.Result is
             while Has_Element (J) loop
                Res_St := Element (J);
                Log.Put_Line (To_String (Res_St.Step));
-               Process_Step (Res_St, Res_St.Step, Steps, Log, Err);
+               Process_Step (Res_St, Res_St.Step, Steps, Log, Err,
+                             Step_Matching);
                if Err then
                   Errors := True;
                end if;
@@ -218,7 +224,8 @@ package body AdaSpec.Result is
    procedure Process_Feature (Res     : out Result_Feature_Type;
                               Feature : in  Feature_Ptr;
                               Steps   : in  Steps_Type;
-                              Log     : in  Logger_Ptr)
+                              Log     : in  Logger_Ptr;
+                              Step_Matching : in Boolean := False)
    is
       use Scenario_Container;
       I      : Scenario_Container.Cursor := First (Feature.all.Scenarios);
@@ -235,12 +242,13 @@ package body AdaSpec.Result is
          Pos         => Feature.Pos,
          others      => <>);
       Process_Scenario (Result.Background, Feature.all.Background,
-                        Steps, Log, Errors);
+                        Steps, Log, Errors, Step_Matching);
       if Errors then
          Result.Fail := True;
       end if;
       while Has_Element (I) loop
-         Process_Scenario (R_Scen, Element (I), Steps, Log, Errors);
+         Process_Scenario (R_Scen, Element (I), Steps, Log, Errors,
+                           Step_Matching);
          if Errors then
             Result.Fail := True;
          end if;
