@@ -7,6 +7,8 @@ Feature: adaspec commandline
     Given adaspec is in the PATH
     And   I am in the adaspec directory
     When  I run "rm -f tests/features/tests/*"
+    Then "tests/features/tests/feature_simplest.adb" should not exist
+    And  "tests/features/tests/feature_simplest.ads" should not exist
 
   Scenario: Help message
     When I run adaspec -h

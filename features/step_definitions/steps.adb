@@ -22,64 +22,38 @@ package body Steps is
    package Char_IO is new Ada.Sequential_IO (Character);
    package ENV renames Ada.Environment_Variables;
 
-   procedure Execute (Command, Arguments : in String) is
+   procedure Execute (Command_Line : in String) is
       use Char_IO;
       use GNAT.OS_Lib;
-      use Ada.Strings.Fixed;
       Tmp_File      : Char_IO.File_Type;
-      Argument_List : Argument_List_Access :=
-                      Argument_String_To_List (Arguments);
-      Cmd_Path      : GNAT.OS_Lib.String_Access;
       Success       : Boolean;
       Return_Code   : Integer;
       Char          : Character;
+      Arg1          : aliased String := "-c";
+      Arg2          : aliased String := "( " & Command_Line & ") 2>&1";
+      Arg_List      : Argument_List (1 .. 2)  --  OK, I do an unchecked access
+                    := (                      --  access here, but is it
+                     Arg1'Unchecked_Access,   --  worse than an
+                     Arg2'Unchecked_Access);  --  Unchecked_Deallocation?
    begin
       Create (Tmp_File);
-      if Index (Command, "/") not in Command'Range then
-         Cmd_Path := Locate_Exec_On_Path (Command);
-         if Cmd_Path = null then
-            raise Ada.IO_Exceptions.Name_Error
-               with "Cannot locate """ & Command & """ on the PATH";
-         end if;
-         Spawn  (Cmd_Path.all,
-                 Argument_List.all,
-                 Name (Tmp_File),
-                 Success,
-                 Return_Code,
-                 True);
-      else
-         Spawn  (Command,
-                 Argument_List.all,
-                 Name (Tmp_File),
-                 Success,
-                 Return_Code,
-                 True);
-      end if;
-      Assert (Success, "Spawn failed");
-      Free (Cmd_Path);
-      Free (Argument_List);
-      Reset (Tmp_File, In_File);
       Last_Command_Output := Null_Unbounded_String;
+      --  Append (Last_Command_Output, Arg3 & ASCII.LF);
+      --  Append (Last_Command_Output, Name (Tmp_File) & ASCII.LF);
+      Spawn  ("/bin/sh",
+              Arg_List,
+              Name (Tmp_File),
+              Success,
+              Return_Code,
+              True);
+      Assert (Success, "Spawn failed");
+      Reset (Tmp_File, In_File);
       while not End_Of_File (Tmp_File) loop
          Read   (Tmp_File, Char);
          Append (Last_Command_Output, Char);
       end loop;
       Delete (Tmp_File);
       Last_Exit_Code := Return_Code;
-   end Execute;
-
-   procedure Execute (Command_Line : in String) is
-      use Ada.Strings.Fixed;
-      I, J : Natural;
-   begin
-      I := Index (Command_Line, " ");
-      if I = 0 then
-         Execute (Command_Line, "");
-      else
-         J := Index_Non_Blank (Command_Line, I);
-         Execute (Command_Line (Command_Line'First .. I - 1),
-                  Command_Line (J .. Command_Line'Last));
-      end if;
    end Execute;
 
    ----------------------------------------------------------------------------
@@ -157,7 +131,7 @@ package body Steps is
    begin
       Args.Add_Para ("Current Directory:");
       Args.Add_Text (Current_Directory);
-      Execute ("adaspec", Args.Match (1));
+      Execute ("adaspec " & Args.Match (1));
    end I_run_adaspec;
 
    procedure it_should_pass_fail (Args : in out Arg_Type) is
@@ -244,6 +218,11 @@ package body Steps is
    procedure when_I_run (Args : in out Arg_Type) is
    begin
       Execute (Args.Match (1));
+      Args.Add_Para ("Exit code:" & Last_Exit_Code'Img);
+      Args.Add_Para ("Current Directory:");
+      Args.Add_Text (Current_Directory);
+      Args.Add_Para ("Command output:");
+      Args.Add_Text (To_String (Last_Command_Output));
    end when_I_run;
 
    procedure Then_file_should_exist (Args : in out Arg_Type) is
