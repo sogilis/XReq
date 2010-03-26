@@ -5,11 +5,13 @@ TEST_SUITES=test coverage
 CONFIG=dbg
 
 GPRBUILD=gprbuild
+GPS=gps
 INSTALL=install
 CP=cp -R
 
 DESTDIR    =
-PREFIX     =$(shell which $(GPRBUILD) 2> /dev/null | sed -e's/\/bin\/[^/]*//')
+PREFIX     =$(shell which $(GPRBUILD) 2>/dev/null | sed -e's/\/bin\/[^/]*//')
+PREFIX_GPS =$(shell which $(GPS) 2>/dev/null | sed -e's/\/bin\/[^/]*//')
 ifeq ($(PREFIX),)
 PREFIX     =/usr/local
 endif
@@ -18,6 +20,7 @@ INCLUDEDIR = $(PREFIX)/include
 LIBDIR     = $(PREFIX)/lib
 GPRDIR     = $(PREFIX)/lib/gnat
 DATADIR    = $(PREFIX)/share
+GPSDATADIR = $(PREFIX_GPS)/share/gps
 DOCDIR     = $(DATADIR)/doc/AdaSpec
 
 all: bin tests doc
@@ -275,6 +278,9 @@ install: bin/adaspec.rel
 	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/adaspeclib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/adaspeclib
 	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/adaspeclib
+	$(INSTALL) -m644 data/gpr-plug-in/adaspec.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
+	$(INSTALL) -m644 data/gpr-plug-in/adaspec.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
+	$(INSTALL) -m644 data/gpr-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 	@echo '------------------------------------------------------------------'
 	@echo '--  AdaSpec has now been installed.'
 	@echo '------------------------------------------------------------------'
@@ -294,8 +300,14 @@ uninstall:
 	-$(RM) -rf $(DESTDIR)$(LIBDIR)/adaspeclib
 	-$(RM) -rf $(DESTDIR)$(DOCDIR)
 	-$(RM) -rf $(DESTDIR)$(DATADIR)/AdaSpec
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 
-.PHONY: install uninstall
+install-gps-local:
+	ln -sf "`pwd`"/data/gpr-plug-in/*.{xml,py} ~/.gps/plug-ins
+
+.PHONY: install uninstall install-gps-local
 
 show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
@@ -324,13 +336,15 @@ help:
 	@echo
 	@echo "    DESTDIR         root for all installation [$(DESTDIR)]"
 	@echo "    PREFIX          prefix for installation   [$(PREFIX)]"
+	@echo "    PREFIX_GPS      prefix for GPS plugin     [$(PREFIX_GPS)]"
 	@echo "    BINDIR          user executables          [$(BINDIR)]"
 	@echo "    INCLUDEDIR      ???                       [$(INCLUDEDIR)]"
 	@echo "    LIBDIR          ???                       [$(LIBDIR)]"
 	@echo "    GPRDIR          GNAT Project files        [$(GPRDIR)]"
 	@echo "    DOCDIR          Documentation directory   [$(DOCDIR)]"
 	@echo "    DATADIR         Read only architecture-independant data"
-	@echo "    DATADIR                                   [$(DATADIR)]"
+	@echo "                                              [$(DATADIR)]"
+	@echo "    GPSDATADIR      GPS plugin data           [$(GPSDATADIR)]"
 
 .PHONY: help show-ignored-coverage
 
