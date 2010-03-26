@@ -329,6 +329,9 @@ help:
 	@echo "    clean:          Clean project"
 	@echo "    install:        Install AdaSpec"
 	@echo "    unnstall:       Uninstall AdaSpec"
+	@echo "    install-gps-local:"
+	@echo "                    Install the GPS plugin in your HOME directory"
+	@echo "                    using symbolic links rather than copying files"
 	@echo "    show-ignored-coverage:"
 	@echo "                    Show lines that are ignored by gcov"
 	@echo
