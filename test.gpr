@@ -1,0 +1,28 @@
+
+project Test is
+
+   for Languages   use ("Feature");
+   for Source_Dirs use (
+      "features",
+      "features/step_definitions",
+      "features/tests");
+   for Object_Dir  use "obj";
+
+   package Preprocess is
+      for Driver ("Feature") use "echo";
+   end Preprocess;
+
+   package Naming is
+      for Body_Suffix ("Feature") use ".feature";
+   end Naming;
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnat05");
+      for Driver ("Feature") use "adaspec";
+   end Compiler;
+
+   package Linker is
+      for Driver use "echo";
+   end Linker;
+
+end Test;
