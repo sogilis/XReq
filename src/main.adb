@@ -33,7 +33,7 @@ procedure Main is
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
-              "-fill-steps";
+              "-fill-steps -progress";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
@@ -43,6 +43,10 @@ procedure Main is
    Fill_Steps : Boolean := False;
    Generators : Generator_Vectors.Vector;
    Generator  : Generator_Ptr;
+   Progress   : Boolean := False;
+   I          : Natural;
+   Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
+   Args_Last  : Natural := 0;
 
 begin
 
@@ -68,6 +72,9 @@ begin
 
       elsif Full_Switch = "-fill-steps" then
          Fill_Steps := True;
+
+      elsif Full_Switch = "-progress" then
+         Progress := True;
 
       elsif Full_Switch = "x" or
          Full_Switch = "-executable"
@@ -121,6 +128,14 @@ begin
    end if;
 
    while not Quit and Length (Arg) > 0 loop
+      Args_Last := Args_Last + 1;
+      Args (Args_Last) := Arg;
+      Arg := To_Unbounded_String (Get_Argument);
+   end loop;
+
+   I   := 1;
+   Arg := Args (I);
+   while not Quit and Length (Arg) > 0 loop
 
       Put_Line ("--> Compile: " & To_String (Arg));
       New_Line;
@@ -156,7 +171,7 @@ begin
          Append (Generators, Generator);
       end if;
 
-      Arg := To_Unbounded_String (Get_Argument);
+      Arg := Args (I + 1);
 
       -------------------
       --  Cleanup Job  --
@@ -166,6 +181,11 @@ begin
 
       -------------------
 
+      if Progress then
+         Put_Line ("completed" & I'Img & " out of" & Args_Last'Img);
+      end if;
+
+      I := I + 1;
       New_Line;
 
    end loop;

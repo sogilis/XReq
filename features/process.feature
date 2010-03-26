@@ -57,8 +57,19 @@ Feature: The simplest works
       """
 
   Scenario: Test the generation of test packages
-    When I run adaspec features/simplest.feature
-    Then it should pass
+    When I run adaspec --progress features/simplest.feature
+    Then it should pass with
+      """
+      --> Compile: features/simplest.feature
+
+      Load Ada steps in: features/step_definitions
+      Compile: features/simplest.feature
+      Generate: features/tests/feature_simplest.ads
+      Generate: features/tests/feature_simplest.adb
+      completed 1 out of 1
+
+
+      """
     And  "features/tests/feature_simplest.ads" should exist
     And  "features/tests/feature_simplest.adb" should exist
     When I compile "feature_simplest" in features/tests

@@ -6,6 +6,7 @@ CONFIG=dbg
 
 GPRBUILD=gprbuild
 INSTALL=install
+CP=cp -R
 
 DESTDIR    =
 PREFIX     =$(shell which $(GPRBUILD) 2> /dev/null | sed -e's/\/bin\/[^/]*//')
