@@ -1,11 +1,187 @@
 #! python
 # -*- coding: utf-8 -*-
 
+"""
+AdaSpec  -  Plugin for AdaSpec
+
+This plugin use a special project file to configure AdaSpec: Makefile.adaspec
+This is also a standard Makefile and its variables are used to configure the
+AdaSpec project. When reading this file, no substitutions are made in variable
+values.
+
+Project variables:
+
+  FEATURE_DIR:          directory where the .feature files are
+  STEP_DEFINITIONS:     directory where the step definitions are
+  RESULT_DIR:           where to generate the test suite
+  TEST_SUITE:           name of the test suite
+
+Available commands for external use:
+
+  def compile(filename = None):
+    Compile the filename `filename' or the current project if not given
+
+  def go_to_spec():
+    Parse the current buffer with adaspec --partial --step-matching
+    The result is used to jump to the step definition file
+
+  def edit_makefile():
+    Open in an editor the Makefile.adaspec project file.
+
+  def show_feature_browser():
+    Show the feature browser and refresh its content.
+"""
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+
 import GPS
 import gtk, gobject
 import os
 import re
 import subprocess
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+
+def compile(filename = None):
+  Command_AdaSpec(filename)
+
+def go_to_spec():
+  vars    = parse_makefile()
+  context = GPS.current_context()
+  file    = context.file()
+  line_no = context.location().line()
+  buffer  = GPS.EditorBuffer.get(file)
+  #GPS.Console().write ("%s line %d\n" % (file.name(), line_no))
+  if not buffer.is_modified():
+    filename = file.name()
+    delete   = False
+  else:
+    filename = GPS.dump(buffer.get_chars())
+    delete   = True
+  args = ["adaspec", "--partial", "--step-matching", "--step", vars['STEP_DEFINITIONS_DIR'], filename]
+  p = subprocess.Popen(args, stdout=subprocess.PIPE)
+  step_file = None
+  step_line = None
+  for line in p.stdout.readlines():
+    m = re.match('^Step Matching: "(.*):([0-9]+)" matches "(.*):([0-9]+)" procedure (.*)$', line)
+    if m:
+      l = int(m.group(2))
+      if l > line_no:
+        break
+      else:
+        #GPS.Console().write ("line %d match %s (%s:%d)\n" % (
+        #  int(m.group(2)), m.group(5), m.group(3), int(m.group(4))));
+        step_file = m.group(3)
+        step_line = int(m.group(4))
+  p.stdout.close()
+  if delete:
+    os.remove(filename)
+  if step_file:
+    open_file(step_file, step_line)
+
+def edit_makefile():
+  open_file(create_makefile())
+
+def show_feature_browser():
+  win = GPS.MDI.get ('Features')
+  if win:
+    win.raise_window();
+  else:
+    GPS.MDI.get ("Project").raise_window()
+    view = FeatureBrowser ()
+    GPS.MDI.add (view, "Features", "Features")
+    win = GPS.MDI.get ('Features')
+    #win.float(True)
+    #GPS.MDI.get ("Project").raise_window()
+    #win.float(False)
+    win.raise_window()
+    win.split (False)
+
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                         Makefile related functions                         ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+
+def makefile_path():
+  return os.path.join(os.path.dirname(GPS.Project.root().file().name()), "Makefile.adaspec")
+
+
+def create_makefile():
+  file = makefile_path()
+  if not os.path.isfile(file):
+    f = open(file, "w")
+    f.write ("""
+############################
+##  AdaSpec Project File  ##
+############################
+
+# FEATURE_DIR:          directory where the .feature files are
+# STEP_DEFINITIONS:     directory where the step definitions are
+# RESULT_DIR:           where to generate the test suite
+# TEST_SUITE:           name of the test suite
+
+FEATURE_DIR=features
+STEP_DEFINITIONS_DIR=features/step_definitions
+RESULT_DIR=features/tests
+TEST_SUITE=test_suite
+
+all: $(RESULT_DIR)/$(TEST_SUITE)
+.PHONY: all
+
+$(RESULT_DIR)/$(TEST_SUITE): $(RESULT_DIR)/$(TEST_SUITE).gpr
+        gprbuild -m -P$<
+
+$(RESULT_DIR)/$(TEST_SUITE).gpr: $(FEATURE_DIR)/*.feature
+        adaspec -x $(TEST_SUITE) $+
+
+clean:
+        -$(RM) $(RESULT_DIR)/$(TEST_SUITE).{gpr,adb}
+        -$(RM) $(RESULT_DIR)/feature_*.{ads,adb}
+.PHONY: clean
+
+    """)
+    f.close()
+  return file
+
+def parse_makefile():
+  file = create_makefile()
+  #GPS.Console().write("Parse %s\n" % file)
+  res = {
+    'FEATURE_DIR'         : "features",
+    'STEP_DEFINITIONS_DIR': "features/steps",
+    'RESULT_DIR'          : "features/tests",
+    'TEST_SUITE'          : ""}
+  f = open (file, "r")
+  for line in f.readlines():
+    var, eq, val = line.partition("=")
+    var = var.strip()
+    val = val.strip()
+    if eq == "=" and re.match("[A-Z][A-Z0-9_]*", var):
+      res[var] = val
+      #GPS.Console().write("%s=%s\n" % (var, val))
+  f.close()
+  return res
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                          Editor related functions                          ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+
+def open_file(file, line=None, always_open=False):
+  if line:
+    GPS.Console().write ("Open %s line %d\n" % (file, line))
+  else:
+    GPS.Console().write ("Open %s\n" % file)
+  if not always_open and not line and file.endswith(".gpr"):
+    GPS.Project.load(file);
+  else:
+    ed = GPS.EditorBuffer.get (GPS.File (file))
+    GPS.MDI.get_by_child (ed.current_view()).raise_window()
+    if line:
+      ed.current_view().goto(GPS.EditorLocation (ed, line, 0) )
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                              Launch  gprbuild                              ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 class Command_GprBuild (GPS.Process):
   def on_match (self, matched, unmatched):
@@ -23,6 +199,10 @@ class Command_GprBuild (GPS.Process):
       progress_current = 1,
       progress_total   = 2)
 
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                               Launch adaspec                               ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 class Command_AdaSpec(GPS.Process):
   def on_match (self, matched, unmatched):
@@ -63,117 +243,10 @@ class Command_AdaSpec(GPS.Process):
       progress_current = 1,
       progress_total   = 2)
 
-def compile(filename = None):
-  Command_AdaSpec(filename)
 
-def go_to_spec():
-  vars    = parse_makefile()
-  context = GPS.current_context()
-  file    = context.file()
-  line_no = context.location().line()
-  buffer  = GPS.EditorBuffer.get(file)
-  #GPS.Console().write ("%s line %d\n" % (file.name(), line_no))
-  if not buffer.is_modified():
-    filename = file.name()
-    delete   = False
-  else:
-    filename = GPS.dump(buffer.get_chars())
-    delete   = True
-  args = ["adaspec", "--partial", "--step-matching", "--step", vars['STEP_DEFINITIONS_DIR'], filename]
-  p = subprocess.Popen(args, stdout=subprocess.PIPE)
-  step_file = None
-  step_line = None
-  for line in p.stdout.readlines():
-    m = re.match('^Step Matching: "(.*):([0-9]+)" matches "(.*):([0-9]+)" procedure (.*)$', line)
-    if m:
-      l = int(m.group(2))
-      if l > line_no:
-        break
-      else:
-        #GPS.Console().write ("line %d match %s (%s:%d)\n" % (
-        #  int(m.group(2)), m.group(5), m.group(3), int(m.group(4))));
-        step_file = m.group(3)
-        step_line = int(m.group(4))
-  p.stdout.close()
-  if delete:
-    os.remove(filename)
-  if step_file:
-    open_file(step_file, step_line)
-
-def makefile_path():
-  return os.path.join(os.path.dirname(GPS.Project.root().file().name()), "Makefile.adaspec")
-
-def create_makefile():
-  file = makefile_path()
-  if not os.path.isfile(file):
-    f = open(file, "w")
-    f.write ("""
-############################
-##  AdaSpec Project File  ##
-############################
-
-# FEATURE_DIR:          directory where the .feature files are
-# STEP_DEFINITIONS:     directory where the step definitions are
-# RESULT_DIR:           where to generate the test suite
-# TEST_SUITE:           name of the test suite
-
-FEATURE_DIR=features
-STEP_DEFINITIONS_DIR=features/step_definitions
-RESULT_DIR=features/tests
-TEST_SUITE=test_suite
-
-all: $(RESULT_DIR)/$(TEST_SUITE)
-.PHONY: all
-
-$(RESULT_DIR)/$(TEST_SUITE): $(RESULT_DIR)/$(TEST_SUITE).gpr
-        gprbuild -m -P$<
-
-$(RESULT_DIR)/$(TEST_SUITE).gpr: $(FEATURE_DIR)/*.feature
-        adaspec -x $(TEST_SUITE) $+
-
-clean:
-        -$(RM) $(RESULT_DIR)/$(TEST_SUITE).{gpr,adb}
-        -$(RM) $(RESULT_DIR)/feature_*.{ads,adb}
-.PHONY: clean
-
-    """)
-    f.close()
-  return file
-
-def open_file(file, line=None, always_open=False):
-  if line:
-    GPS.Console().write ("Open %s line %d\n" % (file, line))
-  else:
-    GPS.Console().write ("Open %s\n" % file)
-  if not always_open and not line and file.endswith(".gpr"):
-    GPS.Project.load(file);
-  else:
-    ed = GPS.EditorBuffer.get (GPS.File (file))
-    GPS.MDI.get_by_child (ed.current_view()).raise_window()
-    if line:
-      ed.current_view().goto(GPS.EditorLocation (ed, line, 0) )
-
-def edit_makefile():
-  open_file(create_makefile())
-
-def parse_makefile():
-  file = create_makefile()
-  #GPS.Console().write("Parse %s\n" % file)
-  res = {
-    'FEATURE_DIR'         : "features",
-    'STEP_DEFINITIONS_DIR': "features/steps",
-    'RESULT_DIR'          : "features/tests",
-    'TEST_SUITE'          : ""}
-  f = open (file, "r")
-  for line in f.readlines():
-    var, eq, val = line.partition("=")
-    var = var.strip()
-    val = val.strip()
-    if eq == "=" and re.match("[A-Z][A-Z0-9_]*", var):
-      res[var] = val
-      #GPS.Console().write("%s=%s\n" % (var, val))
-  f.close()
-  return res
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                         Feature Browser  side view                         ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 class FeatureBrowser(gtk.Table):
   def __init__(self):
@@ -253,22 +326,9 @@ class FeatureBrowser(gtk.Table):
     open_file(path)
 
 
-def show_feature_browser():
-  win = GPS.MDI.get ('Features')
-  if win:
-    win.raise_window();
-  else:
-    GPS.MDI.get ("Project").raise_window()
-    view = FeatureBrowser ()
-    GPS.MDI.add (view, "Features", "Features")
-    win = GPS.MDI.get ('Features')
-    #win.float(True)
-    #GPS.MDI.get ("Project").raise_window()
-    #win.float(False)
-    win.raise_window()
-    win.split (False)
-
-
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                                   Hooks                                   .##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 def on_project_changed(hook):
   if os.path.isfile(makefile_path()):
