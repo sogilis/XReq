@@ -8,9 +8,11 @@ with "adaspeclib.gpr";
 project Full is
 
    for Languages   use ("Ada");
-   for Source_Dirs use (
-      "features",
-      "features/step_definitions",
-      "features/tests");
+   for Source_Dirs use ();
+   for Object_Dir  use "obj";
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-gnat05");
+   end Compiler;
 
 end Full;
