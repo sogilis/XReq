@@ -70,6 +70,9 @@ package body AdaSpec.CLI is
       Put_Line ("    --progress");
       Put_Line ("        Show progress.");
       Put_Line ("");
+      Put_Line ("    --partial");
+      Put_Line ("        Don't generate anything.");
+      Put_Line ("");
       Put_Line ("-- ");
       Put_Line ("Copyright (c) 2010 SOGILIS");
 

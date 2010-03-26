@@ -33,7 +33,7 @@ procedure Main is
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
-              "-fill-steps -progress";
+              "-fill-steps -progress -partial";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
@@ -44,6 +44,7 @@ procedure Main is
    Generators : Generator_Vectors.Vector;
    Generator  : Generator_Ptr;
    Progress   : Boolean := False;
+   Partial    : Boolean := False;
    I          : Natural;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
@@ -75,6 +76,9 @@ begin
 
       elsif Full_Switch = "-progress" then
          Progress := True;
+
+      elsif Full_Switch = "-partial" then
+         Partial := True;
 
       elsif Full_Switch = "x" or
          Full_Switch = "-executable"
@@ -166,7 +170,7 @@ begin
          if not Keep_Going then
             Quit := True;
          end if;
-      else
+      elsif not Partial then
          Generate (Job, Env, Logger, Generator);
          Append (Generators, Generator);
       end if;
@@ -190,7 +194,7 @@ begin
 
    end loop;
 
-   if not Quit and Executable /= Null_Unbounded_String then
+   if not Quit and Executable /= Null_Unbounded_String and not Partial then
 
       Put_Line ("--> Generate Test Suite: " & To_String (Executable));
       New_Line;

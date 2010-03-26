@@ -6,6 +6,7 @@ Feature: adaspec commandline
   Background:
     Given adaspec is in the PATH
     And   I am in the adaspec directory
+    When  I run "rm -f tests/features/tests/*"
 
   Scenario: Help message
     When I run adaspec -h
@@ -23,6 +24,22 @@ Feature: adaspec commandline
     Then it should pass
     And "tests/features/tests/feature_simplest.adb" should exist
     And "tests/features/tests/feature_simplest.ads" should exist
+
+  Scenario: Compile a simple feature with --partial
+    When I run adaspec -x suite --partial --step features/step_definitions tests/features/simplest.feature
+    Then it should pass with
+    """
+    --> Compile: tests/features/simplest.feature
+
+    Load Ada steps in: features/step_definitions
+    Compile: tests/features/simplest.feature
+
+
+    """
+    And "tests/features/tests/feature_simplest.adb" should not exist
+    And "tests/features/tests/feature_simplest.ads" should not exist
+    And "tests/features/tests/suite.adb" should not exist
+    And "tests/features/tests/suite.gpr" should not exist
 
   Scenario: Choose a step directory
     When I run adaspec -otmp --step tmp tests/features/simplest.feature
