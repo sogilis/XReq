@@ -6,7 +6,7 @@ with Util.IO;
 with Util.Strings;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
@@ -14,7 +14,7 @@ use Util.IO;
 use Util.Strings;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 
 package AdaSpec.Result is
 

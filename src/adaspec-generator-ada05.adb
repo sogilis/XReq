@@ -9,7 +9,7 @@ with GNAT.OS_Lib;
 with Util.IO;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Step_Definitions;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 
 use Ada.Directories;
 use Ada.Containers;
@@ -17,7 +17,7 @@ use GNAT.OS_Lib;
 use Util.IO;
 use AdaSpecLib;
 use AdaSpec.Step_Definitions;
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 
 package body AdaSpec.Generator.Ada05 is
 

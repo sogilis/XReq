@@ -6,7 +6,7 @@ with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 with AdaSpec.Result;
 with AdaSpecLib.String_Tables;
 
@@ -15,7 +15,7 @@ use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 use AdaSpec.Result;
 
 package body Test_Suite.Result is

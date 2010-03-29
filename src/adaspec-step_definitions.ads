@@ -5,12 +5,12 @@ with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with Util.IO;
 with AdaSpec.Lang;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use AdaSpec.Lang;
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 
 package AdaSpec.Step_Definitions is
 

@@ -2,15 +2,15 @@
 
 with Ada.Strings.Unbounded;
 with AdaSpec;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 with AdaSpec.Features;
 with Util.IO;
 with Util.Strings;
 
 use Ada.Strings.Unbounded;
 use AdaSpec;
-use AdaSpec.Stanzas;
-use AdaSpec.Stanzas.Stanza_Container;
+use AdaSpec.Steps;
+use AdaSpec.Steps.Stanza_Container;
 use AdaSpec.Features;
 use AdaSpec.Features.Scenario_Container;
 use Util.IO;

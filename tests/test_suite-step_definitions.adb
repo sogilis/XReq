@@ -5,14 +5,14 @@ with Ada.Containers;
 with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Step_Definitions;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Step_Definitions;
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 
 package body Test_Suite.Step_Definitions is
 

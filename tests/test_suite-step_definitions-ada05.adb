@@ -5,7 +5,7 @@ with Ada.Containers;
 with Ada.Directories;
 with Util.IO;
 with AdaSpec;
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 with AdaSpec.Step_Definitions;
 with AdaSpec.Step_Definitions.Ada05;
 
@@ -14,7 +14,7 @@ use Ada.Containers;
 use Ada.Directories;
 use Util.IO;
 use AdaSpec;
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 use AdaSpec.Step_Definitions;
 use AdaSpec.Step_Definitions.Ada05;
 

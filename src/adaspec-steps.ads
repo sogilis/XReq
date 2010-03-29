@@ -6,7 +6,7 @@ with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
 
-package AdaSpec.Stanzas is
+package AdaSpec.Steps is
 
    type Argument_Kind is (None, Text, Table);
 
@@ -60,4 +60,4 @@ package AdaSpec.Stanzas is
 
 --    function "=" (Left, Right : in Stanza_Type) return Boolean;
 
-end AdaSpec.Stanzas;
+end AdaSpec.Steps;

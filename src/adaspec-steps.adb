@@ -2,7 +2,7 @@
 
 with Ada.Strings.Fixed;
 
-package body AdaSpec.Stanzas is
+package body AdaSpec.Steps is
 
    -------------------------------------
    --  Stanza_Type  --  Stanza_Given  --
@@ -124,4 +124,4 @@ package body AdaSpec.Stanzas is
 --                Left.Pos    = Right.Pos;
 --    end "=";
 
-end AdaSpec.Stanzas;
+end AdaSpec.Steps;

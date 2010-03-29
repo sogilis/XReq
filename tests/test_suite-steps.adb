@@ -1,10 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.Stanzas;
+with AdaSpec.Steps;
 
-use AdaSpec.Stanzas;
+use AdaSpec.Steps;
 
-package body Test_Suite.Stanzas is
+package body Test_Suite.Steps is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
@@ -46,5 +46,5 @@ package body Test_Suite.Stanzas is
 
    end Run;
 
-end Test_Suite.Stanzas;
+end Test_Suite.Steps;
 
