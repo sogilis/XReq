@@ -1,8 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.Steps.Ada05;
+with AdaSpec.Step_Definitions.Ada05;
 
-package body AdaSpec.Steps is
+package body AdaSpec.Step_Definitions is
 
    ----------------
    --  Contains  --
@@ -76,7 +76,7 @@ package body AdaSpec.Steps is
       case Language is
          when Lang_Ada =>
             Logger.Put_Line ("Load Ada steps in: " & Directory);
-            AdaSpec.Steps.Ada05.Parse_Directory
+            AdaSpec.Step_Definitions.Ada05.Parse_Directory
                (Steps, Logger, Directory, Fill_Steps);
       end case;
    end Load;
@@ -185,4 +185,4 @@ package body AdaSpec.Steps is
    end Free;
 
 
-end AdaSpec.Steps;
+end AdaSpec.Step_Definitions;

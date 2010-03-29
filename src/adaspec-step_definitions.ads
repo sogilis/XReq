@@ -12,7 +12,7 @@ use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Stanzas;
 
-package AdaSpec.Steps is
+package AdaSpec.Step_Definitions is
 
    Ambiguous_Match : exception;
 
@@ -107,4 +107,4 @@ package AdaSpec.Steps is
 
    procedure Free      (Steps      : in out Steps_Type);
 
-end AdaSpec.Steps;
+end AdaSpec.Step_Definitions;

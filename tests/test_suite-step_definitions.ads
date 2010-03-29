@@ -4,7 +4,7 @@ with AUnit;
 with AUnit.Test_Suites;
 
 
-package Test_Suite.Steps is
+package Test_Suite.Step_Definitions is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
@@ -17,5 +17,5 @@ package Test_Suite.Steps is
    function  Name (T : in     Test_1) return String;
    procedure Run  (T : in out Test_1);
 
-end Test_Suite.Steps;
+end Test_Suite.Step_Definitions;
 

@@ -4,17 +4,17 @@ with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Util.IO;
 with AdaSpec.Lang;
-with AdaSpec.Steps;
+with AdaSpec.Step_Definitions;
 with AdaSpec.Stanzas;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Util.IO;
 use AdaSpec.Lang;
-use AdaSpec.Steps;
+use AdaSpec.Step_Definitions;
 use AdaSpec.Stanzas;
 
-package body Test_Suite.Steps is
+package body Test_Suite.Step_Definitions is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
@@ -91,5 +91,5 @@ package body Test_Suite.Steps is
 
    end Run;
 
-end Test_Suite.Steps;
+end Test_Suite.Step_Definitions;
 

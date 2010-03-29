@@ -19,7 +19,7 @@ use Util.Strings;
 use Util.Strings.Pool;
 use AdaSpec;
 
-package body AdaSpec.Steps.Ada05 is
+package body AdaSpec.Step_Definitions.Ada05 is
 
    -----------------------
    --  Parse_Directory  --
@@ -432,4 +432,4 @@ package body AdaSpec.Steps.Ada05 is
 
 
 
-end AdaSpec.Steps.Ada05;
+end AdaSpec.Step_Definitions.Ada05;

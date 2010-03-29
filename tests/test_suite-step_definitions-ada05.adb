@@ -6,8 +6,8 @@ with Ada.Directories;
 with Util.IO;
 with AdaSpec;
 with AdaSpec.Stanzas;
-with AdaSpec.Steps;
-with AdaSpec.Steps.Ada05;
+with AdaSpec.Step_Definitions;
+with AdaSpec.Step_Definitions.Ada05;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
@@ -15,10 +15,10 @@ use Ada.Directories;
 use Util.IO;
 use AdaSpec;
 use AdaSpec.Stanzas;
-use AdaSpec.Steps;
-use AdaSpec.Steps.Ada05;
+use AdaSpec.Step_Definitions;
+use AdaSpec.Step_Definitions.Ada05;
 
-package body Test_Suite.Steps.Ada05 is
+package body Test_Suite.Step_Definitions.Ada05 is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
@@ -146,4 +146,4 @@ package body Test_Suite.Steps.Ada05 is
    end Run;
 
 
-end Test_Suite.Steps.Ada05;
+end Test_Suite.Step_Definitions.Ada05;

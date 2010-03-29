@@ -4,7 +4,7 @@ with AUnit;
 with AUnit.Test_Suites;
 
 
-package Test_Suite.Steps.Ada05 is
+package Test_Suite.Step_Definitions.Ada05 is
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
@@ -23,4 +23,4 @@ package Test_Suite.Steps.Ada05 is
    function  Name (T : in     Test_Parse_Dir) return String;
    procedure Run  (T : in out Test_Parse_Dir);
 
-end Test_Suite.Steps.Ada05;
+end Test_Suite.Step_Definitions.Ada05;

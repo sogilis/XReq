@@ -4,14 +4,14 @@ with Ada.Strings.Unbounded;
 with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Features;
-with AdaSpec.Steps;
+with AdaSpec.Step_Definitions;
 with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Features;
-use AdaSpec.Steps;
+use AdaSpec.Step_Definitions;
 use AdaSpec.Result;
 
 package AdaSpec.Job is

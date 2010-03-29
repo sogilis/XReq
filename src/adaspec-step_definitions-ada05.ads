@@ -3,7 +3,7 @@
 with Ada.Containers.Vectors;
 with GNAT.Regpat;
 
-package AdaSpec.Steps.Ada05 is
+package AdaSpec.Step_Definitions.Ada05 is
 
 
    --  Called in AdaSpec.Steps.Load
@@ -58,4 +58,4 @@ private
          Fill_Steps : Boolean := False;
       end record;
 
-end AdaSpec.Steps.Ada05;
+end AdaSpec.Step_Definitions.Ada05;
