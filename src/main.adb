@@ -33,7 +33,7 @@ procedure Main is
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
-              "-fill-steps -progress -partial -step-matching";
+              "-fill-steps -progress -partial -step-matching m -make";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
@@ -46,6 +46,7 @@ procedure Main is
    Progress   : Boolean := False;
    Partial    : Boolean := False;
    Step_Match : Boolean := False;
+   Make       : Boolean := False;
    I          : Natural;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
@@ -72,6 +73,11 @@ begin
       then
          Keep_Going := True;
 
+      elsif Full_Switch = "m" or
+         Full_Switch = "-make"
+      then
+         Make := not Partial;
+
       elsif Full_Switch = "-fill-steps" then
          Fill_Steps := True;
 
@@ -80,6 +86,7 @@ begin
 
       elsif Full_Switch = "-partial" then
          Partial := True;
+         Make    := False;
 
       elsif Full_Switch = "-step-matching" then
          Step_Match := True;
@@ -119,7 +126,7 @@ begin
          if Fill_Steps and Length (Step_Dir) /= 0 then
             Put_Line ("--> Fill steps in: " & To_String (Step_Dir));
             New_Line;
-            Make (Env,
+            AdaSpec.Job.Make (Env,
                Step_Dir => To_String (Step_Dir),
                Out_Dir  => To_String (Out_Dir),
                Language => Language);
@@ -152,12 +159,12 @@ begin
       --  Get Parameter  --
       ---------------------
 
-      Make (Env,
+      AdaSpec.Job.Make (Env,
          Step_Dir => To_String (Step_Dir),
          Out_Dir  => To_String (Out_Dir),
          Language => Language);
 
-      Make (Job,
+      AdaSpec.Job.Make (Job,
          Feature_File => To_String (Arg));
 
       Fill_Missing (Env, Feature_File (Job));
@@ -203,7 +210,13 @@ begin
       Put_Line ("--> Generate Test Suite: " & To_String (Executable));
       New_Line;
 
-      Generate_Suite (Generators, To_String (Executable), Env, Logger);
+      begin
+         Generate_Suite (Generators,
+            To_String (Executable), Env, Logger, Make);
+      exception
+         when Generation_Error =>
+            Set_Exit_Status (Failure);
+      end;
 
    end if;
 

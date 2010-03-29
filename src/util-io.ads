@@ -59,6 +59,8 @@ package Util.IO is
    --  Spawn  --
    -------------
 
+   subtype Argument_List is GNAT.OS_Lib.Argument_List;
+
    procedure Spawn          (Command_Name  : in     String;
                              Args          : in     GNAT.OS_Lib.Argument_List;
                              Output_Buffer : in out Unbounded_String;

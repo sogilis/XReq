@@ -685,7 +685,8 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
                              Env  : in Job_Environment;
-                             Log  : in  Logger_Ptr)
+                             Log  : in  Logger_Ptr;
+                             Make : in Boolean := False)
    is
       use Generator_Vectors;
       Filename : constant String := Out_Dir (Env) & "/" & Name & ".adb";
@@ -797,6 +798,31 @@ package body AdaSpec.Generator.Ada05 is
       Log.Put_Line ("Generate: " & Filename);
       Set_File    (Gpr_Name, To_String (Gpr_B.Buffer));
       Log.Put_Line ("Generate: " & Gpr_Name);
+      if Make then
+         declare
+            Arg1 : aliased String := "-m";
+            Arg2 : aliased String := "-P" & Gpr_Name;
+            Args : constant Argument_List (1 .. 2)
+                 := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
+            Buffer  : Unbounded_String;
+            Success : Boolean;
+            Code    : Integer;
+         begin
+            Log.Put_Line ("Build: gnatmake -m -P" & Gpr_Name);
+            Spawn ("gnatmake", Args, Buffer, Success, Code);
+            Log.Put_Line (Buffer);
+            if not Success then
+               Log.Put_Line ("--> Failure");
+            elsif Code = 0 then
+               Log.Put_Line ("--> Success");
+            else
+               Log.Put_Line ("--> Failure:" & Code'Img);
+            end if;
+            if not Success and Code /= 0 then
+               raise Generation_Error;
+            end if;
+         end;
+      end if;
    end Generate_Suite;
 
 end AdaSpec.Generator.Ada05;

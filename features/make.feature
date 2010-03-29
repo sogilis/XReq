@@ -7,7 +7,6 @@ Feature: Run gnatmake after compiling features
     Given adaspec is in the PATH
     And I am in an empty directory
 
-  @wip
   Scenario:
     Given a file "features/simplest.feature":
       """

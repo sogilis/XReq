@@ -27,7 +27,8 @@ package AdaSpec.Generator.Ada05 is
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
                              Env  : in Job_Environment;
-                             Log  : in  Logger_Ptr);
+                             Log  : in  Logger_Ptr;
+                             Make : in Boolean := False);
 
 private
 

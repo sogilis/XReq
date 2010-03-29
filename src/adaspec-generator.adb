@@ -30,10 +30,11 @@ package body AdaSpec.Generator is
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
                              Env  : in Job_Environment;
-                             Log  : in  Logger_Ptr)
+                             Log  : in  Logger_Ptr;
+                             Make : in Boolean := False)
    is
    begin
-      Ada05.Generate_Suite (Gens, Name, Env, Log);
+      Ada05.Generate_Suite (Gens, Name, Env, Log, Make);
    end Generate_Suite;
 
 end AdaSpec.Generator;
