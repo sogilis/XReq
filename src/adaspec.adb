@@ -13,14 +13,4 @@ package body AdaSpec is
       return To_String (Pos.File) & ":" & Trim (Pos.Line'Img, Left);
    end To_String;
 
-
-
-   function Position (File : in String; Line : Natural) return Position_Type is
-      use Ada.Strings.Unbounded;
-   begin
-      return Position_Type'(
-         File => To_Unbounded_String (File),
-         Line => Line);
-   end Position;
-
 end AdaSpec;

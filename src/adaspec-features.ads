@@ -40,10 +40,10 @@ package AdaSpec.Features is
    package Scenario_Container is
       new Ada.Containers.Vectors (Natural, Scenario_Type, "=");
 
-   procedure Make        (Scenario : out    Scenario_Type;
-                          Name     : in     String := "");
-   procedure Append_Step (Scenario : in out Scenario_Type;
-                          Stanza   : in     Stanza_Type);
+   procedure Make   (Scenario : out    Scenario_Type;
+                     Name     : in     String := "");
+   procedure Append (Scenario : in out Scenario_Type;
+                     Stanza   : in     Stanza_Type);
 
    -------------------
    -- Feature_Type  --
@@ -61,31 +61,24 @@ package AdaSpec.Features is
 
    Unparsed_Feature : exception;
 
-   procedure Make            (F      : out    Feature_Type;
-                              Name   : in     String := "");
-   function  Parsed          (F      : in     Feature_Type) return Boolean;
-   function  Name            (F      : in     Feature_Type) return String;
-   function  To_String       (F      : in     Feature_Type) return String;
-   procedure Append_Scenario (F      : in out Feature_Type;
-                              S      : in     Scenario_Type);
-   procedure Set_Background  (F      : in out Feature_Type;
-                              Bg     : in     Scenario_Type);
-   procedure Set_Name        (F      : in out Feature_Type;
-                              Name   : in     String);
-   procedure Set_Position    (F      : in out Feature_Type;
-                              Line   : in     Positive;
-                              File   : in     String);
-   procedure Set_Description (F      : in out Feature_Type;
-                              Desc   : in     String_Array);
+   procedure Make           (F      : out    Feature_Type;
+                             Name   : in     String := "");
+   function  Parsed         (F      : in     Feature_Type) return Boolean;
+   function  Name           (F      : in     Feature_Type) return String;
+   function  To_String      (F      : in     Feature_Type) return String;
+   procedure Append         (F      : in out Feature_Type;
+                             S      : in     Scenario_Type);
+   procedure Set_Background (F      : in out Feature_Type;
+                             Bg     : in     Scenario_Type);
 
    procedure Free is new Ada.Unchecked_Deallocation
       (Feature_Type'Class, Feature_Ptr);
 
    Null_Feature : constant Feature_Type := (others => <>);
 
-   -------------------------
-   --  Feature_File_Type  --
-   -------------------------
+   ------------------------
+   -- Feature_File_Type  --
+   ------------------------
 
    type Feature_File_Type is new Feature_Type with private;
    type Feature_File_Ptr  is access all Feature_File_Type'Class;
