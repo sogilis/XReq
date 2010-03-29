@@ -59,8 +59,6 @@ package Util.IO is
    --  Spawn  --
    -------------
 
-   subtype Argument_List is GNAT.OS_Lib.Argument_List;
-
    procedure Spawn          (Command_Name  : in     String;
                              Args          : in     GNAT.OS_Lib.Argument_List;
                              Output_Buffer : in out Unbounded_String;
@@ -75,6 +73,11 @@ package Util.IO is
                              Return_Code   : out    Integer;
                              Directory     : in     String := "");
 
+   --------------
+   --  GetEnv  --
+   --------------
+
+   function GetEnv (VarName, Default : in String) return String;
 
    -------------------
    --  Logger_Type  --

@@ -15,6 +15,7 @@ package Test_Suite.IO is
    type Test_Char_IO is new Test_Case_Type with null record;
    type Test_Get_Set is new Test_Case_Type with null record;
    type Test_Logger  is new Test_Case_Type with null record;
+   type Test_GetEnv  is new Test_Case_Type with null record;
 
    --  Operation on Test_1
    function  Name (T : in     Test_1) return String;
@@ -35,6 +36,10 @@ package Test_Suite.IO is
    --  Operation on Test_Logger
    function  Name (T : in     Test_Logger) return String;
    procedure Run  (T : in out Test_Logger);
+
+   --  Operation on Test_GetEnv
+   function  Name (T : in     Test_GetEnv) return String;
+   procedure Run  (T : in out Test_GetEnv);
 
 end Test_Suite.IO;
 

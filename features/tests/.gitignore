@@ -2,3 +2,4 @@
 *.gpr
 /bootstrap_suite
 /test_suite
+*.gcda

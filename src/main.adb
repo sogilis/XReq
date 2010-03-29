@@ -213,10 +213,10 @@ begin
       begin
          Generate_Suite (Generators,
             To_String (Executable), Env, Logger, Make);
-      exception
-         when Generation_Error =>
-            Set_Exit_Status (Failure);
-      end;
+      exception                         --  GCOV_IGNORE_BEGIN
+         when Generation_Error =>       --  Should never happen unless
+            Set_Exit_Status (Failure);  --  gnatmake failed. But that's a bug.
+      end;                              --  GCOV_IGNORE_END
 
    end if;
 

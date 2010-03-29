@@ -115,7 +115,7 @@ Feature: The simplest works
     And   "features/tests/feature_simplest.adb" should exist
     And   "features/tests/suite.adb" should exist
     And   "features/tests/suite.gpr" should exist
-    When  I run "gnatmake -Psuite.gpr" in features/tests
+    When  I run "gnatmake -Psuite.gpr $GNAT_FLAGS" in features/tests
     Then  it should pass
     And   "features/tests/suite" should exist
     When  I run the test suite "./suite" in features/tests

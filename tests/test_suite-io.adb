@@ -3,6 +3,7 @@
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
 with Ada.IO_Exceptions;
+with Ada.Environment_Variables;
 with Util.IO;
 
 use Ada.Strings.Unbounded;
@@ -19,6 +20,7 @@ package body Test_Suite.IO is
       Ret.Add_Test (new Test_Char_IO);
       Ret.Add_Test (new Test_Get_Set);
       Ret.Add_Test (new Test_Logger);
+      Ret.Add_Test (new Test_GetEnv);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
@@ -278,6 +280,29 @@ package body Test_Suite.IO is
       Free (Log);
       Log := Logger_Ptr (New_Null_Logger);
       Free (Log);
+
+   end Run;
+
+   --  Test_GetEnv  -----------------------------------------------------------
+
+   function  Name (T : in Test_GetEnv) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.IO.GetEnv");
+   end Name;
+
+   procedure Run (T : in out Test_GetEnv) is
+      use Ada.Environment_Variables;
+   begin
+
+      Clear ("NON_EXISTANT");
+      Set ("EXISTANT", "VALUE");
+
+      T.Assert (GetEnv ("EXISTANT", "") = "VALUE",
+                "GetEnv failed for EXISTANT");
+
+      T.Assert (GetEnv ("NON_EXISTANT", "def") = "def",
+                "GetEnv failed for NON_EXISTANT");
 
    end Run;
 

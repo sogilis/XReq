@@ -4,6 +4,7 @@ with Ada.Directories;
 with Ada.IO_Exceptions;
 with Ada.Strings.Fixed;
 with Ada.Unchecked_Deallocation;
+with Ada.Environment_Variables;
 with GNAT.OS_Lib;
 
 use Ada.Strings.Fixed;
@@ -380,5 +381,20 @@ package body Util.IO is
          Set_Directory (Curr_Dir);
       end if;
    end Spawn;
+
+   --------------
+   --  GetEnv  --
+   --------------
+
+   function GetEnv (VarName, Default : in String) return String is
+      use Ada.Environment_Variables;
+   begin
+      if Exists (VarName) then
+         return Value (VarName);
+      else
+         return Default;
+      end if;
+   end GetEnv;
+
 
 end Util.IO;

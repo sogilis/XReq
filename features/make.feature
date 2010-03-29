@@ -6,8 +6,6 @@ Feature: Run gnatmake after compiling features
   Background:
     Given adaspec is in the PATH
     And I am in an empty directory
-
-  Scenario:
     Given a file "features/simplest.feature":
       """
       Feature: Sample
@@ -44,8 +42,16 @@ Feature: Run gnatmake after compiling features
 
       end Steps;
       """
+
+  Scenario:
     When I run adaspec -m -x suite features/simplest.feature
     Then it should pass
+    And the output should contain
+      """
+
+      --> Success
+
+      """
     And "features/tests/feature_simplest.ads" should exist
     And "features/tests/feature_simplest.adb" should exist
     And "features/tests/suite.adb" should exist
@@ -68,4 +74,12 @@ Feature: Run gnatmake after compiling features
       1 scenario (1 passed)
       2 steps (2 passed)
 
+      """
+
+  Scenario:
+    When I run "GNAT_FLAGS=--non-existing-flag adaspec -m -x suite features/simplest.feature"
+    Then it should pass
+    And the output should contain
+      """
+      --> Failure
       """

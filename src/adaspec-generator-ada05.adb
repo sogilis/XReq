@@ -5,6 +5,7 @@ with Ada.Strings.Fixed;
 with Ada.Directories;
 with Ada.Containers;
 with Ada.Characters.Handling;
+with GNAT.OS_Lib;
 with Util.IO;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Steps;
@@ -12,6 +13,7 @@ with AdaSpec.Stanzas;
 
 use Ada.Directories;
 use Ada.Containers;
+use GNAT.OS_Lib;
 use Util.IO;
 use AdaSpecLib;
 use AdaSpec.Steps;
@@ -800,27 +802,31 @@ package body AdaSpec.Generator.Ada05 is
       Log.Put_Line ("Generate: " & Gpr_Name);
       if Make then
          declare
-            Arg1 : aliased String := "-m";
-            Arg2 : aliased String := "-P" & Gpr_Name;
-            Args : constant Argument_List (1 .. 2)
-                 := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
+            Arg1    : aliased String := "-m";
+            Arg2    : aliased String := "-P" & Gpr_Name;
+            Args    : constant Argument_List (1 .. 2)
+                    := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
+            Args2   : Argument_List_Access :=
+                      Argument_String_To_List (GetEnv ("GNAT_FLAGS", ""));
             Buffer  : Unbounded_String;
             Success : Boolean;
             Code    : Integer;
          begin
             Log.Put_Line ("Build: gnatmake -m -P" & Gpr_Name);
-            Spawn ("gnatmake", Args, Buffer, Success, Code);
+            Spawn ("gnatmake", Args & Args2.all, Buffer, Success, Code);
+            Free (Args2);
             Log.Put_Line (Buffer);
             if not Success then
-               Log.Put_Line ("--> Failure");
+               Log.Put_Line ("--> Failure");  --  GCOV_IGNORE
+               --  Should never happend but better be safe than sorry
             elsif Code = 0 then
                Log.Put_Line ("--> Success");
             else
-               Log.Put_Line ("--> Failure:" & Code'Img);
+               Log.Put_Line ("--> Failure:" & Code'Img);  --  GCOV_IGNORE
             end if;
-            if not Success and Code /= 0 then
-               raise Generation_Error;
-            end if;
+            if not Success and Code /= 0 then   --  GCOV_IGNORE_BEGIN
+               raise Generation_Error;          --  Same here
+            end if;                             --  GCOV_IGNORE_END
          end;
       end if;
    end Generate_Suite;

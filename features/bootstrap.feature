@@ -9,9 +9,7 @@ Feature: Bootstrapping
   @bootstrap
   Scenario: Bootstrap
     Given I am in the adaspec directory
-    When I run adaspec -x bootstrap_suite features/*.feature
-    Then it should pass
-    When I run "gnatmake -m -Pfeatures/tests/bootstrap_suite.gpr"
+    When I run adaspec -m -x bootstrap_suite features/*.feature
     Then it should pass
     When I run "features/tests/bootstrap_suite -t ~@bootstrap+~@wip -f html -o reports/features-adaspec.html"
     Then it should pass
