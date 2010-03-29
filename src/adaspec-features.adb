@@ -3,6 +3,7 @@
 with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with AdaSpec_Feature_Parser;
 
 package body AdaSpec.Features is
 
@@ -19,17 +20,17 @@ package body AdaSpec.Features is
       Scenario := S;
    end Make;
 
-   ----------------------------
-   --  Scenario  --  Append  --
-   ----------------------------
+   -------------------------------------
+   --  Scenario  --  Append_Scenario  --
+   -------------------------------------
 
-   procedure Append (Scenario : in out Scenario_Type;
-                     Stanza   : in     Stanza_Type)
+   procedure Append_Step (Scenario : in out Scenario_Type;
+                          Stanza   : in     Stanza_Type)
    is
       use Stanza_Container;
    begin
       Append (Scenario.Stanzas, Stanza);
-   end Append;
+   end Append_Step;
 
    ------------------------------
    --  Feature_Type  --  Make  --
@@ -107,6 +108,148 @@ package body AdaSpec.Features is
       return F;
    end Create;
 
+   ----------------------------------------
+   --  Feature_File_Type  --  File_Name  --
+   ----------------------------------------
+
+   function  File_Name (F : in Feature_File_Type) return String is
+   begin
+      return To_String (F.File_Name);
+   end File_Name;
+
+
+   ----------------------------------------
+   --  Feature_File_Type  --  To_String  --
+   ----------------------------------------
+
+   function To_String (F : in Feature_File_Type) return String is
+      CRLF : constant String := ASCII.CR & ASCII.LF;
+   begin
+      return "# File: " & To_String (F.File_Name) & CRLF &
+             To_String (Feature_Type (F));
+   end To_String;
+
+
+   -----------------------------------
+   --  Feature_Type  --  To_String  --
+   -----------------------------------
+
+   function To_String (F : in Feature_Type) return String is
+
+      Self : constant access constant Feature_Type'Class := F'Access;
+
+      use Scenario_Container;
+      CRLF : constant String := ASCII.CR & ASCII.LF;
+      Res  : Unbounded_String;
+      Cur  : Scenario_Container.Cursor := First (F.Scenarios);
+      Sce  : Scenario_Type;
+
+      procedure Output_Stanzas (V : in Stanza_Container.Vector);
+      procedure Output_Stanzas (V : in Stanza_Container.Vector) is
+         use Stanza_Container;
+         Pre  : Prefix_Type_Maybe := Prefix_None;
+         Cur  : Stanza_Container.Cursor := First (V);
+         Sta  : Stanza_Type;
+      begin
+         while Has_Element (Cur) loop
+            Append (Res, "    ");
+            Sta := Element (Cur);
+            if Sta.Prefix = Pre then
+               Append (Res, "And");
+            else
+               case Sta.Prefix is
+                  when Prefix_Given => Append (Res, "Given");
+                  when Prefix_When =>  Append (Res, "When");
+                  when Prefix_Then =>  Append (Res, "Then");
+               end case;
+               Pre := Sta.Prefix;
+            end if;
+            Append (Res, " ");
+            Append (Res, To_String (Sta.Stanza));
+            Append (Res, CRLF);
+            Next (Cur);
+         end loop;
+      end Output_Stanzas;
+
+   begin
+      if not Parsed (Self.all) then
+         raise Unparsed_Feature;
+      end if;
+      Append (Res, "Feature: " & To_String (F.Name) & CRLF);
+      Append (Res, CRLF);
+      Append (Res, "  Background: " & To_String (F.Background.Name) & CRLF);
+      Output_Stanzas (F.Background.Stanzas);
+      Append (Res, CRLF);
+      while Has_Element (Cur) loop
+         Sce := Element (Cur);
+         Append (Res, "  Scenario: " & To_String (Sce.Name) & CRLF);
+         Output_Stanzas (Sce.Stanzas);
+         Append (Res, CRLF);
+         Next (Cur);
+      end loop;
+      return To_String (Res);
+   end To_String;
+
+   -----------------------------------------
+   --  Feature_Type  --  Append_Scenario  --
+   -----------------------------------------
+
+   procedure Append_Scenario (F      : in out Feature_Type;
+                              S      : in     Scenario_Type)
+   is
+      use Scenario_Container;
+   begin
+      Append (F.Scenarios, S);
+   end Append_Scenario;
+
+   ----------------------------------------
+   --  Feature_Type  --  Set_Background  --
+   ----------------------------------------
+
+   procedure Set_Background (F      : in out Feature_Type;
+                             Bg     : in     Scenario_Type)
+   is
+   begin
+      F.Background := Bg;
+   end Set_Background;
+
+   ----------------------------------
+   --  Feature_Type  --  Set_Name  --
+   ----------------------------------
+
+   procedure Set_Name        (F      : in out Feature_Type;
+                              Name   : in     String)
+   is
+   begin
+      F.Name := To_Unbounded_String (Name);
+   end Set_Name;
+
+   --------------------------------------
+   --  Feature_Type  --  Set_Position  --
+   --------------------------------------
+
+   procedure Set_Position    (F      : in out Feature_Type;
+                              Line   : in     Positive;
+                              File   : in     String)
+   is
+   begin
+      F.Pos := Position (File, Line);
+   end Set_Position;
+
+   -----------------------------------------
+   --  Feature_Type  --  Set_Description  --
+   -----------------------------------------
+
+   procedure Set_Description (F      : in out Feature_Type;
+                              Desc   : in     String_Array)
+   is
+      use Util.Strings.Vectors;
+   begin
+      for I in Desc'Range loop
+         Append (F.Description, Desc (I));
+      end loop;
+   end Set_Description;
+
 
    ------------------------------------
    --  Feature_File_Type  --  Parse  --
@@ -114,6 +257,57 @@ package body AdaSpec.Features is
 
    procedure Parse (F      : in out Feature_File_Type;
                     Log    : in     Logger_Ptr)
+   is
+      use Ada.Text_IO;
+      use AdaSpecLib;
+
+      function  My_Read_Line return String;
+      function  My_End_Of_File return Boolean;
+      procedure My_Log_Line (Line : in String);
+
+      File : File_Type;
+
+      function  My_Read_Line return String is
+      begin
+         return Get_Line (File);
+      end My_Read_Line;
+
+      function  My_End_Of_File return Boolean is
+      begin
+         return End_Of_File (File);
+      end My_End_Of_File;
+
+      procedure My_Log_Line (Line : in String) is
+      begin
+         Log.Put_Line (Line);
+      end My_Log_Line;
+
+      package Parser is new AdaSpec_Feature_Parser
+         (Feature_Type  => Feature_File_Type,
+          Scenario_Type => Scenario_Type,
+          Step_Type     => Stanza_Type,
+          Table_Type    => String_Tables.Table,
+          Read_Line     => My_Read_Line,
+          End_Of_File   => My_End_Of_File,
+          Log_Line      => My_Log_Line,
+          String_Array  => String_Array,
+
+          Set_Name        => Set_Name,
+          Set_Position    => Set_Position,
+          Set_Description => Set_Description,
+          Append_Scenario => Append_Scenario);
+   begin
+      Open (File, In_File, To_String (F.File_Name));
+      Parser.Parse (F, To_String (F.File_Name));
+      Close (File);
+      F.Parsed := True;
+   end Parse;
+
+   procedure Old_Parse (F      : in out Feature_File_Type;
+                        Log    : in     Logger_Ptr);
+
+   procedure Old_Parse (F      : in out Feature_File_Type;
+                        Log    : in     Logger_Ptr)
    is
 
       Self : constant access Feature_File_Type'Class := F'Access;
@@ -534,111 +728,6 @@ package body AdaSpec.Features is
       Read_All;
       Close (File);
       Self.Parsed := True;
-   end Parse;
-
-   ----------------------------------------
-   --  Feature_File_Type  --  File_Name  --
-   ----------------------------------------
-
-   function  File_Name (F : in Feature_File_Type) return String is
-   begin
-      return To_String (F.File_Name);
-   end File_Name;
-
-
-   ----------------------------------------
-   --  Feature_File_Type  --  To_String  --
-   ----------------------------------------
-
-   function To_String (F : in Feature_File_Type) return String is
-      CRLF : constant String := ASCII.CR & ASCII.LF;
-   begin
-      return "# File: " & To_String (F.File_Name) & CRLF &
-             To_String (Feature_Type (F));
-   end To_String;
-
-
-   -----------------------------------
-   --  Feature_Type  --  To_String  --
-   -----------------------------------
-
-   function To_String (F : in Feature_Type) return String is
-
-      Self : constant access constant Feature_Type'Class := F'Access;
-
-      use Scenario_Container;
-      CRLF : constant String := ASCII.CR & ASCII.LF;
-      Res  : Unbounded_String;
-      Cur  : Scenario_Container.Cursor := First (F.Scenarios);
-      Sce  : Scenario_Type;
-
-      procedure Output_Stanzas (V : in Stanza_Container.Vector);
-      procedure Output_Stanzas (V : in Stanza_Container.Vector) is
-         use Stanza_Container;
-         Pre  : Prefix_Type_Maybe := Prefix_None;
-         Cur  : Stanza_Container.Cursor := First (V);
-         Sta  : Stanza_Type;
-      begin
-         while Has_Element (Cur) loop
-            Append (Res, "    ");
-            Sta := Element (Cur);
-            if Sta.Prefix = Pre then
-               Append (Res, "And");
-            else
-               case Sta.Prefix is
-                  when Prefix_Given => Append (Res, "Given");
-                  when Prefix_When =>  Append (Res, "When");
-                  when Prefix_Then =>  Append (Res, "Then");
-               end case;
-               Pre := Sta.Prefix;
-            end if;
-            Append (Res, " ");
-            Append (Res, To_String (Sta.Stanza));
-            Append (Res, CRLF);
-            Next (Cur);
-         end loop;
-      end Output_Stanzas;
-
-   begin
-      if not Parsed (Self.all) then
-         raise Unparsed_Feature;
-      end if;
-      Append (Res, "Feature: " & To_String (F.Name) & CRLF);
-      Append (Res, CRLF);
-      Append (Res, "  Background: " & To_String (F.Background.Name) & CRLF);
-      Output_Stanzas (F.Background.Stanzas);
-      Append (Res, CRLF);
-      while Has_Element (Cur) loop
-         Sce := Element (Cur);
-         Append (Res, "  Scenario: " & To_String (Sce.Name) & CRLF);
-         Output_Stanzas (Sce.Stanzas);
-         Append (Res, CRLF);
-         Next (Cur);
-      end loop;
-      return To_String (Res);
-   end To_String;
-
-   --------------------------------
-   --  Feature_Type  --  Append  --
-   --------------------------------
-
-   procedure Append         (F      : in out Feature_Type;
-                             S      : in     Scenario_Type)
-   is
-      use Scenario_Container;
-   begin
-      Append (F.Scenarios, S);
-   end Append;
-
-   ----------------------------------------
-   --  Feature_Type  --  Set_Background  --
-   ----------------------------------------
-
-   procedure Set_Background (F      : in out Feature_Type;
-                             Bg     : in     Scenario_Type)
-   is
-   begin
-      F.Background := Bg;
-   end Set_Background;
+   end Old_Parse;
 
 end AdaSpec.Features;

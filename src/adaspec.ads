@@ -18,6 +18,8 @@ package AdaSpec is
          Line : Natural := 0;
       end record;
 
+   function Position (File : in String; Line : Natural) return Position_Type;
+
    function To_String (Pos : in Position_Type) return String;
 
 end AdaSpec;

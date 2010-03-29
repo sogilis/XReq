@@ -32,7 +32,6 @@ all: bin tests doc
 	@echo "####################################################"
 
 dir:
-	mkdir -p src/common
 	mkdir -p lib
 	mkdir -p lib/release
 	mkdir -p lib/debug

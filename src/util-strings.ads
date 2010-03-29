@@ -17,6 +17,9 @@ package Util.Strings is
    type String_List is  --  GCOV_IGNORE
       array (Positive range <>) of Unbounded_String;
 
+   type String_Array is  --  GCOV_IGNORE
+      array (Natural range <>) of Unbounded_String;
+
    package String_Set is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
