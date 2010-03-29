@@ -2,7 +2,6 @@
 -- kate: hl Ada; indent-width 3;
 
 with "config.gpr";
-with "adaspeclib.gpr";
 
 project AdaSpec is
 
