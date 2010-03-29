@@ -9,6 +9,8 @@ Feature: Bootstrapping
   @bootstrap
   Scenario: Bootstrap
     Given I am in the adaspec directory
+    When I run "make clean" in features/tests
+    Then it should pass
     When I run adaspec -m -x bootstrap_suite features/*.feature
     Then it should pass
     When I run "features/tests/bootstrap_suite -t ~@bootstrap+~@wip -f html -o reports/features-adaspec.html"
