@@ -10,7 +10,7 @@ with Util.Strings;
 use Ada.Strings.Unbounded;
 use AdaSpec;
 use AdaSpec.Steps;
-use AdaSpec.Features.Stanza_Container;
+use AdaSpec.Features.Step_Vectors;
 use AdaSpec.Features;
 use AdaSpec.Features.Scenario_Container;
 use Util.IO;

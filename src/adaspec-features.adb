@@ -29,7 +29,7 @@ package body AdaSpec.Features is
    procedure Append (Scenario : in out Scenario_Type;
                      Stanza   : in     Step_Type)
    is
-      use Stanza_Container;
+      use Step_Vectors;
    begin
       Append (Scenario.Stanzas, Stanza);
    end Append;
@@ -124,7 +124,7 @@ package body AdaSpec.Features is
       use Ada.Text_IO;
       use Util.Strings.Vectors;
       use Scenario_Container;
-      use Stanza_Container;
+      use Step_Vectors;
       use AdaSpecLib;
 
       procedure Log_Error (Error : in String);
@@ -573,11 +573,11 @@ package body AdaSpec.Features is
       Cur  : Scenario_Container.Cursor := First (F.Scenarios);
       Sce  : Scenario_Type;
 
-      procedure Output_Stanzas (V : in Stanza_Container.Vector);
-      procedure Output_Stanzas (V : in Stanza_Container.Vector) is
-         use Stanza_Container;
+      procedure Output_Stanzas (V : in Step_Vectors.Vector);
+      procedure Output_Stanzas (V : in Step_Vectors.Vector) is
+         use Step_Vectors;
          Pre  : Prefix_Type_Maybe := Prefix_None;
-         Cur  : Stanza_Container.Cursor := First (V);
+         Cur  : Step_Vectors.Cursor := First (V);
          Sta  : Step_Type;
       begin
          while Has_Element (Cur) loop

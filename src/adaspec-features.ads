@@ -17,7 +17,7 @@ package AdaSpec.Features is
 
    Parse_Error : exception;
 
-   package Stanza_Container is
+   package Step_Vectors is
       new Ada.Containers.Vectors (Natural, Step_Type, "=");
 
    ---------------------
@@ -29,7 +29,7 @@ package AdaSpec.Features is
          Name          : Unbounded_String;
          Pos           : Position_Type;
          Tags          : String_Vector;
-         Stanzas       : Stanza_Container.Vector;
+         Stanzas       : Step_Vectors.Vector;
          case Outline is
             when True =>
                Table   : AdaSpecLib.String_Tables.Table;

@@ -139,10 +139,10 @@ package body AdaSpec.Result is
                                Errors   : out Boolean;
                                Step_Matching : in Boolean := False)
    is
-      use Stanza_Container;
+      use Step_Vectors;
       use Result_Steps;
       use Result_Steps_Vectors2;
-      I         : Stanza_Container.Cursor;
+      I         : Step_Vectors.Cursor;
       J         : Result_Steps.Cursor;
       Stanza    : Step_Type;
       Res_St    : Result_Step_Type;
