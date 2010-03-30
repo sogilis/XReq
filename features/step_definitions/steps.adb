@@ -78,6 +78,8 @@ package body Steps is
       else
          ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src/lib");
       end if;
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) &
+                  "/src/common:" & ENV.Value ("ADA_INCLUDE_PATH"));
    end AdaSpec_in_path;
 
    procedure Given_the_sources_of_Adaspec_are_in_path (Args : in out Arg_Type)
@@ -160,7 +162,7 @@ package body Steps is
    procedure when_I_compile_in (Args : in out Arg_Type) is
       Dir      : constant String := Current_Directory;
       Cmd_Line : constant String :=
-         "gnatmake -g -E -gnata -gnat05 -aI../step_definitions " &
+         "gnatmake -m -g -E -gnata -gnat05 -aI../step_definitions " &
          Args.Match (1);
    begin
       Set_Directory (Args.Match (2));
