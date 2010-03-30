@@ -2,7 +2,7 @@
 
 with Ada.Strings.Fixed;
 
-package body AdaSpec.Steps is
+package body AdaSpec.Generic_Steps is
 
    -------------------------------------
    --  Stanza_Type  --  Stanza_Given  --
@@ -112,16 +112,4 @@ package body AdaSpec.Steps is
       return To_String (S.Pos);
    end Position;
 
-   ----------------------------
-   --  Stanza_Type  --  "="  --
-   ----------------------------
-
---    function "=" (Left, Right : in Stanza_Type) return Boolean is
---    begin
---       return   Left.Prefix = Right.Prefix and
---                Left.Stanza = Right.Stanza and
---                Left.Texts  = Right.Texts  and
---                Left.Pos    = Right.Pos;
---    end "=";
-
-end AdaSpec.Steps;
+end AdaSpec.Generic_Steps;

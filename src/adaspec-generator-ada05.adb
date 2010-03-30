@@ -10,6 +10,7 @@ with Util.IO;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Step_Definitions;
 with AdaSpec.Steps;
+with AdaSpec.Args;
 
 use Ada.Directories;
 use Ada.Containers;
@@ -18,6 +19,7 @@ use Util.IO;
 use AdaSpecLib;
 use AdaSpec.Step_Definitions;
 use AdaSpec.Steps;
+use AdaSpec.Args;
 
 package body AdaSpec.Generator.Ada05 is
 

@@ -3,6 +3,9 @@
 with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with AdaSpec.Args;
+
+use AdaSpec.Args;
 
 package body AdaSpec.Features is
 
