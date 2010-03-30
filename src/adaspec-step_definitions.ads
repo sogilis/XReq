@@ -57,15 +57,15 @@ package AdaSpec.Step_Definitions is
                         Logger  : in     Logger_Ptr) is abstract;
 
    function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type) return Boolean;
+                        Stanza  : in  Step_Type) return Boolean;
 
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type) return String;
+                        Stanza  : in  Step_Type) return String;
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type)
+                        Stanza  : in  Step_Type)
                         return Step_Match_Type is abstract;
    procedure Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type;
+                        Stanza  : in  Step_Type;
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean);
@@ -95,13 +95,13 @@ package AdaSpec.Step_Definitions is
    --  IMPORTANT: deallocate Steps_Type
 
    function  Contains  (Steps      : in  Step_Definitions_Type;
-                        Stanza     : in  Stanza_Type) return Boolean;
+                        Stanza     : in  Step_Type) return Boolean;
    function  Find      (Steps      : in  Step_Definitions_Type;
-                        Stanza     : in  Stanza_Type) return String;
+                        Stanza     : in  Step_Type) return String;
    function  Find      (Steps      : in  Step_Definitions_Type;
-                        Stanza     : in  Stanza_Type) return Step_Match_Type;
+                        Stanza     : in  Step_Type) return Step_Match_Type;
    procedure Find      (Steps      : in  Step_Definitions_Type;
-                        Stanza     : in  Stanza_Type;
+                        Stanza     : in  Step_Type;
                         Proc       : out Unbounded_String;
                         Matches    : out Match_Vectors.Vector;
                         Found      : out Boolean);

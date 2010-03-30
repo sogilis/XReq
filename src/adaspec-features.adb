@@ -27,7 +27,7 @@ package body AdaSpec.Features is
    ----------------------------
 
    procedure Append (Scenario : in out Scenario_Type;
-                     Stanza   : in     Stanza_Type)
+                     Stanza   : in     Step_Type)
    is
       use Stanza_Container;
    begin
@@ -137,7 +137,7 @@ package body AdaSpec.Features is
       procedure Read_Feature  (Feature  : in out Feature_File_Type);
       procedure Read_Scenario (Scenario : out    Scenario_Type;
                                Outline  : in     Boolean := False);
-      procedure Read_Step     (Step     : in out Stanza_Type);
+      procedure Read_Step     (Step     : in out Step_Type);
       procedure Read_String   (Result   : out    Unbounded_String;
                                Sep      : in     String);
       procedure Read_Table    (Result   : out    String_Tables.Table);
@@ -307,7 +307,7 @@ package body AdaSpec.Features is
       --  ++                  TABLE
       procedure Read_Scenario (Scenario : out Scenario_Type;
                                Outline  : in  Boolean := False) is
-         Current_Stanza : Stanza_Type;
+         Current_Stanza : Step_Type;
          Current_Prefix : Prefix_Type_Maybe := Prefix_None;
          Detect         : Boolean;
          Continue       : Boolean := True;
@@ -388,7 +388,7 @@ package body AdaSpec.Features is
       --  ++                | "And"
       --  ++ STANZA_PARAM  -> STRING
       --  ++                  TABLE
-      procedure Read_Step (Step : in out Stanza_Type) is
+      procedure Read_Step (Step : in out Step_Type) is
          use Argument_Vectors;
          Continue    : Boolean := True;
          Long_String : Unbounded_String;
@@ -580,7 +580,7 @@ package body AdaSpec.Features is
          use Stanza_Container;
          Pre  : Prefix_Type_Maybe := Prefix_None;
          Cur  : Stanza_Container.Cursor := First (V);
-         Sta  : Stanza_Type;
+         Sta  : Step_Type;
       begin
          while Has_Element (Cur) loop
             Append (Res, "    ");

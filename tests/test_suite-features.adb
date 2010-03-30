@@ -40,7 +40,7 @@ package body Test_Suite.Features is
       Feature  : Feature_File_Type := Null_Feature_File;
       File     : constant String := "tests/features/simplest.feature";
       Scenario : Scenario_Type;
-      Stanza   : Stanza_Type;
+      Stanza   : Step_Type;
 
       CRLF : constant String := ASCII.CR & ASCII.LF;
       Canonical_Feature_Text : constant String :=

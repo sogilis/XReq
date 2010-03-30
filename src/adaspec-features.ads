@@ -43,7 +43,7 @@ package AdaSpec.Features is
    procedure Make   (Scenario : out    Scenario_Type;
                      Name     : in     String := "");
    procedure Append (Scenario : in out Scenario_Type;
-                     Stanza   : in     Stanza_Type);
+                     Stanza   : in     Step_Type);
 
    -------------------
    -- Feature_Type  --

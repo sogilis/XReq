@@ -10,9 +10,9 @@ package body AdaSpec.Generic_Steps is
 
    function Stanza_Given (S    : in String;
                           File : in String := "";
-                          Line : in Positive := 1) return Stanza_Type is
+                          Line : in Positive := 1) return Step_Type is
    begin
-      return Stanza_Type'(Prefix => Prefix_Given,
+      return Step_Type'(Prefix => Prefix_Given,
                           Stanza => To_Unbounded_String (S),
                           Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
@@ -24,9 +24,9 @@ package body AdaSpec.Generic_Steps is
 
    function Stanza_When  (S    : in String;
                           File : in String := "";
-                          Line : in Positive := 1) return Stanza_Type is
+                          Line : in Positive := 1) return Step_Type is
    begin
-      return Stanza_Type'(Prefix => Prefix_When,
+      return Step_Type'(Prefix => Prefix_When,
                           Stanza => To_Unbounded_String (S),
                           Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
@@ -38,9 +38,9 @@ package body AdaSpec.Generic_Steps is
 
    function Stanza_Then  (S    : in String;
                           File : in String := "";
-                          Line : in Positive := 1) return Stanza_Type is
+                          Line : in Positive := 1) return Step_Type is
    begin
-      return Stanza_Type'(Prefix => Prefix_Then,
+      return Step_Type'(Prefix => Prefix_Then,
                           Stanza => To_Unbounded_String (S),
                           Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
@@ -51,7 +51,7 @@ package body AdaSpec.Generic_Steps is
    --  Stanza_Type  --  To_String  --
    ----------------------------------
 
-   function To_String (S : in Stanza_Type) return String is
+   function To_String (S : in Step_Type) return String is
       Buffer : Unbounded_String;
    begin
       case S.Prefix is
@@ -68,7 +68,7 @@ package body AdaSpec.Generic_Steps is
    --  Stanza_Type  --  To_Regexp  --
    ----------------------------------
 
-   function To_Regexp (S : in Stanza_Type) return String is
+   function To_Regexp (S : in Step_Type) return String is
       use Ada.Strings.Fixed;
       Buffer    : Unbounded_String;
       Stanza    : constant String := To_String (S.Stanza);
@@ -107,7 +107,7 @@ package body AdaSpec.Generic_Steps is
    --  Stanza_Type  --  Position  --
    ---------------------------------
 
-   function Position (S : in Stanza_Type) return String is
+   function Position (S : in Step_Type) return String is
    begin
       return To_String (S.Pos);
    end Position;

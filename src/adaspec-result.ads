@@ -27,7 +27,7 @@ package AdaSpec.Result is
    type Result_Step_Type is
       record
          Procedure_Name : Unbounded_String;
-         Step           : Stanza_Type;
+         Step           : Step_Type;
          Matches        : Match_Vectors.Vector;
       end record;
       --  LIMITATION: I can't make this a private type, or else I get the error
@@ -41,13 +41,13 @@ package AdaSpec.Result is
          (Natural, Result_Steps.Vector, Result_Steps."=");
 
    function  Create (Procedure_Name : in  String;
-                     Step           : in  Stanza_Type;
+                     Step           : in  Step_Type;
                      Matches        : in  Match_Vectors.Vector
                                     := Match_Vectors.Empty_Vector)
                                    return Result_Step_Type;
    procedure Make   (S              : out Result_Step_Type;
                      Procedure_Name : in  String;
-                     Step           : in  Stanza_Type;
+                     Step           : in  Step_Type;
                      Matches        : in  Match_Vectors.Vector
                                     := Match_Vectors.Empty_Vector);
 

@@ -38,7 +38,7 @@ package body Test_Suite.Step_Definitions is
       Match_V : Match_Vectors.Vector;
       Proc_N  : Unbounded_String;
       StanzaS : constant String := "I match ""abc""";
-      Stanza  : constant Stanza_Type := Stanza_When (StanzaS);
+      Stanza  : constant Step_Type := Stanza_When (StanzaS);
       Found   : Boolean;
       Loc     : Match_Location;
    begin

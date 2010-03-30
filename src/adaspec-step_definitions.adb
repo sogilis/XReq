@@ -9,7 +9,7 @@ package body AdaSpec.Step_Definitions is
    ----------------
 
    function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type) return Boolean
+                        Stanza  : in  Step_Type) return Boolean
    is
       This : constant access constant Step_File_Type'Class := S'Access;
    begin
@@ -21,7 +21,7 @@ package body AdaSpec.Step_Definitions is
    ------------
 
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type) return String
+                        Stanza  : in  Step_Type) return String
    is
       This    : constant access constant Step_File_Type'Class := S'Access;
       Proc    : Unbounded_String;
@@ -41,7 +41,7 @@ package body AdaSpec.Step_Definitions is
    ------------
 
    procedure Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Stanza_Type;
+                        Stanza  : in  Step_Type;
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean)
@@ -95,7 +95,7 @@ package body AdaSpec.Step_Definitions is
    ----------------
 
    function  Contains  (Steps     : in Step_Definitions_Type;
-                        Stanza    : in Stanza_Type) return Boolean
+                        Stanza    : in Step_Type) return Boolean
    is
    begin
       return Find (Steps, Stanza) /= "";
@@ -106,7 +106,7 @@ package body AdaSpec.Step_Definitions is
    ------------
 
    function  Find      (Steps     : in Step_Definitions_Type;
-                        Stanza    : in Stanza_Type) return String
+                        Stanza    : in Step_Type) return String
    is
       Proc    : Unbounded_String;
       Matches : Match_Vectors.Vector;
@@ -125,7 +125,7 @@ package body AdaSpec.Step_Definitions is
    ------------
 
    function  Find      (Steps     : in Step_Definitions_Type;
-                        Stanza    : in Stanza_Type) return Step_Match_Type
+                        Stanza    : in Step_Type) return Step_Match_Type
    is
       use Step_Vectors;
       Result : Step_Match_Type;
@@ -153,7 +153,7 @@ package body AdaSpec.Step_Definitions is
    ------------
 
    procedure Find      (Steps     : in  Step_Definitions_Type;
-                        Stanza    : in  Stanza_Type;
+                        Stanza    : in  Step_Type;
                         Proc      : out Unbounded_String;
                         Matches   : out Match_Vectors.Vector;
                         Found     : out Boolean)

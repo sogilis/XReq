@@ -8,7 +8,7 @@ package body AdaSpec.Result is
 
    procedure Make (S              : out Result_Step_Type;
                    Procedure_Name : in  String;
-                   Step           : in  Stanza_Type;
+                   Step           : in  Step_Type;
                    Matches        : in  Match_Vectors.Vector
                                   := Match_Vectors.Empty_Vector)
    is
@@ -24,7 +24,7 @@ package body AdaSpec.Result is
    ------------------------------------
 
    function  Create (Procedure_Name : in  String;
-                     Step           : in  Stanza_Type;
+                     Step           : in  Step_Type;
                      Matches        : in  Match_Vectors.Vector
                                     := Match_Vectors.Empty_Vector)
                                    return Result_Step_Type
@@ -87,13 +87,13 @@ package body AdaSpec.Result is
    ------------------------------------------
 
    procedure Process_Step     (Res      : out Result_Step_Type;
-                               Stanza   : in  Stanza_Type;
+                               Stanza   : in  Step_Type;
                                Steps    : in  Step_Definitions_Type;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
                                Step_Matching : in Boolean);
    procedure Process_Step     (Res      : out Result_Step_Type;
-                               Stanza   : in  Stanza_Type;
+                               Stanza   : in  Step_Type;
                                Steps    : in  Step_Definitions_Type;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
@@ -145,7 +145,7 @@ package body AdaSpec.Result is
       use Result_Steps_Vectors2;
       I         : Stanza_Container.Cursor;
       J         : Result_Steps.Cursor;
-      Stanza    : Stanza_Type;
+      Stanza    : Step_Type;
       Res_St    : Result_Step_Type;
       StepsV    : Result_Steps.Vector;
       Steps_tmp : Result_Steps.Vector;

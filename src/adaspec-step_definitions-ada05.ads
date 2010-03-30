@@ -27,7 +27,7 @@ package AdaSpec.Step_Definitions.Ada05 is
                                    Logger     : in     Logger_Ptr);
 
    overriding function  Find      (S       : in     Ada_Step_File_Type;
-                                   Stanza  : in     Stanza_Type)
+                                   Stanza  : in     Step_Type)
                                              return Step_Match_Type;
 
    overriding procedure Finalize  (S       : in out Ada_Step_File_Type);

@@ -348,7 +348,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
    ------------
 
    function  Find      (S       : in     Ada_Step_File_Type;
-                        Stanza  : in     Stanza_Type)
+                        Stanza  : in     Step_Type)
                                   return Step_Match_Type
    is
       use Match_Vectors;
