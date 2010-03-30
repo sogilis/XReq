@@ -8,7 +8,7 @@ package AdaSpecLib is
    --  Step_Type  --
    -----------------
 
-   type Step_Type is                            --  GCOV_IGNORE
+   type Step_Kind is                            --  GCOV_IGNORE
       (Step_Given, Step_When, Step_Then);       --  GCOV_IGNORE
 
 

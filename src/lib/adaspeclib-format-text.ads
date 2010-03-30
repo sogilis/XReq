@@ -38,7 +38,7 @@ package AdaSpecLib.Format.Text is
                              Tags       : in     Tag_Array_Type);
    overriding
    procedure Put_Step       (Format     : in out Text_Format_Type;
-                             Step       : in     Step_Type;
+                             Step       : in     Step_Kind;
                              Name       : in     String;
                              Position   : in     String;
                              Args       : in     Arg_Type;
@@ -58,7 +58,7 @@ private
    type Text_Format_Type is new Format_Type with
       record
          Has_Previous_Step  : Boolean := False;
-         Previous_Step_Type : Step_Type;
+         Previous_Step_Type : Step_Kind;
       end record;
 
 end AdaSpecLib.Format.Text;

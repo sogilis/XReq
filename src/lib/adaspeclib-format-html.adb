@@ -356,7 +356,7 @@ package body AdaSpecLib.Format.HTML is
    ----------------
 
    procedure Put_Step       (Format     : in out HTML_Format_Type;
-                             Step       : in     Step_Type;
+                             Step       : in     Step_Kind;
                              Name       : in     String;
                              Position   : in     String;
                              Args       : in     Arg_Type;

@@ -81,7 +81,7 @@ package AdaSpecLib.Format.HTML is
                              Tags       : in     Tag_Array_Type);
    overriding
    procedure Put_Step       (Format     : in out HTML_Format_Type;
-                             Step       : in     Step_Type;
+                             Step       : in     Step_Kind;
                              Name       : in     String;
                              Position   : in     String;
                              Args       : in     Arg_Type;
