@@ -8,6 +8,7 @@ with AdaSpecLib;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
+with AdaSpec.Scenarios;
 with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
@@ -16,6 +17,7 @@ use Util.Strings;
 use AdaSpecLib;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
+use AdaSpec.Scenarios;
 use AdaSpec.Steps;
 
 package AdaSpec.Result is

@@ -2,17 +2,15 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
-with AdaSpecLib;
 
 use Ada.Strings.Unbounded;
-use AdaSpecLib;
 
 generic
 
    type Argument_Type is private;
    with function "=" (Left, Right : in Argument_Type) return Boolean;
 
-package AdaSpec.Generic_Steps is
+package AdaSpecLib.Generic_Steps is
 
    -------------------
    --  Stanza_Type  --
@@ -73,4 +71,4 @@ private
 
    Null_Step : constant Step_Type := (others => <>);
 
-end AdaSpec.Generic_Steps;
+end AdaSpecLib.Generic_Steps;

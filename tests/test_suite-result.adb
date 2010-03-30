@@ -6,6 +6,7 @@ with Util.IO;
 with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
+with AdaSpec.Scenarios;
 with AdaSpec.Steps;
 with AdaSpec.Result;
 with AdaSpecLib.String_Tables;
@@ -15,6 +16,7 @@ use Util.IO;
 use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
+use AdaSpec.Scenarios;
 use AdaSpec.Steps;
 use AdaSpec.Result;
 

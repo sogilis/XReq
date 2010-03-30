@@ -2,7 +2,7 @@
 
 with Ada.Strings.Fixed;
 
-package body AdaSpec.Generic_Steps is
+package body AdaSpecLib.Generic_Steps is
 
    ---------------------------
    --  Step_Type  --  Step  --
@@ -215,4 +215,4 @@ package body AdaSpec.Generic_Steps is
       Append (S.Args, E);
    end Arg_Append;
 
-end AdaSpec.Generic_Steps;
+end AdaSpecLib.Generic_Steps;

@@ -3,36 +3,14 @@
 with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with AdaSpecLib.String_Tables;
 with AdaSpec.Args;
+with AdaSpec.Steps;
 
 use AdaSpec.Args;
+use AdaSpec.Steps;
 
 package body AdaSpec.Features is
-
-   --------------------------
-   --  Scenario  --  Make  --
-   --------------------------
-
-   procedure Make   (Scenario : out    Scenario_Type;
-                     Name     : in     String := "")
-   is
-      S : Scenario_Type := Null_Scenario;
-   begin
-      S.Name   := To_Unbounded_String (Name);
-      Scenario := S;
-   end Make;
-
-   ----------------------------
-   --  Scenario  --  Append  --
-   ----------------------------
-
-   procedure Append (Scenario : in out Scenario_Type;
-                     Stanza   : in     Step_Type)
-   is
-      use Step_Vectors;
-   begin
-      Append (Scenario.Stanzas, Stanza);
-   end Append;
 
    ------------------------------
    --  Feature_Type  --  Make  --

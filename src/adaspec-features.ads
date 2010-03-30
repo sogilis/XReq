@@ -6,49 +6,20 @@ with Ada.Strings.Unbounded;
 with Util.Strings;
 with Util.IO;
 with AdaSpecLib;
-with AdaSpecLib.String_Tables;
-with AdaSpec.Steps;
+with AdaSpec.Scenarios;
 
 use Ada.Strings.Unbounded;
 use Util.Strings;
 use Util.IO;
 use AdaSpecLib;
-use AdaSpec.Steps;
+use AdaSpec.Scenarios;
 
 package AdaSpec.Features is
 
    Parse_Error : exception;
 
-   package Step_Vectors is
-      new Ada.Containers.Vectors (Natural, Step_Type, "=");
-
-   ---------------------
-   --  Scenario_Type  --
-   ---------------------
-
-   type Scenario_Type (Outline : Boolean := False) is
-      record
-         Name          : Unbounded_String;
-         Pos           : Position_Type;
-         Tags          : String_Vector;
-         Stanzas       : Step_Vectors.Vector;
-         case Outline is
-            when True =>
-               Table   : AdaSpecLib.String_Tables.Table;
-            when False =>
-               null;
-         end case;
-      end record;
-   type Scenario_Ptr is access all Scenario_Type;
-   Null_Scenario : Scenario_Type;
-
    package Scenario_Container is
       new Ada.Containers.Vectors (Natural, Scenario_Type, "=");
-
-   procedure Make   (Scenario : out    Scenario_Type;
-                     Name     : in     String := "");
-   procedure Append (Scenario : in out Scenario_Type;
-                     Stanza   : in     Step_Type);
 
    -------------------
    -- Feature_Type  --
