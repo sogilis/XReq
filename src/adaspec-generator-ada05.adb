@@ -620,8 +620,8 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
                         Ada_String (To_String (Gen.Feature.Name)) & ", " &
-                        Ada_String (Join (Gen.Feature.Description,
-                                          "" & ASCII.LF)) & ", " &
+                        Ada_String (To_String (Gen.Feature.Description)) &
+                        ", " &
                         Ada_String (To_String (Gen.Feature.Pos)) & ");");
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("end Priv_Feature;");

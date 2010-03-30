@@ -141,4 +141,33 @@ package body AdaSpecLib.Generic_Scenarios is
       S.D.Table := Table;
    end Set_Table;
 
+   ----------------------------------
+   --  Scenario  --  Output_Steps  --
+   ----------------------------------
+
+   procedure Output_Steps (S     : in     Scenario_Type;
+                           Buf   : in out Unbounded_String) is
+      Sta : Step_Type;
+      Pre : Step_All_Kind := Step_Null;
+   begin
+      for I in S.Step_First .. S.Step_Last loop
+         Sta := S.Step_Element (I);
+         Append (Buf, "    ");
+         Append (Buf, Sta.To_String (Pre));
+         Pre := Sta.Kind;
+         Append (Buf, ASCII.LF);
+      end loop;
+   end Output_Steps;
+
+   ---------------------------------
+   --  Scenario_Type  --  Equals  --
+   ---------------------------------
+
+   function Equals (Left, Right : in Scenario_Type) return Boolean is
+      L : constant access constant Scenario_Type'Class := Left'Access;
+      R : constant access constant Scenario_Type'Class := Right'Access;
+   begin
+      return L.all = R.all;
+   end Equals;
+
 end AdaSpecLib.Generic_Scenarios;

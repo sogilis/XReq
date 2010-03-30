@@ -3,7 +3,6 @@
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.IO;
-with Util.Strings;
 with AdaSpecLib;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Features;
@@ -13,7 +12,6 @@ with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
-use Util.Strings;
 use AdaSpecLib;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
@@ -110,7 +108,7 @@ package AdaSpec.Result is
    type Result_Feature_Type is
       record
          Name        : Unbounded_String;
-         Description : Util.Strings.String_Vectors.Vector;
+         Description : Unbounded_String;
          Pos         : Position_Type;
          Background  : Result_Scenario_Type;
          Scenarios   : Result_Scenarios.Vector;

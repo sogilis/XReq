@@ -3,12 +3,16 @@
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with AdaSpecLib.String_Tables;
+with AdaSpecLib.Interface_Scenarios;
+with AdaSpecLib.Interface_Steps;
 
 use Ada.Strings.Unbounded;
+use AdaSpecLib.Interface_Scenarios;
+use AdaSpecLib.Interface_Steps;
 
 generic
 
-   type Step_Type is private;
+   type Step_Type is new Step_Interface with private;
    with function "=" (Left, Right : in Step_Type) return Boolean;
 
 package AdaSpecLib.Generic_Scenarios is
@@ -19,7 +23,7 @@ package AdaSpecLib.Generic_Scenarios is
    --  Scenario_Type  --
    ---------------------
 
-   type Scenario_Type is tagged private;
+   type Scenario_Type is new Scenario_Interface with private;
    type Scenario_Ptr is access all Scenario_Type'Class;
 
    function  New_Scenario (Name     : in     String;
@@ -45,7 +49,12 @@ package AdaSpecLib.Generic_Scenarios is
                            return AdaSpecLib.String_Tables.Table;
 
    procedure Set_Table    (S     : in out Scenario_Type;
-                           Table : in AdaSpecLib.String_Tables.Table);
+                           Table : in     AdaSpecLib.String_Tables.Table);
+
+   procedure Output_Steps (S     : in     Scenario_Type;
+                           Buf   : in out Unbounded_String);
+
+   function Equals (Left, Right : in Scenario_Type) return Boolean;
 
    Null_Scenario         : constant Scenario_Type;
    Null_Scenario_Outline : constant Scenario_Type;
@@ -69,7 +78,7 @@ private
          end case;
       end record;
 
-   type Scenario_Type is tagged
+   type Scenario_Type is new Scenario_Interface with
       record
          D : Scenario_Record;
       end record;

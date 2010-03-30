@@ -1,6 +1,5 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Strings.Unbounded;
 with AdaSpec;
 with AdaSpecLib;
 with AdaSpec.Steps;
@@ -9,13 +8,11 @@ with AdaSpec.Features;
 with Util.IO;
 with Util.Strings;
 
-use Ada.Strings.Unbounded;
 use AdaSpec;
 use AdaSpecLib;
 use AdaSpec.Steps;
 use AdaSpec.Scenarios;
 use AdaSpec.Features;
-use AdaSpec.Features.Scenario_Container;
 use Util.IO;
 use Util.Strings.String_Vectors;
 
@@ -110,7 +107,7 @@ package body Test_Suite.Features is
       T.Assert (Feature.Name = "Sample",
               "Feature name incorrect");
 
-      T.Assert (Integer (String_Vectors.Length (Feature.Description)) = 0,
+      T.Assert (Feature.Description = "",
               "Feature description while there is none");
 
       T.Assert (Feature.Background.Name = "",
@@ -130,13 +127,13 @@ package body Test_Suite.Features is
       T.Assert (Stanza.Stanza = "this step works",
               "Text of the first given of background incorrect");
 
-      T.Assert (Integer (Length (Feature.Scenarios)) /= 0,
+      T.Assert (Feature.Scenario_Count /= 0,
               "No scenario");
 
-      T.Assert (Integer (Length (Feature.Scenarios)) = 1,
+      T.Assert (Feature.Scenario_Count = 1,
               "More than one scenario");
 
-      Scenario := Feature.Scenarios.Element (0);
+      Scenario := Feature.Scenario_Element (0);
 
       T.Assert (Scenario.Name = "Run a good step",
               "Name of the scenario incorrect");
@@ -176,12 +173,12 @@ package body Test_Suite.Features is
 
       Make (Feature1, "Sample2");
 
-      T.Assert (Name   (Feature1) = "Sample2", "Incorrect feature name");
-      T.Assert (Parsed (Feature1), "Feature_Type is always parsed");
+      T.Assert (Feature1.Name = "Sample2", "Incorrect feature name");
+      T.Assert (Feature1.Parsed, "Feature_Type is always parsed");
 
       Scenario := New_Scenario ("Background");
       Step_Append (Scenario, Stanza_Given ("this step works"));
-      Set_Background (Feature1, Scenario);
+      Feature1.Set_Background (Scenario);
 
       Scenario := New_Scenario ("Run a good step");
       Step_Append (Scenario, Stanza_Given ("this step works"));
@@ -189,21 +186,21 @@ package body Test_Suite.Features is
       Step_Append (Scenario, Stanza_When  ("I insert money"));
       Step_Append (Scenario, Stanza_When  ("I push the button"));
       Step_Append (Scenario, Stanza_Then  ("I get a cake"));
-      Append (Feature1, Scenario);
+      Feature1.Scenario_Append (Scenario);
 
       Scenario := New_Scenario ("Another good step");
       Step_Append (Scenario, Stanza_Given ("this step works"));
-      Append (Feature1, Scenario);
+      Feature1.Scenario_Append (Scenario);
 
       Make  (Feature2, File);
       Parse (Feature2, Std_Logger);
 
       Put_Line ("Feature1:");
-      Put_Line (To_String (Feature1));
+      Put_Line (Feature1.To_String);
       Put_Line ("Feature2:");
-      Put_Line (To_String (Feature2));
+      Put_Line (Feature2.To_String);
 
-      T.Assert (To_String (Feature1) = To_String (Feature_Type (Feature2)),
+      T.Assert (Feature1.To_String = Feature_Type (Feature2).To_String,
                 "The two features text representation must be the same");
 
 

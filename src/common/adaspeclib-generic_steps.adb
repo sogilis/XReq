@@ -65,15 +65,19 @@ package body AdaSpecLib.Generic_Steps is
    --  Stanza_Type  --  To_String  --
    ----------------------------------
 
-   function To_String (S : in Step_Type) return String is
+   function To_String (S : in Step_Type;
+                       K : in Step_All_Kind := Step_Null) return String is
       Buffer : Unbounded_String;
    begin
-      case S.Prefix is
-         when Step_Given => Append (Buffer, "Given ");
-         when Step_When  => Append (Buffer, "When ");
-         when Step_Then  => Append (Buffer, "Then ");
---          when others       => Append (Buffer, "<?> ");
-      end case;
+      if S.Prefix = K then
+         Append (Buffer, "And ");
+      else
+         case S.Prefix is
+            when Step_Given => Append (Buffer, "Given ");
+            when Step_When  => Append (Buffer, "When ");
+            when Step_Then  => Append (Buffer, "Then ");
+         end case;
+      end if;
       Append (Buffer, S.Stanza);
       return To_String (Buffer);
    end To_String;
@@ -214,5 +218,16 @@ package body AdaSpecLib.Generic_Steps is
    begin
       Append (S.Args, E);
    end Arg_Append;
+
+   -----------------------------
+   --  Step_Type  --  Equals  --
+   -----------------------------
+
+   function Equals (Left, Right : in Step_Type) return Boolean is
+      L : constant access constant Step_Type'Class := Left'Access;
+      R : constant access constant Step_Type'Class := Right'Access;
+   begin
+      return L.all = R.all;
+   end Equals;
 
 end AdaSpecLib.Generic_Steps;

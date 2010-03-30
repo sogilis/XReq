@@ -1,5 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Util.Strings;
+
+use Util.Strings;
+
 package body AdaSpec.Result is
 
    ----------------------------------
@@ -223,33 +227,34 @@ package body AdaSpec.Result is
                               Log     : in  Logger_Ptr;
                               Step_Matching : in Boolean := False)
    is
-      use Scenario_Container;
-      I      : Scenario_Container.Cursor := First (Feature.all.Scenarios);
       R_Scen : Result_Scenario_Type;
       Result : Result_Feature_Type;
       Errors : Boolean;
    begin
-      if not Parsed (Feature.all) then
+      if not Feature.Parsed then
          raise Unparsed_Feature;
       end if;
       Result := Result_Feature_Type'(
-         Name        => Feature.Name,
-         Description => Feature.Description,
-         Pos         => Feature.Pos,
+         Name        => To_Unbounded_String (Feature.Name),
+         Description => To_Unbounded_String (Feature.Description),
+         Pos         => Feature.Position,
          others      => <>);
       Process_Scenario (Result.Background, Feature.all.Background,
                         Steps, Log, Errors, Step_Matching);
       if Errors then
          Result.Fail := True;
       end if;
-      while Has_Element (I) loop
-         Process_Scenario (R_Scen, Element (I), Steps, Log, Errors,
+      for I in Feature.Scenario_First .. Feature.Scenario_Last loop
+         Process_Scenario (R_Scen,
+                           Feature.Scenario_Element (I),
+                           Steps,
+                           Log,
+                           Errors,
                            Step_Matching);
          if Errors then
             Result.Fail := True;
          end if;
          Append (Result, R_Scen);
-         Next (I);
       end loop;
       if Result.Fail then
          Log.Put_Line ("AdaSpec can create the procedures for you if you " &

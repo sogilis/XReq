@@ -1,11 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Unchecked_Deallocation;
-with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.IO;
 with AdaSpecLib;
 with AdaSpec.Scenarios;
+with AdaSpecLib.Generic_Features;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -16,39 +15,22 @@ package AdaSpec.Features is
 
    Parse_Error : exception;
 
-   package Scenario_Container is
-      new Ada.Containers.Vectors (Natural, Scenario_Type, "=");
-
    -------------------
    -- Feature_Type  --
    -------------------
 
-   type Feature_Type is tagged
-      record
-         Name        : Unbounded_String;
-         Description : AdaSpecLib.String_Vector;
-         Pos         : Position_Type;
-         Background  : Scenario_Type;
-         Scenarios   : Scenario_Container.Vector;
-      end record;
-   type Feature_Ptr  is access all Feature_Type'Class;
+   package Features_Pkg is new AdaSpecLib.Generic_Features
+      (Scenario_Type, AdaSpec.Scenarios.Equals);
 
-   Unparsed_Feature : exception;
+   subtype Feature_Type is Features_Pkg.Feature_Type;
+   subtype Feature_Ptr  is Features_Pkg.Feature_Ptr;
 
-   procedure Make           (F      : out    Feature_Type;
-                             Name   : in     String := "");
-   function  Parsed         (F      : in     Feature_Type) return Boolean;
-   function  Name           (F      : in     Feature_Type) return String;
-   function  To_String      (F      : in     Feature_Type) return String;
-   procedure Append         (F      : in out Feature_Type;
-                             S      : in     Scenario_Type);
-   procedure Set_Background (F      : in out Feature_Type;
-                             Bg     : in     Scenario_Type);
+   procedure Free (F : in out Feature_Ptr)  renames Features_Pkg.Free;
+   procedure Make (F :    out Feature_Type;
+                   Name : in  String := "") renames Features_Pkg.Make;
 
-   procedure Free is new Ada.Unchecked_Deallocation
-      (Feature_Type'Class, Feature_Ptr);
-
-   Null_Feature : constant Feature_Type := (others => <>);
+   Unparsed_Feature : exception renames Features_Pkg.Unparsed_Feature;
+   Null_Feature     : constant Feature_Type := Features_Pkg.Null_Feature;
 
    ------------------------
    -- Feature_File_Type  --
@@ -56,8 +38,6 @@ package AdaSpec.Features is
 
    type Feature_File_Type is new Feature_Type with private;
    type Feature_File_Ptr  is access all Feature_File_Type'Class;
-
-   function  Null_Feature_File return Feature_File_Type;
 
    procedure Make      (F         : out    Feature_File_Type;
                         File_Name : in     String);
@@ -72,7 +52,7 @@ package AdaSpec.Features is
    function  To_String (F         : in     Feature_File_Type) return String;
 
 
-
+   Null_Feature_File : constant Feature_File_Type;
 
 
 
@@ -83,5 +63,8 @@ private  ----------------------------------------------------------------------
          Parsed      : Boolean := False;
          File_Name   : Unbounded_String;
       end record;
+
+   Null_Feature_File : constant Feature_File_Type :=
+      Feature_File_Type'(Null_Feature with others => <>);
 
 end AdaSpec.Features;

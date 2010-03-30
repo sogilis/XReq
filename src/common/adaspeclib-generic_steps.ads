@@ -2,8 +2,10 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
+with AdaSpecLib.Interface_Steps;
 
 use Ada.Strings.Unbounded;
+use AdaSpecLib.Interface_Steps;
 
 generic
 
@@ -16,7 +18,7 @@ package AdaSpecLib.Generic_Steps is
    --  Stanza_Type  --
    -------------------
 
-   type Step_Type is tagged private;
+   type Step_Type is new Step_Interface with private;
    type Step_Ptr is access all Step_Type'Class;
 
    function  Stanza_Given (S    : in String;
@@ -33,7 +35,9 @@ package AdaSpecLib.Generic_Steps is
                            Stanza   : in String;
                            Position : in Position_Type) return Step_Type;
 
-   function  To_String    (S : in Step_Type) return String;
+   function  To_String    (S : in Step_Type;
+                           K : in Step_All_Kind := Step_Null)
+                                             return String;
    function  To_Regexp    (S : in Step_Type) return String;
 
    function  Arg_First    (S : in Step_Type) return Natural;
@@ -54,6 +58,8 @@ package AdaSpecLib.Generic_Steps is
    procedure Arg_Append   (S      : in out Step_Type;
                            E      : in     Argument_Type);
 
+   function Equals (Left, Right : in Step_Type) return Boolean;
+
    Null_Step : constant Step_Type;
 
 private
@@ -61,7 +67,7 @@ private
    package Argument_Vectors is new
       Ada.Containers.Vectors (Natural, Argument_Type, "=");
 
-   type Step_Type is tagged
+   type Step_Type is new Step_Interface with
       record
          Prefix : Step_Kind;
          Stanza : Unbounded_String;
