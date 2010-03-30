@@ -389,7 +389,6 @@ package body AdaSpec.Features is
       --  ++ STANZA_PARAM  -> STRING
       --  ++                  TABLE
       procedure Read_Step (Step : in out Step_Type) is
-         use Argument_Vectors;
          Continue    : Boolean := True;
          Long_String : Unbounded_String;
          Tble        : String_Tables.Table;
