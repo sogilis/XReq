@@ -104,7 +104,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
       Current_Steps : Step_Container.Vector;
       I             : Step_Container.Cursor;
       J             : Util.Strings.Vectors.Cursor;
-      Current_Step  : Step_Type;
+      Current_Step  : Step_Definition_Type;
       Pending_Step  : Boolean := False;
       Char          : Character;
       Buffer        : Unbounded_String;
@@ -171,7 +171,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
                --            Natural'Image (Idx_Next) & ": " &
                --            "Warning: expecting procedure for previous step");
                --  end if;
-               Current_Step := Step_Type'(
+               Current_Step := Step_Definition_Type'(
                   Prefix    => Prefix,
                   --  TODO: free memory
                   Pattern_R => new Pattern_Matcher'(
@@ -353,7 +353,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
    is
       use Match_Vectors;
       Result   : Step_Match_Type;
-      Step     : Step_Type;
+      Step     : Step_Definition_Type;
       Matches2 : Match_Vectors.Vector;
    begin
 
@@ -421,7 +421,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
    overriding procedure Finalize  (S : in out Ada_Step_File_Type) is
       use Step_Container;
       I : Step_Container.Cursor := First (S.Steps);
-      E : Step_Type;
+      E : Step_Definition_Type;
    begin
       while Has_Element (I) loop
          E := Element (I);

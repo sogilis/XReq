@@ -39,7 +39,7 @@ private
    procedure Free is new Ada.Unchecked_Deallocation
       (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
 
-   type Step_Type is
+   type Step_Definition_Type is
       record
          Prefix    : Prefix_Type;
          Pattern_R : Pattern_Matcher_Ptr;
@@ -49,7 +49,7 @@ private
       end record;
 
    package Step_Container is new
-      Ada.Containers.Vectors (Natural, Step_Type);
+      Ada.Containers.Vectors (Natural, Step_Definition_Type);
 
    type Ada_Step_File_Type is new Step_File_Type with
       record
