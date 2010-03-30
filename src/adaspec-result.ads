@@ -71,7 +71,7 @@ package AdaSpec.Result is
          --  GCOV_IGNORE_BEGIN
          Name  : Unbounded_String;
          Pos   : Position_Type;
-         Tags  : String_Vector;
+         Tags  : AdaSpecLib.String_Vector;
          Steps : Result_Steps.Vector;
          case Outline is
             when True =>
@@ -110,7 +110,7 @@ package AdaSpec.Result is
    type Result_Feature_Type is
       record
          Name        : Unbounded_String;
-         Description : Util.Strings.Vectors.Vector;
+         Description : Util.Strings.String_Vectors.Vector;
          Pos         : Position_Type;
          Background  : Result_Scenario_Type;
          Scenarios   : Result_Scenarios.Vector;

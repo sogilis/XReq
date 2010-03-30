@@ -3,13 +3,11 @@
 with Ada.Unchecked_Deallocation;
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
-with Util.Strings;
 with Util.IO;
 with AdaSpecLib;
 with AdaSpec.Scenarios;
 
 use Ada.Strings.Unbounded;
-use Util.Strings;
 use Util.IO;
 use AdaSpecLib;
 use AdaSpec.Scenarios;
@@ -28,7 +26,7 @@ package AdaSpec.Features is
    type Feature_Type is tagged
       record
          Name        : Unbounded_String;
-         Description : String_Vector;
+         Description : AdaSpecLib.String_Vector;
          Pos         : Position_Type;
          Background  : Scenario_Type;
          Scenarios   : Scenario_Container.Vector;

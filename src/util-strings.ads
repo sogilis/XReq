@@ -2,17 +2,16 @@
 
 with Ada.Strings.Unbounded;
 with Ada.Strings.Unbounded.Hash;
-with Ada.Containers.Vectors;
 with Ada.Containers.Hashed_Sets;
+with AdaSpecLib;
 
 use Ada.Strings.Unbounded;
 
 package Util.Strings is
 
-   package Vectors is
-      new Ada.Containers.Vectors (Natural, Unbounded_String, "=");
+   package String_Vectors renames AdaSpecLib.String_Vectors;
 
-   subtype String_Vector is Vectors.Vector;
+   subtype String_Vector is String_Vectors.Vector;
 
    type String_List is  --  GCOV_IGNORE
       array (Positive range <>) of Unbounded_String;

@@ -278,7 +278,7 @@ package body AdaSpec.Generator.Ada05 is
                                 Seq_Num    : in Integer;
                                 Background : in Boolean := False)
    is
-      use Util.Strings.Vectors;
+      use Util.Strings.String_Vectors;
       use Result_Steps_Vectors2;
       use Result_Steps;
       I     : Result_Steps.Cursor;
@@ -543,7 +543,7 @@ package body AdaSpec.Generator.Ada05 is
 
    procedure Generate_Feature  (S : in out Ada_Generator_Type)
    is
-      use Util.Strings.Vectors;
+      use Util.Strings.String_Vectors;
       use Result_Scenarios;
       I   : Result_Scenarios.Cursor := First (S.Feature.Scenarios);
       Str : Unbounded_String;
@@ -593,7 +593,7 @@ package body AdaSpec.Generator.Ada05 is
 
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
-      use Util.Strings.Vectors;
+      use Util.Strings.String_Vectors;
       use Result_Scenarios;
       I   : Result_Scenarios.Cursor := First (Gen.Feature.Scenarios);
       Num : Positive := 1;

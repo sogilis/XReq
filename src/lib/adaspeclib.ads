@@ -1,10 +1,22 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with Ada.Containers.Vectors;
 
 package AdaSpecLib is
 
    Not_Yet_Implemented : exception;
+
+   ----------------------
+   --  String_Vectors  --
+   ----------------------
+
+   package String_Vectors is new Ada.Containers.Vectors
+     (Natural,
+      Ada.Strings.Unbounded.Unbounded_String,
+      Ada.Strings.Unbounded."=");
+
+   subtype String_Vector is String_Vectors.Vector;
 
    -----------------
    --  Step_Type  --

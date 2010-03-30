@@ -3,10 +3,12 @@
 with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with Util.Strings;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Args;
 with AdaSpec.Steps;
 
+use Util.Strings;
 use AdaSpec.Args;
 use AdaSpec.Steps;
 
@@ -100,9 +102,8 @@ package body AdaSpec.Features is
       Self : constant access Feature_File_Type'Class := F'Access;
 
       use Ada.Text_IO;
-      use Util.Strings.Vectors;
+      use Util.Strings.String_Vectors;
       use Scenario_Container;
-      use Step_Vectors;
 
       procedure Log_Error (Error : in String);
       procedure Read_Line;
@@ -141,7 +142,7 @@ package body AdaSpec.Features is
       Idx_Data      : Natural;          --  Index where data starts
       --                                --  (after the keyword generally)
       Unread_Line   : Boolean := False; --  Unread the line;
-      Current_Tags  : String_Vector;
+      Current_Tags  : AdaSpecLib.String_Vector;
 
       -------------------------
       --  Utility Functions  --
@@ -233,7 +234,7 @@ package body AdaSpec.Features is
          Beginning        : Boolean := True;
          Had_Description  : Boolean := False;
          Data             : Unbounded_String;
-         I                : Util.Strings.Vectors.Cursor;
+         I                : Util.Strings.String_Vectors.Cursor;
       begin
          Feature.Name := Trimed_Suffix (Line_S, Idx_Data);
          Feature.Pos  := Position;
@@ -288,20 +289,13 @@ package body AdaSpec.Features is
          Current_Prefix : Step_All_Kind := Step_Null;
          Detect         : Boolean;
          Continue       : Boolean := True;
+         Table          : String_Tables.Table;
       begin
-         if Outline then
-            Scenario := (Outline => True,
-                         Name    => Trimed_Suffix (Line_S, Idx_Data),
-                         Pos     => Position,
-                         Tags    => Current_Tags,
-                         others  => <>);
-         else
-            Scenario := (Outline => False,
-                         Name    => Trimed_Suffix (Line_S, Idx_Data),
-                         Pos     => Position,
-                         Tags    => Current_Tags,
-                         others  => <>);
-         end if;
+         Scenario := New_Scenario
+           (Name     => To_String (Trimed_Suffix (Line_S, Idx_Data)),
+            Position => Position,
+            Outline  => Outline,
+            Tags     => Current_Tags);
          Clear (Current_Tags);
          while Continue and not End_Of_File loop
 
@@ -321,7 +315,8 @@ package body AdaSpec.Features is
             elsif Outline and then Detect_Keyword (K_Examples) then
                Read_Line;
                if not End_Of_File then
-                  Read_Table (Scenario.Table);
+                  Read_Table (Table);
+                  Scenario.Set_Table (Table);
                end if;
                Detect := False;
             elsif Detect_Keyword (K_Given) then
@@ -350,7 +345,7 @@ package body AdaSpec.Features is
                end if;
                Read_Step (Current_Stanza);
                if Current_Prefix /= Step_Null then
-                  Append (Scenario.Steps, Current_Stanza);
+                  Scenario.Step_Append (Current_Stanza);
                end if;
             end if;
 
@@ -549,16 +544,14 @@ package body AdaSpec.Features is
       Cur  : Scenario_Container.Cursor := First (F.Scenarios);
       Sce  : Scenario_Type;
 
-      procedure Output_Stanzas (V : in Step_Vectors.Vector);
-      procedure Output_Stanzas (V : in Step_Vectors.Vector) is
-         use Step_Vectors;
-         Pre  : Step_All_Kind := Step_Null;
-         Cur  : Step_Vectors.Cursor := First (V);
-         Sta  : Step_Type;
+      procedure Output_Stanzas (S : in Scenario_Type);
+      procedure Output_Stanzas (S : in Scenario_Type) is
+         Sta : Step_Type;
+         Pre : Step_All_Kind := Step_Null;
       begin
-         while Has_Element (Cur) loop
+         for I in S.Step_First .. S.Step_Last loop
+            Sta := S.Step_Element (I);
             Append (Res, "    ");
-            Sta := Element (Cur);
             if Sta.Kind = Pre then
                Append (Res, "And");
             else
@@ -572,7 +565,6 @@ package body AdaSpec.Features is
             Append (Res, " ");
             Append (Res, Sta.Stanza);
             Append (Res, CRLF);
-            Next (Cur);
          end loop;
       end Output_Stanzas;
 
@@ -582,13 +574,13 @@ package body AdaSpec.Features is
       end if;
       Append (Res, "Feature: " & To_String (F.Name) & CRLF);
       Append (Res, CRLF);
-      Append (Res, "  Background: " & To_String (F.Background.Name) & CRLF);
-      Output_Stanzas (F.Background.Steps);
+      Append (Res, "  Background: " & F.Background.Name & CRLF);
+      Output_Stanzas (F.Background);
       Append (Res, CRLF);
       while Has_Element (Cur) loop
          Sce := Element (Cur);
-         Append (Res, "  Scenario: " & To_String (Sce.Name) & CRLF);
-         Output_Stanzas (Sce.Steps);
+         Append (Res, "  Scenario: " & Sce.Name & CRLF);
+         Output_Stanzas (Sce);
          Append (Res, CRLF);
          Next (Cur);
       end loop;

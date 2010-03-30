@@ -14,11 +14,10 @@ use AdaSpec;
 use AdaSpecLib;
 use AdaSpec.Steps;
 use AdaSpec.Scenarios;
-use AdaSpec.Scenarios.Step_Vectors;
 use AdaSpec.Features;
 use AdaSpec.Features.Scenario_Container;
 use Util.IO;
-use Util.Strings.Vectors;
+use Util.Strings.String_Vectors;
 
 package body Test_Suite.Features is
 
@@ -111,19 +110,19 @@ package body Test_Suite.Features is
       T.Assert (Feature.Name = "Sample",
               "Feature name incorrect");
 
-      T.Assert (Integer (Length (Feature.Description)) = 0,
+      T.Assert (Integer (String_Vectors.Length (Feature.Description)) = 0,
               "Feature description while there is none");
 
-      T.Assert (To_String (Feature.Background.Name) = "",
+      T.Assert (Feature.Background.Name = "",
               "Background name while there is none");
 
-      T.Assert (Integer (Length (Feature.Background.Steps)) /= 0,
+      T.Assert (Feature.Background.Step_Count /= 0,
               "No background stanzas");
 
-      T.Assert (Integer (Length (Feature.Background.Steps)) = 1,
+      T.Assert (Feature.Background.Step_Count = 1,
               "More than one line of background");
 
-      Stanza := Feature.Background.Steps.Element (0);
+      Stanza := Feature.Background.Step_Element (0);
 
       T.Assert (Stanza.Kind = Step_Given,
               "The first step of the background is not a Given");
@@ -139,13 +138,13 @@ package body Test_Suite.Features is
 
       Scenario := Feature.Scenarios.Element (0);
 
-      T.Assert (To_String (Scenario.Name) = "Run a good step",
+      T.Assert (Scenario.Name = "Run a good step",
               "Name of the scenario incorrect");
 
-      T.Assert (Integer (Length (Scenario.Steps)) = 1,
+      T.Assert (Scenario.Step_Count = 1,
               "No or more than one stanza in the scenario");
 
-      Stanza := Scenario.Steps.Element (0);
+      Stanza := Scenario.Step_Element (0);
 
       T.Assert (Stanza.Kind = Step_Given,
               "The first step of the scenario is not a Given");

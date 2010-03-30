@@ -10,12 +10,12 @@ package body Util.Strings is
    --  Join  --
    ------------
 
-   function  Join         (Strings    : in Vectors.Vector;
+   function  Join         (Strings    : in String_Vectors.Vector;
                            Sep        : in String) return String
    is
-      use Vectors;
+      use String_Vectors;
       Buffer : Unbounded_String;
-      I      : Vectors.Cursor := First (Strings);
+      I      : String_Vectors.Cursor := First (Strings);
    begin
       while Has_Element (I) loop
          Append (Buffer, Element (I));

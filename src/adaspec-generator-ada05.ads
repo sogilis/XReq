@@ -43,7 +43,7 @@ private
          Fn_Backgnd : Unbounded_String;
          Id_Pkgname : Unbounded_String;
          With_Pkg   : String_Set.Set;
-         Fn_Steps   : Util.Strings.Vectors.Vector;
+         Fn_Steps   : Util.Strings.String_Vectors.Vector;
       end record;
 
 

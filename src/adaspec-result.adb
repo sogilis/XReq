@@ -139,10 +139,8 @@ package body AdaSpec.Result is
                                Errors   : out Boolean;
                                Step_Matching : in Boolean := False)
    is
-      use Step_Vectors;
       use Result_Steps;
       use Result_Steps_Vectors2;
-      I         : Step_Vectors.Cursor;
       J         : Result_Steps.Cursor;
       Stanza    : Step_Type;
       Res_St    : Result_Step_Type;
@@ -152,9 +150,8 @@ package body AdaSpec.Result is
       Scenarios : Result_Steps_Vectors2.Vector;
    begin
       Errors := False;
-      I := First (Scenario.Steps);
-      while Has_Element (I) loop
-         Stanza := Element (I);
+      for I in Scenario.Step_First .. Scenario.Step_Last loop
+         Stanza := Scenario.Step_Element (I);
          if Scenario.Outline then
             Err := False;
             Make (Res_St, "", Stanza, Match_Vectors.Empty_Vector);
@@ -166,13 +163,12 @@ package body AdaSpec.Result is
          else
             Append (StepsV, Res_St);
          end if;
-         Next (I);
       end loop;
       if not Scenario.Outline then
          Res := (Outline => False,
-                 Name    => Scenario.Name,
-                 Pos     => Scenario.Pos,
-                 Tags    => Scenario.Tags,
+                 Name    => To_Unbounded_String (Scenario.Name),
+                 Pos     => Scenario.Position,
+                 Tags    => Scenario.Tag_Vector,
                  Steps   => StepsV);
       else
          for Y in Scenario.Table.First_Y + 1 .. Scenario.Table.Last_Y loop
@@ -208,9 +204,9 @@ package body AdaSpec.Result is
             Append (Scenarios, Steps_tmp);
          end loop;
          Res := (Outline   => True,
-                 Name      => Scenario.Name,
-                 Pos       => Scenario.Pos,
-                 Tags      => Scenario.Tags,
+                 Name      => To_Unbounded_String (Scenario.Name),
+                 Pos       => Scenario.Position,
+                 Tags      => Scenario.Tag_Vector,
                  Steps     => StepsV,
                  Table     => Scenario.Table,
                  Scenarios => Scenarios);

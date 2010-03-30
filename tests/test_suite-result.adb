@@ -3,13 +3,13 @@
 with Ada.Containers;
 with Ada.Strings.Unbounded;
 with Util.IO;
+with AdaSpecLib.String_Tables;
 with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
 with AdaSpec.Scenarios;
 with AdaSpec.Steps;
 with AdaSpec.Result;
-with AdaSpecLib.String_Tables;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -250,12 +250,13 @@ package body Test_Suite.Result is
       use AdaSpecLib.String_Tables;
       use Result_Steps_Vectors2;
       use Result_Steps;
-      Scenario  : Scenario_Type (True);
+      Scenario  : Scenario_Type := Null_Scenario_Outline;
       Result    : Result_Scenario_Type;
       Steps     : Step_Definitions_Type
                 := Load ("tests/features/step_definitions", Lang_Ada);
       Errors    : Boolean;
       Steps_tmp : Result_Steps.Vector;
+      Table     : Table_Type;
 
       procedure Equals (Found, Expect, Description : in String);
       procedure Equals (Found, Expect, Description : in String) is
@@ -269,21 +270,25 @@ package body Test_Suite.Result is
       Step_Append (Scenario, Stanza_When  ("A is '<A>' and B is '<B>'"));
       Step_Append (Scenario, Stanza_Then  ("C is <C>"));
 
-      Scenario.Table.Put (0, 0, "A");
-      Scenario.Table.Put (1, 0, "B");
-      Scenario.Table.Put (2, 0, "C");
+      Table := Scenario.Table;
 
-      Scenario.Table.Put (0, 1, "[a]");
-      Scenario.Table.Put (1, 1, "[b]");
-      Scenario.Table.Put (2, 1, "[c]");
+      Table.Put (0, 0, "A");
+      Table.Put (1, 0, "B");
+      Table.Put (2, 0, "C");
 
-      Scenario.Table.Put (0, 2, "1");
-      Scenario.Table.Put (1, 2, "2");
-      Scenario.Table.Put (2, 2, "3");
+      Table.Put (0, 1, "[a]");
+      Table.Put (1, 1, "[b]");
+      Table.Put (2, 1, "[c]");
 
-      Scenario.Table.Put (0, 3, "x");
-      Scenario.Table.Put (1, 3, "y");
-      Scenario.Table.Put (2, 3, "z");
+      Table.Put (0, 2, "1");
+      Table.Put (1, 2, "2");
+      Table.Put (2, 2, "3");
+
+      Table.Put (0, 3, "x");
+      Table.Put (1, 3, "y");
+      Table.Put (2, 3, "z");
+
+      Scenario.Set_Table (Table);
 
       Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
 

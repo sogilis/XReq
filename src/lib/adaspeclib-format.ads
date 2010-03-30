@@ -5,7 +5,6 @@ with Ada.Exceptions;
 with Ada.Finalization;
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
-with Ada.Containers.Vectors;
 with AdaSpecLib.Args;
 with AdaSpecLib.Report;
 
@@ -171,15 +170,10 @@ package AdaSpecLib.Format is
    --  Tag_Expr_Type  --
    ---------------------
 
-   package String_Vectors is new Ada.Containers.Vectors (
-      Natural,
-      Ada.Strings.Unbounded.Unbounded_String,
-      Ada.Strings.Unbounded."=");
-
    type Conditional_Type is tagged
       record
          Expr      : Ada.Strings.Unbounded.Unbounded_String;
-         Scenarios : String_Vectors.Vector;
+         Scenarios : String_Vector;
       end record;
 
    function  Create (Expr : in String) return Conditional_Type;
