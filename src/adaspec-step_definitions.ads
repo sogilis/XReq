@@ -45,7 +45,7 @@ package AdaSpec.Step_Definitions is
       --  premature use of type with private component
    type Step_File_Ptr  is access all Step_File_Type'Class;
 
-   package Step_Vectors is
+   package Step_Definition_Vectors is
       new Ada.Containers.Vectors (Natural, Step_File_Ptr, "=");
 
    Unparsed_Step : exception;
@@ -80,7 +80,7 @@ package AdaSpec.Step_Definitions is
    --  Steps_Type  --
    ------------------
 
-   subtype Step_Definitions_Type is Step_Vectors.Vector;
+   subtype Step_Definitions_Type is Step_Definition_Vectors.Vector;
 
    function  Load      (Directory  : in     String;
                         Language   : in     Language_Type)

@@ -369,7 +369,7 @@ package body AdaSpec.Features is
 
             if Detect then
                if Current_Prefix /= Prefix_None then
-                  Current_Stanza.Prefix := Current_Prefix;
+                  Current_Stanza.Set_Kind (Current_Prefix);
                end if;
                Read_Step (Current_Stanza);
                if Current_Prefix /= Prefix_None then
@@ -394,11 +394,9 @@ package body AdaSpec.Features is
          Long_String : Unbounded_String;
          Tble        : String_Tables.Table;
       begin
-         Step := (
-            Prefix => Step.Prefix,
-            Stanza => Trimed_Suffix (Line_S, Idx_Data),
-            Pos    => Position,
-            others => <>);
+         Step := New_Step (Step.Kind,
+                           To_String (Trimed_Suffix (Line_S, Idx_Data)),
+                           Position);
 --          Log_Error ("Begin read step");
          while Continue and not End_Of_File loop
 
@@ -418,13 +416,13 @@ package body AdaSpec.Features is
                Continue    := False;
             elsif Detect_Keyword (K_StrSimple) then
                Read_String (Long_String, K_StrSimple);
-               Append (Step.Args, Argument_Type'(Text, Long_String));
+               Step.Arg_Append (Argument_Type'(Text, Long_String));
             elsif Detect_Keyword (K_StrDouble) then
                Read_String (Long_String, K_StrDouble);
-               Append (Step.Args, Argument_Type'(Text, Long_String));
+               Step.Arg_Append (Argument_Type'(Text, Long_String));
             elsif Detect_Keyword ("|") then
                Read_Table (Tble);
-               Append (Step.Args, Argument_Type'(Table, Tble));
+               Step.Arg_Append (Argument_Type'(Table, Tble));
             elsif Detect_Keyword ("#") then
                null;
             elsif Idx_Data > 0 then
@@ -585,18 +583,18 @@ package body AdaSpec.Features is
          while Has_Element (Cur) loop
             Append (Res, "    ");
             Sta := Element (Cur);
-            if Sta.Prefix = Pre then
+            if Sta.Kind = Pre then
                Append (Res, "And");
             else
-               case Sta.Prefix is
+               case Sta.Kind is
                   when Prefix_Given => Append (Res, "Given");
                   when Prefix_When =>  Append (Res, "When");
                   when Prefix_Then =>  Append (Res, "Then");
                end case;
-               Pre := Sta.Prefix;
+               Pre := Sta.Kind;
             end if;
             Append (Res, " ");
-            Append (Res, To_String (Sta.Stanza));
+            Append (Res, Sta.Stanza);
             Append (Res, CRLF);
             Next (Cur);
          end loop;

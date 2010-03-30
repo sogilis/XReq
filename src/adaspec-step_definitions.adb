@@ -127,9 +127,9 @@ package body AdaSpec.Step_Definitions is
    function  Find      (Steps     : in Step_Definitions_Type;
                         Stanza    : in Step_Type) return Step_Match_Type
    is
-      use Step_Vectors;
+      use Step_Definition_Vectors;
       Result : Step_Match_Type;
-      I      : Step_Vectors.Cursor := First (Steps);
+      I      : Step_Definition_Vectors.Cursor := First (Steps);
       Step   : Step_File_Ptr;
       Res2   : Step_Match_Type;
    begin
@@ -172,8 +172,8 @@ package body AdaSpec.Step_Definitions is
    ------------
 
    procedure Free (Steps : in out Step_Definitions_Type) is
-      use Step_Vectors;
-      I : Step_Vectors.Cursor := First (Steps);
+      use Step_Definition_Vectors;
+      I : Step_Definition_Vectors.Cursor := First (Steps);
       E : Step_File_Ptr;
    begin
       while Has_Element (I) loop

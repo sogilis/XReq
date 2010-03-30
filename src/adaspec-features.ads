@@ -17,6 +17,9 @@ package AdaSpec.Features is
 
    Parse_Error : exception;
 
+   package Stanza_Container is
+      new Ada.Containers.Vectors (Natural, Step_Type, "=");
+
    ---------------------
    --  Scenario_Type  --
    ---------------------

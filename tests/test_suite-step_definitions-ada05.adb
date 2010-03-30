@@ -110,10 +110,10 @@ package body Test_Suite.Step_Definitions.Ada05 is
    end Name;
 
    procedure Run (T : in out Test_Parse_Dir) is
-      use Step_Vectors;
+      use Step_Definition_Vectors;
 
       Directory : constant String := "tests/features/step_definitions";
-      Steps     : Step_Vectors.Vector;
+      Steps     : Step_Definition_Vectors.Vector;
       Step      : Step_File_Ptr;
       Found     : Boolean := False;
       I         : Integer := 0;

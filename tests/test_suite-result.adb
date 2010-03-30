@@ -255,14 +255,11 @@ package body Test_Suite.Result is
       Errors    : Boolean;
       Steps_tmp : Result_Steps.Vector;
 
-      procedure Equals (Found : in Unbounded_String;
-                        Expect, Description : in String);
-      procedure Equals (Found : in Unbounded_String;
-                        Expect, Description : in String) is
-         S : constant String := To_String (Found);
+      procedure Equals (Found, Expect, Description : in String);
+      procedure Equals (Found, Expect, Description : in String) is
       begin
          T.Assert (Found = Expect, "Expected """ & Expect & """ but found """ &
-                   S & """ for " & Description);
+                   Found & """ for " & Description);
       end Equals;
    begin
 

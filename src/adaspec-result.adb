@@ -59,9 +59,8 @@ package body AdaSpec.Result is
       Append (Buffer, Indent & Procedure_Name (S) & " (");
       while Has_Element (I) loop
          Append (Buffer, "(" &
-                 Ada_String (Slice (S.Step.Stanza,
-                                    Element (I).First,
-                                    Element (I).Last)) &
+                 Ada_String (S.Step.Stanza
+                    (Element (I).First .. Element (I).Last)) &
                  Element (I).First'Img &
                  Element (I).Last'Img & ")");
          Next (I);
@@ -107,13 +106,13 @@ package body AdaSpec.Result is
       exception
          when Ambiguous_Match =>
             Log.Put_Line (String'("Error: Ambiguous match in " &
-                        Position (Stanza) & " for:"));
+                        To_String (Position (Stanza)) & " for:"));
             Log.Put_Line ("  " & To_String (Stanza));
             Errors := True;
       end;
       if not Match.Match then
          Log.Put_Line (String'("Error: Missing step definition in " &
-                       Position (Stanza) & " for:"));
+                       To_String (Position (Stanza)) & " for:"));
          Log.Put_Line ("  " & To_String (Stanza));
          Log.Put_Line ("You can implement this step by adding on your " &
                        "step definition file:");
@@ -122,7 +121,7 @@ package body AdaSpec.Result is
          Log.New_Line;
          Errors := True;
       elsif Step_Matching then
-         Log.Put_Line ("Step Matching: """ & Position (Stanza) &
+         Log.Put_Line ("Step Matching: """ & To_String (Position (Stanza)) &
                        """ matches """ & To_String (Match.Position) &
                        """ procedure " & To_String (Match.Proc_Name));
       end if;
@@ -187,7 +186,8 @@ package body AdaSpec.Result is
                   J := First (Steps_tmp);
                   while Has_Element (J) loop
                      Res_St := Element (J);
-                     Replace (Res_St.Step.Stanza, Label, Item);
+                     Res_St.Step.Set_Stanza
+                       (Replace (Res_St.Step.Stanza, Label, Item));
                      Replace_Element (Steps_tmp, J, Res_St);
                      Next (J);
                   end loop;

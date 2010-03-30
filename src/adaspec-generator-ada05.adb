@@ -107,7 +107,6 @@ package body AdaSpec.Generator.Ada05 is
       pragma Unreferenced (Scenario);
       use Ada.Strings;
       use Ada.Strings.Fixed;
-      use Argument_Vectors;
       use String_Set;
       use Match_Vectors;
       Procname : constant String := Procedure_Name (Step);
@@ -115,7 +114,6 @@ package body AdaSpec.Generator.Ada05 is
       Copy     : Boolean := False;
       I        : Match_Vectors.Cursor := First (Step.Matches);
       E        : Match_Location;
-      I2       : Argument_Vectors.Cursor := First (Step.Step.Args);
       E2       : Argument_Type;
    begin
       S.Adb.Put_Line ("--");
@@ -137,16 +135,16 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("Args   : Arg_Type;");
       S.Adb.Put_Indent;
       S.Adb.Put      ("Prefix : constant Step_Type := ");
-      case Step.Step.Prefix is
+      case Step.Step.Kind is
          when Prefix_Given => S.Adb.Put ("Step_Given;");
          when Prefix_When  => S.Adb.Put ("Step_When;");
          when Prefix_Then  => S.Adb.Put ("Step_Then;");
       end case;
       S.Adb.New_Line;
       S.Adb.Put_Line ("Stanza : constant String    := " &
-                      Ada_String (To_String (Step.Step.Stanza)) & ";");
+                      Ada_String (Step.Step.Stanza) & ";");
       S.Adb.Put_Line ("Pos    : constant String    := " &
-                      Ada_String (To_String (Step.Step.Pos)) & ";");
+                      Ada_String (To_String (Step.Step.Position)) & ";");
       S.Adb.UnIndent;
 
       -------------------------------------------------------------------------
@@ -160,15 +158,15 @@ package body AdaSpec.Generator.Ada05 is
       --  Fill in Args  --
       -------------------------------------------------------------------------
       S.Adb.Put_Line ("Make (Args, " &
-                     Ada_String (To_String (Step.Step.Stanza)) & ");");
+                     Ada_String (Step.Step.Stanza) & ");");
       while Has_Element (I) loop
          E := Element (I);
          S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
                                      E.Last'Img & ");");
          Next (I);
       end loop;
-      while Has_Element (I2) loop
-         E2 := Element (I2);
+      for I2 in Step.Step.Arg_First .. Step.Step.Arg_Last loop
+         E2 := Step.Step.Arg_Element (I2);
          case E2.Typ is
             when Text =>
                S.Adb.Put_Line ("Add_Text  (Args, " &
@@ -187,7 +185,6 @@ package body AdaSpec.Generator.Ada05 is
             when others =>
                null;    --  GCOV_IGNORE (never happens)
          end case;
-         Next (I2);
       end loop;
       S.Adb.Put_Line ("Add_Sep   (Args, 1);");
       --  Skip if failure

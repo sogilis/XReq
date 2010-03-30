@@ -4,6 +4,20 @@ with Ada.Strings.Fixed;
 
 package body AdaSpec.Generic_Steps is
 
+   ---------------------------
+   --  Step_Type  --  Step  --
+   ---------------------------
+
+   function  New_Step    (Kind     : in Prefix_Type;
+                          Stanza   : in String;
+                          Position : in Position_Type) return Step_Type is
+   begin
+      return Step_Type'(Prefix => Kind,
+                        Stanza => To_Unbounded_String (Stanza),
+                        Pos    => Position,
+                        others => <>);
+   end New_Step;
+
    -------------------------------------
    --  Stanza_Type  --  Stanza_Given  --
    -------------------------------------
@@ -102,14 +116,103 @@ package body AdaSpec.Generic_Steps is
       return To_String (Buffer);
    end To_Regexp;
 
+   ----------------------------------
+   --  Stanza_Type  --  Arg_First  --
+   ----------------------------------
+
+   function Arg_First (S : in Step_Type) return Natural is
+      pragma Unreferenced (S);
+   begin
+      return 0;
+   end Arg_First;
+
+   ---------------------------------
+   --  Stanza_Type  --  Arg_Last  --
+   ---------------------------------
+
+   function Arg_Last  (S : in Step_Type) return Natural is
+      use Argument_Vectors;
+      use Ada.Containers;
+   begin
+      return Integer (Length (S.Args)) - 1;
+   end Arg_Last;
+
+   ---------------------------------
+   --  Stanza_Type  --  Arg_Last  --
+   ---------------------------------
+
+   function Arg_Element (S : in Step_Type;
+                         I : in Natural)   return Argument_Type is
+      use Argument_Vectors;
+   begin
+      return Element (S.Args, I);
+   end Arg_Element;
 
    ---------------------------------
    --  Stanza_Type  --  Position  --
    ---------------------------------
 
-   function Position (S : in Step_Type) return String is
+   function Position (S : in Step_Type) return Position_Type is
    begin
-      return To_String (S.Pos);
+      return S.Pos;
    end Position;
+
+   -------------------------------
+   --  Stanza_Type  --  Stanza  --
+   -------------------------------
+
+   function Stanza    (S : in Step_Type) return String is
+   begin
+      return To_String (S.Stanza);
+   end Stanza;
+
+   -----------------------------
+   --  Stanza_Type  --  Kind  --
+   -----------------------------
+
+   function Kind      (S : in Step_Type) return Prefix_Type is
+   begin
+      return S.Prefix;
+   end Kind;
+   -------------------------------------
+   --  Stanza_Type  --  Set_Position  --
+   -------------------------------------
+
+   procedure Set_Position (S      : in out Step_Type;
+                           Pos    : in     Position_Type) is
+   begin
+      S.Pos := Pos;
+   end Set_Position;
+
+   -----------------------------------
+   --  Stanza_Type  --  Set_Stanza  --
+   -----------------------------------
+
+   procedure Set_Stanza   (S      : in out Step_Type;
+                           Stanza : in     String) is
+   begin
+      S.Stanza := To_Unbounded_String (Stanza);
+   end Set_Stanza;
+
+   ---------------------------------
+   --  Stanza_Type  --  Set_Kind  --
+   ---------------------------------
+
+   procedure Set_Kind     (S      : in out Step_Type;
+                           Kind   : in     Prefix_Type) is
+   begin
+      S.Prefix := Kind;
+   end Set_Kind;
+
+   -----------------------------------
+   --  Stanza_Type  --  Arg_Append  --
+   -----------------------------------
+
+   procedure Arg_Append   (S      : in out Step_Type;
+                           E      : in     Argument_Type) is
+      use Argument_Vectors;
+   begin
+      Append (S.Args, E);
+   end Arg_Append;
 
 end AdaSpec.Generic_Steps;

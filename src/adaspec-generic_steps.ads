@@ -17,18 +17,8 @@ package AdaSpec.Generic_Steps is
    --  Stanza_Type  --
    -------------------
 
-   type Step_Type is
-      record
-         Prefix : Prefix_Type;
-         Stanza : Unbounded_String;
-         Args   : Argument_Vectors.Vector;
-         Pos    : Position_Type;
-      end record;
-   type Stanza_Ptr is access all Step_Type;
-   Null_Stanza : Step_Type;
-
-   package Stanza_Container is
-      new Ada.Containers.Vectors (Natural, Step_Type, "=");
+   type Step_Type is tagged private;
+   type Step_Ptr is access all Step_Type'Class;
 
    function Stanza_Given (S    : in String;
                           File : in String := "";
@@ -40,8 +30,44 @@ package AdaSpec.Generic_Steps is
                           File : in String := "";
                           Line : in Positive := 1) return Step_Type;
 
-   function To_String (S : in Step_Type) return String;
-   function To_Regexp (S : in Step_Type) return String;
-   function Position  (S : in Step_Type) return String;
+   function  New_Step    (Kind     : in Prefix_Type;
+                          Stanza   : in String;
+                          Position : in Position_Type) return Step_Type;
+
+
+   function  To_String   (S : in Step_Type) return String;
+   function  To_Regexp   (S : in Step_Type) return String;
+
+   function  Arg_First   (S : in Step_Type) return Natural;
+   function  Arg_Last    (S : in Step_Type) return Natural;
+   function  Arg_Element (S : in Step_Type;
+                          I : in Natural)   return Argument_Type;
+
+   function  Position    (S : in Step_Type) return Position_Type;
+   function  Stanza      (S : in Step_Type) return String;
+   function  Kind        (S : in Step_Type) return Prefix_Type;
+
+   procedure Set_Position (S      : in out Step_Type;
+                           Pos    : in     Position_Type);
+   procedure Set_Stanza   (S      : in out Step_Type;
+                           Stanza : in     String);
+   procedure Set_Kind     (S      : in out Step_Type;
+                           Kind   : in     Prefix_Type);
+   procedure Arg_Append   (S      : in out Step_Type;
+                           E      : in     Argument_Type);
+
+   Null_Step : constant Step_Type;
+
+private
+
+   type Step_Type is tagged
+      record
+         Prefix : Prefix_Type;
+         Stanza : Unbounded_String;
+         Args   : Argument_Vectors.Vector;
+         Pos    : Position_Type;
+      end record;
+
+   Null_Step : constant Step_Type := (others => <>);
 
 end AdaSpec.Generic_Steps;

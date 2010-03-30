@@ -10,7 +10,7 @@ with Util.Strings;
 use Ada.Strings.Unbounded;
 use AdaSpec;
 use AdaSpec.Steps;
-use AdaSpec.Steps.Stanza_Container;
+use AdaSpec.Features.Stanza_Container;
 use AdaSpec.Features;
 use AdaSpec.Features.Scenario_Container;
 use Util.IO;
@@ -121,10 +121,10 @@ package body Test_Suite.Features is
 
       Stanza := Feature.Background.Stanzas.Element (0);
 
-      T.Assert (Stanza.Prefix = Prefix_Given,
+      T.Assert (Stanza.Kind = Prefix_Given,
               "The first step of the background is not a Given");
 
-      T.Assert (To_String (Stanza.Stanza) = "this step works",
+      T.Assert (Stanza.Stanza = "this step works",
               "Text of the first given of background incorrect");
 
       T.Assert (Integer (Length (Feature.Scenarios)) /= 0,
@@ -143,10 +143,10 @@ package body Test_Suite.Features is
 
       Stanza := Scenario.Stanzas.Element (0);
 
-      T.Assert (Stanza.Prefix = Prefix_Given,
+      T.Assert (Stanza.Kind = Prefix_Given,
               "The first step of the scenario is not a Given");
 
-      T.Assert (To_String (Stanza.Stanza) = "this step works",
+      T.Assert (Stanza.Stanza = "this step works",
               "Text of the first given of scenario incorrect");
 
       T.Assert (To_String (Feature) = Canonical_Feature_Text,

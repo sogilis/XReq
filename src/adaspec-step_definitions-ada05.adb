@@ -30,7 +30,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False)
    is
-      use Step_Vectors;
+      use Step_Definition_Vectors;
       Search  : Search_Type;
       Element : Directory_Entry_Type;
       Step    : Ada_Step_File_Ptr;
@@ -42,7 +42,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
          Step := new Ada_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Step_Vectors.Append (Steps, Step_File_Ptr (Step));
+         Step_Definition_Vectors.Append (Steps, Step_File_Ptr (Step));
       end loop;
       End_Search (Search);
    end Parse_Directory;
@@ -365,14 +365,14 @@ package body AdaSpec.Step_Definitions.Ada05 is
       --  Look for the phrase
       for i in S.Steps.First_Index .. S.Steps.Last_Index loop
          Step  := S.Steps.Element (i);
-         if Step.Prefix = Stanza.Prefix then
+         if Step.Prefix = Stanza.Kind then
             declare
                Matched  : Match_Array (0 .. Paren_Count (Step.Pattern_R.all));
             begin
 --                Put_Line ("AdaSpec.Steps.Ada.Find: Match """ &
 --                          To_String (Stanza.Stanza) & """ against |" &
 --                          To_String (Step.Pattern_S) & "|");
-               Match (Step.Pattern_R.all, To_String (Stanza.Stanza), Matched);
+               Match (Step.Pattern_R.all, Stanza.Stanza, Matched);
                if Matched (0) /= No_Match then
                   if Result.Match then
                      raise Ambiguous_Match;
