@@ -89,7 +89,7 @@ package AdaSpec.Result is
                                Step     : in     Result_Step_Type);
    procedure Process_Scenario (Res      : out    Result_Scenario_Type;
                                Scenario : in     Scenario_Type;
-                               Steps    : in     Steps_Type;
+                               Steps    : in     Step_Definitions_Type;
                                Log      : in     Logger_Ptr;
                                Errors   : out    Boolean;
                                Step_Matching : in Boolean := False);
@@ -120,7 +120,7 @@ package AdaSpec.Result is
                               Scenario : in     Result_Scenario_Type);
    procedure Process_Feature (Res      : out    Result_Feature_Type;
                               Feature  : in     Feature_Ptr;
-                              Steps    : in     Steps_Type;
+                              Steps    : in     Step_Definitions_Type;
                               Log      : in     Logger_Ptr;
                               Step_Matching : in Boolean := False);
 

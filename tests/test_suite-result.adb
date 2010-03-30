@@ -64,7 +64,7 @@ package body Test_Suite.Result is
       use Ada.Containers;
       Result       : Result_Scenario_Type;
       Scenario     : Scenario_Type;
-      Steps        : Steps_Type
+      Steps        : Step_Definitions_Type
                    := Load ("tests/features/step_definitions", Lang_Ada);
       Ideal_Result : Result_Steps.Vector;
       A, B         : Result_Step_Type;
@@ -130,7 +130,7 @@ package body Test_Suite.Result is
       Expected : Result_Feature_Type;
       Result   : Result_Feature_Type;
       Feature  : Feature_File_Ptr;
-      Steps    : Steps_Type;
+      Steps    : Step_Definitions_Type;
       Exp_Str  : constant String :=
                "Feature Sample"                     & CRLF &
                "   Background "                     & CRLF &
@@ -250,7 +250,7 @@ package body Test_Suite.Result is
       use Result_Steps;
       Scenario  : Scenario_Type (True);
       Result    : Result_Scenario_Type;
-      Steps     : Steps_Type
+      Steps     : Step_Definitions_Type
                 := Load ("tests/features/step_definitions", Lang_Ada);
       Errors    : Boolean;
       Steps_tmp : Result_Steps.Vector;

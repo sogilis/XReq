@@ -80,31 +80,32 @@ package AdaSpec.Step_Definitions is
    --  Steps_Type  --
    ------------------
 
-   subtype Steps_Type is Step_Vectors.Vector;
+   subtype Step_Definitions_Type is Step_Vectors.Vector;
 
    function  Load      (Directory  : in     String;
-                        Language   : in     Language_Type) return Steps_Type;
+                        Language   : in     Language_Type)
+                                     return Step_Definitions_Type;
    --  IMPORTANT: deallocate Steps_Type
 
-   procedure Load      (Steps      : in out Steps_Type;
+   procedure Load      (Steps      : in out Step_Definitions_Type;
                         Logger     : in     Logger_Ptr;
                         Directory  : in     String;
                         Language   : in     Language_Type;
                         Fill_Steps : in     Boolean := False);
    --  IMPORTANT: deallocate Steps_Type
 
-   function  Contains  (Steps      : in  Steps_Type;
+   function  Contains  (Steps      : in  Step_Definitions_Type;
                         Stanza     : in  Stanza_Type) return Boolean;
-   function  Find      (Steps      : in  Steps_Type;
+   function  Find      (Steps      : in  Step_Definitions_Type;
                         Stanza     : in  Stanza_Type) return String;
-   function  Find      (Steps      : in  Steps_Type;
+   function  Find      (Steps      : in  Step_Definitions_Type;
                         Stanza     : in  Stanza_Type) return Step_Match_Type;
-   procedure Find      (Steps      : in  Steps_Type;
+   procedure Find      (Steps      : in  Step_Definitions_Type;
                         Stanza     : in  Stanza_Type;
                         Proc       : out Unbounded_String;
                         Matches    : out Match_Vectors.Vector;
                         Found      : out Boolean);
 
-   procedure Free      (Steps      : in out Steps_Type);
+   procedure Free      (Steps      : in out Step_Definitions_Type);
 
 end AdaSpec.Step_Definitions;

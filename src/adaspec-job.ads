@@ -26,7 +26,7 @@ package AdaSpec.Job is
       record
          Step_Dir  : Unbounded_String;
          Out_Dir   : Unbounded_String;
-         Steps     : Steps_Type;
+         Steps     : Step_Definitions_Type;
          Loaded    : Boolean := False;
          Language  : Language_Type := Lang_Ada;
       end record;

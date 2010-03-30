@@ -33,7 +33,7 @@ package body Test_Suite.Step_Definitions is
 
    procedure Run (T : in out Test_1) is
       use Match_Vectors;
-      Steps   : Steps_Type;
+      Steps   : Step_Definitions_Type;
       Dir     : constant String := "tests/features/step_definitions";
       Match_V : Match_Vectors.Vector;
       Proc_N  : Unbounded_String;

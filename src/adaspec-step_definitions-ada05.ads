@@ -7,7 +7,7 @@ package AdaSpec.Step_Definitions.Ada05 is
 
 
    --  Called in AdaSpec.Steps.Load
-   procedure Parse_Directory (Steps      : in out Steps_Type;
+   procedure Parse_Directory (Steps      : in out Step_Definitions_Type;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False);

@@ -88,13 +88,13 @@ package body AdaSpec.Result is
 
    procedure Process_Step     (Res      : out Result_Step_Type;
                                Stanza   : in  Stanza_Type;
-                               Steps    : in  Steps_Type;
+                               Steps    : in  Step_Definitions_Type;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
                                Step_Matching : in Boolean);
    procedure Process_Step     (Res      : out Result_Step_Type;
                                Stanza   : in  Stanza_Type;
-                               Steps    : in  Steps_Type;
+                               Steps    : in  Step_Definitions_Type;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
                                Step_Matching : in Boolean)
@@ -135,7 +135,7 @@ package body AdaSpec.Result is
 
    procedure Process_Scenario (Res      : out Result_Scenario_Type;
                                Scenario : in  Scenario_Type;
-                               Steps    : in  Steps_Type;
+                               Steps    : in  Step_Definitions_Type;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
                                Step_Matching : in Boolean := False)
@@ -223,7 +223,7 @@ package body AdaSpec.Result is
 
    procedure Process_Feature (Res     : out Result_Feature_Type;
                               Feature : in  Feature_Ptr;
-                              Steps   : in  Steps_Type;
+                              Steps   : in  Step_Definitions_Type;
                               Log     : in  Logger_Ptr;
                               Step_Matching : in Boolean := False)
    is

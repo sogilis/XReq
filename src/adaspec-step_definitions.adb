@@ -67,7 +67,7 @@ package body AdaSpec.Step_Definitions is
    --  Load  --
    ------------
 
-   procedure Load (Steps      : in out Steps_Type;
+   procedure Load (Steps      : in out Step_Definitions_Type;
                    Logger     : in     Logger_Ptr;
                    Directory  : in     String;
                    Language   : in     Language_Type;
@@ -82,8 +82,9 @@ package body AdaSpec.Step_Definitions is
    end Load;
 
    function  Load (Directory : in     String;
-                   Language  : in     Language_Type) return Steps_Type is
-      Result : Steps_Type;
+                   Language  : in     Language_Type)
+                               return Step_Definitions_Type is
+      Result : Step_Definitions_Type;
    begin
       Load (Result, Null_Logger, Directory, Language);
       return Result;
@@ -93,7 +94,7 @@ package body AdaSpec.Step_Definitions is
    --  Contains  --
    ----------------
 
-   function  Contains  (Steps     : in Steps_Type;
+   function  Contains  (Steps     : in Step_Definitions_Type;
                         Stanza    : in Stanza_Type) return Boolean
    is
    begin
@@ -104,7 +105,7 @@ package body AdaSpec.Step_Definitions is
    --  Find  --
    ------------
 
-   function  Find      (Steps     : in Steps_Type;
+   function  Find      (Steps     : in Step_Definitions_Type;
                         Stanza    : in Stanza_Type) return String
    is
       Proc    : Unbounded_String;
@@ -123,7 +124,7 @@ package body AdaSpec.Step_Definitions is
    --  Find  --
    ------------
 
-   function  Find      (Steps     : in Steps_Type;
+   function  Find      (Steps     : in Step_Definitions_Type;
                         Stanza    : in Stanza_Type) return Step_Match_Type
    is
       use Step_Vectors;
@@ -151,7 +152,7 @@ package body AdaSpec.Step_Definitions is
    --  Find  --
    ------------
 
-   procedure Find      (Steps     : in  Steps_Type;
+   procedure Find      (Steps     : in  Step_Definitions_Type;
                         Stanza    : in  Stanza_Type;
                         Proc      : out Unbounded_String;
                         Matches   : out Match_Vectors.Vector;
@@ -170,7 +171,7 @@ package body AdaSpec.Step_Definitions is
    --  Free  --
    ------------
 
-   procedure Free (Steps : in out Steps_Type) is
+   procedure Free (Steps : in out Step_Definitions_Type) is
       use Step_Vectors;
       I : Step_Vectors.Cursor := First (Steps);
       E : Step_File_Ptr;
