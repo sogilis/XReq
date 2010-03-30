@@ -41,7 +41,7 @@ private
 
    type Step_Definition_Type is
       record
-         Prefix    : Prefix_Type;
+         Prefix    : Step_Kind;
          Pattern_R : Pattern_Matcher_Ptr;
          Pattern_S : Unbounded_String;
          Proc_Name : Unbounded_String;

@@ -2,8 +2,10 @@
 
 with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
+with AdaSpecLib;
 
 use Ada.Strings.Unbounded;
+use AdaSpecLib;
 
 generic
 
@@ -29,7 +31,7 @@ package AdaSpec.Generic_Steps is
                            File : in String := "";
                            Line : in Positive := 1) return Step_Type;
 
-   function  New_Step     (Kind     : in Prefix_Type;
+   function  New_Step     (Kind     : in Step_Kind;
                            Stanza   : in String;
                            Position : in Position_Type) return Step_Type;
 
@@ -43,14 +45,14 @@ package AdaSpec.Generic_Steps is
 
    function  Position     (S : in Step_Type) return Position_Type;
    function  Stanza       (S : in Step_Type) return String;
-   function  Kind         (S : in Step_Type) return Prefix_Type;
+   function  Kind         (S : in Step_Type) return Step_Kind;
 
    procedure Set_Position (S      : in out Step_Type;
                            Pos    : in     Position_Type);
    procedure Set_Stanza   (S      : in out Step_Type;
                            Stanza : in     String);
    procedure Set_Kind     (S      : in out Step_Type;
-                           Kind   : in     Prefix_Type);
+                           Kind   : in     Step_Kind);
    procedure Arg_Append   (S      : in out Step_Type;
                            E      : in     Argument_Type);
 
@@ -63,7 +65,7 @@ private
 
    type Step_Type is tagged
       record
-         Prefix : Prefix_Type;
+         Prefix : Step_Kind;
          Stanza : Unbounded_String;
          Args   : Argument_Vectors.Vector;
          Pos    : Position_Type;

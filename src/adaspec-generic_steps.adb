@@ -8,7 +8,7 @@ package body AdaSpec.Generic_Steps is
    --  Step_Type  --  Step  --
    ---------------------------
 
-   function  New_Step    (Kind     : in Prefix_Type;
+   function  New_Step    (Kind     : in Step_Kind;
                           Stanza   : in String;
                           Position : in Position_Type) return Step_Type is
    begin
@@ -170,7 +170,7 @@ package body AdaSpec.Generic_Steps is
    --  Stanza_Type  --  Kind  --
    -----------------------------
 
-   function Kind      (S : in Step_Type) return Prefix_Type is
+   function Kind      (S : in Step_Type) return Step_Kind is
    begin
       return S.Prefix;
    end Kind;
@@ -199,7 +199,7 @@ package body AdaSpec.Generic_Steps is
    ---------------------------------
 
    procedure Set_Kind     (S      : in out Step_Type;
-                           Kind   : in     Prefix_Type) is
+                           Kind   : in     Step_Kind) is
    begin
       S.Prefix := Kind;
    end Set_Kind;

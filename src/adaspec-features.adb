@@ -307,7 +307,7 @@ package body AdaSpec.Features is
       procedure Read_Scenario (Scenario : out Scenario_Type;
                                Outline  : in  Boolean := False) is
          Current_Stanza : Step_Type;
-         Current_Prefix : Prefix_Type_Maybe := Step_Null;
+         Current_Prefix : Step_All_Kind := Step_Null;
          Detect         : Boolean;
          Continue       : Boolean := True;
       begin
@@ -574,7 +574,7 @@ package body AdaSpec.Features is
       procedure Output_Stanzas (V : in Step_Vectors.Vector);
       procedure Output_Stanzas (V : in Step_Vectors.Vector) is
          use Step_Vectors;
-         Pre  : Prefix_Type_Maybe := Step_Null;
+         Pre  : Step_All_Kind := Step_Null;
          Cur  : Step_Vectors.Cursor := First (V);
          Sta  : Step_Type;
       begin

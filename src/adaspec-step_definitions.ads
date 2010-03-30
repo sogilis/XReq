@@ -4,11 +4,13 @@ with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with Util.IO;
+with AdaSpecLib;
 with AdaSpec.Lang;
 with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
+use AdaSpecLib;
 use AdaSpec.Lang;
 use AdaSpec.Steps;
 

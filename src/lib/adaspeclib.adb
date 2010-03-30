@@ -3,7 +3,7 @@
 with Ada.Strings.Fixed;
 with Ada.Strings;
 
-package body AdaSpec is
+package body AdaSpecLib is
 
    function To_String (Pos : in Position_Type) return String is
       use Ada.Strings.Fixed;
@@ -13,4 +13,4 @@ package body AdaSpec is
       return To_String (Pos.File) & ":" & Trim (Pos.Line'Img, Left);
    end To_String;
 
-end AdaSpec;
+end AdaSpecLib;

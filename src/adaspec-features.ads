@@ -5,12 +5,14 @@ with Ada.Containers.Vectors;
 with Ada.Strings.Unbounded;
 with Util.Strings;
 with Util.IO;
-with AdaSpec.Steps;
+with AdaSpecLib;
 with AdaSpecLib.String_Tables;
+with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
 use Util.Strings;
 use Util.IO;
+use AdaSpecLib;
 use AdaSpec.Steps;
 
 package AdaSpec.Features is

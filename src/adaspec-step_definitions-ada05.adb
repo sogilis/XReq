@@ -93,7 +93,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
                         To_Unbounded_String ("@todo"),
                         To_Unbounded_String ("package "),
                         To_Unbounded_String ("procedure "));
-      Prefix        : Prefix_Type;
+      Prefix        : Step_Kind;
       Found_Pkg     : Boolean;
       Found_Prc     : Boolean;
       Found_TODO    : Boolean;

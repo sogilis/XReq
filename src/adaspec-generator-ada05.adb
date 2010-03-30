@@ -16,6 +16,7 @@ use Ada.Directories;
 use Ada.Containers;
 use GNAT.OS_Lib;
 use Util.IO;
+use AdaSpecLib;
 use AdaSpec.Step_Definitions;
 use AdaSpec.Steps;
 use AdaSpec.Args;
