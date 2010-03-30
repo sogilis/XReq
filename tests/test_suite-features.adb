@@ -2,6 +2,7 @@
 
 with Ada.Strings.Unbounded;
 with AdaSpec;
+with AdaSpecLib;
 with AdaSpec.Steps;
 with AdaSpec.Features;
 with Util.IO;
@@ -9,6 +10,7 @@ with Util.Strings;
 
 use Ada.Strings.Unbounded;
 use AdaSpec;
+use AdaSpecLib;
 use AdaSpec.Steps;
 use AdaSpec.Features.Step_Vectors;
 use AdaSpec.Features;
@@ -121,7 +123,7 @@ package body Test_Suite.Features is
 
       Stanza := Feature.Background.Stanzas.Element (0);
 
-      T.Assert (Stanza.Kind = Prefix_Given,
+      T.Assert (Stanza.Kind = Step_Given,
               "The first step of the background is not a Given");
 
       T.Assert (Stanza.Stanza = "this step works",
@@ -143,7 +145,7 @@ package body Test_Suite.Features is
 
       Stanza := Scenario.Stanzas.Element (0);
 
-      T.Assert (Stanza.Kind = Prefix_Given,
+      T.Assert (Stanza.Kind = Step_Given,
               "The first step of the scenario is not a Given");
 
       T.Assert (Stanza.Stanza = "this step works",

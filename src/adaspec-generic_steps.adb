@@ -26,7 +26,7 @@ package body AdaSpec.Generic_Steps is
                           File : in String := "";
                           Line : in Positive := 1) return Step_Type is
    begin
-      return Step_Type'(Prefix => Prefix_Given,
+      return Step_Type'(Prefix => Step_Given,
                           Stanza => To_Unbounded_String (S),
                           Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
@@ -40,7 +40,7 @@ package body AdaSpec.Generic_Steps is
                           File : in String := "";
                           Line : in Positive := 1) return Step_Type is
    begin
-      return Step_Type'(Prefix => Prefix_When,
+      return Step_Type'(Prefix => Step_When,
                           Stanza => To_Unbounded_String (S),
                           Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
@@ -54,7 +54,7 @@ package body AdaSpec.Generic_Steps is
                           File : in String := "";
                           Line : in Positive := 1) return Step_Type is
    begin
-      return Step_Type'(Prefix => Prefix_Then,
+      return Step_Type'(Prefix => Step_Then,
                           Stanza => To_Unbounded_String (S),
                           Pos    => (To_Unbounded_String (File), Line),
                           others => <>);
@@ -69,9 +69,9 @@ package body AdaSpec.Generic_Steps is
       Buffer : Unbounded_String;
    begin
       case S.Prefix is
-         when Prefix_Given => Append (Buffer, "Given ");
-         when Prefix_When  => Append (Buffer, "When ");
-         when Prefix_Then  => Append (Buffer, "Then ");
+         when Step_Given => Append (Buffer, "Given ");
+         when Step_When  => Append (Buffer, "When ");
+         when Step_Then  => Append (Buffer, "Then ");
 --          when others       => Append (Buffer, "<?> ");
       end case;
       Append (Buffer, S.Stanza);
@@ -90,9 +90,9 @@ package body AdaSpec.Generic_Steps is
       N         : Natural;
    begin
       case S.Prefix is
-         when Prefix_Given => Append (Buffer, "@given ");
-         when Prefix_When  => Append (Buffer, "@when ");
-         when Prefix_Then  => Append (Buffer, "@then ");
+         when Step_Given => Append (Buffer, "@given ");
+         when Step_When  => Append (Buffer, "@when ");
+         when Step_Then  => Append (Buffer, "@then ");
       end case;
       Append (Buffer, "^");
       while I <= Stanza'Last loop

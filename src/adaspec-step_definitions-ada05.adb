@@ -149,9 +149,9 @@ package body AdaSpec.Step_Definitions.Ada05 is
 
          Find_Token (To_String (Line_S), Tokens, Idx_Next, Idx_Tk);
          case Idx_Tk is
-            when 1 =>   Prefix := Prefix_Given; Found := True;
-            when 2 =>   Prefix := Prefix_When;  Found := True;
-            when 3 =>   Prefix := Prefix_Then;  Found := True;
+            when 1 =>   Prefix := Step_Given; Found := True;
+            when 2 =>   Prefix := Step_When;  Found := True;
+            when 3 =>   Prefix := Step_Then;  Found := True;
             when 4 =>   Found_TODO := True;
             when 5 =>   Found_Pkg  := True;
             when 6 =>   Found_Prc  := True;
@@ -243,9 +243,9 @@ package body AdaSpec.Step_Definitions.Ada05 is
                   Current_Step := First_Element (Current_Steps);
                   Procedure_S := Null_Unbounded_String;
                   case Current_Step.Prefix is
-                     when Prefix_Given => Append (Procedure_S, "Given_");
-                     when Prefix_When  => Append (Procedure_S, "When_");
-                     when Prefix_Then  => Append (Procedure_S, "Then_");
+                     when Step_Given => Append (Procedure_S, "Given_");
+                     when Step_When  => Append (Procedure_S, "When_");
+                     when Step_Then  => Append (Procedure_S, "Then_");
                   end case;
                   Append (Procedure_S,
                      To_Identifier (To_String (Current_Step.Pattern_S)));

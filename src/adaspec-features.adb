@@ -125,7 +125,6 @@ package body AdaSpec.Features is
       use Util.Strings.Vectors;
       use Scenario_Container;
       use Step_Vectors;
-      use AdaSpecLib;
 
       procedure Log_Error (Error : in String);
       procedure Read_Line;
@@ -308,7 +307,7 @@ package body AdaSpec.Features is
       procedure Read_Scenario (Scenario : out Scenario_Type;
                                Outline  : in  Boolean := False) is
          Current_Stanza : Step_Type;
-         Current_Prefix : Prefix_Type_Maybe := Prefix_None;
+         Current_Prefix : Prefix_Type_Maybe := Step_Null;
          Detect         : Boolean;
          Continue       : Boolean := True;
       begin
@@ -348,13 +347,13 @@ package body AdaSpec.Features is
                end if;
                Detect := False;
             elsif Detect_Keyword (K_Given) then
-               Current_Prefix := Prefix_Given;
+               Current_Prefix := Step_Given;
             elsif Detect_Keyword (K_When) then
-               Current_Prefix := Prefix_When;
+               Current_Prefix := Step_When;
             elsif Detect_Keyword (K_Then) then
-               Current_Prefix := Prefix_Then;
+               Current_Prefix := Step_Then;
             elsif Detect_Keyword (K_And) then
-               if Current_Prefix = Prefix_None then
+               if Current_Prefix = Step_Null then
                   Log_Error    ("ERROR: And keyword");
                   Log.Put_Line ("       And keyword should be following " &
                                        "another keyword");
@@ -368,11 +367,11 @@ package body AdaSpec.Features is
             end if;
 
             if Detect then
-               if Current_Prefix /= Prefix_None then
+               if Current_Prefix /= Step_Null then
                   Current_Stanza.Set_Kind (Current_Prefix);
                end if;
                Read_Step (Current_Stanza);
-               if Current_Prefix /= Prefix_None then
+               if Current_Prefix /= Step_Null then
                   Append (Scenario.Stanzas, Current_Stanza);
                end if;
             end if;
@@ -575,7 +574,7 @@ package body AdaSpec.Features is
       procedure Output_Stanzas (V : in Step_Vectors.Vector);
       procedure Output_Stanzas (V : in Step_Vectors.Vector) is
          use Step_Vectors;
-         Pre  : Prefix_Type_Maybe := Prefix_None;
+         Pre  : Prefix_Type_Maybe := Step_Null;
          Cur  : Step_Vectors.Cursor := First (V);
          Sta  : Step_Type;
       begin
@@ -586,9 +585,9 @@ package body AdaSpec.Features is
                Append (Res, "And");
             else
                case Sta.Kind is
-                  when Prefix_Given => Append (Res, "Given");
-                  when Prefix_When =>  Append (Res, "When");
-                  when Prefix_Then =>  Append (Res, "Then");
+                  when Step_Given => Append (Res, "Given");
+                  when Step_When =>  Append (Res, "When");
+                  when Step_Then =>  Append (Res, "Then");
                end case;
                Pre := Sta.Kind;
             end if;

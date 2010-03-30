@@ -16,7 +16,6 @@ use Ada.Directories;
 use Ada.Containers;
 use GNAT.OS_Lib;
 use Util.IO;
-use AdaSpecLib;
 use AdaSpec.Step_Definitions;
 use AdaSpec.Steps;
 use AdaSpec.Args;
@@ -136,9 +135,9 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Indent;
       S.Adb.Put      ("Prefix : constant Step_Type := ");
       case Step.Step.Kind is
-         when Prefix_Given => S.Adb.Put ("Step_Given;");
-         when Prefix_When  => S.Adb.Put ("Step_When;");
-         when Prefix_Then  => S.Adb.Put ("Step_Then;");
+         when Step_Given => S.Adb.Put ("Step_Given;");
+         when Step_When  => S.Adb.Put ("Step_When;");
+         when Step_Then  => S.Adb.Put ("Step_Then;");
       end case;
       S.Adb.New_Line;
       S.Adb.Put_Line ("Stanza : constant String    := " &
