@@ -134,7 +134,7 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Indent;
       S.Adb.Put_Line ("Args   : Arg_Type;");
       S.Adb.Put_Indent;
-      S.Adb.Put      ("Prefix : constant Step_Type := ");
+      S.Adb.Put      ("Prefix : constant Step_Kind := ");
       case Step.Step.Kind is
          when Step_Given => S.Adb.Put ("Step_Given;");
          when Step_When  => S.Adb.Put ("Step_When;");
