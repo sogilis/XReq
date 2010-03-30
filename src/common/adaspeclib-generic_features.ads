@@ -13,6 +13,7 @@ generic
    with function "=" (Left, Right : in Scenario_Type) return Boolean;
 
 package AdaSpecLib.Generic_Features is
+
    -------------------
    -- Feature_Type  --
    -------------------

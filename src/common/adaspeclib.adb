@@ -13,4 +13,12 @@ package body AdaSpecLib is
       return To_String (Pos.File) & ":" & Trim (Pos.Line'Img, Left);
    end To_String;
 
+   function Position  (File : in String;
+                       Line : in Positive) return Position_Type
+   is
+      use Ada.Strings.Unbounded;
+   begin
+      return Position_Type'(To_Unbounded_String (File), Line);
+   end Position;
+
 end AdaSpecLib;

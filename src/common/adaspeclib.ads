@@ -37,6 +37,8 @@ package AdaSpecLib is
       end record;
 
    function To_String (Pos : in Position_Type) return String;
+   function Position  (File : in String;
+                       Line : in Positive) return Position_Type;
 
    Null_Position : constant Position_Type;
 

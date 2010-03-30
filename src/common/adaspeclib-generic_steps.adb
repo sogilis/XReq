@@ -4,9 +4,9 @@ with Ada.Strings.Fixed;
 
 package body AdaSpecLib.Generic_Steps is
 
-   ---------------------------
-   --  Step_Type  --  Step  --
-   ---------------------------
+   -------------------------------
+   --  Step_Type  --  New_Step  --
+   -------------------------------
 
    function  New_Step    (Kind     : in Step_Kind;
                           Stanza   : in String;
@@ -24,12 +24,9 @@ package body AdaSpecLib.Generic_Steps is
 
    function Stanza_Given (S    : in String;
                           File : in String := "";
-                          Line : in Positive := 1) return Step_Type is
+                          Line : in Natural := 0) return Step_Type is
    begin
-      return Step_Type'(Prefix => Step_Given,
-                          Stanza => To_Unbounded_String (S),
-                          Pos    => (To_Unbounded_String (File), Line),
-                          others => <>);
+      return New_Step (Step_Given, S, Position (File, Line));
    end Stanza_Given;
 
    ------------------------------------
@@ -38,12 +35,9 @@ package body AdaSpecLib.Generic_Steps is
 
    function Stanza_When  (S    : in String;
                           File : in String := "";
-                          Line : in Positive := 1) return Step_Type is
+                          Line : in Natural := 0) return Step_Type is
    begin
-      return Step_Type'(Prefix => Step_When,
-                          Stanza => To_Unbounded_String (S),
-                          Pos    => (To_Unbounded_String (File), Line),
-                          others => <>);
+      return New_Step (Step_When, S, Position (File, Line));
    end Stanza_When;
 
    ------------------------------------
@@ -52,12 +46,9 @@ package body AdaSpecLib.Generic_Steps is
 
    function Stanza_Then  (S    : in String;
                           File : in String := "";
-                          Line : in Positive := 1) return Step_Type is
+                          Line : in Natural := 0) return Step_Type is
    begin
-      return Step_Type'(Prefix => Step_Then,
-                          Stanza => To_Unbounded_String (S),
-                          Pos    => (To_Unbounded_String (File), Line),
-                          others => <>);
+      return New_Step (Step_Then, S, Position (File, Line));
    end Stanza_Then;
 
 

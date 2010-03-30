@@ -21,15 +21,16 @@ package AdaSpecLib.Generic_Steps is
    type Step_Type is new Step_Interface with private;
    type Step_Ptr is access all Step_Type'Class;
 
+
    function  Stanza_Given (S    : in String;
                            File : in String := "";
-                           Line : in Positive := 1) return Step_Type;
+                           Line : in Natural := 0) return Step_Type;
    function  Stanza_When  (S : in String;
                            File : in String := "";
-                           Line : in Positive := 1) return Step_Type;
+                           Line : in Natural := 0) return Step_Type;
    function  Stanza_Then  (S : in String;
                            File : in String := "";
-                           Line : in Positive := 1) return Step_Type;
+                           Line : in Natural := 0) return Step_Type;
 
    function  New_Step     (Kind     : in Step_Kind;
                            Stanza   : in String;
@@ -61,6 +62,7 @@ package AdaSpecLib.Generic_Steps is
    function Equals (Left, Right : in Step_Type) return Boolean;
 
    Null_Step : constant Step_Type;
+
 
 private
 
