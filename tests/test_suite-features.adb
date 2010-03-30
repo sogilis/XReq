@@ -117,13 +117,13 @@ package body Test_Suite.Features is
       T.Assert (To_String (Feature.Background.Name) = "",
               "Background name while there is none");
 
-      T.Assert (Integer (Length (Feature.Background.Stanzas)) /= 0,
+      T.Assert (Integer (Length (Feature.Background.Steps)) /= 0,
               "No background stanzas");
 
-      T.Assert (Integer (Length (Feature.Background.Stanzas)) = 1,
+      T.Assert (Integer (Length (Feature.Background.Steps)) = 1,
               "More than one line of background");
 
-      Stanza := Feature.Background.Stanzas.Element (0);
+      Stanza := Feature.Background.Steps.Element (0);
 
       T.Assert (Stanza.Kind = Step_Given,
               "The first step of the background is not a Given");
@@ -142,10 +142,10 @@ package body Test_Suite.Features is
       T.Assert (To_String (Scenario.Name) = "Run a good step",
               "Name of the scenario incorrect");
 
-      T.Assert (Integer (Length (Scenario.Stanzas)) = 1,
+      T.Assert (Integer (Length (Scenario.Steps)) = 1,
               "No or more than one stanza in the scenario");
 
-      Stanza := Scenario.Stanzas.Element (0);
+      Stanza := Scenario.Steps.Element (0);
 
       T.Assert (Stanza.Kind = Step_Given,
               "The first step of the scenario is not a Given");
@@ -180,20 +180,20 @@ package body Test_Suite.Features is
       T.Assert (Name   (Feature1) = "Sample2", "Incorrect feature name");
       T.Assert (Parsed (Feature1), "Feature_Type is always parsed");
 
-      Make   (Scenario, "Background");
-      Append (Scenario, Stanza_Given ("this step works"));
+      Scenario := New_Scenario ("Background");
+      Step_Append (Scenario, Stanza_Given ("this step works"));
       Set_Background (Feature1, Scenario);
 
-      Make   (Scenario, "Run a good step");
-      Append (Scenario, Stanza_Given ("this step works"));
-      Append (Scenario, Stanza_Given ("I am in front of a cake machine"));
-      Append (Scenario, Stanza_When  ("I insert money"));
-      Append (Scenario, Stanza_When  ("I push the button"));
-      Append (Scenario, Stanza_Then  ("I get a cake"));
+      Scenario := New_Scenario ("Run a good step");
+      Step_Append (Scenario, Stanza_Given ("this step works"));
+      Step_Append (Scenario, Stanza_Given ("I am in front of a cake machine"));
+      Step_Append (Scenario, Stanza_When  ("I insert money"));
+      Step_Append (Scenario, Stanza_When  ("I push the button"));
+      Step_Append (Scenario, Stanza_Then  ("I get a cake"));
       Append (Feature1, Scenario);
 
-      Make   (Scenario, "Another good step");
-      Append (Scenario, Stanza_Given ("this step works"));
+      Scenario := New_Scenario ("Another good step");
+      Step_Append (Scenario, Stanza_Given ("this step works"));
       Append (Feature1, Scenario);
 
       Make  (Feature2, File);

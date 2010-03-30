@@ -26,7 +26,7 @@ package AdaSpec.Scenarios is
          Name          : Unbounded_String;
          Pos           : Position_Type;
          Tags          : String_Vector;
-         Stanzas       : Step_Vectors.Vector;
+         Steps         : Step_Vectors.Vector;
          case Outline is
             when True =>
                Table   : AdaSpecLib.String_Tables.Table;
@@ -37,9 +37,13 @@ package AdaSpec.Scenarios is
    type Scenario_Ptr is access all Scenario_Type;
    Null_Scenario : constant Scenario_Type := (others => <>);
 
-   procedure Make   (Scenario : out    Scenario_Type;
-                     Name     : in     String := "");
-   procedure Append (Scenario : in out Scenario_Type;
-                     Stanza   : in     Step_Type);
+   function  New_Scenario (Name     : in     String;
+                           Position : in     Position_Type := Null_Position)
+                                      return Scenario_Type;
+
+   procedure Step_Append  (Scenario : in out Scenario_Type;
+                           Stanza   : in     Step_Type);
+   function  Step_First   (Scenario : in     Scenario_Type) return Natural;
+   function  Step_Last    (Scenario : in     Scenario_Type) return Integer;
 
 end AdaSpec.Scenarios;

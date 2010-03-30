@@ -152,7 +152,7 @@ package body AdaSpec.Result is
       Scenarios : Result_Steps_Vectors2.Vector;
    begin
       Errors := False;
-      I := First (Scenario.Stanzas);
+      I := First (Scenario.Steps);
       while Has_Element (I) loop
          Stanza := Element (I);
          if Scenario.Outline then

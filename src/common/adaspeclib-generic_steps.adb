@@ -130,7 +130,7 @@ package body AdaSpecLib.Generic_Steps is
    --  Stanza_Type  --  Arg_Last  --
    ---------------------------------
 
-   function Arg_Last  (S : in Step_Type) return Natural is
+   function Arg_Last  (S : in Step_Type) return Integer is
       use Argument_Vectors;
       use Ada.Containers;
    begin

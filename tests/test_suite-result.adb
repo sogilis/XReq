@@ -73,9 +73,9 @@ package body Test_Suite.Result is
       Errors       : Boolean;
    begin
 
-      Make   (Scenario, "Scenario");
-      Append (Scenario, Stanza_Given ("this step works"));
-      Append (Scenario, Stanza_When  ("this step works too"));
+      Scenario := New_Scenario ("Scenario");
+      Step_Append (Scenario, Stanza_Given ("this step works"));
+      Step_Append (Scenario, Stanza_When  ("this step works too"));
 
       Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
 
@@ -105,7 +105,7 @@ package body Test_Suite.Result is
       T.Assert (Result.Steps = Ideal_Result,
               "Wrong scenario result (1)");
 
-      Append (Scenario, Stanza_When  ("this step doesn't work"));
+      Step_Append (Scenario, Stanza_When  ("this step doesn't work"));
       Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
       T.Assert (Errors, "No error while processing scenario (2)");
 
@@ -265,9 +265,9 @@ package body Test_Suite.Result is
       end Equals;
    begin
 
-      Append (Scenario, Stanza_Given ("A is <A> and B is <B>"));
-      Append (Scenario, Stanza_When  ("A is '<A>' and B is '<B>'"));
-      Append (Scenario, Stanza_Then  ("C is <C>"));
+      Step_Append (Scenario, Stanza_Given ("A is <A> and B is <B>"));
+      Step_Append (Scenario, Stanza_When  ("A is '<A>' and B is '<B>'"));
+      Step_Append (Scenario, Stanza_Then  ("C is <C>"));
 
       Scenario.Table.Put (0, 0, "A");
       Scenario.Table.Put (1, 0, "B");

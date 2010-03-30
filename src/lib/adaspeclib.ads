@@ -26,5 +26,10 @@ package AdaSpecLib is
 
    function To_String (Pos : in Position_Type) return String;
 
+   Null_Position : constant Position_Type;
+
+private
+
+   Null_Position : constant Position_Type := (others => <>);
 
 end AdaSpecLib;

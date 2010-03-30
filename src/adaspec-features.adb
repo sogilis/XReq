@@ -350,7 +350,7 @@ package body AdaSpec.Features is
                end if;
                Read_Step (Current_Stanza);
                if Current_Prefix /= Step_Null then
-                  Append (Scenario.Stanzas, Current_Stanza);
+                  Append (Scenario.Steps, Current_Stanza);
                end if;
             end if;
 
@@ -583,12 +583,12 @@ package body AdaSpec.Features is
       Append (Res, "Feature: " & To_String (F.Name) & CRLF);
       Append (Res, CRLF);
       Append (Res, "  Background: " & To_String (F.Background.Name) & CRLF);
-      Output_Stanzas (F.Background.Stanzas);
+      Output_Stanzas (F.Background.Steps);
       Append (Res, CRLF);
       while Has_Element (Cur) loop
          Sce := Element (Cur);
          Append (Res, "  Scenario: " & To_String (Sce.Name) & CRLF);
-         Output_Stanzas (Sce.Stanzas);
+         Output_Stanzas (Sce.Steps);
          Append (Res, CRLF);
          Next (Cur);
       end loop;

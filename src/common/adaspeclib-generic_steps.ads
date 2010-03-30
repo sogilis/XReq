@@ -37,7 +37,7 @@ package AdaSpecLib.Generic_Steps is
    function  To_Regexp    (S : in Step_Type) return String;
 
    function  Arg_First    (S : in Step_Type) return Natural;
-   function  Arg_Last     (S : in Step_Type) return Natural;
+   function  Arg_Last     (S : in Step_Type) return Integer;
    function  Arg_Element  (S : in Step_Type;
                            I : in Natural)   return Argument_Type;
 
