@@ -27,6 +27,6 @@ package AdaSpec.Args is
          --  GCOV_IGNORE_END
       end record;
 
-   function Text (A : Argument_Type) return String;
+   function Text (A : in Argument_Type) return String;
 
 end AdaSpec.Args;

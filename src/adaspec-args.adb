@@ -2,7 +2,7 @@
 
 package body AdaSpec.Args is
 
-   function Text (A : Argument_Type) return String is
+   function Text (A : in Argument_Type) return String is
    begin
       return To_String (A.Text);
    end Text;
