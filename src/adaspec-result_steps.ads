@@ -18,7 +18,7 @@ package AdaSpec.Result_Steps is
 
    --  A procedure name of a step definition and its arguments
 
-   type Result_Step_Type is new Step_Type with private;
+   type Result_Step_Type is new Step_Type with private;  --  GCOV_INGORE
 
    --  Creation  --------------------------------------------------------------
 

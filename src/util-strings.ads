@@ -19,10 +19,6 @@ package Util.Strings is
    package String_Set is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
-
-   function  Join         (Strings    : in String_Vector;
-                           Sep        : in String) return String;
-
    function  Replace      (Subject     : in String;
                            Pattern     : in String;
                            Replacement : in String) return String;

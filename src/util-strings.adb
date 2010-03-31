@@ -6,25 +6,6 @@ use Ada.Strings.Fixed;
 
 package body Util.Strings is
 
-   ------------
-   --  Join  --
-   ------------
-
-   function  Join         (Strings    : in String_Vectors.Vector;
-                           Sep        : in String) return String
-   is
-      use String_Vectors;
-      Buffer : Unbounded_String;
-      I      : String_Vectors.Cursor := First (Strings);
-   begin
-      while Has_Element (I) loop
-         Append (Buffer, Element (I));
-         Append (Buffer, Sep);
-         Next (I);
-      end loop;
-      return To_String (Buffer);
-   end Join;
-
    ---------------
    --  Replace  --
    ---------------

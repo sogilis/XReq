@@ -18,7 +18,7 @@ package AdaSpecLib.Generic_Steps is
    --  Stanza_Type  --
    -------------------
 
-   type Step_Type is new Step_Interface with private;
+   type Step_Type is new Step_Interface with private;  --  GCOV_IGNORE
    type Step_Ptr is access all Step_Type'Class;
 
    --  Creation  --------------------------------------------------------------

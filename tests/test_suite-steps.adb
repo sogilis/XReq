@@ -1,7 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with AdaSpecLib;
 with AdaSpec.Steps;
 
+use AdaSpecLib;
 use AdaSpec.Steps;
 
 package body Test_Suite.Steps is
@@ -18,10 +20,11 @@ package body Test_Suite.Steps is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Stanzas");
+      return ("AdaSpec.Steps");
    end Name;
 
    procedure Run (T : in out Test_1) is
+      S : Step_Type;
    begin
 
       T.Assert (Stanza_Given ("A").To_String = "Given A",
@@ -43,6 +46,9 @@ package body Test_Suite.Steps is
                   "Expected: " & Expect & ASCII.LF &
                   "Found   : " & Found);
       end;
+
+      S.Set_Position (Position ("toto", 5));
+      T.Assert (S.Position = Position ("toto", 5), "Wrong position");
 
    end Run;
 
