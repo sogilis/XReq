@@ -165,7 +165,7 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	cucumber -t "@bootstrap" features/*.feature
+	strace cucumber -t "@bootstrap" features/*.feature
 #	-\
 #	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 #	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
