@@ -162,11 +162,14 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	-rm -rf coverage/cuke
 	-mkdir -p coverage/cuke
 	lcov -q -d obj/coverage --zerocounters
-	-bin/adaspec.cov -x bootstrap_coverage_suite features/*.feature
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	cucumber -t "~@wip" -t "~@bootstrap" -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
+	cucumber -t "@bootstrap" features/*.feature
+#	-\
+#	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+#	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
+#	cucumber -t "~@wip" -t "~@bootstrap" -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
