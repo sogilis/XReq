@@ -30,12 +30,9 @@ package AdaSpec.Result_Features is
 
    type Result_Feature_Type is new Features_Package.Feature_Type with private;
 
-   function  To_String       (Res      : in     Result_Feature_Type;
-                              Indent   : in     String := "")
-                                         return String;
    function  To_Code         (Res      : in     Result_Feature_Type;
                               Indent   : in     String := "")
-                                         return String renames To_String;
+                                         return String;
    procedure Append          (Res      : in out Result_Feature_Type;
                               Scenario : in     Result_Scenario_Type);
    procedure Process_Feature (Res      : out    Result_Feature_Type;

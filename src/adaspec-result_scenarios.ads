@@ -29,7 +29,7 @@ package AdaSpec.Result_Scenarios is
    type Result_Scenario_Type is new
       Scenarios_Package.Scenario_Type with private;
 
-   function  To_String        (Res      : in     Result_Scenario_Type;
+   function  To_Code          (Res      : in     Result_Scenario_Type;
                                Indent   : in     String := "")
                                           return String;
    procedure Append           (Res      : in out Result_Scenario_Type;

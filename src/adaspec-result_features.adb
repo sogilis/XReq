@@ -63,7 +63,7 @@ package body AdaSpec.Result_Features is
    --  Result_Feature_Type  --  To_String  --
    ------------------------------------------
 
-   function  To_String        (Res      : in     Result_Feature_Type;
+   function  To_Code        (Res      : in     Result_Feature_Type;
                                Indent   : in     String := "")
                                           return String
    is
@@ -74,17 +74,17 @@ package body AdaSpec.Result_Features is
    begin
       Append (Buffer, Indent & "Feature " & Res.Name & CRLF);
       Append (Buffer, Indent & "   Background " & S & CRLF);
-      Append (Buffer, Res.Background.To_String (Indent & "      "));
+      Append (Buffer, Res.Background.To_Code (Indent & "      "));
       Append (Buffer, Indent & "   End Background " & S & CRLF);
       for I in Res.Scenario_First .. Res.Scenario_Last loop
          E := Res.Scenario_Element (I);
          Append (Buffer, Indent & "   Scenario " & E.Name & CRLF);
-         Append (Buffer, E.To_String (Indent & "      "));
+         Append (Buffer, E.To_Code (Indent & "      "));
          Append (Buffer, Indent & "   End Scenario " & E.Name & CRLF);
       end loop;
       Append (Buffer, Indent & "End Feature " & Res.Name & CRLF);
       return To_String (Buffer);
-   end To_String;
+   end To_Code;
 
    ------------
    --  Fail  --

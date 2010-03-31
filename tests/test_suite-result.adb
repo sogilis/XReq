@@ -68,12 +68,12 @@ package body Test_Suite.Result is
       package Result_Steps is new Ada.Containers.Vectors
         (Natural, Result_Step_Type, Equals);
       use Result_Steps;
+      use Ada.Containers;
 
       function Eq (S : in Result_Scenario_Type;
                    V : in Result_Steps.Vector) return Boolean;
       function Eq (S : in Result_Scenario_Type;
                    V : in Result_Steps.Vector) return Boolean is
-         use Ada.Containers;
       begin
          if Integer (Length (V)) /= S.Step_Count then
             return False;
@@ -126,12 +126,18 @@ package body Test_Suite.Result is
       T.Assert (A = B,
               "Wrong Step #1: " & A.To_Code & " /= " & B.To_Code);
 
+      T.Assert (Integer (Length (Ideal_Result)) /= Result.Step_Count,
+              "Wrong scenario result length (1)");
+
       T.Assert (Eq (Result, Ideal_Result),
               "Wrong scenario result (1)");
 
       Step_Append (Scenario, Stanza_When  ("this step doesn't work"));
       Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
       T.Assert (Errors, "No error while processing scenario (2)");
+
+      T.Assert (Integer (Length (Ideal_Result)) /= Result.Step_Count,
+              "Wrong scenario result length (2)");
 
       T.Assert (Eq (Result, Ideal_Result),
               "Wrong scenario result (2)");
@@ -208,7 +214,9 @@ package body Test_Suite.Result is
 --               To_String (Expected) & "---");
 
       T.Assert (Result.To_Code = Exp_Str,
-              "To_String value not expected:" & CRLF & Result.To_Code);
+              "To_String value not expected:" & CRLF &
+              "Got:      <<<" & Result.To_Code & ">>>" & CRLF &
+              "Expected: <<<" & Exp_Str & ">>>");
 
       Free (Steps);
    end Run;
@@ -252,7 +260,9 @@ package body Test_Suite.Result is
       Feature.Set_Name ("simplest feature");
 
       T.Assert (Feature.To_Code = Expected,
-              "To_String value not expected:" & CRLF & Feature.To_Code);
+              "To_String value not expected:" & CRLF &
+              "Got:      <<<" & Feature.To_Code & ">>>" & CRLF &
+              "Expected: <<<" & Expected & ">>>");
 
    end Run;
 

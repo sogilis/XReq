@@ -43,11 +43,8 @@ package AdaSpec.Result_Steps is
 
 
    function Procedure_Name (S      : in Result_Step_Type) return String;
-   function To_String      (S      : in Result_Step_Type;
-                            Indent : in String := "") return String;
    function To_Code        (S      : in Result_Step_Type;
-                            Indent : in String := "") return String
-                            renames To_String;
+                            Indent : in String := "") return String;
 
    procedure Set_Procedure_Name (S   : in out Result_Step_Type;
                                  Prc : in     String);

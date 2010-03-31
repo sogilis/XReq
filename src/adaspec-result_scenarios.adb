@@ -103,7 +103,7 @@ package body AdaSpec.Result_Scenarios is
    --  Result_Scenario_Type  --  To_String  --
    -------------------------------------------
 
-   function  To_String        (Res      : in     Result_Scenario_Type;
+   function  To_Code        (Res      : in     Result_Scenario_Type;
                                Indent   : in     String := "")
                                           return String
    is
@@ -113,10 +113,10 @@ package body AdaSpec.Result_Scenarios is
    begin
       for I in Res.Step_First .. Res.Step_Last loop
          Append (Buffer,
-                 Indent & Step_Type (Res.Step_Element (I)).To_String & CRLF);
+                 Indent & Res.Step_Element (I).To_Code & CRLF);
       end loop;
       return To_String (Buffer);
-   end To_String;
+   end To_Code;
 
    --------------------
    --  New_Scenario  --

@@ -82,7 +82,7 @@ package body AdaSpec.Result_Steps is
    --  Result_Step_Type  --  To_String  --
    ---------------------------------------
 
-   function To_String (S : in Result_Step_Type;
+   function To_Code (S : in Result_Step_Type;
                        Indent : in String := "") return String
    is
       use Util.Strings;
@@ -99,7 +99,7 @@ package body AdaSpec.Result_Steps is
       end loop;
       Append (Buffer, " );");
       return To_String (Buffer);
-   end To_String;
+   end To_Code;
 
    ------------------------------------------
    --  Result_Step_Type  --  Process_Step  --
