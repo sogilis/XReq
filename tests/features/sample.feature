@@ -8,4 +8,4 @@ Feature: Sample
 
   Scenario: Another one
     When I match "toto"
-    And  I match "tata"
+    And  I match "tata" and "tutu"

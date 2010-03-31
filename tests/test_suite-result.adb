@@ -173,7 +173,8 @@ package body Test_Suite.Result is
                "   End Scenario Run a good step"    & CRLF &
                "   Scenario Another one"            & CRLF &
                "      Sample2.When_I_Match ((""toto"" 10 13) );" & CRLF &
-               "      Sample2.When_I_Match ((""tata"" 10 13) );" & CRLF &
+               "      Sample2.When_I_Match ((""tata"" 10 13)"    &
+                                           "(""tutu"" 21 24) );" & CRLF &
                "   End Scenario Another one"        & CRLF &
                "End Feature Sample"                 & CRLF;
    begin

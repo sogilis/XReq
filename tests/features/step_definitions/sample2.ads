@@ -18,7 +18,8 @@ package Sample2 is
    --  @then ^I get a cake$
    procedure I_get_a_cake (Args : in out Arg_Type);
 
-   --  @when ^I match "(.*)"$
+   --  @when ^I match "([^"]*)"$
+   --  @when ^I match "([^"]*)" and "([^"]*)"$
    procedure When_I_Match (Args : in out Arg_Type);
 
 end Sample2;
