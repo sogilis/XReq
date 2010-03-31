@@ -79,9 +79,10 @@ package body Test_Suite.Result is
             return False;
          end if;
          for I in S.Step_First .. S.Step_Last loop
-            if AdaSpec.Result_Steps.Equals
+            if not AdaSpec.Result_Steps.Equals
                      (S.Step_Element (I), Element (V, I))
             then
+               Std_Logger.Put_Line ("Fail at index" & I'Img);
                return False;
             end if;
          end loop;
@@ -126,8 +127,9 @@ package body Test_Suite.Result is
       T.Assert (A = B,
               "Wrong Step #1: " & A.To_Code & " /= " & B.To_Code);
 
-      T.Assert (Integer (Length (Ideal_Result)) /= Result.Step_Count,
-              "Wrong scenario result length (1)");
+      T.Assert (Integer (Length (Ideal_Result)) = Result.Step_Count,
+              "Wrong scenario result length (1)" & Result.Step_Count'Img &
+              " instead of" & Length (Ideal_Result)'Img);
 
       T.Assert (Eq (Result, Ideal_Result),
               "Wrong scenario result (1)");
@@ -136,7 +138,7 @@ package body Test_Suite.Result is
       Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
       T.Assert (Errors, "No error while processing scenario (2)");
 
-      T.Assert (Integer (Length (Ideal_Result)) /= Result.Step_Count,
+      T.Assert (Integer (Length (Ideal_Result)) = Result.Step_Count,
               "Wrong scenario result length (2)");
 
       T.Assert (Eq (Result, Ideal_Result),
