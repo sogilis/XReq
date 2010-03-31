@@ -171,12 +171,16 @@ package body Test_Suite.Result is
                "   Scenario Run a good step"        & CRLF &
                "      Sample1.This_Step_Works ( );" & CRLF &
                "   End Scenario Run a good step"    & CRLF &
+               "   Scenario Another one"            & CRLF &
+               "      Sample2.When_I_Match ((""toto"" 10 13) );" & CRLF &
+               "      Sample2.When_I_Match ((""tata"" 10 13) );" & CRLF &
+               "   End Scenario Another one"        & CRLF &
                "End Feature Sample"                 & CRLF;
    begin
 
       Steps   := Load   ("tests/features/step_definitions", Lang_Ada);
       Feature := new Feature_File_Type'(Create
-            ("tests/features/simplest.feature"));
+            ("tests/features/sample.feature"));
 
       declare
          procedure P;

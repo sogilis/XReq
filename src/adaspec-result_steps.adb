@@ -51,11 +51,11 @@ package body AdaSpec.Result_Steps is
       return To_String (S.Procedure_Name);
    end Procedure_Name;
 
-   ---------------------------------------
-   --  Result_Step_Type  --  To_String  --
-   ---------------------------------------
+   -------------------------------------
+   --  Result_Step_Type  --  To_Code  --
+   -------------------------------------
 
-   function To_Code (S : in Result_Step_Type;
+   function To_Code   (S      : in Result_Step_Type;
                        Indent : in String := "") return String
    is
       use Util.Strings;
