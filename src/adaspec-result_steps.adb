@@ -1,5 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Util.Strings;
+
 package body AdaSpec.Result_Steps is
 
    --------------------------------------
@@ -11,10 +13,9 @@ package body AdaSpec.Result_Steps is
                           Position : in Position_Type)
                           return Result_Step_Type is
    begin
-      return Step_Type'(Prefix => Kind,
-                        Stanza => To_Unbounded_String (Stanza),
-                        Pos    => Position,
-                        others => <>);
+      return Result_Step_Type'
+        (AdaSpec.Steps.New_Step (Kind, Stanza, Position)
+         with others => <>);
    end New_Step;
 
    -------------------------------------
@@ -54,18 +55,18 @@ package body AdaSpec.Result_Steps is
    --  Result_Step_Type  --  New_Result_Step  --
    ---------------------------------------------
 
-   function  New_Result_Step (Procedure_Name : in  String;
-                              Step           : in  Step_Type;
+   function  New_Result_Step (Step           : in  Step_Type;
+                              Procedure_Name : in  String := "";
                               Matches        : in  Match_Vectors.Vector
                                              := Match_Vectors.Empty_Vector)
                                              return Result_Step_Type
    is
    begin
-      return Result_Step_Type'(
+      return Result_Step_Type'
+        (Step with
          Procedure_Name => To_Unbounded_String (Procedure_Name),
-         Step           => Step,
-         Matches        => Matches)
-   end Create;
+         Matches        => Matches);
+   end New_Result_Step;
 
 
    --------------------------------------------
@@ -84,18 +85,17 @@ package body AdaSpec.Result_Steps is
    function To_String (S : in Result_Step_Type;
                        Indent : in String := "") return String
    is
-      use Match_Vectors;
+      use Util.Strings;
       Buffer : Unbounded_String;
-      I : Cursor := First (S.Matches);
+      E : Match_Location;
    begin
       Append (Buffer, Indent & Procedure_Name (S) & " (");
-      while Has_Element (I) loop
-         Append (Buffer, "(" &
-                 Ada_String (S.Step.Stanza
-                    (Element (I).First .. Element (I).Last)) &
-                 Element (I).First'Img &
-                 Element (I).Last'Img & ")");
-         Next (I);
+      for I in S.Match_First .. S.Match_Last loop
+         E := S.Match_Element (I);
+         Append (Buffer, String'("(" &
+                 Ada_String (S.Stanza (E.First .. E.Last)) &
+                 E.First'Img &
+                 E.Last'Img & ")"));
       end loop;
       Append (Buffer, " );");
       return To_String (Buffer);
@@ -105,12 +105,6 @@ package body AdaSpec.Result_Steps is
    --  Result_Step_Type  --  Process_Step  --
    ------------------------------------------
 
-   procedure Process_Step     (Res      : out Result_Step_Type;
-                               Stanza   : in  Step_Type;
-                               Steps    : in  Step_Definitions_Type;
-                               Log      : in  Logger_Ptr;
-                               Errors   : out Boolean;
-                               Step_Matching : in Boolean);
    procedure Process_Step     (Res      : out Result_Step_Type;
                                Stanza   : in  Step_Type;
                                Steps    : in  Step_Definitions_Type;
@@ -145,7 +139,71 @@ package body AdaSpec.Result_Steps is
                        """ matches """ & To_String (Match.Position) &
                        """ procedure " & To_String (Match.Proc_Name));
       end if;
-      Make (Res, To_String (Match.Proc_Name), Stanza, Match.Matches);
+      Res := New_Result_Step (Stanza);
+      Res.Procedure_Name := Match.Proc_Name;
+      Res.Matches        := Match.Matches;
    end Process_Step;
+
+   --------------------------
+   --  Set_Procedure_Name  --
+   --------------------------
+
+   procedure Set_Procedure_Name (S   : in out Result_Step_Type;
+                                 Prc : in     String) is
+   begin
+      S.Procedure_Name := To_Unbounded_String (Prc);
+   end Set_Procedure_Name;
+
+   ----------------------------------
+   --  Step_Type  --  Match_First  --
+   ----------------------------------
+
+   function Match_First   (S : in Result_Step_Type) return Natural is
+      pragma Unreferenced (S);
+   begin
+      return 0;
+   end Match_First;
+
+   ---------------------------------
+   --  Step_Type  --  Match_Last  --
+   ---------------------------------
+
+   function Match_Last    (S : in Result_Step_Type) return Integer is
+   begin
+      return Match_Count (S) - 1;
+   end Match_Last;
+
+   ----------------------------------
+   --  Step_Type  --  Match_Count  --
+   ----------------------------------
+
+   function Match_Count   (S : in Result_Step_Type) return Natural is
+      use Match_Vectors;
+   begin
+      return Integer (Length (S.Matches));
+   end Match_Count;
+
+   ------------------------------------
+   --  Step_Type  --  Match_Element  --
+   ------------------------------------
+
+   function Match_Element (S : in Result_Step_Type;
+                           I : in Natural)          return Match_Location
+   is
+      use Match_Vectors;
+   begin
+      return Element (S.Matches, I);
+   end Match_Element;
+
+   -----------------------------
+   --  Step_Type  --  Equals  --
+   -----------------------------
+
+   function Equals (Left, Right : in Result_Step_Type) return Boolean is
+      L : constant access constant Result_Step_Type'Class := Left'Access;
+      R : constant access constant Result_Step_Type'Class := Right'Access;
+   begin
+      return L.all = R.all;
+   end Equals;
 
 end AdaSpec.Result_Steps;

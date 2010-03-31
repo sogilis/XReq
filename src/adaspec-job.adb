@@ -1,8 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with AdaSpec.Result_Features;
 
 use Ada.Directories;
+use AdaSpec.Result_Features;
 
 package body AdaSpec.Job is
 
@@ -157,7 +159,7 @@ package body AdaSpec.Job is
                        Step_Matching);
    exception
       when Parse_Error =>
-         Job.Result.Fail := True;
+         Job.Result.Set_Fail;
    end Run;
 
    -----------------------------

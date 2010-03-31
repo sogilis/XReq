@@ -85,6 +85,48 @@ package body AdaSpecLib.Generic_Scenarios is
       return Element (Scenario.D.Steps, Index);
    end Step_Element;
 
+   -------------------------------
+   --  Scenario  --  Tag_First  --
+   -------------------------------
+
+   function  Tag_First  (Scenario : in     Scenario_Type) return Natural is
+      pragma Unreferenced (Scenario);
+   begin
+      return 0;
+   end Tag_First;
+
+   ------------------------------
+   --  Scenario  --  Tag_Last  --
+   ------------------------------
+
+   function  Tag_Last   (Scenario : in     Scenario_Type) return Integer is
+   begin
+      return Tag_Count (Scenario) - 1;
+   end Tag_Last;
+
+   -------------------------------
+   --  Scenario  --  Tag_Count  --
+   -------------------------------
+
+   function  Tag_Count  (Scenario : in     Scenario_Type) return Natural is
+      use Ada.Containers;
+      use String_Vectors;
+   begin
+      return Natural (Length (Scenario.D.Tags));
+   end Tag_Count;
+
+   ---------------------------------
+   --  Scenario  --  Tag_Element  --
+   ---------------------------------
+
+   function  Tag_Element (Scenario : in     Scenario_Type;
+                          Index    : in     Natural)       return String
+   is
+      use String_Vectors;
+   begin
+      return To_String (Element (Scenario.D.Tags, Index));
+   end Tag_Element;
+
    -----------------------------
    --  Scenario  --  Outline  --
    -----------------------------
@@ -130,6 +172,16 @@ package body AdaSpecLib.Generic_Scenarios is
    begin
       return S.D.Table;
    end Table;
+
+   ----------------------------------
+   --  Scenario_Type  -- Set_Name  --
+   ----------------------------------
+
+   procedure Set_Name     (S     : in out Scenario_Type;
+                           Name  : in     String) is
+   begin
+      S.D.Name := To_Unbounded_String (Name);
+   end Set_Name;
 
    -------------------------------
    --  Scenario  --  Set_Table  --

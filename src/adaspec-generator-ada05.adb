@@ -3,7 +3,6 @@
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Directories;
-with Ada.Containers;
 with Ada.Characters.Handling;
 with GNAT.OS_Lib;
 with Util.IO;
@@ -13,7 +12,6 @@ with AdaSpec.Steps;
 with AdaSpec.Args;
 
 use Ada.Directories;
-use Ada.Containers;
 use GNAT.OS_Lib;
 use Util.IO;
 use AdaSpecLib;
@@ -109,15 +107,14 @@ package body AdaSpec.Generator.Ada05 is
       use Ada.Strings.Fixed;
       use String_Set;
       use Match_Vectors;
-      Procname : constant String := Procedure_Name (Step);
+      Procname : constant String := Step.Procedure_Name;
       Pkgname  : Unbounded_String;
       Copy     : Boolean := False;
-      I        : Match_Vectors.Cursor := First (Step.Matches);
       E        : Match_Location;
       E2       : Argument_Type;
    begin
       S.Adb.Put_Line ("--");
-      S.Adb.Put_Line ("--  " & To_String (Step.Step));
+      S.Adb.Put_Line ("--  " & Step_Type (Step).To_String);
       S.Adb.Put_Line ("--");
       S.Adb.Put_Line ("Format.Start_Step;");
 
@@ -135,16 +132,16 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line ("Args   : Arg_Type;");
       S.Adb.Put_Indent;
       S.Adb.Put      ("Prefix : constant Step_Kind := ");
-      case Step.Step.Kind is
+      case Step.Kind is
          when Step_Given => S.Adb.Put ("Step_Given;");
          when Step_When  => S.Adb.Put ("Step_When;");
          when Step_Then  => S.Adb.Put ("Step_Then;");
       end case;
       S.Adb.New_Line;
       S.Adb.Put_Line ("Stanza : constant String    := " &
-                      Ada_String (Step.Step.Stanza) & ";");
+                      Ada_String (Step.Stanza) & ";");
       S.Adb.Put_Line ("Pos    : constant String    := " &
-                      Ada_String (To_String (Step.Step.Position)) & ";");
+                      Ada_String (To_String (Step.Position)) & ";");
       S.Adb.UnIndent;
 
       -------------------------------------------------------------------------
@@ -158,15 +155,14 @@ package body AdaSpec.Generator.Ada05 is
       --  Fill in Args  --
       -------------------------------------------------------------------------
       S.Adb.Put_Line ("Make (Args, " &
-                     Ada_String (Step.Step.Stanza) & ");");
-      while Has_Element (I) loop
-         E := Element (I);
+                      Ada_String (Step.Stanza) & ");");
+      for I in Step.Match_First .. Step.Match_Last loop
+         E := Step.Match_Element (I);
          S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
                                      E.Last'Img & ");");
-         Next (I);
       end loop;
-      for I2 in Step.Step.Arg_First .. Step.Step.Arg_Last loop
-         E2 := Step.Step.Arg_Element (I2);
+      for I2 in Step.Arg_First .. Step.Arg_Last loop
+         E2 := Step.Arg_Element (I2);
          case E2.Typ is
             when Text =>
                S.Adb.Put_Line ("Add_Text  (Args, " &
@@ -279,11 +275,6 @@ package body AdaSpec.Generator.Ada05 is
                                 Background : in Boolean := False)
    is
       use Util.Strings.String_Vectors;
-      use Result_Steps_Vectors2;
-      use Result_Steps;
-      I     : Result_Steps.Cursor;
-      E     : Result_Steps.Vector;
-      J     : Result_Steps_Vectors2.Cursor;
       N     : Integer;
       Proc  : constant String := "procedure " & To_String (Name) & " ";
       First : Boolean := True;
@@ -340,10 +331,10 @@ package body AdaSpec.Generator.Ada05 is
       S.Adb.Put_Line    ("Fail          : Boolean := Stop;");
       S.Adb.Put_Line    ("Tags          : constant " &
                      "AdaSpecLib.Format.Tag_Array_Type (1 .." &
-                     String'(Length (Scenario.Tags)'Img) & ") :=");
+                     String'(Scenario.Tag_Count'Img) & ") :=");
       S.Adb.Put_Indent;
       S.Adb.Put ("      (");
-      for I in 0 .. Integer (Length (Scenario.Tags)) - 1 loop
+      for I in Scenario.Tag_First .. Scenario.Tag_Last loop
          if I > 0 then
             S.Adb.Put (", ");
             S.Adb.New_Line;
@@ -352,10 +343,9 @@ package body AdaSpec.Generator.Ada05 is
          end if;
          S.Adb.Put (String'(Integer'Image (I + 1)) &
                     " => Ada.Strings.Unbounded.To_Unbounded_String (" &
-                    Ada_String (To_String (Element (Scenario.Tags, I))) &
-                    ")");
+                    Ada_String (Scenario.Tag_Element (I)) & ")");
       end loop;
-      if Length (Scenario.Tags) = 0 then
+      if Scenario.Tag_Count = 0 then
          S.Adb.Put ("others => Ada.Strings.Unbounded.Null_Unbounded_String");
       end if;
       S.Adb.Put (");");
@@ -372,8 +362,8 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Put_Line ("Format.Start_Background (First);");
       else
          S.Adb.Put_Line ("if Cond.Eval (Tags) and then Cond.Eval (" &
-                         Ada_String (To_String (Scenario.Pos.File)) & "," &
-                         Seq_Num'Img & ") then");
+                         Ada_String (To_String (Scenario.Position.File)) &
+                         "," & Seq_Num'Img & ") then");
          S.Adb.Indent;
          S.Adb.Put_Line ("if First then");
          S.Adb.Put_Line ("   Priv_Feature (Format);");
@@ -393,8 +383,8 @@ package body AdaSpec.Generator.Ada05 is
          else
             S.Adb.Put ("Put_Scenario");
          end if;
-         S.Adb.Put (" (" & Ada_String (To_String (Scenario.Name)) & ", " &
-                           Ada_String (To_String (Scenario.Pos)) & ", " &
+         S.Adb.Put (" (" & Ada_String (Scenario.Name) & ", " &
+                           Ada_String (To_String (Scenario.Position)) & ", " &
                            "Tags);");
          S.Adb.New_Line;
          S.Adb.Put_Line ("end if;");
@@ -410,7 +400,7 @@ package body AdaSpec.Generator.Ada05 is
             S.Adb.Put_Line ("Format.Start_Scenario;");
          end if;
       end if;
-      if not Background or else Length (Scenario.Steps) /= 0 then
+      if not Background or else Scenario.Step_Count /= 0 then
          if Background then
             S.Adb.Put_Line ("------------------");
             S.Adb.Put_Line ("--  Background  --");
@@ -428,35 +418,31 @@ package body AdaSpec.Generator.Ada05 is
          S.Adb.Indent;
          if Background then
             S.Adb.Put_Line ("Format.Put_Background (" &
-                              Ada_String (To_String (Scenario.Name)) & ", " &
-                              Ada_String (To_String (Scenario.Pos)) & ", " &
-                              "Tags);");
+                              Ada_String (Scenario.Name) & ", " &
+                              Ada_String (To_String (Scenario.Position)) &
+                              ", " & "Tags);");
          elsif Scenario.Outline then
             S.Adb.Put_Line ("Format.Put_Outline (" &
-                              Ada_String (To_String (Scenario.Name)) & ", " &
-                              Ada_String (To_String (Scenario.Pos)) & ", " &
-                              "Tags);");
+                              Ada_String (Scenario.Name) & ", " &
+                              Ada_String (To_String (Scenario.Position)) &
+                              ", " & "Tags);");
          else
             S.Adb.Put_Line ("Format.Put_Scenario (" &
-                              Ada_String (To_String (Scenario.Name)) & ", " &
-                              Ada_String (To_String (Scenario.Pos)) & ", " &
-                              "Tags);");
+                              Ada_String (Scenario.Name) & ", " &
+                              Ada_String (To_String (Scenario.Position)) &
+                              ", " & "Tags);");
          end if;
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
-         I := Result_Steps.First (Scenario.Steps);
-         while Has_Element (I) loop
-            Generate_Step (S, Scenario, Element (I),
+         for I in Scenario.Step_First .. Scenario.Step_Last loop
+            Generate_Step (S, Scenario, Scenario.Step_Element (I),
                            Background, Scenario.Outline, Scenario.Outline);
-            Next (I);
          end loop;
       end if;
       if Scenario.Outline then
          N := 0;
-         J := Result_Steps_Vectors2.First (Scenario.Scenarios);
-         while Has_Element (J) loop
+         for J in Scenario.Outline_First .. Scenario.Outline_Last loop
             N := N + 1;
-            E := Element (J);
             S.Adb.Put_Line ("--------------------------");
             S.Adb.Put_Line ("--  Generated Scenario  --");
             S.Adb.Put_Line ("--------------------------");
@@ -479,18 +465,22 @@ package body AdaSpec.Generator.Ada05 is
             S.Adb.Put_Line ("  Format.Put_Scenario_Outline (" &
                             Ada.Strings.Fixed.Trim
                               (N'Img, Ada.Strings.Left) & ", " &
-                            Ada_String (To_String (Scenario.Name)) & ", " &
-                            Ada_String (To_String (Scenario.Pos)) & ", " &
+                            Ada_String (Scenario.Name) & ", " &
+                            Ada_String (To_String (Scenario.Position)) & ", " &
                             "Tags);");
             S.Adb.Put_Line ("end Priv_Put_Scenario;");
             S.Adb.UnIndent;
             S.Adb.Put_Line ("begin");
             S.Adb.Indent;
-            I := Result_Steps.First (E);
-            while Has_Element (I) loop
-               Generate_Step (S, Scenario, Element (I),
-                              Background, False, True);
-               Next (I);
+            for I in Scenario.Outline_Step_First (J) ..
+                              Scenario.Outline_Step_Last (J)
+            loop
+               Generate_Step (S,
+                              Scenario,
+                              Scenario.Outline_Step_Element (J, I),
+                              Background,
+                              False,
+                              True);
             end loop;
             S.Adb.UnIndent;
             S.Adb.Put_Line ("end;");
@@ -502,7 +492,6 @@ package body AdaSpec.Generator.Ada05 is
                               "Report.Count_Scenario_Passed + 1;");
             S.Adb.Put_Line ("end if;");
             S.Adb.Put_Line ("Format.Stop_Scenario;");
-            Next (J);
             First := False;
          end loop;
          S.Adb.Put_Line ("--------------------------------");
@@ -544,19 +533,16 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate_Feature  (S : in out Ada_Generator_Type)
    is
       use Util.Strings.String_Vectors;
-      use Result_Scenarios;
-      I   : Result_Scenarios.Cursor := First (S.Feature.Scenarios);
       Str : Unbounded_String;
       N   : Positive := 1;
    begin
       Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd, 0, True);
-      while Has_Element (I) loop
+      for I in S.Feature.Scenario_First .. S.Feature.Scenario_Last loop
          Get_Unique_String (S.Pool,
-            To_Identifier ("Scenario_" & To_String (Element (I).Name)),
+            To_Identifier ("Scenario_" & S.Feature.Scenario_Element (I).Name),
             Str);
          Append (S.Fn_Steps, Str);
-         Generate_Scenario (S, Element (I), Str, N);
-         Next (I);
+         Generate_Scenario (S, S.Feature.Scenario_Element (I), Str, N);
          N := N + 1;
       end loop;
    end Generate_Feature;
@@ -594,8 +580,7 @@ package body AdaSpec.Generator.Ada05 is
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
       use Util.Strings.String_Vectors;
-      use Result_Scenarios;
-      I   : Result_Scenarios.Cursor := First (Gen.Feature.Scenarios);
+      E   : Result_Scenario_Type;
       Num : Positive := 1;
    begin
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
@@ -619,10 +604,10 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Put_Line ("begin");
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
-                        Ada_String (To_String (Gen.Feature.Name)) & ", " &
-                        Ada_String (To_String (Gen.Feature.Description)) &
+                        Ada_String (Gen.Feature.Name) & ", " &
+                        Ada_String (Gen.Feature.Description) &
                         ", " &
-                        Ada_String (To_String (Gen.Feature.Pos)) & ");");
+                        Ada_String (To_String (Gen.Feature.Position)) & ");");
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("end Priv_Feature;");
       Generate_Feature (Gen);
@@ -644,13 +629,13 @@ package body AdaSpec.Generator.Ada05 is
       Gen.Adb.Put_Line ("if List_Mode then");
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.List_Feature (" &
-                        Ada_String (To_String (Gen.Feature.Name)) & ");");
-      while Has_Element (I) loop
+                        Ada_String (Gen.Feature.Name) & ");");
+      for I in Gen.Feature.Scenario_First .. Gen.Feature.Scenario_Last loop
+         E := Gen.Feature.Scenario_Element (I);
          Gen.Adb.Put_Line ("Format.List_Scenario (" &
-                           Ada_String (To_String (Element (I).Name)) & ", " &
-                           Ada_String (To_String (Element (I).Pos.File)) &
+                           Ada_String (E.Name) & ", " &
+                           Ada_String (To_String (E.Position.File)) &
                            "," & String'(Num'Img) & ");");
-         Next (I);
          Num := Num + 1;
       end loop;
       Gen.Adb.UnIndent;

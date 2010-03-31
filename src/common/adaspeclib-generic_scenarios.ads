@@ -41,12 +41,21 @@ package AdaSpecLib.Generic_Scenarios is
    function  Step_Element (Scenario : in     Scenario_Type;
                            Index    : in     Natural)       return Step_Type;
 
+   function  Tag_First    (Scenario : in     Scenario_Type) return Natural;
+   function  Tag_Last     (Scenario : in     Scenario_Type) return Integer;
+   function  Tag_Count    (Scenario : in     Scenario_Type) return Natural;
+   function  Tag_Element  (Scenario : in     Scenario_Type;
+                           Index    : in     Natural)       return String;
+
    function  Outline      (S : in Scenario_Type) return Boolean;
    function  Name         (S : in Scenario_Type) return String;
    function  Position     (S : in Scenario_Type) return Position_Type;
    function  Tag_Vector   (S : in Scenario_Type) return String_Vector;
    function  Table        (S : in Scenario_Type)
                            return AdaSpecLib.String_Tables.Table;
+
+   procedure Set_Name     (S     : in out Scenario_Type;
+                           Name  : in     String);
 
    procedure Set_Table    (S     : in out Scenario_Type;
                            Table : in     AdaSpecLib.String_Tables.Table);
