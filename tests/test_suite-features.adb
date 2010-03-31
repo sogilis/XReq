@@ -220,19 +220,21 @@ package body Test_Suite.Features is
    function  Name (T : in Test_3) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Features null test");
+      return ("AdaSpec.Scenarios");
    end Name;
 
    procedure Run (T : in out Test_3) is
-      use Text_IO;
+      S1, S2 : Scenario_Type;
    begin
 
-      null;
+      S1.Make ("Name", Position ("A", 5), True);
+      S2.Make ("Name", Position ("A", 5), True);
 
-   exception
-      when Error : others =>
-         Put_Line (Exception_Information (Error));
-         Reraise_Occurrence (Error);
+      T.Assert (Equals (S1, S2), "S1 /= S2");
+
+      S2.Make ("Name", Position ("A", 5), False);
+
+      T.Assert (not Equals (S1, S2), "S1 = S2");
 
    end Run;
 

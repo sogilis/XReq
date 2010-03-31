@@ -53,6 +53,11 @@ package body Test_Suite.Result is
       T.Assert (Step.Procedure_Name = "Proc",
               "Wrong procedure name");
 
+      Step.Set_Procedure_Name ("pp");
+
+      T.Assert (Step.Procedure_Name = "pp",
+              "Wrong procedure name (2)");
+
    end Run;
 
    --  Result_Scenario_Type  --------------------------------------------------

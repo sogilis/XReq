@@ -93,12 +93,14 @@ private
          Pos           : Position_Type;
          Tags          : String_Vector;
          Steps         : Step_Vectors.Vector;
+         --  GCOV_IGNORE_BEGIN
          case Outline is
             when True =>
                Table   : AdaSpecLib.String_Tables.Table;
             when False =>
                null;
          end case;
+         --  GCOV_IGNORE_END
       end record;
 
    type Scenario_Type is new Scenario_Interface with

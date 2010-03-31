@@ -50,9 +50,10 @@ package body AdaSpec.Steps is
    -----------------------------
 
    function Equals (Left, Right : in Step_Type) return Boolean is
-      use Steps_Pkg;
+      L : constant access constant Step_Type'Class := Left'Access;
+      R : constant access constant Step_Type'Class := Right'Access;
    begin
-      return Left = Right;
+      return Steps_Pkg."=" (L.all, R.all);
    end Equals;
 
 

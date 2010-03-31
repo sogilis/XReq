@@ -24,7 +24,7 @@ package body Test_Suite.Steps is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      S : Step_Type;
+      S1, S2 : Step_Type;
    begin
 
       T.Assert (Stanza_Given ("A").To_String = "Given A",
@@ -47,8 +47,14 @@ package body Test_Suite.Steps is
                   "Found   : " & Found);
       end;
 
-      S.Set_Position (Position ("toto", 5));
-      T.Assert (S.Position = Position ("toto", 5), "Wrong position");
+      S1 := Stanza_Given ("A");
+      S2 := Stanza_Given ("A");
+
+      S1.Set_Position (Position ("toto", 5));
+      T.Assert (S1.Position = Position ("toto", 5), "Wrong position");
+
+      S2.Set_Position (Position ("toto", 5));
+      T.Assert (Equals (S1, S2), "Wrong Equals");
 
    end Run;
 
