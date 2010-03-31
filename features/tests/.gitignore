@@ -3,3 +3,6 @@
 /bootstrap_suite
 /test_suite
 *.gcda
+/feature_tests
+/dbg/
+/cov/

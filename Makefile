@@ -67,6 +67,23 @@ bin/unit_tests: dir
 bin/unit_tests.cov: dir
 	$(GPRBUILD) -Punit_tests.gpr -Xmode=coverage
 
+bootstrap: bin/feature_tests
+
+bin/feature_tests: bin/feature_tests.dbg
+	ln -s feature_tests.dbg $@
+
+bin/feature_tests.dbg: bin/adaspec features/*.feature
+	-$(MKDIR) features/tests/dbg
+	GNAT_FLAGS="-g -gnata -E" \
+	bin/adaspec -m -x feature_tests -o features/tests/dbg features/*.feature
+	$(CP) features/tests/dbg/feature_tests $@
+
+bin/feature_tests.cov: bin/adaspec features/*.feature
+	-$(MKDIR) features/tests/cov
+	GNAT_FLAGS="-g -gnata -E -fprofile-arcs -ftest-coverage" \
+	bin/adaspec -m -x feature_tests -o features/tests/cov features/*.feature
+	$(CP) features/tests/cov/feature_tests $@
+
 tests: dir
 	$(GPRBUILD) -Punit_tests.gpr
 
@@ -86,7 +103,7 @@ clean: clean-gcov
 	-$(RM) reports/features*.html
 	-$(RM) reports/features*.junit/*
 
-.PHONY: all dir bin tests doc clean
+.PHONY: all dir bin tests bootstrap doc clean
 
 
 

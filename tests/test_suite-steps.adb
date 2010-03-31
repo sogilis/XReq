@@ -24,20 +24,20 @@ package body Test_Suite.Steps is
    procedure Run (T : in out Test_1) is
    begin
 
-      T.Assert (To_String (Stanza_Given ("A")) = "Given A",
+      T.Assert (Stanza_Given ("A").To_String = "Given A",
               "Wrong stanza Given A");
 
-      T.Assert (To_String (Stanza_When  ("B")) = "When B",
+      T.Assert (Stanza_When  ("B").To_String = "When B",
               "Wrong stanza When B");
 
-      T.Assert (To_String (Stanza_Then  ("C")) = "Then C",
+      T.Assert (Stanza_Then  ("C").To_String = "Then C",
               "Wrong stanza Then C");
 
       declare
          Expect : constant String :=
             "@given ^Something ""([^""]*)"" dumb \(""\)$";
          Found  : constant String :=
-            To_Regexp (Stanza_Given ("Something ""here"" dumb ("")"));
+            Stanza_Given ("Something ""here"" dumb ("")").To_Regexp;
       begin
          T.Assert (Expect = Found, "To_Regexp not OK." & ASCII.LF &
                   "Expected: " & Expect & ASCII.LF &

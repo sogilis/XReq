@@ -9,17 +9,21 @@ use Util.Strings;
 use AdaSpec.Steps;
 
 package body AdaSpec.Result_Scenarios is
+   --------------------------------------
+   --  Result_Scenario_Type  --  Make  --
+   --------------------------------------
 
-   ----------------------------------------
-   --  Result_Scenario_Type  --  Append  --
-   ----------------------------------------
-
-   procedure Append           (Res      : in out Result_Scenario_Type;
-                               Step     : in     Result_Step_Type)
-   is
+   procedure Make             (Res           : out    Result_Scenario_Type;
+                               Scenario      : in     Scenario_Type) is
    begin
-      Res.Step_Append (Step);
-   end Append;
+      Res.Make (Scenario.Name,
+                Scenario.Position,
+                Scenario.Outline,
+                Scenario.Tag_Vector);
+      if Scenario.Outline then
+         Res.Set_Table (Scenario.Table);
+      end if;
+   end Make;
 
    --------------------------------------------------
    --  Result_Scenario_Type  --  Process_Scenario  --
@@ -35,36 +39,46 @@ package body AdaSpec.Result_Scenarios is
       use Result_Steps;
       use Result_Steps_Vectors2;
       J         : Result_Steps.Cursor;
-      Stanza    : Step_Type;
       Res_St    : Result_Step_Type;
-      StepsV    : Result_Steps.Vector;
       Steps_tmp : Result_Steps.Vector;
       Err       : Boolean;
-      Scenarios : Result_Steps_Vectors2.Vector;
    begin
+      Res.Make (Scenario);
+      Clear (Res.Scenarios);
       Errors := False;
-      Res := New_Scenario (Scenario.Name,
-                           Scenario.Position,
-                           Scenario.Outline,
-                           Scenario.Tag_Vector);
+      --
+      --  Process all steps
+      --
       for I in Scenario.Step_First .. Scenario.Step_Last loop
-         Stanza := Scenario.Step_Element (I);
          if Scenario.Outline then
             Err := False;
-            Res_St := New_Result_Step (Stanza);
+            Res_St.Make (Scenario.Step_Element (I));
          else
-            Res_St.Process_Step (Stanza, Steps, Log, Err, Step_Matching);
+            Res_St.Process_Step (Scenario.Step_Element (I),
+                                 Steps,
+                                 Log, Err, Step_Matching);
          end if;
          if Err then
             Errors := True;
          else
-            Append (StepsV, Res_St);
             Res.Step_Append (Res_St);
          end if;
       end loop;
+      --
+      --  For scenario outlines, create scenarios
+      --
       if Scenario.Outline then
          for Y in Scenario.Table.First_Y + 1 .. Scenario.Table.Last_Y loop
-            Steps_tmp := StepsV;
+            --
+            --  For each row,
+            --  take each cell and replace <Label> with the actual item in each
+            --  steps
+            --
+            Clear (Steps_tmp);
+            for I in Scenario.Step_First .. Scenario.Step_Last loop
+               Res_St.Make (Scenario.Step_Element (I));
+               Append (Steps_tmp, Res_St);
+            end loop;
             for X in Scenario.Table.First_X .. Scenario.Table.Last_X loop
                declare
                   Item  : constant String := Scenario.Table.Item (X, Y, "");
@@ -74,16 +88,21 @@ package body AdaSpec.Result_Scenarios is
                   J := First (Steps_tmp);
                   while Has_Element (J) loop
                      Res_St := Element (J);
+                     --  Log.Put_Line ("Replace: " & Res_St.To_String);
                      Res_St.Set_Stanza (Replace (Res_St.Stanza, Label, Item));
+                     --  Log.Put_Line ("With   : " & Res_St.To_String);
                      Replace_Element (Steps_tmp, J, Res_St);
                      Next (J);
                   end loop;
                end;
             end loop;
+            --
+            --  Now that we have the scenario for the row, process their steps
+            --
             J := First (Steps_tmp);
             while Has_Element (J) loop
                Res_St := Element (J);
-               Log.Put_Line (Step_Type (Res_St).To_String);
+               --  Log.Put_Line ("I get  : " & Res_St.To_String);
                Process_Step (Res_St, Step_Type (Res_St),
                              Steps, Log, Err, Step_Matching);
                if Err then
@@ -92,10 +111,12 @@ package body AdaSpec.Result_Scenarios is
                Replace_Element (Steps_tmp, J, Res_St);
                Next (J);
             end loop;
-            Append (Scenarios, Steps_tmp);
+            --  Log.Put_Line ("--------");
+            --
+            --  And append the scenario in the scenario outline
+            --
+            Append (Res.Scenarios, Steps_tmp);
          end loop;
-         Res.Scenarios := Scenarios;
-         Res.Set_Table (Scenario.Table);
       end if;
    end Process_Scenario;
 
@@ -117,23 +138,6 @@ package body AdaSpec.Result_Scenarios is
       end loop;
       return To_String (Buffer);
    end To_Code;
-
-   --------------------
-   --  New_Scenario  --
-   --------------------
-
-   function  New_Scenario (Name     : in     String;
-                           Position : in     Position_Type := Null_Position;
-                           Outline  : in     Boolean := False;
-                           Tags     : in     AdaSpecLib.String_Vector :=
-                                      AdaSpecLib.String_Vectors.Empty_Vector)
-                                      return Result_Scenario_Type
-   is
-   begin
-      return Result_Scenario_Type'
-        (Scenarios_Package.New_Scenario (Name, Position, Outline, Tags)
-         with others => <>);
-   end New_Scenario;
 
    ---------------------
    --  Outline_First  --

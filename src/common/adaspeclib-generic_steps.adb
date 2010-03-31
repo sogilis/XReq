@@ -8,49 +8,16 @@ package body AdaSpecLib.Generic_Steps is
    --  Step_Type  --  New_Step  --
    -------------------------------
 
-   function  New_Step    (Kind     : in Step_Kind;
-                          Stanza   : in String;
-                          Position : in Position_Type) return Step_Type is
+   procedure Make     (Step     : out Step_Type;
+                       Kind     : in  Step_Kind;
+                       Stanza   : in  String;
+                       Position : in  Position_Type) is
    begin
-      return Step_Type'(Prefix => Kind,
-                        Stanza => To_Unbounded_String (Stanza),
-                        Pos    => Position,
-                        others => <>);
-   end New_Step;
-
-   -------------------------------------
-   --  Stanza_Type  --  Stanza_Given  --
-   -------------------------------------
-
-   function Stanza_Given (S    : in String;
-                          File : in String := "";
-                          Line : in Natural := 0) return Step_Type is
-   begin
-      return New_Step (Step_Given, S, Position (File, Line));
-   end Stanza_Given;
-
-   ------------------------------------
-   --  Stanza_Type  --  Stanza_When  --
-   ------------------------------------
-
-   function Stanza_When  (S    : in String;
-                          File : in String := "";
-                          Line : in Natural := 0) return Step_Type is
-   begin
-      return New_Step (Step_When, S, Position (File, Line));
-   end Stanza_When;
-
-   ------------------------------------
-   --  Stanza_Type  --  Stanza_Then  --
-   ------------------------------------
-
-   function Stanza_Then  (S    : in String;
-                          File : in String := "";
-                          Line : in Natural := 0) return Step_Type is
-   begin
-      return New_Step (Step_Then, S, Position (File, Line));
-   end Stanza_Then;
-
+      Step := Step_Type'(Prefix => Kind,
+                         Stanza => To_Unbounded_String (Stanza),
+                         Pos    => Position,
+                         others => <>);
+   end Make;
 
    ----------------------------------
    --  Stanza_Type  --  To_String  --

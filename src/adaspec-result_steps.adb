@@ -1,55 +1,29 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with AdaSpecLib;
 with Util.Strings;
+
+use AdaSpecLib;
 
 package body AdaSpec.Result_Steps is
 
-   --------------------------------------
-   --  Result_Step_Type  --  New_Step  --
-   --------------------------------------
 
-   function  New_Step    (Kind     : in Step_Kind;
-                          Stanza   : in String;
-                          Position : in Position_Type)
-                          return Result_Step_Type is
+   ----------------------------------
+   --  Result_Step_Type  --  Make  --
+   ----------------------------------
+
+   procedure Make           (Self           : out Result_Step_Type;
+                             Step           : in  Step_Type;
+                             Procedure_Name : in  String := "";
+                             Matches        : in  Match_Vectors.Vector
+                             := Match_Vectors.Empty_Vector)
+   is
    begin
-      return Result_Step_Type'
-        (AdaSpec.Steps.New_Step (Kind, Stanza, Position)
-         with others => <>);
-   end New_Step;
-
-   -------------------------------------
-   --  Stanza_Type  --  Stanza_Given  --
-   -------------------------------------
-
-   function Stanza_Given (S    : in String;
-                          File : in String := "";
-                          Line : in Natural := 0) return Result_Step_Type is
-   begin
-      return New_Step (Step_Given, S, Position (File, Line));
-   end Stanza_Given;
-
-   ------------------------------------
-   --  Stanza_Type  --  Stanza_When  --
-   ------------------------------------
-
-   function Stanza_When  (S    : in String;
-                          File : in String := "";
-                          Line : in Natural := 0) return Result_Step_Type is
-   begin
-      return New_Step (Step_When, S, Position (File, Line));
-   end Stanza_When;
-
-   ------------------------------------
-   --  Stanza_Type  --  Stanza_Then  --
-   ------------------------------------
-
-   function Stanza_Then  (S    : in String;
-                          File : in String := "";
-                          Line : in Natural := 0) return Result_Step_Type is
-   begin
-      return New_Step (Step_Then, S, Position (File, Line));
-   end Stanza_Then;
+      Self := Result_Step_Type'
+        (Step with
+         Procedure_Name => To_Unbounded_String (Procedure_Name),
+         Matches        => Matches);
+   end Make;
 
    ---------------------------------------------
    --  Result_Step_Type  --  New_Result_Step  --
@@ -62,10 +36,9 @@ package body AdaSpec.Result_Steps is
                                              return Result_Step_Type
    is
    begin
-      return Result_Step_Type'
-        (Step with
-         Procedure_Name => To_Unbounded_String (Procedure_Name),
-         Matches        => Matches);
+      return Self : Result_Step_Type do
+         Self.Make (Step, Procedure_Name, Matches);
+      end return;
    end New_Result_Step;
 
 
@@ -120,26 +93,26 @@ package body AdaSpec.Result_Steps is
       exception
          when Ambiguous_Match =>
             Log.Put_Line (String'("Error: Ambiguous match in " &
-                        To_String (Position (Stanza)) & " for:"));
-            Log.Put_Line ("  " & To_String (Stanza));
+                          To_String (Stanza.Position) & " for:"));
+            Log.Put_Line ("  " & Stanza.To_String);
             Errors := True;
       end;
       if not Match.Match then
          Log.Put_Line (String'("Error: Missing step definition in " &
-                       To_String (Position (Stanza)) & " for:"));
-         Log.Put_Line ("  " & To_String (Stanza));
+                       To_String (Stanza.Position) & " for:"));
+         Log.Put_Line ("  " & Stanza.To_String);
          Log.Put_Line ("You can implement this step by adding on your " &
                        "step definition file:");
-         Log.Put_Line ("  --  " & To_Regexp (Stanza));
+         Log.Put_Line ("  --  " & Stanza.To_Regexp);
          Log.Put_Line ("  --  @todo");
          Log.New_Line;
          Errors := True;
       elsif Step_Matching then
-         Log.Put_Line ("Step Matching: """ & To_String (Position (Stanza)) &
+         Log.Put_Line ("Step Matching: """ & To_String (Stanza.Position) &
                        """ matches """ & To_String (Match.Position) &
                        """ procedure " & To_String (Match.Proc_Name));
       end if;
-      Res := New_Result_Step (Stanza);
+      Res.Make (Stanza);
       Res.Procedure_Name := Match.Proc_Name;
       Res.Matches        := Match.Matches;
    end Process_Step;
@@ -194,16 +167,5 @@ package body AdaSpec.Result_Steps is
    begin
       return Element (S.Matches, I);
    end Match_Element;
-
-   -----------------------------
-   --  Step_Type  --  Equals  --
-   -----------------------------
-
-   function Equals (Left, Right : in Result_Step_Type) return Boolean is
-      L : constant access constant Result_Step_Type'Class := Left'Access;
-      R : constant access constant Result_Step_Type'Class := Right'Access;
-   begin
-      return L.all = R.all;
-   end Equals;
 
 end AdaSpec.Result_Steps;

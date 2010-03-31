@@ -27,26 +27,26 @@ package AdaSpec.Result_Scenarios is
       (Result_Step_Type, AdaSpec.Result_Steps.Equals);
 
    type Result_Scenario_Type is new
-      Scenarios_Package.Scenario_Type with private;
+     Scenarios_Package.Scenario_Type with private;
 
-   function  To_Code          (Res      : in     Result_Scenario_Type;
-                               Indent   : in     String := "")
-                                          return String;
-   procedure Append           (Res      : in out Result_Scenario_Type;
-                               Step     : in     Result_Step_Type);
-   procedure Process_Scenario (Res      : out    Result_Scenario_Type;
-                               Scenario : in     Scenario_Type;
-                               Steps    : in     Step_Definitions_Type;
-                               Log      : in     Logger_Ptr;
-                               Errors   : out    Boolean;
+   --  Creation  --------------------------------------------------------------
+
+   procedure Make             (Res           : out    Result_Scenario_Type;
+                               Scenario      : in     Scenario_Type);
+
+   --  Processing  ------------------------------------------------------------
+
+   function  To_Code          (Res           : in     Result_Scenario_Type;
+                               Indent        : in     String := "")
+                                               return String;
+   procedure Process_Scenario (Res           : out    Result_Scenario_Type;
+                               Scenario      : in     Scenario_Type;
+                               Steps         : in     Step_Definitions_Type;
+                               Log           : in     Logger_Ptr;
+                               Errors        : out    Boolean;
                                Step_Matching : in Boolean := False);
 
-   function  New_Scenario (Name     : in     String;
-                           Position : in     Position_Type := Null_Position;
-                           Outline  : in     Boolean := False;
-                           Tags     : in     String_Vector :=
-                                             String_Vectors.Empty_Vector)
-                                      return Result_Scenario_Type;
+   --  Collection: Outlines  --------------------------------------------------
 
    function  Outline_First (S : in Result_Scenario_Type) return Natural;
    function  Outline_Last  (S : in Result_Scenario_Type) return Integer;
@@ -61,6 +61,8 @@ package AdaSpec.Result_Scenarios is
                                    Outline : in Natural;
                                    Step    : in Natural)
                                    return Result_Step_Type;
+
+   ----------------------------------------------------------------------------
 
 private
 

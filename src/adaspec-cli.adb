@@ -80,6 +80,11 @@ package body AdaSpec.CLI is
       Put_Line ("    --step-matching");
       Put_Line ("        Show matches with step definitions");
       Put_Line ("");
+      Put_Line ("ENVIRONMENT VARIABLES");
+      Put_Line ("");
+      Put_Line ("    GNAT_FLAGS");
+      Put_Line ("        Additional flags to pass to gnatmake");
+      Put_Line ("");
       Put_Line ("-- ");
       Put_Line ("Copyright (c) 2010 SOGILIS");
 

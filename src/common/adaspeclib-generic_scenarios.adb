@@ -2,36 +2,38 @@
 
 package body AdaSpecLib.Generic_Scenarios is
 
-   ----------------------------------
-   --  Scenario  --  New_Scenario  --
-   ----------------------------------
+   -------------------------------
+   --  Scenario_Type  --  Make  --
+   -------------------------------
 
-   function  New_Scenario (Name     : in     String;
+
+   procedure Make         (Scenario : out    Scenario_Type;
+                           Name     : in     String;
                            Position : in     Position_Type := Null_Position;
                            Outline  : in     Boolean := False;
                            Tags     : in     String_Vector :=
-                                             String_Vectors.Empty_Vector)
-                                      return Scenario_Type
-   is
+                             String_Vectors.Empty_Vector) is
    begin
       if Outline then
-         return Scenario_Type'(D => (Outline => True,
-                                     Name    => To_Unbounded_String (Name),
-                                     Pos     => Position,
-                                     Tags    => Tags,
-                                     others  => <>));
+         Scenario := Scenario_Type'
+           (D => (Outline => True,
+                  Name    => To_Unbounded_String (Name),
+                  Pos     => Position,
+                  Tags    => Tags,
+                  others  => <>));
       else
-         return Scenario_Type'(D => (Outline => False,
-                                     Name    => To_Unbounded_String (Name),
-                                     Pos     => Position,
-                                     Tags    => Tags,
-                                     others  => <>));
+         Scenario := Scenario_Type'
+           (D => (Outline => False,
+                  Name    => To_Unbounded_String (Name),
+                  Pos     => Position,
+                  Tags    => Tags,
+                  others  => <>));
       end if;
-   end New_Scenario;
+   end Make;
 
-   ----------------------------
-   --  Scenario  --  Append  --
-   ----------------------------
+   ---------------------------------
+   --  Scenario  --  Step_Append  --
+   ---------------------------------
 
    procedure Step_Append (Scenario : in out Scenario_Type;
                      Stanza   : in     Step_Type)

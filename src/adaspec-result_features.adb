@@ -48,17 +48,6 @@ package body AdaSpec.Result_Features is
       Res := Result;
    end Process_Feature;
 
-   ---------------------------------------
-   --  Result_Feature_Type  --  Append  --
-   ---------------------------------------
-
-   procedure Append          (Res      : in out Result_Feature_Type;
-                              Scenario : in     Result_Scenario_Type)
-   is
-   begin
-      Res.Scenario_Append (Scenario);
-   end Append;
-
    ------------------------------------------
    --  Result_Feature_Type  --  To_String  --
    ------------------------------------------

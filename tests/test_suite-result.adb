@@ -48,7 +48,7 @@ package body Test_Suite.Result is
       Step : Result_Step_Type;
    begin
 
-      Step := New_Result_Step (Stanza_Given (""), "Proc");
+      Step.Make (Stanza_Given (""), "Proc");
 
       T.Assert (Step.Procedure_Name = "Proc",
               "Wrong procedure name");
@@ -98,7 +98,7 @@ package body Test_Suite.Result is
       Errors       : Boolean;
    begin
 
-      Scenario := New_Scenario ("Scenario");
+      Scenario.Make ("Scenario");
       Step_Append (Scenario, Stanza_Given ("this step works"));
       Step_Append (Scenario, Stanza_When  ("this step works too"));
 
@@ -201,11 +201,11 @@ package body Test_Suite.Result is
       T.Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");
 
-      Append (R_Scen, New_Result_Step (Stanza_Given ("this step works"),
-                                       "Sample1.This_Step_Works"));
+      R_Scen.Step_Append (New_Result_Step (Stanza_Given ("this step works"),
+                                           "Sample1.This_Step_Works"));
       Expected.Set_Background (R_Scen);
       R_Scen.Set_Name ("Run a good step");
-      Append (Expected, R_Scen);
+      Expected.Scenario_Append (R_Scen);
       Expected.Set_Name ("Sample");
 
 --       Can't Test the "=" operator without loading twice the same file
@@ -252,13 +252,13 @@ package body Test_Suite.Result is
    begin
 
       Append (Matches, (1, 15));
-      Append (R_Scen, New_Result_Step (Stanza_Given ("this step works"),
-                                       "Sample1.This_Step_Works",
-                                       Matches));
+      R_Scen.Step_Append (New_Result_Step (Stanza_Given ("this step works"),
+                                           "Sample1.This_Step_Works",
+                                           Matches));
       R_Scen.Set_Name ("BG");
       Feature.Set_Background (R_Scen);
       R_Scen.Set_Name ("Run a good step");
-      Append (Feature, R_Scen);
+      Feature.Scenario_Append (R_Scen);
       Feature.Set_Name ("simplest feature");
 
       T.Assert (Feature.To_Code = Expected,

@@ -26,12 +26,38 @@ package AdaSpecLib.Generic_Scenarios is
    type Scenario_Type is new Scenario_Interface with private;
    type Scenario_Ptr is access all Scenario_Type'Class;
 
-   function  New_Scenario (Name     : in     String;
+   --  Creation  --------------------------------------------------------------
+
+   procedure Make         (Scenario : out    Scenario_Type;
+                           Name     : in     String;
                            Position : in     Position_Type := Null_Position;
                            Outline  : in     Boolean := False;
                            Tags     : in     String_Vector :=
-                                             String_Vectors.Empty_Vector)
-                                      return Scenario_Type;
+                                             String_Vectors.Empty_Vector);
+
+   --  Processing  ------------------------------------------------------------
+
+   procedure Output_Steps (S     : in     Scenario_Type;
+                           Buf   : in out Unbounded_String);
+
+   --  Properties: Read  ------------------------------------------------------
+
+   function  Outline      (S : in Scenario_Type) return Boolean;
+   function  Name         (S : in Scenario_Type) return String;
+   function  Position     (S : in Scenario_Type) return Position_Type;
+   function  Tag_Vector   (S : in Scenario_Type) return String_Vector;
+   function  Table        (S : in Scenario_Type)
+                           return AdaSpecLib.String_Tables.Table;
+
+   --  Properties: Write  -----------------------------------------------------
+
+   procedure Set_Name     (S     : in out Scenario_Type;
+                           Name  : in     String);
+
+   procedure Set_Table    (S     : in out Scenario_Type;
+                           Table : in     AdaSpecLib.String_Tables.Table);
+
+   --  Collection: Steps  -----------------------------------------------------
 
    procedure Step_Append  (Scenario : in out Scenario_Type;
                            Stanza   : in     Step_Type);
@@ -41,27 +67,15 @@ package AdaSpecLib.Generic_Scenarios is
    function  Step_Element (Scenario : in     Scenario_Type;
                            Index    : in     Natural)       return Step_Type;
 
+   --  Collection: Tags  ------------------------------------------------------
+
    function  Tag_First    (Scenario : in     Scenario_Type) return Natural;
    function  Tag_Last     (Scenario : in     Scenario_Type) return Integer;
    function  Tag_Count    (Scenario : in     Scenario_Type) return Natural;
    function  Tag_Element  (Scenario : in     Scenario_Type;
                            Index    : in     Natural)       return String;
 
-   function  Outline      (S : in Scenario_Type) return Boolean;
-   function  Name         (S : in Scenario_Type) return String;
-   function  Position     (S : in Scenario_Type) return Position_Type;
-   function  Tag_Vector   (S : in Scenario_Type) return String_Vector;
-   function  Table        (S : in Scenario_Type)
-                           return AdaSpecLib.String_Tables.Table;
-
-   procedure Set_Name     (S     : in out Scenario_Type;
-                           Name  : in     String);
-
-   procedure Set_Table    (S     : in out Scenario_Type;
-                           Table : in     AdaSpecLib.String_Tables.Table);
-
-   procedure Output_Steps (S     : in     Scenario_Type;
-                           Buf   : in out Unbounded_String);
+   ----------------------------------------------------------------------------
 
    function Equals (Left, Right : in Scenario_Type) return Boolean;
 

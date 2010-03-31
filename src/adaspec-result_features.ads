@@ -30,21 +30,24 @@ package AdaSpec.Result_Features is
 
    type Result_Feature_Type is new Features_Package.Feature_Type with private;
 
-   function  To_Code         (Res      : in     Result_Feature_Type;
-                              Indent   : in     String := "")
-                                         return String;
-   procedure Append          (Res      : in out Result_Feature_Type;
-                              Scenario : in     Result_Scenario_Type);
-   procedure Process_Feature (Res      : out    Result_Feature_Type;
-                              Feature  : in     Feature_Ptr;
-                              Steps    : in     Step_Definitions_Type;
-                              Log      : in     Logger_Ptr;
+   --  Processing  ------------------------------------------------------------
+
+   function  To_Code         (Res           : in     Result_Feature_Type;
+                              Indent        : in     String := "")
+                                              return String;
+   procedure Process_Feature (Res           : out    Result_Feature_Type;
+                              Feature       : in     Feature_Ptr;
+                              Steps         : in     Step_Definitions_Type;
+                              Log           : in     Logger_Ptr;
                               Step_Matching : in Boolean := False);
 
-   function  Fail (F : in Result_Feature_Type) return Boolean;
+   --  Properties  ------------------------------------------------------------
 
+   function  Fail     (F    : in     Result_Feature_Type) return Boolean;
    procedure Set_Fail (F    : in out Result_Feature_Type;
                        Fail : in     Boolean := True);
+
+   ----------------------------------------------------------------------------
 
 private
 

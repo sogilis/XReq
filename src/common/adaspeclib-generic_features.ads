@@ -23,15 +23,24 @@ package AdaSpecLib.Generic_Features is
 
    procedure Free            (F      : in out Feature_Ptr);
 
+   --  Creation  --------------------------------------------------------------
+
    procedure Make            (F      : out    Feature_Type;
                               Name   : in     String := "");
+
+   --  Process  ---------------------------------------------------------------
+
+   function  To_String   (F : in Feature_Type) return String;
+
+   --  Properties: Read  ------------------------------------------------------
 
    function  Parsed      (F : in Feature_Type) return Boolean;
    function  Name        (F : in Feature_Type) return String;
    function  Position    (F : in Feature_Type) return Position_Type;
-   function  To_String   (F : in Feature_Type) return String;
-   function  Description (F : in Feature_Type) return String;
    function  Background  (F : in Feature_Type) return Scenario_Type;
+   function  Description (F : in Feature_Type) return String;
+
+   --  Properties: Write  -----------------------------------------------------
 
    procedure Set_Name           (F      : in out Feature_Type;
                                  Name   : in     String);
@@ -44,6 +53,8 @@ package AdaSpecLib.Generic_Features is
    procedure Append_Description (F      : in out Feature_Type;
                                  Desc   : in     String);
 
+   --  Collection: Scenario  --------------------------------------------------
+
    function  Scenario_First     (F : in Feature_Type) return Natural;
    function  Scenario_Last      (F : in Feature_Type) return Integer;
    function  Scenario_Count     (F : in Feature_Type) return Natural;
@@ -51,6 +62,8 @@ package AdaSpecLib.Generic_Features is
                                  I : in Natural)      return Scenario_Type;
    procedure Scenario_Append    (F : in out Feature_Type;
                                  S : in     Scenario_Type);
+
+   ----------------------------------------------------------------------------
 
    Null_Feature     : constant Feature_Type;
    Unparsed_Feature : exception;

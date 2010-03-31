@@ -232,7 +232,7 @@ package body AdaSpec.Features is
          Continue       : Boolean := True;
          Table          : String_Tables.Table;
       begin
-         Scenario := New_Scenario
+         Scenario.Make
            (Name     => To_String (Trimed_Suffix (Line_S, Idx_Data)),
             Position => Position,
             Outline  => Outline,
@@ -306,9 +306,9 @@ package body AdaSpec.Features is
          Long_String : Unbounded_String;
          Tble        : String_Tables.Table;
       begin
-         Step := New_Step (Step.Kind,
-                           To_String (Trimed_Suffix (Line_S, Idx_Data)),
-                           Position);
+         Step.Make (Step.Kind,
+                    To_String (Trimed_Suffix (Line_S, Idx_Data)),
+                    Position);
 --          Log_Error ("Begin read step");
          while Continue and not End_Of_File loop
 
