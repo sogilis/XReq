@@ -14,7 +14,7 @@ package body AdaSpecLib is
    end To_String;
 
    function Position  (File : in String;
-                       Line : in Positive) return Position_Type
+                       Line : in Natural) return Position_Type
    is
       use Ada.Strings.Unbounded;
    begin

@@ -38,7 +38,7 @@ package AdaSpecLib is
 
    function To_String (Pos : in Position_Type) return String;
    function Position  (File : in String;
-                       Line : in Positive) return Position_Type;
+                       Line : in Natural) return Position_Type;
 
    Null_Position : constant Position_Type;
 
