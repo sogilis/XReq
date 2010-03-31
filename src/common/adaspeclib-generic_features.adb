@@ -74,7 +74,7 @@ package body AdaSpecLib.Generic_Features is
       Self : constant access constant Feature_Type'Class := F'Access;
 
       use Scenario_Container;
-      CRLF : constant String := ASCII.CR & ASCII.LF;
+      CRLF : constant String := "" & ASCII.LF;
       Res  : Unbounded_String;
       Cur  : Scenario_Container.Cursor := First (F.Scenarios);
       Sce  : Scenario_Type;

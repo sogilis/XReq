@@ -149,7 +149,7 @@ package body Test_Suite.Result is
    end Name;
 
    procedure Run (T : in out Test_Result_Feature_Type) is
-      CRLF     : constant String := ASCII.CR & ASCII.LF;
+      CRLF     : constant String := "" & ASCII.LF;
       R_Scen   : Result_Scenario_Type;
       Expected : Result_Feature_Type;
       Result   : Result_Feature_Type;
@@ -224,7 +224,7 @@ package body Test_Suite.Result is
 
    procedure Run (T : in out Test_To_String) is
       use Match_Vectors;
-      CRLF     : constant String := ASCII.CR & ASCII.LF;
+      CRLF     : constant String := "" & ASCII.LF;
       Expected : constant String :=
                "Feature simplest feature"           & CRLF &
                "   Background BG"                   & CRLF &

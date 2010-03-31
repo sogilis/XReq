@@ -67,7 +67,7 @@ package body AdaSpec.Result_Features is
                                Indent   : in     String := "")
                                           return String
    is
-      CRLF   : constant String := ASCII.CR & ASCII.LF;
+      CRLF   : constant String := "" & ASCII.LF;
       Buffer : Unbounded_String;
       S      : constant String := Res.Background.Name;
       E      : Result_Scenario_Type;

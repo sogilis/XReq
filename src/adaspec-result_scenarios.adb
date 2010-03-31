@@ -108,7 +108,7 @@ package body AdaSpec.Result_Scenarios is
                                           return String
    is
       use Result_Steps;
-      CRLF   : constant String := ASCII.CR & ASCII.LF;
+      CRLF   : constant String := "" & ASCII.LF;
       Buffer : Unbounded_String;
    begin
       for I in Res.Step_First .. Res.Step_Last loop

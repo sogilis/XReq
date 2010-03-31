@@ -14,6 +14,7 @@ use AdaSpec.Steps;
 use AdaSpec.Scenarios;
 use AdaSpec.Features;
 use Util.IO;
+use Util.Strings;
 use Util.Strings.String_Vectors;
 
 package body Test_Suite.Features is
@@ -42,7 +43,7 @@ package body Test_Suite.Features is
       Scenario : Scenario_Type;
       Stanza   : Step_Type;
 
-      CRLF : constant String := ASCII.CR & ASCII.LF;
+      CRLF : constant String := "" & ASCII.LF;
       Canonical_Feature_Text : constant String :=
          "# File: " & File              & CRLF &
          "Feature: Sample"              & CRLF &
@@ -149,8 +150,10 @@ package body Test_Suite.Features is
       T.Assert (Stanza.Stanza = "this step works",
               "Text of the first given of scenario incorrect");
 
-      T.Assert (To_String (Feature) = Canonical_Feature_Text,
-              "To_String do not match the canonical text");
+      T.Assert (Feature.To_String = Canonical_Feature_Text,
+                "To_String do not match the canonical text." & ASCII.LF &
+                "Got:      " & Ada_String (Feature.To_String) & ASCII.LF &
+                "Expected: " & Ada_String (Canonical_Feature_Text));
    end Run;
 
    --  Test_2  ----------------------------------------------------------------

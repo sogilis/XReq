@@ -29,7 +29,7 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Describe) is
-      CRLF : constant String := ASCII.CR & ASCII.LF;
+      CRLF : constant String := "" & ASCII.LF;
       Job  : Job_Type;
       Env  : Job_Environment;
       Expected_Result : constant String :=

@@ -256,7 +256,7 @@ package body Coverage_Suite is
       use Ada.Strings.Fixed;
       use Util.IO;
 
-      CRLF      : constant String := ASCII.CR & ASCII.LF;
+      CRLF      : constant String := "" & ASCII.LF;
       File_Path : constant String := To_String (T.Path);
       Count     : Natural;
       Covered   : Natural;

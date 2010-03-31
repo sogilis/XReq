@@ -126,7 +126,7 @@ package body AdaSpec.Job is
 
    function Describe (Job : in Job_Type;
                       Env : in Job_Environment) return String is
-      CRLF : constant String := ASCII.CR & ASCII.LF;
+      CRLF : constant String := "" & ASCII.LF;
    begin
       return "Feature:     " & Feature_File (Job) & CRLF &
              "Steps in:    " & Step_Dir (Env)     & CRLF &

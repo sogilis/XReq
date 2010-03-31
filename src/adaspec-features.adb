@@ -464,7 +464,7 @@ package body AdaSpec.Features is
    ----------------------------------------
 
    function To_String (F : in Feature_File_Type) return String is
-      CRLF : constant String := ASCII.CR & ASCII.LF;
+      CRLF : constant String := "" & ASCII.LF;
    begin
       return "# File: " & To_String (F.File_Name) & CRLF &
              Feature_Type (F).To_String;
