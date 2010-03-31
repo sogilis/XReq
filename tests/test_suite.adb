@@ -12,6 +12,7 @@ with Test_Suite.CLI;
 with Test_Suite.Job;
 with Test_Suite.Result;
 with Test_Suite.Steps;
+with Test_Suite.Args;
 with Test_Suite.Step_Definitions;
 with Test_Suite.Step_Definitions.Ada05;
 with Test_Suite.Features;
@@ -46,7 +47,8 @@ package body Test_Suite is
       Test_Suite.Lang           .Add_Tests (Ret);
       Test_Suite.CLI            .Add_Tests (Ret);
       Test_Suite.Job            .Add_Tests (Ret);
-      Test_Suite.Steps        .Add_Tests (Ret);
+      Test_Suite.Steps          .Add_Tests (Ret);
+      Test_Suite.Args           .Add_Tests (Ret);
       Test_Suite.Result         .Add_Tests (Ret);
       Test_Suite.Step_Definitions          .Add_Tests (Ret);
       Test_Suite.Step_Definitions.Ada05    .Add_Tests (Ret);
