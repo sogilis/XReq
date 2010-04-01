@@ -22,19 +22,19 @@ Feature: Auto fill in of steps definitions
     Then it should fail
     And the output should contain
       """
-      Error: Missing step definition in features/test.feature:4 for:
+      ERROR: Missing step definition in features/test.feature:4 for:
         Given a computer
       You can implement this step by adding on your step definition file:
         --  @given ^a computer$
         --  @todo
 
-      Error: Missing step definition in features/test.feature:5 for:
+      ERROR: Missing step definition in features/test.feature:5 for:
         When I type on my keyboard "toto"
       You can implement this step by adding on your step definition file:
         --  @when ^I type on my keyboard "([^"]*)"$
         --  @todo
 
-      Error: Missing step definition in features/test.feature:6 for:
+      ERROR: Missing step definition in features/test.feature:6 for:
         Then I should see "toto"
       You can implement this step by adding on your step definition file:
         --  @then ^I should see "([^"]*)"$

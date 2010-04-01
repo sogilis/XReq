@@ -178,7 +178,7 @@ Feature: Scenario Outlines
     Then it should fail
     And the output should contain
       """
-      Error: Missing step definition in features/outline.feature:7 for:
+      ERROR: Missing step definition in features/outline.feature:7 for:
         Then I should have NaN cucumbers
       You can implement this step by adding on your step definition file:
         --  @then ^I should have NaN cucumbers$
