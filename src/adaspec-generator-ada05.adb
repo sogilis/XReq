@@ -14,7 +14,6 @@ with AdaSpec.Args;
 use Ada.Directories;
 use GNAT.OS_Lib;
 use Util.IO;
-use AdaSpecLib;
 use AdaSpec.Step_Definitions;
 use AdaSpec.Steps;
 use AdaSpec.Args;
@@ -105,7 +104,7 @@ package body AdaSpec.Generator.Ada05 is
       pragma Unreferenced (Scenario);
       use Ada.Strings;
       use Ada.Strings.Fixed;
-      use String_Set;
+      use String_Sets;
       use Match_Vectors;
       Procname : constant String := Step.Procedure_Name;
       Pkgname  : Unbounded_String;
@@ -274,7 +273,7 @@ package body AdaSpec.Generator.Ada05 is
                                 Seq_Num    : in Integer;
                                 Background : in Boolean := False)
    is
-      use Util.Strings.String_Vectors;
+      use String_Vectors;
       N     : Integer;
       Proc  : constant String := "procedure " & To_String (Name) & " ";
       First : Boolean := True;
@@ -532,7 +531,7 @@ package body AdaSpec.Generator.Ada05 is
 
    procedure Generate_Feature  (S : in out Ada_Generator_Type)
    is
-      use Util.Strings.String_Vectors;
+      use String_Vectors;
       Str : Unbounded_String;
       N   : Positive := 1;
    begin
@@ -553,8 +552,8 @@ package body AdaSpec.Generator.Ada05 is
 
    procedure Generate_With (S : in out Ada_Generator_Type)
    is
-      use String_Set;
-      J   : String_Set.Cursor := First (S.With_Pkg);
+      use String_Sets;
+      J   : String_Sets.Cursor := First (S.With_Pkg);
       Buf : Unbounded_String;
    begin
       while Has_Element (J) loop
@@ -579,7 +578,7 @@ package body AdaSpec.Generator.Ada05 is
 
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
-      use Util.Strings.String_Vectors;
+      use String_Vectors;
       E   : Result_Scenario_Type;
       Num : Positive := 1;
    begin

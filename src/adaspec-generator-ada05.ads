@@ -1,11 +1,13 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
+with AdaSpecLib;
 with Util.Strings;
 with Util.Strings.Pool;
 with AdaSpec.Result;
 
 use Ada.Strings.Unbounded;
+use AdaSpecLib;
 use Util.Strings;
 use Util.Strings.Pool;
 use AdaSpec.Result;
@@ -42,8 +44,8 @@ private
          Pool       : String_Pool;
          Fn_Backgnd : Unbounded_String;
          Id_Pkgname : Unbounded_String;
-         With_Pkg   : String_Set.Set;
-         Fn_Steps   : Util.Strings.String_Vectors.Vector;
+         With_Pkg   : String_Sets.Set;
+         Fn_Steps   : String_Vector;
       end record;
 
 

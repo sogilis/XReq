@@ -3,20 +3,15 @@
 with Ada.Strings.Unbounded;
 with Ada.Strings.Unbounded.Hash;
 with Ada.Containers.Hashed_Sets;
-with AdaSpecLib;
 
 use Ada.Strings.Unbounded;
 
 package Util.Strings is
 
-   package String_Vectors renames AdaSpecLib.String_Vectors;
-
-   subtype String_Vector is String_Vectors.Vector;
-
    type String_List is  --  GCOV_IGNORE
       array (Positive range <>) of Unbounded_String;
 
-   package String_Set is
+   package String_Sets is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
    function  Replace      (Subject     : in String;

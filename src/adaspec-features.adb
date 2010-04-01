@@ -51,7 +51,7 @@ package body AdaSpec.Features is
       Self : constant access Feature_File_Type'Class := F'Access;
 
       use Ada.Text_IO;
-      use Util.Strings.String_Vectors;
+      use String_Vectors;
 
       procedure Log_Error (Error : in String);
       procedure Read_Line;

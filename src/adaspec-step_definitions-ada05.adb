@@ -80,7 +80,7 @@ package body AdaSpec.Step_Definitions.Ada05 is
       use Ada.Strings.Fixed;
       use Ada.Strings;
       use Step_Container;
-      use Util.Strings.String_Vectors;
+      use String_Vectors;
       File          : File_Type;
       Line_S        : Unbounded_String;
       Idx_Next      : Natural;
@@ -103,13 +103,13 @@ package body AdaSpec.Step_Definitions.Ada05 is
       Procedure_S   : Unbounded_String;
       Current_Steps : Step_Container.Vector;
       I             : Step_Container.Cursor;
-      J             : Util.Strings.String_Vectors.Cursor;
+      J             : String_Vectors.Cursor;
       Current_Step  : Step_Definition_Type;
       Pending_Step  : Boolean := False;
       Char          : Character;
       Buffer        : Unbounded_String;
       Prc_Pool      : String_Pool;
-      Added_Prc     : Util.Strings.String_Vectors.Vector;
+      Added_Prc     : String_Vectors.Vector;
       With_AdaSpecLib : Boolean := False;
       Use_AdaSpecLib  : Boolean := False;
       Steps_Ads_File  : constant String := To_String (S.File_Name);

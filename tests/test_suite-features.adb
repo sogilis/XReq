@@ -15,7 +15,6 @@ use AdaSpec.Scenarios;
 use AdaSpec.Features;
 use Util.IO;
 use Util.Strings;
-use Util.Strings.String_Vectors;
 
 package body Test_Suite.Features is
 
