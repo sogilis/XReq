@@ -35,7 +35,8 @@ procedure Main is
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
-              "-fill-steps -progress -partial -step-matching m -make";
+              "-fill-steps -progress -partial -step-matching m -make " &
+              "q -quiet";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
@@ -79,6 +80,11 @@ begin
          Full_Switch = "-make"
       then
          Make := not Partial;
+
+      elsif Full_Switch = "q" or
+         Full_Switch = "-quiet"
+      then
+         Logger.Set_Verbosity (-1);
 
       elsif Full_Switch = "-fill-steps" then
          Fill_Steps := True;
@@ -154,8 +160,8 @@ begin
    Arg := Args (I);
    while not Quit and Length (Arg) > 0 loop
 
-      Put_Line ("--> Compile: " & To_String (Arg));
-      New_Line;
+      Logger.Put_Line ("--> Compile: " & To_String (Arg));
+      Logger.New_Line;
 
       ---------------------
       --  Get Parameter  --
@@ -199,18 +205,18 @@ begin
       -------------------
 
       if Progress then
-         Put_Line ("completed" & I'Img & " out of" & Args_Last'Img);
+         Logger.Put_Line (-1, "completed" & I'Img & " out of" & Args_Last'Img);
       end if;
 
       I := I + 1;
-      New_Line;
+      Logger.New_Line;
 
    end loop;
 
    if not Quit and Executable /= Null_Unbounded_String and not Partial then
 
-      Put_Line ("--> Generate Test Suite: " & To_String (Executable));
-      New_Line;
+      Logger.Put_Line ("--> Generate Test Suite: " & To_String (Executable));
+      Logger.New_Line;
 
       begin
          Generate_Suite (Generators,

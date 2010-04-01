@@ -184,18 +184,32 @@ def open_file(file, line=None, always_open=False):
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 class Command_GprBuild (GPS.Process):
+  location_category = "Build test suite"
   def on_match (self, matched, unmatched):
-    if matched:
-      GPS.Console().write(matched + "\n")
-    if unmatched:
-      GPS.Console().write(unmatched + "\n")
+    matched = re.sub("^\n*", "", matched)
+    matched = re.sub("\n+", "\n", matched)
+    for line in matched.split("\n"):
+      line = "%s/%s" % (self.vars['RESULT_DIR'], line)
+      GPS.Locations.parse(line,
+                          self.location_category,
+                          regexp = "^(.*)\:([0-9]+)\:([0-9]+)\: +(.*)$",
+                          file_index = 1,
+                          line_index = 2,
+                          column_index = 3,
+                          msg_index = 4)
+    GPS.Console().write(matched)
 
-  def __init__ (self, projectfile):
-    GPS.Process.__init__ (self, 'gprbuild -m -d -vP0 """-P%s"""' % projectfile,
+  def __init__ (self, projectfile, vars = None):
+    if not vars: vars = parse_makefile()
+    self.vars = vars
+    GPS.Console().write("\n\n")
+    GPS.Locations.remove_category(self.location_category);
+    GPS.Process.__init__ (self, 'gprbuild -m -vP0 -d """-P%s"""' % projectfile,
       show_command = True,
-      regexp = ".*",
+      regexp = "^.+$",
+      single_line_regexp = True,
       on_match = self.on_match,
-      progress_regexp = "^completed ([^ ]+) out of ([^ ]+)( .*)?$",
+      progress_regexp = "^completed ([0-9]+) out of ([0-9]+).*$",
       progress_current = 1,
       progress_total   = 2)
 
@@ -205,23 +219,34 @@ class Command_GprBuild (GPS.Process):
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 class Command_AdaSpec(GPS.Process):
+  location_category = "Build features"
   def on_match (self, matched, unmatched):
-    if matched:
-      GPS.Console().write(matched + "\n")
-    if unmatched:
-      GPS.Console().write(unmatched + "\n")
+    matched = re.sub("^\n*", "", matched)
+    matched = re.sub("\n+", "\n", matched)
+    for line in matched.split("\n"):
+      GPS.Locations.parse(line,
+                          self.location_category,
+                          regexp = "^(.*)\:([0-9]+)\: ERROR: +(.*)$",
+                          file_index = 1,
+                          line_index = 2,
+                          msg_index = 3)
+    GPS.Console().write(matched)
 
   def on_exit (self, status, output):
+    GPS.Console().write(output)
     if self.run_gprbuild and self.vars['TEST_SUITE']:
       gprpath = "%s/%s.gpr" % (self.vars['RESULT_DIR'], self.vars['TEST_SUITE'])
-      Command_GprBuild(gprpath)
+      Command_GprBuild(gprpath, self.vars)
 
   def __init__ (self, filename=None, run_gprbuild=True, vars=None):
     if not vars: vars = parse_makefile()
     self.run_gprbuild = run_gprbuild
     self.vars = vars
 
-    command="adaspec --progress";
+    GPS.Console().write("\n\n")
+    GPS.Locations.remove_category(self.location_category);
+
+    command="adaspec --progress --keep-going --quiet";
     if vars['TEST_SUITE'] and not filename:
       command = command + ' --executable """%s"""' % vars['TEST_SUITE']
     command = command + ' --step """%s""" ' % vars['STEP_DEFINITIONS_DIR']
@@ -236,10 +261,11 @@ class Command_AdaSpec(GPS.Process):
 
     GPS.Process.__init__ (self, command,
       show_command = True,
-      regexp = ".*",
+      regexp = "^.+$",
+      single_line_regexp = True,
       on_match = self.on_match,
       on_exit  = self.on_exit,
-      progress_regexp = "^completed ([^ ]+) out of ([^ ]+)( .*)?$",
+      progress_regexp = "^completed ([0-9]+) out of ([0-9]+)$",
       progress_current = 1,
       progress_total   = 2)
 

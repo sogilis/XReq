@@ -17,14 +17,14 @@ package body Util.IO is
    -------------------
 
    procedure Set_Verbosity (Log : in out Logger_Type;
-                            V   : in     Natural)
+                            V   : in     Integer)
    is
    begin
       Log.Verbosity_Level := V;
    end Set_Verbosity;
 
    function  Verbosity     (Log : in     Logger_Type)
-                                  return Natural
+                                  return Integer
    is
    begin
       return Log.Verbosity_Level;
@@ -32,7 +32,7 @@ package body Util.IO is
 
    procedure Put_Line      (Log : in out Logger_Type;
                             S   : in     String;
-                            V   : in     Natural := 0)
+                            V   : in     Integer := 0)
    is
    begin
       Log.Put_Line (V, S);
@@ -40,7 +40,7 @@ package body Util.IO is
 
    procedure Put_Line      (Log : in out Logger_Type;
                             S   : in     Unbounded_String;
-                            V   : in     Natural := 0)
+                            V   : in     Integer := 0)
    is
    begin
       Log.Put_Line (V, To_String (S));
@@ -48,7 +48,7 @@ package body Util.IO is
 
    procedure Put           (Log : in out Logger_Type;
                             S   : in     String;
-                            V   : in     Natural := 0)
+                            V   : in     Integer := 0)
    is
    begin
       Log.Put (V, S);
@@ -56,14 +56,14 @@ package body Util.IO is
 
    procedure Put           (Log : in out Logger_Type;
                             S   : in     Unbounded_String;
-                            V   : in     Natural := 0)
+                            V   : in     Integer := 0)
    is
    begin
       Log.Put (V, To_String (S));
    end Put;
 
    procedure Put_Line      (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     String)
    is
    begin
@@ -73,7 +73,7 @@ package body Util.IO is
    end Put_Line;
 
    procedure Put_Line      (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     Unbounded_String)
    is
    begin
@@ -81,7 +81,7 @@ package body Util.IO is
    end Put_Line;
 
    procedure Put           (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     String)
    is
       Self : constant Logger_Ptr := Log'Unchecked_Access;
@@ -92,7 +92,7 @@ package body Util.IO is
    end Put;
 
    procedure Put           (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     Unbounded_String)
    is
    begin
@@ -100,14 +100,14 @@ package body Util.IO is
    end Put;
 
    procedure Put_Indent    (Log : in out Logger_Type;
-                            V   : in     Natural := 0)
+                            V   : in     Integer := 0)
    is
    begin
       Log.Put (V, String'(Log.Indent_Level * " "));
    end Put_Indent;
 
    procedure New_Line      (Log : in out Logger_Type;
-                            V   : in     Natural := 0)
+                            V   : in     Integer := 0)
    is
    begin
       Log.Put (V, "" & ASCII.LF);

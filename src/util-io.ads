@@ -86,43 +86,43 @@ package Util.IO is
 --    type Logger_Type is abstract tagged private;
    type Logger_Type is abstract tagged
       record
-         Verbosity_Level : Natural := 0;
+         Verbosity_Level : Integer := 0;
          Indent_Level    : Natural := 0;
       end record;
    type Logger_Ptr  is access all Logger_Type'Class;
 
    procedure Set_Verbosity (Log : in out Logger_Type;
-                            V   : in     Natural);
+                            V   : in     Integer);
    function  Verbosity     (Log : in     Logger_Type)
-                                  return Natural;
+                                  return Integer;
    procedure Put_Line      (Log : in out Logger_Type;
                             S   : in     String;
-                            V   : in     Natural := 0);
+                            V   : in     Integer := 0);
    procedure Put_Line      (Log : in out Logger_Type;
                             S   : in     Unbounded_String;
-                            V   : in     Natural := 0);
+                            V   : in     Integer := 0);
    procedure Put           (Log : in out Logger_Type;
                             S   : in     String;
-                            V   : in     Natural := 0);
+                            V   : in     Integer := 0);
    procedure Put           (Log : in out Logger_Type;
                             S   : in     Unbounded_String;
-                            V   : in     Natural := 0);
+                            V   : in     Integer := 0);
    procedure Put_Line      (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     String);
    procedure Put_Line      (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     Unbounded_String);
    procedure Put           (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     String);
    procedure Put           (Log : in out Logger_Type;
-                            V   : in     Natural;
+                            V   : in     Integer;
                             S   : in     Unbounded_String);
    procedure Put_Indent    (Log : in out Logger_Type;
-                            V   : in     Natural := 0);
+                            V   : in     Integer := 0);
    procedure New_Line      (Log : in out Logger_Type;
-                            V   : in     Natural := 0);
+                            V   : in     Integer := 0);
    procedure Indent        (Log : in out Logger_Type;
                             N   : in     Natural := 3);
    procedure UnIndent      (Log : in out Logger_Type;

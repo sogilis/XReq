@@ -98,9 +98,15 @@ package body AdaSpec.Features is
 
       procedure Log_Error (Error : in String)
       is
+         use Ada.Strings;
+         use Ada.Strings.Fixed;
       begin
-         Log.Put_Line (Error & " in " & To_String (Position.File) & " line" &
-                       Position.Line'Img);
+         if Log.Verbosity < 0 then
+            Log.Put_Line (-1, To_String (Position) & ": " & Error);
+         else
+            Log.Put_Line (Error & " in " & To_String (Position.File) &
+                          " line" & Position.Line'Img);
+         end if;
       end Log_Error;
 
       procedure Read_Line is
@@ -268,10 +274,16 @@ package body AdaSpec.Features is
                Current_Prefix := Step_Then;
             elsif Detect_Keyword (K_And) then
                if Current_Prefix = Step_Null then
-                  Log_Error    ("ERROR: And keyword");
-                  Log.Put_Line ("       And keyword should be following " &
-                                       "another keyword");
-                  Log.Put_Line ("       Ignoring step");
+                  if Log.Verbosity < 0 then
+                     Log_Error    ("ERROR: And keyword should be following " &
+                                   "another keyword");
+                     Log_Error    ("ERROR: Ignoring step");
+                  else
+                     Log_Error    ("ERROR: And keyword");
+                     Log.Put_Line ("       And keyword should be following " &
+                                          "another keyword");
+                     Log.Put_Line ("       Ignoring step");
+                  end if;
                end if;
             elsif Trimed_Suffix (Line_S, Idx_Data) /= "" then
                Log_Error    ("ERROR: invalid format");

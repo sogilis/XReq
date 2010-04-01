@@ -92,20 +92,30 @@ package body AdaSpec.Result_Steps is
          Match := Find (Steps, Stanza);
       exception
          when Ambiguous_Match =>
-            Log.Put_Line (String'("Error: Ambiguous match in " &
-                          To_String (Stanza.Position) & " for:"));
-            Log.Put_Line ("  " & Stanza.To_String);
+            if Log.Verbosity < 0 then
+               Log.Put_Line (-1, To_String (Stanza.Position) & ": ERROR: " &
+                             "Ambiguous match for: " & Stanza.To_String);
+            else
+               Log.Put_Line ("ERROR: Ambiguous match in " &
+                             To_String (Stanza.Position) & " for:");
+               Log.Put_Line ("  " & Stanza.To_String);
+            end if;
             Errors := True;
       end;
       if not Match.Match then
-         Log.Put_Line (String'("Error: Missing step definition in " &
-                       To_String (Stanza.Position) & " for:"));
-         Log.Put_Line ("  " & Stanza.To_String);
-         Log.Put_Line ("You can implement this step by adding on your " &
-                       "step definition file:");
-         Log.Put_Line ("  --  " & Stanza.To_Regexp);
-         Log.Put_Line ("  --  @todo");
-         Log.New_Line;
+         if Log.Verbosity < 0 then
+            Log.Put_Line (-1, To_String (Stanza.Position) & ": ERROR: " &
+                          "Missing step definition for: " & Stanza.To_String);
+         else
+            Log.Put_Line (String'("ERROR: Missing step definition in " &
+                          To_String (Stanza.Position) & " for:"));
+            Log.Put_Line ("  " & Stanza.To_String);
+            Log.Put_Line ("You can implement this step by adding on your " &
+                          "step definition file:");
+            Log.Put_Line ("  --  " & Stanza.To_Regexp);
+            Log.Put_Line ("  --  @todo");
+            Log.New_Line;
+         end if;
          Errors := True;
       elsif Step_Matching then
          Log.Put_Line ("Step Matching: """ & To_String (Stanza.Position) &

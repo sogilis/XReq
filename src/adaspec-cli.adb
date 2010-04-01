@@ -71,6 +71,9 @@ package body AdaSpec.CLI is
       Put_Line ("        Build generated files (using gnatmake for Ada language).");
       Put_Line ("        Require option -x, --executable.");
       Put_Line ("");
+      Put_Line ("    -q, --quiet");
+      Put_Line ("        Display minimum output only.");
+      Put_Line ("");
       Put_Line ("    --progress");
       Put_Line ("        Show progress.");
       Put_Line ("");
