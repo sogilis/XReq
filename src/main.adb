@@ -209,12 +209,15 @@ begin
       end if;
 
       I := I + 1;
-      Logger.New_Line;
+      if not Quit and Length (Arg) > 0 then
+         Logger.New_Line;
+      end if;
 
    end loop;
 
    if not Quit and Executable /= Null_Unbounded_String and not Partial then
 
+      Logger.New_Line;
       Logger.Put_Line ("--> Generate Test Suite: " & To_String (Executable));
       Logger.New_Line;
 
