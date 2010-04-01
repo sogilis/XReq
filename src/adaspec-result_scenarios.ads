@@ -4,12 +4,14 @@ with Ada.Containers.Vectors;
 with AdaSpecLib;
 with AdaSpecLib.Generic_Scenarios;
 with Util.IO;
+with Util.Strings;
 with AdaSpec.Result_Steps;
 with AdaSpec.Scenarios;
 with AdaSpec.Step_Definitions;
 
 use AdaSpecLib;
 use Util.IO;
+use Util.Strings;
 use AdaSpec.Result_Steps;
 use AdaSpec.Scenarios;
 use AdaSpec.Step_Definitions;
@@ -44,7 +46,8 @@ package AdaSpec.Result_Scenarios is
                                Steps         : in     Step_Definitions_Type;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;
-                               Step_Matching : in Boolean := False);
+                               Missing_Steps : in out String_Set;
+                               Step_Matching : in     Boolean := False);
 
    --  Collection: Outlines  --------------------------------------------------
 

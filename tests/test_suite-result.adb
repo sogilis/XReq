@@ -3,6 +3,7 @@
 with Ada.Containers.Vectors;
 with Ada.Containers;
 with Util.IO;
+with Util.Strings;
 with AdaSpecLib.String_Tables;
 with AdaSpec.Lang;
 with AdaSpec.Features;
@@ -14,6 +15,7 @@ with AdaSpec.Result_Scenarios;
 with AdaSpec.Result_Features;
 
 use Util.IO;
+use Util.Strings;
 use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
@@ -94,20 +96,22 @@ package body Test_Suite.Result is
          return True;
       end Eq;
 
-      Result       : Result_Scenario_Type;
-      Scenario     : Scenario_Type;
-      Steps        : Step_Definitions_Type
-                   := Load ("tests/features/step_definitions", Lang_Ada);
-      Ideal_Result : Result_Steps.Vector;
-      A, B         : Result_Step_Type;
-      Errors       : Boolean;
+      Result        : Result_Scenario_Type;
+      Scenario      : Scenario_Type;
+      Steps         : Step_Definitions_Type
+                    := Load ("tests/features/step_definitions", Lang_Ada);
+      Ideal_Result  : Result_Steps.Vector;
+      A, B          : Result_Step_Type;
+      Errors        : Boolean;
+      Missing_Steps : String_Set;
    begin
 
       Scenario.Make ("Scenario");
       Step_Append (Scenario, Stanza_Given ("this step works"));
       Step_Append (Scenario, Stanza_When  ("this step works too"));
 
-      Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
+      Process_Scenario (Result, Scenario,
+                        Steps, Std_Logger, Errors, Missing_Steps);
 
       T.Assert (not Errors, "Errors happened while processing scenario (1)");
 
@@ -140,7 +144,8 @@ package body Test_Suite.Result is
               "Wrong scenario result (1)");
 
       Step_Append (Scenario, Stanza_When  ("this step doesn't work"));
-      Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
+      Process_Scenario (Result, Scenario,
+                        Steps, Std_Logger, Errors, Missing_Steps);
       T.Assert (Errors, "No error while processing scenario (2)");
 
       T.Assert (Integer (Length (Ideal_Result)) = Result.Step_Count,
@@ -182,6 +187,7 @@ package body Test_Suite.Result is
                                            "(""tutu"" 21 24) );" & CRLF &
                "   End Scenario Another one"        & CRLF &
                "End Feature Sample"                 & CRLF;
+      Missing_Steps : String_Set;
    begin
 
       Steps   := Load   ("tests/features/step_definitions", Lang_Ada);
@@ -193,7 +199,7 @@ package body Test_Suite.Result is
          procedure P is
          begin
             Process_Feature (Result, Feature_Ptr (Feature),
-                             Steps, Std_Logger);
+                             Steps, Std_Logger, Missing_Steps);
          end P;
          procedure A is new Assert_Except (Test_Result_Feature_Type, P);
       begin
@@ -206,7 +212,8 @@ package body Test_Suite.Result is
       T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
               "Feature name incorrect");
 
-      Process_Feature (Result, Feature_Ptr (Feature), Steps, Std_Logger);
+      Process_Feature (Result, Feature_Ptr (Feature),
+                       Steps, Std_Logger, Missing_Steps);
 
       T.Assert (Result.Name = "Sample",
               "Feature name incorrect (2)");
@@ -297,6 +304,7 @@ package body Test_Suite.Result is
       Errors    : Boolean;
       I         : Natural;
       Table     : Table_Type;
+      Missing_Steps : String_Set;
 
       procedure Equals (Found, Expect, Description : in String);
       procedure Equals (Found, Expect, Description : in String) is
@@ -330,7 +338,8 @@ package body Test_Suite.Result is
 
       Scenario.Set_Table (Table);
 
-      Process_Scenario (Result, Scenario, Steps, Std_Logger, Errors);
+      Process_Scenario (Result, Scenario,
+                        Steps, Std_Logger, Errors, Missing_Steps);
 
       T.Assert (not Errors, "Errors while Process_Scenario");
 

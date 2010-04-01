@@ -36,7 +36,7 @@ procedure Main is
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
               "-fill-steps -progress -partial -step-matching m -make " &
-              "q -quiet";
+              "q -quiet -fill-steps-in=";
    Arg        : Unbounded_String;
    Step_Dir   : Unbounded_String;
    Out_Dir    : Unbounded_String;
@@ -50,6 +50,7 @@ procedure Main is
    Partial    : Boolean := False;
    Step_Match : Boolean := False;
    Make       : Boolean := False;
+   Fill_Pkg   : Unbounded_String;
    I          : Natural;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
@@ -85,6 +86,10 @@ begin
          Full_Switch = "-quiet"
       then
          Logger.Set_Verbosity (-1);
+
+      elsif Full_Switch = "-fill-steps-in" then
+         Fill_Steps := True;
+         Fill_Pkg   := To_Unbounded_String (Parameter);
 
       elsif Full_Switch = "-fill-steps" then
          Fill_Steps := True;
@@ -182,7 +187,7 @@ begin
       --  Compile Features  --
       ------------------------
 
-      Run (Job, Env, Logger, Step_Match);
+      Run (Job, Env, Logger, To_String (Fill_Pkg), Step_Match);
       if Job.Result.Fail then
          Put_Line (Standard_Error, "Failure to compile " & Feature_File (Job));
          Set_Exit_Status (Failure);

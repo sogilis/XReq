@@ -1,7 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with AdaSpecLib;
-with Util.Strings;
 
 use AdaSpecLib;
 
@@ -58,7 +57,6 @@ package body AdaSpec.Result_Steps is
    function To_Code   (S      : in Result_Step_Type;
                        Indent : in String := "") return String
    is
-      use Util.Strings;
       Buffer : Unbounded_String;
       E : Match_Location;
    begin
@@ -78,14 +76,17 @@ package body AdaSpec.Result_Steps is
    --  Result_Step_Type  --  Process_Step  --
    ------------------------------------------
 
-   procedure Process_Step     (Res      : out Result_Step_Type;
-                               Stanza   : in  Step_Type;
-                               Steps    : in  Step_Definitions_Type;
-                               Log      : in  Logger_Ptr;
-                               Errors   : out Boolean;
-                               Step_Matching : in Boolean)
+   procedure Process_Step     (Res           : out    Result_Step_Type;
+                               Stanza        : in     Step_Type;
+                               Steps         : in     Step_Definitions_Type;
+                               Log           : in     Logger_Ptr;
+                               Errors        : out    Boolean;
+                               Step_Matching : in     Boolean;
+                               Missing_Steps : in out String_Set)
    is
-      Match : Step_Match_Type;
+      use String_Sets;
+      Match  : Step_Match_Type;
+      RegExp : Unbounded_String;
    begin
       Errors := False;
       begin
@@ -103,6 +104,8 @@ package body AdaSpec.Result_Steps is
             Errors := True;
       end;
       if not Match.Match then
+         RegExp := To_Unbounded_String (Stanza.To_Regexp);
+         Include (Missing_Steps, RegExp);
          if Log.Verbosity < 0 then
             Log.Put_Line (-1, To_String (Stanza.Position) & ": ERROR: " &
                           "Missing step definition for: " & Stanza.To_String);

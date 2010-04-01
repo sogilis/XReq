@@ -1,9 +1,11 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with Util.Strings;
 with AdaSpec.Result_Features;
 
 use Ada.Directories;
+use Util.Strings;
 use AdaSpec.Result_Features;
 
 package body AdaSpec.Job is
@@ -137,12 +139,15 @@ package body AdaSpec.Job is
    --  Job_Type  --  Run  --
    -------------------------
 
-   procedure Run (Job    : in out Job_Type;
-                  Env    : in     Job_Environment;
-                  Logger : in     Logger_Ptr;
-                  Step_Matching : in Boolean := False)
+   procedure Run (Job           : in out Job_Type;
+                  Env           : in out Job_Environment;
+                  Logger        : in     Logger_Ptr;
+                  Add_Steps_Pkg : in     String  := "";
+                  Step_Matching : in     Boolean := False)
    is
+      use String_Sets;
       F : constant Feature_File_Ptr := new Feature_File_Type;
+      Missing_Steps : String_Set;
    begin
       if not Env.Loaded then
          raise Invalid_Environment with "Must call Load (Env) first";
@@ -155,8 +160,17 @@ package body AdaSpec.Job is
 
       --  No Parse_Error
       Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
-      Process_Feature (Job.Result, Job.Feature, Env.Steps, Logger,
-                       Step_Matching);
+      Job.Result.Process_Feature (Job.Feature, Env.Steps, Logger,
+                                  Missing_Steps, Step_Matching);
+
+      if Add_Steps_Pkg /= "" and not Is_Empty (Missing_Steps) then
+         Add_Steps (Env.Steps, Missing_Steps, Add_Steps_Pkg,
+                    Step_Dir (Env), Env.Language, Logger);
+         Clear (Missing_Steps);
+         Job.Result.Set_Fail (False);
+         Job.Result.Process_Feature (Job.Feature, Env.Steps, Logger,
+                                     Missing_Steps, Step_Matching);
+      end if;
    exception
       when Parse_Error =>
          Job.Result.Set_Fail;

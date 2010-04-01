@@ -70,7 +70,7 @@ bin/unit_tests.cov: dir
 bootstrap: bin/feature_tests
 
 bin/feature_tests: bin/feature_tests.dbg
-	ln -s feature_tests.dbg $@
+	ln -s -f feature_tests.dbg $@
 
 bin/feature_tests.dbg: bin/adaspec features/*.feature
 	-$(MKDIR) features/tests/dbg

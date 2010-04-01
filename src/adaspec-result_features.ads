@@ -3,12 +3,14 @@
 with AdaSpecLib;
 with AdaSpecLib.Generic_Features;
 with Util.IO;
+with Util.Strings;
 with AdaSpec.Result_Scenarios;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
 
 use AdaSpecLib;
 use Util.IO;
+use Util.Strings;
 use AdaSpec.Result_Scenarios;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
@@ -39,7 +41,8 @@ package AdaSpec.Result_Features is
                               Feature       : in     Feature_Ptr;
                               Steps         : in     Step_Definitions_Type;
                               Log           : in     Logger_Ptr;
-                              Step_Matching : in Boolean := False);
+                              Missing_Steps : in out String_Set;
+                              Step_Matching : in     Boolean := False);
 
    --  Properties  ------------------------------------------------------------
 

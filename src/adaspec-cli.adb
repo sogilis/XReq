@@ -52,6 +52,11 @@ package body AdaSpec.CLI is
       Put_Line ("        step.  With this switch, you can omit the features files but you");
       Put_Line ("        have to specify a step definition directory using --step.");
       Put_Line ("");
+      Put_Line ("    --fill-steps-in PACKAGE");
+      Put_Line ("        Same as --fill-steps except that steps that were not found in the");
+      Put_Line ("        feature files will be inserted in the step package PACKAGE and");
+      Put_Line ("        filled in with a procedure skeleton.");
+      Put_Line ("");
       Put_Line ("    -x, --executable TEST_NAME");
       Put_Line ("        Create a test program called TEST_NAME that will be able to run all");
       Put_Line ("        the specified features.  If not present, only test packages are");

@@ -14,7 +14,8 @@ package body AdaSpec.Result_Features is
                               Feature : in  Feature_Ptr;
                               Steps   : in  Step_Definitions_Type;
                               Log     : in  Logger_Ptr;
-                              Step_Matching : in Boolean := False)
+                              Missing_Steps : in out String_Set;
+                              Step_Matching : in     Boolean := False)
    is
       R_Scen : Result_Scenario_Type;
       Result : Result_Feature_Type;
@@ -27,7 +28,8 @@ package body AdaSpec.Result_Features is
       Result.Set_Position    (Feature.Position);
       Result.Set_Description (Feature.Description);
       Process_Scenario (R_Scen, Feature.Background,
-                        Steps, Log, Errors, Step_Matching);
+                        Steps,
+                        Log, Errors, Missing_Steps, Step_Matching);
       Result.Set_Background (R_Scen);
       if Errors then
          Result.Fail := True;
@@ -35,7 +37,7 @@ package body AdaSpec.Result_Features is
       for I in Feature.Scenario_First .. Feature.Scenario_Last loop
          Process_Scenario (R_Scen, Feature.Scenario_Element (I),
                            Steps,
-                           Log, Errors, Step_Matching);
+                           Log, Errors, Missing_Steps, Step_Matching);
          if Errors then
             Result.Fail := True;
          end if;

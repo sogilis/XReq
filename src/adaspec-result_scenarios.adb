@@ -1,11 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Unbounded;
-with Util.Strings;
 with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
-use Util.Strings;
 use AdaSpec.Steps;
 
 package body AdaSpec.Result_Scenarios is
@@ -34,6 +32,7 @@ package body AdaSpec.Result_Scenarios is
                                Steps    : in  Step_Definitions_Type;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
+                               Missing_Steps : in out String_Set;
                                Step_Matching : in Boolean := False)
    is
       use Result_Steps;
@@ -56,7 +55,7 @@ package body AdaSpec.Result_Scenarios is
          else
             Res_St.Process_Step (Scenario.Step_Element (I),
                                  Steps,
-                                 Log, Err, Step_Matching);
+                                 Log, Err, Step_Matching, Missing_Steps);
          end if;
          if Err then
             Errors := True;
@@ -104,7 +103,8 @@ package body AdaSpec.Result_Scenarios is
                Res_St := Element (J);
                --  Log.Put_Line ("I get  : " & Res_St.To_String);
                Process_Step (Res_St, Step_Type (Res_St),
-                             Steps, Log, Err, Step_Matching);
+                             Steps,
+                             Log, Err, Step_Matching, Missing_Steps);
                if Err then
                   Errors := True;
                end if;

@@ -65,8 +65,9 @@ package AdaSpec.Job is
    procedure Make     (Job           : out    Job_Type;
                        Feature_File  : in     String);
    procedure Run      (Job           : in out Job_Type;
-                       Env           : in     Job_Environment;
+                       Env           : in out Job_Environment;
                        Logger        : in     Logger_Ptr;
+                       Add_Steps_Pkg : in     String  := "";
                        Step_Matching : in     Boolean := False);
    --  IMPORTANT: call Cleanup afterwards
    procedure Cleanup  (Job           : in out Job_Type);

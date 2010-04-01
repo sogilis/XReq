@@ -2,11 +2,13 @@
 
 with Ada.Strings.Unbounded;
 with Util.IO;
+with Util.Strings;
 with AdaSpec.Steps;
 with AdaSpec.Step_Definitions;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
+use Util.Strings;
 use AdaSpec.Steps;
 use AdaSpec.Step_Definitions;
 
@@ -36,15 +38,16 @@ package AdaSpec.Result_Steps is
 
    --  Processing  ------------------------------------------------------------
 
-   function  To_Code       (S             : in  Result_Step_Type;
-                            Indent        : in  String := "") return String;
+   function  To_Code       (S             : in     Result_Step_Type;
+                            Indent        : in     String := "") return String;
 
-   procedure Process_Step  (Res           : out Result_Step_Type;
-                            Stanza        : in  Step_Type;
-                            Steps         : in  Step_Definitions_Type;
-                            Log           : in  Logger_Ptr;
-                            Errors        : out Boolean;
-                            Step_Matching : in Boolean);
+   procedure Process_Step  (Res           : out    Result_Step_Type;
+                            Stanza        : in     Step_Type;
+                            Steps         : in     Step_Definitions_Type;
+                            Log           : in     Logger_Ptr;
+                            Errors        : out    Boolean;
+                            Step_Matching : in     Boolean;
+                            Missing_Steps : in out String_Set);
 
    --  Properties  ------------------------------------------------------------
 

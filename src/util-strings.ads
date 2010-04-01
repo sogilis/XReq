@@ -14,6 +14,8 @@ package Util.Strings is
    package String_Sets is
       new Ada.Containers.Hashed_Sets (Unbounded_String, Hash, "=", "=");
 
+   subtype String_Set is String_Sets.Set;
+
    function  Replace      (Subject     : in String;
                            Pattern     : in String;
                            Replacement : in String) return String;
@@ -38,6 +40,9 @@ package Util.Strings is
                            Start_Index : in Natural) return String;
 
    function To_Identifier (Source  : in String) return String;  --  GCOV_IGNORE
+
+   function To_Package_File_Id
+                          (Source  : in String) return String;
 
    function Ada_String    (Source  : in String) return String;
 

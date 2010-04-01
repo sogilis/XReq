@@ -2,6 +2,10 @@
 
 with Ada.Containers.Vectors;
 with GNAT.Regpat;
+with Util.Strings.Pool;
+
+
+use Util.Strings.Pool;
 
 package AdaSpec.Step_Definitions.Ada05 is
 
@@ -11,6 +15,14 @@ package AdaSpec.Step_Definitions.Ada05 is
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False);
+   --  IMPORTANT: deallocate Steps_Type
+
+   --  Called in AdaSpec.Steps.Add_Steps
+   procedure Add_Steps       (Steps      : in out Step_Definitions_Type;
+                              New_Steps  : in     String_Set;
+                              Step_Pkg   : in     String;
+                              Directory  : in     String;
+                              Logger     : in     Logger_Ptr);
    --  IMPORTANT: deallocate Steps_Type
 
 
@@ -56,6 +68,7 @@ private
          Parsed     : Boolean := False;
          Steps      : Step_Container.Vector;
          Fill_Steps : Boolean := False;
+         Procedures : String_Pool;
       end record;
 
 end AdaSpec.Step_Definitions.Ada05;

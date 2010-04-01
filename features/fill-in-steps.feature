@@ -204,3 +204,70 @@ Feature: Auto fill in of steps definitions
 
       end Steps;
       """
+
+  Scenario: Filling new steps
+    When I run adaspec --fill-steps-in new_steps -x suite -m features/test.feature
+    Then it should pass
+    And  "features/step_definitions/new_steps.ads" should exist
+    And  "features/step_definitions/new_steps.adb" should exist
+    And  "features/step_definitions/new_steps.ads" should contain
+      """
+      package new_steps is
+
+      """
+    And  "features/step_definitions/new_steps.ads" should contain
+      """
+
+         --  @given ^a computer$
+         procedure Given_a_computer (Args : in out Arg_Type);
+
+      """
+    And  "features/step_definitions/new_steps.ads" should contain
+      """
+
+         --  @when ^I type on my keyboard "([^"]*)"$
+         procedure When_I_type_on_my_keyboard (Args : in out Arg_Type);
+
+      """
+    And  "features/step_definitions/new_steps.ads" should contain
+      """
+
+         --  @then ^I should see "([^"]*)"$
+         procedure Then_I_should_see (Args : in out Arg_Type);
+
+      """
+    And  "features/step_definitions/new_steps.ads" should contain
+      """
+
+      end new_steps;
+      """
+    And  "features/step_definitions/new_steps.adb" should contain
+      """
+      procedure Given_a_computer (Args : in out Arg_Type) is
+      """
+    And  "features/step_definitions/new_steps.adb" should contain
+      """
+      procedure When_I_type_on_my_keyboard (Args : in out Arg_Type) is
+      """
+    And  "features/step_definitions/new_steps.adb" should contain
+      """
+      procedure Then_I_should_see (Args : in out Arg_Type) is
+      """
+
+    And "features/tests/suite" should exist
+
+    When I run the test suite "features/tests/suite"
+    Then it should fail with
+      """
+      Feature: TEST
+
+        Scenario:
+          Given a computer
+            NEW_STEPS.GIVEN_A_COMPUTER.NOT_YET_IMPLEMENTED: Procedure Given_a_computer not implemented
+          When I type on my keyboard "toto"
+          Then I should see "toto"
+
+      1 scenario (1 failed)
+      3 steps (1 failed, 2 skipped)
+
+      """

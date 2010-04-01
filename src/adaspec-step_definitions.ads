@@ -4,12 +4,14 @@ with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with Util.IO;
+with Util.Strings;
 with AdaSpecLib;
 with AdaSpec.Lang;
 with AdaSpec.Steps;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
+use Util.Strings;
 use AdaSpecLib;
 use AdaSpec.Lang;
 use AdaSpec.Steps;
@@ -95,6 +97,13 @@ package AdaSpec.Step_Definitions is
                         Language   : in     Language_Type;
                         Fill_Steps : in     Boolean := False);
    --  IMPORTANT: deallocate Steps_Type
+
+   procedure Add_Steps (Steps      : in out Step_Definitions_Type;
+                        New_Steps  : in     String_Set;
+                        Step_Pkg   : in     String;
+                        Directory  : in     String;
+                        Language   : in     Language_Type;
+                        Logger     : in     Logger_Ptr);
 
    function  Contains  (Steps      : in  Step_Definitions_Type;
                         Stanza     : in  Step_Type) return Boolean;

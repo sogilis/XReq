@@ -90,6 +90,25 @@ package body AdaSpec.Step_Definitions is
       return Result;
    end Load;
 
+   -----------------
+   --  Add_Steps  --
+   -----------------
+
+   procedure Add_Steps (Steps      : in out Step_Definitions_Type;
+                        New_Steps  : in     String_Set;
+                        Step_Pkg   : in     String;
+                        Directory  : in     String;
+                        Language   : in     Language_Type;
+                        Logger     : in     Logger_Ptr)
+   is
+   begin
+      case Language is
+         when Lang_Ada =>
+            AdaSpec.Step_Definitions.Ada05.Add_Steps
+               (Steps, New_Steps, Step_Pkg, Directory, Logger);
+      end case;
+   end Add_Steps;
+
    ----------------
    --  Contains  --
    ----------------

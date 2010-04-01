@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Strings.Fixed;
+with Ada.Characters.Handling;
 
 use Ada.Strings.Fixed;
 
@@ -151,6 +152,29 @@ package body Util.Strings is
       end if;
       return To_String (Buffer);
    end To_Identifier;
+
+   --------------------------
+   --  To_Package_File_Id  --
+   --------------------------
+
+   function To_Package_File_Id
+                          (Source  : in String) return String
+   is
+      use Ada.Characters.Handling;
+      Result : String := Source;
+   begin
+      for I in Result'Range loop
+         case Source (I) is
+            when 'A' .. 'Z' =>
+               Result (I) := To_Lower (Source (I));
+            when '.' =>
+               Result (I) := '-';
+            when others =>
+               null;
+         end case;
+      end loop;
+      return Result;
+   end To_Package_File_Id;
 
    ------------------
    --  Ada_String  --
