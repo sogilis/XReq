@@ -352,11 +352,32 @@ p.position {
 }
 
     </style>
+    <script type="text/javascript">
+      var loaded=false;
+      var timeout_id;
+      function refresh(){
+        if(!loaded) {
+          location.reload(true);
+        } else {
+          clearTimeout(timeout_id);
+        }
+      }
+      function stop_refresh() {
+        loaded = true
+      }
+      function refresh_periodic(delay) {
+        timeout_id = setTimeout(refresh, delay);
+      }
+    </script>
   </head>
   <body>
+    <script type="text/javascript">/*<![CDATA[*/
+      refresh_periodic(5000);
+    /*]]>*/</script>
     <div id="title">
       <h1>Test suite results</h1>
     </div>
+    <p><a href="" onClick="refresh_periodic(5000); return false">refresh</a>, <a href="" onClick="stop_refresh(); return false">no refresh</a></p>
 <?garbage?>
     <div id="feature-1" class="feature skip">
       <div class="feature-header">
@@ -606,6 +627,9 @@ end Steps2;
     </div>
 <?var name="page-end"?>
   </body>
+  <script type="text/javascript">/*<![CDATA[*/
+    stop_refresh();
+  /*]]>*/</script>
 </html>
 <?garbage?>
 <!-- kate: hl PHP (HTML); -->

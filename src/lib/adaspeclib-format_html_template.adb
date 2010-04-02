@@ -361,11 +361,32 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
       Put (File, "    </style>" & ASCII.LF);
+      Put (File, "    <script type=""text/javascript"">" & ASCII.LF);
+      Put (File, "      var loaded=false;" & ASCII.LF);
+      Put (File, "      var timeout_id;" & ASCII.LF);
+      Put (File, "      function refresh(){" & ASCII.LF);
+      Put (File, "        if(!loaded) {" & ASCII.LF);
+      Put (File, "          location.reload(true);" & ASCII.LF);
+      Put (File, "        } else {" & ASCII.LF);
+      Put (File, "          clearTimeout(timeout_id);" & ASCII.LF);
+      Put (File, "        }" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
+      Put (File, "      function stop_refresh() {" & ASCII.LF);
+      Put (File, "        loaded = true" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
+      Put (File, "      function refresh_periodic(delay) {" & ASCII.LF);
+      Put (File, "        timeout_id = setTimeout(refresh, delay);" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
+      Put (File, "    </script>" & ASCII.LF);
       Put (File, "  </head>" & ASCII.LF);
       Put (File, "  <body>" & ASCII.LF);
+      Put (File, "    <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "      refresh_periodic(5000);" & ASCII.LF);
+      Put (File, "    /*]]>*/</script>" & ASCII.LF);
       Put (File, "    <div id=""title"">" & ASCII.LF);
       Put (File, "      <h1>Test suite results</h1>" & ASCII.LF);
       Put (File, "    </div>" & ASCII.LF);
+      Put (File, "    <p><a href="""" onClick=""refresh_periodic(5000); return false"">refresh</a>, <a href="""" onClick=""stop_refresh(); return false"">no refresh</a></p>" & ASCII.LF);
    end page_begin;
 
    procedure feature_begin
@@ -875,6 +896,9 @@ package body AdaSpecLib.Format_HTML_Template is
         (File : in out File_Type) is
    begin
       Put (File, "  </body>" & ASCII.LF);
+      Put (File, "  <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "    stop_refresh();" & ASCII.LF);
+      Put (File, "  /*]]>*/</script>" & ASCII.LF);
       Put (File, "</html>" & ASCII.LF);
    end page_end;
 
