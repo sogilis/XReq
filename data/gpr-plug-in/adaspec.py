@@ -15,11 +15,15 @@ Project variables:
   STEP_DEFINITIONS:     directory where the step definitions are
   RESULT_DIR:           where to generate the test suite
   TEST_SUITE:           name of the test suite
+  GENERATED_STEPS:      package name where to put generated steps
 
 Available commands for external use:
 
   def compile(filename = None):
     Compile the filename `filename' or the current project if not given
+
+  def generate_steps(filename = None):
+    Generate the step definitions
 
   def go_to_spec():
     Parse the current buffer with adaspec --partial --step-matching
@@ -44,6 +48,9 @@ import subprocess
 
 def compile(filename = None):
   Command_AdaSpec(filename)
+
+def generate_steps(filename = None):
+  Command_AdaSpec(filename, run_gprbuild = False, generate_steps = True)
 
 def go_to_spec():
   vars    = parse_makefile()
@@ -119,11 +126,13 @@ def create_makefile():
 # STEP_DEFINITIONS:     directory where the step definitions are
 # RESULT_DIR:           where to generate the test suite
 # TEST_SUITE:           name of the test suite
+# GENERATED_STEPS:      package name where to put generated steps
 
 FEATURE_DIR=features
 STEP_DEFINITIONS_DIR=features/step_definitions
 RESULT_DIR=features/tests
 TEST_SUITE=test_suite
+GENERATED_STEPS=Generated_Steps
 
 all: $(RESULT_DIR)/$(TEST_SUITE)
 .PHONY: all
@@ -150,7 +159,8 @@ def parse_makefile():
     'FEATURE_DIR'         : "features",
     'STEP_DEFINITIONS_DIR': "features/steps",
     'RESULT_DIR'          : "features/tests",
-    'TEST_SUITE'          : ""}
+    'TEST_SUITE'          : "",
+    'GENERATED_STEPS'     : "Generated_Steps"}
   f = open (file, "r")
   for line in f.readlines():
     var, eq, val = line.partition("=")
@@ -238,7 +248,7 @@ class Command_AdaSpec(GPS.Process):
       gprpath = "%s/%s.gpr" % (self.vars['RESULT_DIR'], self.vars['TEST_SUITE'])
       Command_GprBuild(gprpath, self.vars)
 
-  def __init__ (self, filename=None, run_gprbuild=True, vars=None):
+  def __init__ (self, filename=None, run_gprbuild=True, vars=None, generate_steps=False):
     if not vars: vars = parse_makefile()
     self.run_gprbuild = run_gprbuild
     self.vars = vars
@@ -251,6 +261,8 @@ class Command_AdaSpec(GPS.Process):
       command = command + ' --executable """%s"""' % vars['TEST_SUITE']
     command = command + ' --step """%s""" ' % vars['STEP_DEFINITIONS_DIR']
     command = command + ' --output """%s"""' % vars['RESULT_DIR']
+    if generate_steps:
+      command = command + ' --fill-steps-in """%s"""' % vars['GENERATED_STEPS']
     if filename:
       command = command + ' """%s"""' % filename
     else:
@@ -278,24 +290,35 @@ class FeatureBrowser(gtk.Table):
   def __init__(self):
     gtk.Table.__init__(self, rows=2, columns=1);
     self.toolBar = gtk.Toolbar()
+
     btn = gtk.ToolButton()
     btn.set_icon_name(gtk.STOCK_REFRESH)
     btn.set_label("Refresh")
     btn.set_tooltip_text("Refresh the feature view")
     btn.connect ('clicked', lambda x: self.refresh())
     self.toolBar.insert(btn, 1)
+
     btn = gtk.ToolButton()
     btn.set_icon_name(gtk.STOCK_EDIT)
     btn.set_label("Edit project file")
     btn.set_tooltip_text("Edit the AdaSpec Makefile")
     btn.connect ('clicked', lambda x: edit_makefile())
     self.toolBar.insert(btn, 2)
+
     btn = gtk.ToolButton()
     btn.set_icon_name(gtk.STOCK_EXECUTE)
     btn.set_label("Compile")
     btn.set_tooltip_text("Compile features")
     btn.connect ('clicked', lambda x: compile())
     self.toolBar.insert(btn, 3)
+
+    btn = gtk.ToolButton()
+    btn.set_icon_name(gtk.STOCK_CONVERT)
+    btn.set_label("Generate Steps")
+    btn.set_tooltip_text("Generate missing step definitions")
+    btn.connect ('clicked', lambda x: (generate_steps(), compile()))
+    self.toolBar.insert(btn, 4)
+
     self.attach(self.toolBar, 0, 1, 0, 1, yoptions=0)
     self.treeModel = gtk.TreeStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING, gobject.TYPE_STRING)
     self.populateModel();
