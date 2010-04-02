@@ -341,12 +341,15 @@ class FeatureBrowser(gtk.Table):
 
   def populateModel(self):
     vars = parse_makefile()
+    prjpath = makefile_path()
     feature_dir = vars['FEATURE_DIR']
     steps_dir = vars['STEP_DEFINITIONS_DIR']
     result_dir = vars['RESULT_DIR']
     self.treeModel.clear()
     img_d = gtk.icon_theme_get_default().load_icon("folder", gtk.ICON_SIZE_MENU, 0)
     img_f = gtk.icon_theme_get_default().load_icon("document", gtk.ICON_SIZE_MENU, 0)
+    if os.path.isfile(prjpath):
+      self.treeModel.append(None, [img_f, os.path.basename(prjpath), prjpath])
     if os.path.isdir(feature_dir):
       it = self.treeModel.append(None, [img_d, "Features", feature_dir]);
       for f in os.listdir(feature_dir):
