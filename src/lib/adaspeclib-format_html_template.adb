@@ -373,6 +373,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "      }" & ASCII.LF);
       Put (File, "      function stop_refresh() {" & ASCII.LF);
       Put (File, "        loaded = true" & ASCII.LF);
+      Put (File, "        document.getElementById(""link-refresh"").style.display = ""none"";" & ASCII.LF);
       Put (File, "      }" & ASCII.LF);
       Put (File, "      function refresh_periodic(delay) {" & ASCII.LF);
       Put (File, "        timeout_id = setTimeout(refresh, delay);" & ASCII.LF);
@@ -386,7 +387,7 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "    <div id=""title"">" & ASCII.LF);
       Put (File, "      <h1>Test suite results</h1>" & ASCII.LF);
       Put (File, "    </div>" & ASCII.LF);
-      Put (File, "    <p><a href="""" onClick=""refresh_periodic(5000); return false"">refresh</a>, <a href="""" onClick=""stop_refresh(); return false"">no refresh</a></p>" & ASCII.LF);
+      Put (File, "    <p id=""link-refresh""><a href="""" onClick=""stop_refresh(); return false"">stop refresh</a></p>" & ASCII.LF);
    end page_begin;
 
    procedure feature_begin
