@@ -25,6 +25,12 @@ Available commands for external use:
   def generate_steps(filename = None):
     Generate the step definitions
 
+  def run_tests():
+    Run the test suite, and show it once completed
+
+  def browse_test_report():
+    Browse the test report
+
   def go_to_spec():
     Parse the current buffer with adaspec --partial --step-matching
     The result is used to jump to the step definition file
@@ -51,6 +57,15 @@ def compile(filename = None):
 
 def generate_steps(filename = None):
   Command_AdaSpec(filename, run_gprbuild = False, generate_steps = True)
+
+def run_tests():
+  compile()
+  Command_TestSuite()
+  browse_test_report()
+
+def browse_test_report():
+  vars = parse_makefile()
+  GPS.HTML.browse(self.vars['REPORT_FILE'])
 
 def go_to_spec():
   vars    = parse_makefile()
@@ -127,12 +142,14 @@ def create_makefile():
 # RESULT_DIR:           where to generate the test suite
 # TEST_SUITE:           name of the test suite
 # GENERATED_STEPS:      package name where to put generated steps
+# REPORT_FILE:          where the HTML reports should go
 
 FEATURE_DIR=features
 STEP_DEFINITIONS_DIR=features/step_definitions
 RESULT_DIR=features/tests
 TEST_SUITE=test_suite
 GENERATED_STEPS=Generated_Steps
+REPORT_FILE=features/tests/adaspec-report.html
 
 all: $(RESULT_DIR)/$(TEST_SUITE)
 .PHONY: all
@@ -160,7 +177,8 @@ def parse_makefile():
     'STEP_DEFINITIONS_DIR': "features/steps",
     'RESULT_DIR'          : "features/tests",
     'TEST_SUITE'          : "",
-    'GENERATED_STEPS'     : "Generated_Steps"}
+    'GENERATED_STEPS'     : "Generated_Steps",
+    'REPORT_FILE'         : "features/tests/adaspec-report.html"}
   f = open (file, "r")
   for line in f.readlines():
     var, eq, val = line.partition("=")
@@ -283,6 +301,39 @@ class Command_AdaSpec(GPS.Process):
 
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                             Launch  test suite                             ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+
+class Command_TestSuite(GPS.Process):
+  def on_match (self, matched, unmatched):
+    matched = re.sub("^\n*", "", matched)
+    matched = re.sub("\n+", "\n", matched)
+    GPS.Console().write(matched)
+
+  def on_exit (self, status, output):
+    GPS.Console().write(output)
+
+  def __init__ (self, vars=None):
+    if not vars: vars = parse_makefile()
+    self.vars = vars
+
+    self.test_suite = "%s/%s" % (self.vars['RESULT_DIR'], self.vars['TEST_SUITE'])
+
+    GPS.Console().write("\n\n")
+
+    command = self.test_suite
+    command = command + ' -f html'
+    command = command + ' -o """%s"""' % self.vars['REPORT_FILE']
+
+    GPS.Process.__init__ (self, command,
+      show_command = True,
+      regexp = "^.+$",
+      single_line_regexp = True,
+      on_match = self.on_match,
+      on_exit  = self.on_exit)
+
+
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 ##                         Feature Browser  side view                         ##
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
@@ -298,12 +349,12 @@ class FeatureBrowser(gtk.Table):
     btn.connect ('clicked', lambda x: self.refresh())
     self.toolBar.insert(btn, 1)
 
-    btn = gtk.ToolButton()
-    btn.set_icon_name(gtk.STOCK_EDIT)
-    btn.set_label("Edit project file")
-    btn.set_tooltip_text("Edit the AdaSpec Makefile")
-    btn.connect ('clicked', lambda x: edit_makefile())
-    self.toolBar.insert(btn, 2)
+    #btn = gtk.ToolButton()
+    #btn.set_icon_name(gtk.STOCK_EDIT)
+    #btn.set_label("Edit project file")
+    #btn.set_tooltip_text("Edit the AdaSpec Makefile")
+    #btn.connect ('clicked', lambda x: edit_makefile())
+    #self.toolBar.insert(btn, 2)
 
     btn = gtk.ToolButton()
     btn.set_icon_name(gtk.STOCK_EXECUTE)
@@ -318,6 +369,13 @@ class FeatureBrowser(gtk.Table):
     btn.set_tooltip_text("Generate missing step definitions")
     btn.connect ('clicked', lambda x: (generate_steps(), compile()))
     self.toolBar.insert(btn, 4)
+
+    btn = gtk.ToolButton()
+    btn.set_icon_name(gtk.STOCK_MEDIA_PLAY)
+    btn.set_label("Test")
+    btn.set_tooltip_text("Start test suite")
+    btn.connect ('clicked', lambda x: run_tests())
+    self.toolBar.insert(btn, 5)
 
     self.attach(self.toolBar, 0, 1, 0, 1, yoptions=0)
     self.treeModel = gtk.TreeStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING, gobject.TYPE_STRING)
@@ -350,6 +408,8 @@ class FeatureBrowser(gtk.Table):
     img_f = gtk.icon_theme_get_default().load_icon("document", gtk.ICON_SIZE_MENU, 0)
     if os.path.isfile(prjpath):
       self.treeModel.append(None, [img_f, os.path.basename(prjpath), prjpath])
+    if os.path.isfile(vars['REPORT_FILE']):
+      self.treeModel.append(None, [img_f, os.path.basename(vars['REPORT_FILE']), vars['REPORT_FILE']])
     if os.path.isdir(feature_dir):
       it = self.treeModel.append(None, [img_d, "Features", feature_dir]);
       for f in os.listdir(feature_dir):
@@ -375,7 +435,10 @@ class FeatureBrowser(gtk.Table):
   def feature_activated(self, tree, path, view_col, *user):
     model = tree.get_model()
     path = model.get_value(model.get_iter(path), 2)
-    open_file(path)
+    if path.endswith(".html"):
+      GPS.HTML.browse(path)
+    else:
+      open_file(path)
 
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##

@@ -6,3 +6,5 @@
 /feature_tests
 /dbg/
 /cov/
+*.bexch
+/adaspec-report.html

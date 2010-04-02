@@ -7,12 +7,14 @@
 # RESULT_DIR:           where to generate the test suite
 # TEST_SUITE:           name of the test suite
 # GENERATED_STEPS:      package name where to put generated steps
+# REPORT_FILE:          where the HTML reports should go
 
 FEATURE_DIR=features
 STEP_DEFINITIONS_DIR=features/step_definitions
 RESULT_DIR=features/tests
 TEST_SUITE=test_suite
 GENERATED_STEPS=Generated_Steps
+REPORT_FILE=features/tests/adaspec-report.html
 
 all: $(RESULT_DIR)/$(TEST_SUITE)
 .PHONY: all
