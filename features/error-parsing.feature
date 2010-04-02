@@ -28,6 +28,15 @@ Feature: Parsing Errors
              Ignoring step
       """
 
+    When I run adaspec -q features/error-and.feature
+    Then it should pass
+    And the output should contain
+      """
+      features/error-and.feature:4: ERROR: And keyword should be following another keyword
+      features/error-and.feature:4: ERROR: Ignoring step
+
+      """
+
 
   Scenario: Invalid step
     Given a file "features/error-and.feature":
@@ -45,6 +54,15 @@ Feature: Parsing Errors
     And the output should contain
       """
       ERROR: invalid format in features/error-and.feature line 4
+
+      """
+
+    When I run adaspec -q features/error-and.feature
+    Then it should fail
+    And the output should contain
+      """
+      features/error-and.feature:4: ERROR: invalid format
+
       """
 
 
@@ -64,4 +82,49 @@ Feature: Parsing Errors
     And the output should contain
       """
       ERROR: invalid format in features/error-and.feature line 5
+
+      """
+
+    When I run adaspec -q features/error-and.feature
+    Then it should fail
+    And the output should contain
+      """
+      features/error-and.feature:5: ERROR: invalid format
+
+      """
+
+  Scenario: Stray characters in long string
+    Given a file "features/longstring.feature":
+      """
+      Feature: Sample
+
+        Background: B
+          Given this is a step
+            \"""with stray characters
+            With a long string
+            \"""
+
+      """
+    And a file "features/step_definitions/steps.ads":
+      """
+      package Steps is
+         --  @given ^this is a step$
+         --  @todo
+      end Steps;
+      """
+
+    When I run adaspec features/longstring.feature
+    Then it should pass
+    And the output should contain
+      """
+      ERROR: stray characers after """ in features/longstring.feature line 5
+
+      """
+
+    When I run adaspec -q features/longstring.feature
+    Then it should pass
+    And the output should contain
+      """
+      features/longstring.feature:5: ERROR: stray characers after """
+
       """

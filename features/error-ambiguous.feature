@@ -62,8 +62,58 @@ Feature: ambiguous step definition error reporting
   Scenario:
     When I run adaspec features/ambiguous.feature
     Then it should fail
+    And the output should contain
+      """
+      ERROR: Ambiguous match in features/ambiguous.feature:4 for:
+        Given this step works
+
+      """
+    And the output should contain
+      """
+      ERROR: Ambiguous match in features/ambiguous.feature:8 for:
+        Given this step works
+
+      """
+    And the output should contain
+      """
+      ERROR: Ambiguous match in features/ambiguous.feature:11 for:
+        Given this step works
+
+      """
+
+    When I run adaspec -q features/ambiguous.feature
+    Then it should fail
+    And the output should contain
+      """
+      features/ambiguous.feature:4: ERROR: Ambiguous match for: Given this step works
+
+      """
+    And the output should contain
+      """
+      features/ambiguous.feature:8: ERROR: Ambiguous match for: Given this step works
+
+      """
+    And the output should contain
+      """
+      features/ambiguous.feature:11: ERROR: Ambiguous match for: Given this step works
+
+      """
 
   Scenario:
     When I run adaspec features/ambiguous2.feature
     Then it should fail
+    And the output should contain
+      """
+      ERROR: Ambiguous match in features/ambiguous2.feature:4 for:
+        Given this is ambiguous
+
+      """
+
+    When I run adaspec -q features/ambiguous2.feature
+    Then it should fail
+    And the output should contain
+      """
+      features/ambiguous2.feature:4: ERROR: Ambiguous match for: Given this is ambiguous
+
+      """
 

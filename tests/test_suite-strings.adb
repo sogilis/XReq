@@ -25,6 +25,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Relative_Path);
       Ret.Add_Test (new Test_Reverse_Path);
       Ret.Add_Test (new Test_Replace);
+      Ret.Add_Test (new Test_Package_File_Id);
    end Add_Tests;
 
    --  Test_Starts_With  ------------------------------------------------------
@@ -382,6 +383,22 @@ package body Test_Suite.Strings is
    begin
 
       T.Assert (Replace ("abcabc", "abc", "Aabc") = "AabcAabc", "not OK");
+
+   end Run;
+
+   --  Test_Package_File_Id  --------------------------------------------------
+
+   function  Name (T : in Test_Package_File_Id) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.To_Package_File_Id");
+   end Name;
+
+   procedure Run (T : in out Test_Package_File_Id) is
+   begin
+
+      T.Assert (To_Package_File_Id ("First_Second.Last") = "first_second-last",
+                "To_Package_File_Id not OK");
 
    end Run;
 

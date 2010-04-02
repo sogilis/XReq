@@ -339,11 +339,13 @@ package body AdaSpec.Step_Definitions.Ada05 is
       --  Fill Steps  --
       ------------------
       if Fill_Steps then
-         if not Use_AdaSpecLib then
-            Buffer := "use  AdaSpecLib.General;" & ASCII.LF & Buffer;
-         end if;
-         if not With_AdaSpecLib then
-            Buffer := "with AdaSpecLib.General;" & ASCII.LF & Buffer;
+         if not Is_Empty (Added_Prc) then
+            if not Use_AdaSpecLib then
+               Buffer := "use  AdaSpecLib.General;" & ASCII.LF & Buffer;
+            end if;
+            if not With_AdaSpecLib then
+               Buffer := "with AdaSpecLib.General;" & ASCII.LF & Buffer;
+            end if;
          end if;
          Logger.Put_Line ("Update: " & Steps_Ads_File);
          Set_File (Steps_Ads_File, To_String (Buffer));
@@ -563,7 +565,10 @@ package body AdaSpec.Step_Definitions.Ada05 is
       while Has_Element (I) and S = null loop
          S := Ada_Step_File_Ptr (Element (I));
          if S /= null and then S.File_Name /= File_Name_Ads then
-            S := null;
+            --  This line is difficult to cover for certain as it depends on
+            --  the order the step packages are read. If the step package we
+            --  are modifying is the first, then this line is never executed.
+            S := null;  --  GCOV_IGNORE
          end if;
          Next (I);
       end loop;
@@ -572,7 +577,12 @@ package body AdaSpec.Step_Definitions.Ada05 is
          S := new Ada_Step_File_Type;
          S.Make  (File_Name_Ads, Fill_Steps => False);
          if Exists (File_Name_Ads) then
+            --  GCOV_IGNORE_BEGIN
+            --  Should not never happen, unless the parsing of the step
+            --  directory missed a file, or unless a new file was created
+            --  in between
             S.Parse (Logger);
+            --  GCOV_IGNORE_END
          end if;
          Append  (Steps, Step_File_Ptr (S));
          I := Last (Steps);
@@ -596,7 +606,11 @@ package body AdaSpec.Step_Definitions.Ada05 is
             Unique_Procedure_Name (S.Procedures, Prc_Name, Step_Then,
                                    Slice (Tag, 7, Length (Tag)));
          else
+            --  GCOV_IGNORE_BEGIN
+            --  Should not enter here, the tag should always start with either
+            --  a @given, @when, or @then, but we never know
             Unique_Procedure_Name (S.Procedures, Prc_Name, To_String (Tag));
+            --  GCOV_IGNORE_END
          end if;
          Append (Procedures, Prc_Name);
          Append (Tags,       Tag);
