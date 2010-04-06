@@ -128,6 +128,7 @@ private
          Skip_Scenarios  : Boolean := False;
          Inline_Backgrnd : Boolean := False;
          Run_Feature     : Boolean := False;
+         Has_Debug       : Boolean := False;
          Curr_Scenario   : Menu_Item_2;
          Curr_Feature    : Menu_Item_1;
          Menu            : Menu_Vectors.Vector;

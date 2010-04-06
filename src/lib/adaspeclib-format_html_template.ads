@@ -77,6 +77,9 @@ package AdaSpecLib.Format_HTML_Template is
          Param_position : in String;
          Param_stanza : in String);
 
+   procedure step_debug
+        (File : in out File_Type);
+
    procedure step_string
         (File : in out File_Type;
          Param_string : in String);
@@ -117,6 +120,9 @@ package AdaSpecLib.Format_HTML_Template is
          Param_trace : in String;
          Param_feature_id : in String;
          Param_num : in String);
+
+   procedure step_debug_end
+        (File : in out File_Type);
 
    procedure step_end
         (File : in out File_Type);

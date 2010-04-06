@@ -369,6 +369,7 @@ package body AdaSpecLib.Format.HTML is
       Left, Right : Natural; --  Left and right boundaries of matches
 
    begin
+      Format.Has_Debug := False;
       if not (Format.In_Outline  and
               Format.In_Scenario and
               Success = Status_Passed)
@@ -418,6 +419,9 @@ package body AdaSpecLib.Format.HTML is
                when Arg_Separator =>
                   if Success /= Status_Failed and not Format.Debug_Mode then
                      exit Loop_Args;
+                  elsif not Format.Has_Debug and I < Args.Last then
+                     Tmpl.step_debug (Format.Output);
+                     Format.Has_Debug := True;
                   end if;
                   if I < Args.Last then
                      Tmpl.step_separator (Format.Output);
@@ -466,6 +470,9 @@ package body AdaSpecLib.Format.HTML is
    procedure Stop_Step      (Format     : in out HTML_Format_Type) is
    begin
       if Format.Close_Step then
+         if Format.Has_Debug then
+            Tmpl.step_debug_end (Format.Output);
+         end if;
          Tmpl.step_end (Format.Output);
       end if;
       Format_Type (Format).Stop_Step;  --  resend

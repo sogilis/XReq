@@ -6,6 +6,15 @@
     <title><?placeholder name="title"?></title>
     <style type="text/css">
 
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
 a {
   color: inherit;
 }
@@ -351,6 +360,19 @@ p.position {
   color: grey;
 }
 
+.debug-link {
+  float: right;
+  font-size: 0.7em;
+  margin: 0;
+  padding: 0;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.debug {
+  display: none;
+}
+
     </style>
     <script type="text/javascript">
       var loaded=false;
@@ -368,6 +390,42 @@ p.position {
       }
       function refresh_periodic(delay) {
         timeout_id = setTimeout(refresh, delay);
+      }
+
+      function debugLinkClicked(elem){
+        //alert(elem + ": " + elem.is_close);
+        var is_close = elem.is_close;
+        var e = elem.nextSibling;
+        while (e) {
+          if (e.tagName && e.className.indexOf("hidden") == -1) {
+            //alert("current: " + e + (is_close ? "\nclose->open" : "\nopen->close") + "\nclass: " + e.className + "\nnext: " + e.nextSibling);
+            if (is_close) {
+              e.style.display = e.style_display;
+            } else {
+              e.style_display = e.style.display;
+              e.style.display = "none";
+            }
+            //alert (e + "\ndisplay: " + e.style.display + "\nOld display: " + e.style_display);
+          }
+          e = e.nextSibling;
+          //alert ("next: " + e);
+        }
+        elem.is_close = ! is_close;
+        //alert(elem + ": " + elem.is_close);
+      }
+
+      function debugInit(){
+        var t = document.getElementsByClassName("debug-link");
+        for(var i = 0; i < t.length; ++i) {
+          if (t[i].is_close || t[i].debug_init_processed) {
+            // Nothing to do
+          } else {
+            t[i].is_close = false;
+            t[i].debug_init_processed = true;
+            //alert("debugInit: " + i + " debugLinkClicked (" + t[i] + ")")
+            debugLinkClicked (t[i]);
+          }
+        }
       }
     </script>
   </head>
@@ -410,6 +468,13 @@ p.position {
   Scenario: Run a good step
     Given this step works
 </pre>
+          <p class="debug-link"><a href="" onClick="debugLinkClicked(this.parentNode); return false;">debug</a></p>
+          <hr class="clear hidden" />
+          <p>Debug output:</p>
+          <pre class="string">OUT</pre>
+          <script type="text/javascript">/*<![CDATA[*/
+            debugInit();
+          /*]]>*/</script>
         </div>
         <div class="step fail">
           <script type="text/javascript">/*<![CDATA[*/
@@ -524,6 +589,9 @@ end Steps2;
           <p class="position"><?placeholder name="position"?></p>
           <p><?placeholder name="stanza"?></p>
           <hr class="clear hidden" />
+<?var name="step-debug"?>
+          <p class="debug-link"><a href="" onClick="debugLinkClicked(this.parentNode); return false;">debug</a></p>
+          <hr class="clear hidden" />
 <?var name="step-string"?>
           <pre class="string"><?placeholder name="string"?></pre>
 <?var name="step-table-begin"?>
@@ -559,6 +627,10 @@ end Steps2;
             document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
             document.getElementById("title").className = "fail";
+          /*]]>*/</script>
+<?var name="step-debug-end"?>
+          <script type="text/javascript">/*<![CDATA[*/
+            debugInit();
           /*]]>*/</script>
 <?var name="step-end"?>
         </div> <!-- step -->

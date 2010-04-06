@@ -15,6 +15,15 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "</title>" & ASCII.LF);
       Put (File, "    <style type=""text/css"">" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".left {" & ASCII.LF);
+      Put (File, "  float: left;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".right {" & ASCII.LF);
+      Put (File, "  float: right;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, "a {" & ASCII.LF);
       Put (File, "  color: inherit;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -360,6 +369,19 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "  color: grey;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
+      Put (File, ".debug-link {" & ASCII.LF);
+      Put (File, "  float: right;" & ASCII.LF);
+      Put (File, "  font-size: 0.7em;" & ASCII.LF);
+      Put (File, "  margin: 0;" & ASCII.LF);
+      Put (File, "  padding: 0;" & ASCII.LF);
+      Put (File, "  margin-left: 1%;" & ASCII.LF);
+      Put (File, "  margin-right: 1%;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".debug {" & ASCII.LF);
+      Put (File, "  display: none;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
       Put (File, "    </style>" & ASCII.LF);
       Put (File, "    <script type=""text/javascript"">" & ASCII.LF);
       Put (File, "      var loaded=false;" & ASCII.LF);
@@ -377,6 +399,42 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "      }" & ASCII.LF);
       Put (File, "      function refresh_periodic(delay) {" & ASCII.LF);
       Put (File, "        timeout_id = setTimeout(refresh, delay);" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "      function debugLinkClicked(elem){" & ASCII.LF);
+      Put (File, "        //alert(elem + "": "" + elem.is_close);" & ASCII.LF);
+      Put (File, "        var is_close = elem.is_close;" & ASCII.LF);
+      Put (File, "        var e = elem.nextSibling;" & ASCII.LF);
+      Put (File, "        while (e) {" & ASCII.LF);
+      Put (File, "          if (e.tagName && e.className.indexOf(""hidden"") == -1) {" & ASCII.LF);
+      Put (File, "            //alert(""current: "" + e + (is_close ? ""\nclose->open"" : ""\nopen->close"") + ""\nclass: "" + e.className + ""\nnext: "" + e.nextSibling);" & ASCII.LF);
+      Put (File, "            if (is_close) {" & ASCII.LF);
+      Put (File, "              e.style.display = e.style_display;" & ASCII.LF);
+      Put (File, "            } else {" & ASCII.LF);
+      Put (File, "              e.style_display = e.style.display;" & ASCII.LF);
+      Put (File, "              e.style.display = ""none"";" & ASCII.LF);
+      Put (File, "            }" & ASCII.LF);
+      Put (File, "            //alert (e + ""\ndisplay: "" + e.style.display + ""\nOld display: "" + e.style_display);" & ASCII.LF);
+      Put (File, "          }" & ASCII.LF);
+      Put (File, "          e = e.nextSibling;" & ASCII.LF);
+      Put (File, "          //alert (""next: "" + e);" & ASCII.LF);
+      Put (File, "        }" & ASCII.LF);
+      Put (File, "        elem.is_close = ! is_close;" & ASCII.LF);
+      Put (File, "        //alert(elem + "": "" + elem.is_close);" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "      function debugInit(){" & ASCII.LF);
+      Put (File, "        var t = document.getElementsByClassName(""debug-link"");" & ASCII.LF);
+      Put (File, "        for(var i = 0; i < t.length; ++i) {" & ASCII.LF);
+      Put (File, "          if (t[i].is_close || t[i].debug_init_processed) {" & ASCII.LF);
+      Put (File, "            // Nothing to do" & ASCII.LF);
+      Put (File, "          } else {" & ASCII.LF);
+      Put (File, "            t[i].is_close = false;" & ASCII.LF);
+      Put (File, "            t[i].debug_init_processed = true;" & ASCII.LF);
+      Put (File, "            //alert(""debugInit: "" + i + "" debugLinkClicked ("" + t[i] + "")"")" & ASCII.LF);
+      Put (File, "            debugLinkClicked (t[i]);" & ASCII.LF);
+      Put (File, "          }" & ASCII.LF);
+      Put (File, "        }" & ASCII.LF);
       Put (File, "      }" & ASCII.LF);
       Put (File, "    </script>" & ASCII.LF);
       Put (File, "  </head>" & ASCII.LF);
@@ -589,6 +647,13 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
    end step_begin;
 
+   procedure step_debug
+        (File : in out File_Type) is
+   begin
+      Put (File, "          <p class=""debug-link""><a href="""" onClick=""debugLinkClicked(this.parentNode); return false;"">debug</a></p>" & ASCII.LF);
+      Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
+   end step_debug;
+
    procedure step_string
         (File : in out File_Type;
          Param_string : in String) is
@@ -701,6 +766,14 @@ package body AdaSpecLib.Format_HTML_Template is
       Put (File, "            document.getElementById(""title"").className = ""fail"";" & ASCII.LF);
       Put (File, "          /*]]>*/</script>" & ASCII.LF);
    end step_error_scenario;
+
+   procedure step_debug_end
+        (File : in out File_Type) is
+   begin
+      Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "            debugInit();" & ASCII.LF);
+      Put (File, "          /*]]>*/</script>" & ASCII.LF);
+   end step_debug_end;
 
    procedure step_end
         (File : in out File_Type) is
