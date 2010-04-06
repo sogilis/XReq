@@ -65,7 +65,7 @@ def run_tests():
 
 def browse_test_report():
   vars = parse_makefile()
-  GPS.HTML.browse(self.vars['REPORT_FILE'])
+  GPS.HTML.browse(vars['REPORT_FILE'])
 
 def go_to_spec():
   vars    = parse_makefile()
@@ -322,7 +322,7 @@ class Command_TestSuite(GPS.Process):
     GPS.Console().write("\n\n")
 
     command = self.test_suite
-    command = command + ' -f html'
+    command = command + ' -d -f html'
     command = command + ' -o """%s"""' % self.vars['REPORT_FILE']
 
     GPS.Process.__init__ (self, command,
