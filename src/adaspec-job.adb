@@ -155,25 +155,6 @@ package body AdaSpec.Job is
       return To_String (Job.Feature_File);
    end Feature_File;
 
-   ------------------------------
-   --  Job_Type  --  Describe  --
-   ------------------------------
-
-   function Describe (Job : in Job_Type;
-                      Env : in Job_Environment) return String
-   is
-      use String_Vectors;
-      CRLF   : constant String := "" & ASCII.LF;
-      Buffer : Unbounded_String;
-   begin
-      Append (Buffer, "Feature:     " & Feature_File (Job) & CRLF);
-      for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
-         Append (Buffer, "Steps in:    " & Element (Env.Step_Dir, I) & CRLF);
-      end loop;
-      Append (Buffer, "Generate in: " & Out_Dir (Env)      & CRLF);
-      return To_String (Buffer);
-   end Describe;
-
    -------------------------
    --  Job_Type  --  Run  --
    -------------------------
@@ -246,24 +227,6 @@ package body AdaSpec.Job is
       Env := E;
       Job := J;
    end Init;
-
-   ------------
-   --  Init  --
-   ------------
-
---    procedure Init (Env          : out    Job_Environment;
---                    Job          : out    Job_Type;
---                    Logger       : in     Logger_Ptr;
---                    Feature_File : in     String;
---                    Step_Dir     : in     String;
---                    Out_Dir      : in     String := "")
---    is
---       use String_Vectors;
---       V : String_Vector;
---    begin
---       Append (V, To_Unbounded_String (Step_Dir));
---       Init (Env, Job, Logger, Feature_File, V, Out_Dir);
---    end Init;
 
 
 end AdaSpec.Job;

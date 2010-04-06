@@ -78,8 +78,6 @@ package AdaSpec.Job is
                        Step_Matching : in     Boolean := False);
    --  IMPORTANT: call Cleanup afterwards
    procedure Cleanup  (Job           : in out Job_Type);
-   function  Describe (Job           : in     Job_Type;
-                       Env           : in     Job_Environment) return String;
 
 
    procedure Init (Env          : out    Job_Environment;
@@ -89,14 +87,6 @@ package AdaSpec.Job is
                    Step_Dir     : in     String_Vector :=
                                          Empty_String_Vector;
                    Out_Dir      : in     String := "");
-   --  IMPORTANT: run UnLoad in Env
-
---    procedure Init (Env          : out    Job_Environment;
---                    Job          : out    Job_Type;
---                    Logger       : in     Logger_Ptr;
---                    Feature_File : in     String;
---                    Step_Dir     : in     String;
---                    Out_Dir      : in     String := "");
    --  IMPORTANT: run UnLoad in Env
 
 end AdaSpec.Job;

@@ -10,7 +10,7 @@ package Test_Suite.Job is
       Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_Describe is
+   type Test_First_Step_Dir is
       new Test_Case_Type with null record;
    type Test_Fill_Missing is
       new Test_Case_Type with null record;
@@ -20,8 +20,8 @@ package Test_Suite.Job is
       new Test_Case_Type with null record;
 
    --  Operation on Test_Describe
-   function  Name (T : in     Test_Describe) return String;
-   procedure Run  (T : in out Test_Describe);
+   function  Name (T : in     Test_First_Step_Dir) return String;
+   procedure Run  (T : in out Test_First_Step_Dir);
 
    --  Operation on Test_Fill_Missing
    function  Name (T : in     Test_Fill_Missing)

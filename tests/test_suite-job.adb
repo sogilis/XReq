@@ -12,7 +12,7 @@ package body Test_Suite.Job is
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
    is
    begin
-      Ret.Add_Test (new Test_Describe);
+      Ret.Add_Test (new Test_First_Step_Dir);
       Ret.Add_Test (new Test_Fill_Missing);
       Ret.Add_Test (new Test_Job_Environment);
       Ret.Add_Test (new Test_Run);
@@ -20,20 +20,14 @@ package body Test_Suite.Job is
 
    --  Describe  --------------------------------------------------------------
 
-   function  Name (T : in Test_Describe) return String is
+   function  Name (T : in Test_First_Step_Dir) return String is
       pragma Unreferenced (T);
    begin
-      return ("AsaSpec.Job.Describe");
+      return ("AsaSpec.Job.First_Step_Dir");
    end Name;
 
-   procedure Run (T : in out Test_Describe) is
-      CRLF : constant String := "" & ASCII.LF;
-      Job  : Job_Type;
+   procedure Run (T : in out Test_First_Step_Dir) is
       Env  : Job_Environment;
-      Expected_Result : constant String :=
-         "Feature:     F" & CRLF &
-         "Steps in:    S" & CRLF &
-         "Generate in: O" & CRLF;
    begin
 
       declare
@@ -41,17 +35,12 @@ package body Test_Suite.Job is
          procedure P is begin
             T.Assert (First_Step_Dir (Env) = "", "not OK");
          end P;
-         procedure A is new Assert_Except (Test_Describe, P);
+         procedure A is new Assert_Except (Test_First_Step_Dir, P);
       begin
          A (T,
             "Constraint_Error has not been raised in call to First_Step_Dir",
             Constraint_Error'Identity);
       end;
-
-      Make (Env, "S", "O");
-      Make (Job, "F");
-      T.Assert (Describe (Job, Env) = Expected_Result,
-                "Incorrect description");
    end Run;
 
 

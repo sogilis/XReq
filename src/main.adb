@@ -281,10 +281,12 @@ exception
       AdaSpec.CLI.Help;
       Set_Exit_Status (Failure);
 
+   --  GCOV_IGNORE_BEGIN
    when Error : Not_Yet_Implemented =>
       Free (Logger);
       Put_Line (Standard_Error, "Not Yet Implemented: " &
                 Exception_Message (Error));
       Set_Exit_Status (Failure);
+   --  GCOV_IGNORE_END
 
 end Main;

@@ -285,6 +285,9 @@ package body AdaSpec.Step_Definitions.Ada05 is
                Current_Step := Element (I);
                Current_Step.Proc_Name := Package_S & '.' & Procedure_S;
                Steps.Append (Current_Step);
+--                Logger.Put_Line (
+--                   "Step: " & To_String (Current_Step.Pattern_S) &
+--                   " -> " & To_String (Current_Step.Proc_Name));
                Next (I);
             end loop;
             Clear (Current_Steps);
@@ -318,6 +321,9 @@ package body AdaSpec.Step_Definitions.Ada05 is
             while Has_Element (I) loop
                Current_Step := Element (I);
                Current_Step.Proc_Name := Null_Unbounded_String;
+--                Logger.Put_Line ("Step: " &
+--                                 To_String (Current_Step.Pattern_S) &
+--                                 " -> TODO");
                Steps.Append (Current_Step);
                Next (I);
             end loop;
