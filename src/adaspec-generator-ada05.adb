@@ -674,6 +674,7 @@ package body AdaSpec.Generator.Ada05 is
                              Make : in Boolean := False)
    is
       use Generator_Vectors;
+      use String_Vectors;
       Filename : constant String := Out_Dir (Env) & "/" & Name & ".adb";
       Gpr_Name : constant String := Out_Dir (Env) & "/" & Name & ".gpr";
       With_B   : Buffer_Type;
@@ -682,8 +683,6 @@ package body AdaSpec.Generator.Ada05 is
       I        : Generator_Vectors.Cursor := First (Gens);
       E        : Ada_Generator_Ptr;
       Prc_Name : constant String := To_Identifier (Name);
-      Step_D   : constant String :=
-         Relative_Path (Reverse_Path (Out_Dir (Env)), Step_Dir (Env));
    begin
       With_B.Put_Line ("--  File: " & Filename);
       With_B.Put_Line ("with Ada.Command_Line;");
@@ -763,7 +762,17 @@ package body AdaSpec.Generator.Ada05 is
       Gpr_B.Put_Line ("project " & Prc_Name & " is");
       Gpr_B.Indent;
       Gpr_B.Put_Line ("for Main        use (""" & Prc_Name & """);");
-      Gpr_B.Put_Line ("for Source_Dirs use (""."", """ & Step_D & """);");
+      Gpr_B.Put_Indent;
+      Gpr_B.Put      ("for Source_Dirs use ("".""");
+
+      for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
+         Gpr_B.Put (", """ & Relative_Path (Reverse_Path (Out_Dir (Env)),
+                                            To_String (Element (Env.Step_Dir,
+                                                                I))
+                                           ) & """");
+      end loop;
+      Gpr_B.Put      (");");
+      Gpr_B.New_Line;
       Gpr_B.Put_Line ("package Compiler is");
       Gpr_B.Indent;
       Gpr_B.Put_Line ("for Default_Switches (""Ada"") use " &

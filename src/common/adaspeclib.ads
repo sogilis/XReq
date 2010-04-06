@@ -18,6 +18,8 @@ package AdaSpecLib is
 
    subtype String_Vector is String_Vectors.Vector;
 
+   Empty_String_Vector : constant String_Vector := String_Vectors.Empty_Vector;
+
    -----------------
    --  Step_Type  --
    -----------------

@@ -1,10 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Strings.Unbounded;
 with AdaSpec.Job;
 with Util.IO;
 
-use Ada.Strings.Unbounded;
 use AdaSpec.Job;
 use Util.IO;
 
@@ -37,6 +35,19 @@ package body Test_Suite.Job is
          "Steps in:    S" & CRLF &
          "Generate in: O" & CRLF;
    begin
+
+      declare
+         procedure P;
+         procedure P is begin
+            T.Assert (First_Step_Dir (Env) = "", "not OK");
+         end P;
+         procedure A is new Assert_Except (Test_Describe, P);
+      begin
+         A (T,
+            "Constraint_Error has not been raised in call to First_Step_Dir",
+            Constraint_Error'Identity);
+      end;
+
       Make (Env, "S", "O");
       Make (Job, "F");
       T.Assert (Describe (Job, Env) = Expected_Result,
@@ -56,8 +67,9 @@ package body Test_Suite.Job is
       Env  : Job_Environment;
    begin
       Fill_Missing (Env, "A/B/spec.feature");
-      T.Assert (Env.Step_Dir = "A/B/step_definitions", "Incorrect step dir");
-      T.Assert (Env.Out_Dir  = "A/B/tests", "Incorrect out dir");
+      T.Assert (First_Step_Dir (Env) = "A/B/step_definitions",
+                "Incorrect step dir");
+      T.Assert (Out_Dir  (Env) = "A/B/tests", "Incorrect out dir");
    end Run;
 
    --  Job_Environment  -------------------------------------------------------
@@ -78,8 +90,8 @@ package body Test_Suite.Job is
 
       T.Assert (not Env.Loaded, "Env should NOT be loaded");
 
-      T.Assert (Env.Step_Dir = "steps", "Invalid step dir");
-      T.Assert (Env.Out_Dir = "out", "Invalid out dir");
+      T.Assert (First_Step_Dir (Env) = "steps", "Invalid step dir");
+      T.Assert (Out_Dir  (Env) = "out", "Invalid out dir");
 
       Make (Env, "tests/features/step_definitions");
 
@@ -152,7 +164,7 @@ package body Test_Suite.Job is
 
       Load (Env, Std_Logger);
 
-      T.Assert (Step_Dir (Env) = "tests/features/step_definitions",
+      T.Assert (First_Step_Dir (Env) = "tests/features/step_definitions",
               "incorrect step dir");
 
       T.Assert (Out_Dir (Env) = "tests/features/tests",

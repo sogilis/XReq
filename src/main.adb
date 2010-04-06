@@ -28,6 +28,7 @@ use AdaSpec.Generator;
 procedure Main is
 
    use Generator_Vectors;
+   use String_Vectors;
 
    Logger     : Logger_Ptr := Logger_Ptr (New_Standard_Logger);
    Env        : Job_Environment;
@@ -38,7 +39,7 @@ procedure Main is
               "-fill-steps -progress -partial -step-matching m -make " &
               "q -quiet -fill-steps-in=";
    Arg        : Unbounded_String;
-   Step_Dir   : Unbounded_String;
+   Step_Dir   : String_Vector;
    Out_Dir    : Unbounded_String;
    Language   : Language_Type := Language_Type'First;
    Executable : Unbounded_String;
@@ -52,6 +53,7 @@ procedure Main is
    Make       : Boolean := False;
    Fill_Pkg   : Unbounded_String;
    I          : Natural;
+   J          : String_Vectors.Cursor;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
 
@@ -110,10 +112,7 @@ begin
          Executable := To_Unbounded_String (Parameter);
 
       elsif Full_Switch = "s" or Full_Switch = "-step" then
-         if Length (Step_Dir) /= 0 then
-            raise Not_Yet_Implemented with "multiple --step";
-         end if;
-         Step_Dir := To_Unbounded_String (Parameter);
+         Append (Step_Dir, To_Unbounded_String (Parameter));
 
       elsif Full_Switch = "o" or Full_Switch = "-output" then
          Out_Dir  := To_Unbounded_String (Parameter);
@@ -136,11 +135,15 @@ begin
 
       Arg := To_Unbounded_String (Get_Argument);
       if Length (Arg) = 0 then
-         if Fill_Steps and Length (Step_Dir) /= 0 then
-            Put_Line ("--> Fill steps in: " & To_String (Step_Dir));
+         if Fill_Steps and not Is_Empty (Step_Dir) then
+            J := First (Step_Dir);
+            while Has_Element (J) loop
+               Put_Line ("--> Fill steps in: " & To_String (Element (J)));
+               Next (J);
+            end loop;
             New_Line;
             AdaSpec.Job.Make (Env,
-               Step_Dir => To_String (Step_Dir),
+               Step_Dir => Step_Dir,
                Out_Dir  => To_String (Out_Dir),
                Language => Language);
             Load (Env, Logger,
@@ -173,7 +176,7 @@ begin
       ---------------------
 
       AdaSpec.Job.Make (Env,
-         Step_Dir => To_String (Step_Dir),
+         Step_Dir => Step_Dir,
          Out_Dir  => To_String (Out_Dir),
          Language => Language);
 

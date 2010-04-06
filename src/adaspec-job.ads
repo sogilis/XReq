@@ -6,6 +6,7 @@ with AdaSpec.Lang;
 with AdaSpec.Features;
 with AdaSpec.Step_Definitions;
 with AdaSpec.Result;
+with AdaSpecLib;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -13,6 +14,7 @@ use AdaSpec.Lang;
 use AdaSpec.Features;
 use AdaSpec.Step_Definitions;
 use AdaSpec.Result;
+use AdaSpecLib;
 
 package AdaSpec.Job is
 
@@ -24,7 +26,7 @@ package AdaSpec.Job is
 
    type Job_Environment is
       record
-         Step_Dir  : Unbounded_String;
+         Step_Dir  : String_Vector;
          Out_Dir   : Unbounded_String;
          Steps     : Step_Definitions_Type;
          Loaded    : Boolean := False;
@@ -33,10 +35,15 @@ package AdaSpec.Job is
    Null_Job_Environment : constant Job_Environment := (others => <>);
 
    procedure Make         (Env        : out    Job_Environment;
-                           Step_Dir   : in     String := "";
+                           Step_Dir   : in     String_Vector :=
+                                               Empty_String_Vector;
                            Out_Dir    : in     String := "";
                            Language   : in     Language_Type := Lang_Ada);
-   function  Step_Dir     (Env        : in     Job_Environment) return String;
+   procedure Make         (Env        : out    Job_Environment;
+                           Step_Dir   : in     String;
+                           Out_Dir    : in     String := "";
+                           Language   : in     Language_Type := Lang_Ada);
+   function  First_Step_Dir (Env      : in     Job_Environment) return String;
    function  Out_Dir      (Env        : in     Job_Environment) return String;
    procedure Fill_Missing (Env        : in out Job_Environment;
                            Feature    : in     String);
@@ -79,8 +86,17 @@ package AdaSpec.Job is
                    Job          : out    Job_Type;
                    Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
-                   Step_Dir     : in     String := "";
+                   Step_Dir     : in     String_Vector :=
+                                         Empty_String_Vector;
                    Out_Dir      : in     String := "");
+   --  IMPORTANT: run UnLoad in Env
+
+--    procedure Init (Env          : out    Job_Environment;
+--                    Job          : out    Job_Type;
+--                    Logger       : in     Logger_Ptr;
+--                    Feature_File : in     String;
+--                    Step_Dir     : in     String;
+--                    Out_Dir      : in     String := "");
    --  IMPORTANT: run UnLoad in Env
 
 end AdaSpec.Job;

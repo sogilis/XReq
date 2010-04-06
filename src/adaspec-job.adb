@@ -1,6 +1,7 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with Ada.Directories;
+with Ada.Containers;
 with Util.Strings;
 with AdaSpec.Result_Features;
 
@@ -15,25 +16,48 @@ package body AdaSpec.Job is
    ---------------------------------
 
    procedure Make         (Env      : out    Job_Environment;
-                           Step_Dir : in     String := "";
+                           Step_Dir : in     String_Vector :=
+                                             Empty_String_Vector;
                            Out_Dir  : in     String := "";
                            Language : in     Language_Type := Lang_Ada) is
    begin
       Env := (
-         Step_Dir => To_Unbounded_String (Step_Dir),
+         Step_Dir => Step_Dir,
          Out_Dir  => To_Unbounded_String (Out_Dir),
          Language => Language,
          others   => <>);
+   end Make;
+
+   ---------------------------------
+   --  Job_Environment  -- Make   --
+   ---------------------------------
+
+   procedure Make         (Env      : out    Job_Environment;
+                           Step_Dir : in     String;
+                           Out_Dir  : in     String := "";
+                           Language : in     Language_Type := Lang_Ada)
+   is
+      use String_Vectors;
+      V : String_Vector;
+   begin
+      Append (V, To_Unbounded_String (Step_Dir));
+      Make (Env, V, Out_Dir, Language);
    end Make;
 
    -------------------------------------
    --  Job_Environment  --  Step_Dir  --
    -------------------------------------
 
-   function  Step_Dir     (Env      : in     Job_Environment) return String is
+   function  First_Step_Dir (Env : in Job_Environment) return String is
+      use String_Vectors;
+      use Ada.Containers;
    begin
-      return To_String (Env.Step_Dir);
-   end Step_Dir;
+      if Length (Env.Step_Dir) >= 1 then
+         return To_String (First_Element (Env.Step_Dir));
+      else
+         raise Constraint_Error with "No step dir";
+      end if;
+   end First_Step_Dir;
 
    ------------------------------------
    --  Job_Environment  --  Out_Dir  --
@@ -49,12 +73,14 @@ package body AdaSpec.Job is
    -----------------------------------------
 
    procedure Fill_Missing (Env : in out Job_Environment;
-                           Feature : in String) is
+                           Feature : in String)
+   is
+      use String_Vectors;
    begin
 
-      if Length (Env.Step_Dir) = 0 then
-         Env.Step_Dir := To_Unbounded_String (Compose (
-            Containing_Directory (Feature), "step_definitions"));
+      if Is_Empty (Env.Step_Dir) then
+         Append (Env.Step_Dir, To_Unbounded_String (Compose (
+            Containing_Directory (Feature), "step_definitions")));
       end if;
 
       if Length (Env.Out_Dir) = 0 then
@@ -72,9 +98,10 @@ package body AdaSpec.Job is
                    Logger     : in     Logger_Ptr;
                    Fill_Steps : in     Boolean := False)
    is
+      use String_Vectors;
    begin
 
-      if Length (Env.Step_Dir) = 0 then
+      if Is_Empty (Env.Step_Dir) then
          raise Invalid_Environment with "No step_definitions directory";
       end if;
       if Length (Env.Out_Dir) = 0 then
@@ -85,9 +112,15 @@ package body AdaSpec.Job is
          Create_Path (Out_Dir (Env));
       end if;
 
-      Create_Path (Step_Dir (Env));
+      for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
+         declare
+            Step : constant String := To_String (Element (Env.Step_Dir, I));
+         begin
+            Create_Path (Step);
+            Load (Env.Steps, Logger, Step, Env.Language, Fill_Steps);
+         end;
+      end loop;
 
-      Load (Env.Steps, Logger, Step_Dir (Env), Env.Language, Fill_Steps);
       Env.Loaded := True;
 
    end Load;
@@ -127,12 +160,18 @@ package body AdaSpec.Job is
    ------------------------------
 
    function Describe (Job : in Job_Type;
-                      Env : in Job_Environment) return String is
-      CRLF : constant String := "" & ASCII.LF;
+                      Env : in Job_Environment) return String
+   is
+      use String_Vectors;
+      CRLF   : constant String := "" & ASCII.LF;
+      Buffer : Unbounded_String;
    begin
-      return "Feature:     " & Feature_File (Job) & CRLF &
-             "Steps in:    " & Step_Dir (Env)     & CRLF &
-             "Generate in: " & Out_Dir (Env)      & CRLF;
+      Append (Buffer, "Feature:     " & Feature_File (Job) & CRLF);
+      for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
+         Append (Buffer, "Steps in:    " & Element (Env.Step_Dir, I) & CRLF);
+      end loop;
+      Append (Buffer, "Generate in: " & Out_Dir (Env)      & CRLF);
+      return To_String (Buffer);
    end Describe;
 
    -------------------------
@@ -165,7 +204,7 @@ package body AdaSpec.Job is
 
       if Add_Steps_Pkg /= "" and not Is_Empty (Missing_Steps) then
          Add_Steps (Env.Steps, Missing_Steps, Add_Steps_Pkg,
-                    Step_Dir (Env), Env.Language, Logger);
+                    First_Step_Dir (Env), Env.Language, Logger);
          Clear (Missing_Steps);
          Job.Result.Set_Fail (False);
          Job.Result.Process_Feature (Job.Feature, Env.Steps, Logger,
@@ -193,7 +232,8 @@ package body AdaSpec.Job is
                    Job          : out    Job_Type;
                    Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
-                   Step_Dir     : in     String := "";
+                   Step_Dir     : in     String_Vector :=
+                                         Empty_String_Vector;
                    Out_Dir      : in     String := "")
    is
       E : Job_Environment;
@@ -206,6 +246,24 @@ package body AdaSpec.Job is
       Env := E;
       Job := J;
    end Init;
+
+   ------------
+   --  Init  --
+   ------------
+
+--    procedure Init (Env          : out    Job_Environment;
+--                    Job          : out    Job_Type;
+--                    Logger       : in     Logger_Ptr;
+--                    Feature_File : in     String;
+--                    Step_Dir     : in     String;
+--                    Out_Dir      : in     String := "")
+--    is
+--       use String_Vectors;
+--       V : String_Vector;
+--    begin
+--       Append (V, To_Unbounded_String (Step_Dir));
+--       Init (Env, Job, Logger, Feature_File, V, Out_Dir);
+--    end Init;
 
 
 end AdaSpec.Job;

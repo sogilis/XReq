@@ -123,7 +123,6 @@ Feature: adaspec commandline
     And "tests/features/tests/feature_simplest.adb" should exist
     And "tests/features/tests/feature_simplest.ads" should exist
 
-  @wip
   Scenario: Compile with two step directories
     When I run adaspec --step tmp --step tests/features/step_definitions tests/features/simplest.feature
     Then it should pass
