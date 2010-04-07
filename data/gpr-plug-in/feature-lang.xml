@@ -38,5 +38,8 @@
       </Category>
     </Categories>
 
+
+    <Engine>adaspecgps</Engine>
+    <Comment_Line>adaspec_gps_comment_line</Comment_Line>
   </Language>
 </Custom>

@@ -1,0 +1,22 @@
+--                         Copyright (C) 2010, Sogilis                       --
+-- kate: hl Ada; indent-width 3;
+
+with "config";
+
+library project GPS_Plugin is
+
+   for Library_Name     use "adaspecgps";
+   for Source_Dirs      use ("src/gps", "src/common");
+   for Object_Dir       use "obj/gps";
+   for Library_Dir      use "lib/gps";
+   for Library_Kind     use "relocatable";
+
+   package Compiler is
+      for Default_Switches ("Ada") use ("-g");
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("Ada") use ("-E");
+   end Binder;
+
+end GPS_Plugin;

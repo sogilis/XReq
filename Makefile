@@ -23,7 +23,7 @@ DATADIR    = $(PREFIX)/share
 GPSDATADIR = $(PREFIX_GPS)/share/gps
 DOCDIR     = $(DATADIR)/doc/AdaSpec
 
-all: bin tests doc
+all: bin gps-plugin tests doc
 	@echo
 	@echo "####################################################"
 	@echo "##                                                ##"
@@ -32,19 +32,21 @@ all: bin tests doc
 	@echo "####################################################"
 
 dir:
-	mkdir -p src/common
-	mkdir -p lib
-	mkdir -p lib/release
-	mkdir -p lib/debug
-	mkdir -p lib/coverage
-	mkdir -p obj
-	mkdir -p obj/release
-	mkdir -p obj/debug
-	mkdir -p obj/coverage
-	mkdir -p bin
-	mkdir -p doc
-	mkdir -p reports
-	mkdir -p coverage
+	@-mkdir -p src/common
+	@-mkdir -p lib
+	@-mkdir -p lib/gps
+	@-mkdir -p lib/release
+	@-mkdir -p lib/debug
+	@-mkdir -p lib/coverage
+	@-mkdir -p obj
+	@-mkdir -p obj/gps
+	@-mkdir -p obj/release
+	@-mkdir -p obj/debug
+	@-mkdir -p obj/coverage
+	@-mkdir -p bin
+	@-mkdir -p doc
+	@-mkdir -p reports
+	@-mkdir -p coverage
 
 bin: bin/adaspec
 
@@ -60,6 +62,12 @@ bin/adaspec.dbg: dir
 bin/adaspec: bin/adaspec.$(CONFIG)
 	-rm -f bin/adaspec
 	ln -s adaspec.$(CONFIG) bin/adaspec
+
+lib/gps/libadaspecgps.so: dir
+	$(GPRBUILD) -Pgps_plugin.gpr -Xmode=release
+	#$(MAKE) -C src/gps libgprcustom.so && mv src/gps/libgprcustom.so $@
+
+gps-plugin: lib/gps/libadaspecgps.so
 
 bin/unit_tests: dir
 	$(GPRBUILD) -Punit_tests.gpr -Xmode=debug
@@ -103,7 +111,7 @@ clean: clean-gcov
 	-$(RM) reports/features*.html
 	-$(RM) reports/features*.junit/*
 
-.PHONY: all dir bin tests bootstrap doc clean
+.PHONY: all dir bin gps-plugin tests bootstrap doc clean
 
 
 
@@ -299,16 +307,13 @@ check: gnatcheck coverage run-cucumber run-tests
 
 .PHONY: gnatcheck test-report test-report-cucumber test-report-unit check
 
-install: bin/adaspec.rel
+install: bin/adaspec.rel install-gps
 	$(INSTALL) -D bin/adaspec.rel $(DESTDIR)$(BINDIR)/adaspec
 	$(INSTALL) -m644 -D data/adaspeclib.gpr $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/adaspeclib
 	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/adaspeclib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/adaspeclib
 	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/adaspeclib
-	$(INSTALL) -m644 data/gpr-plug-in/adaspec.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
-	$(INSTALL) -m644 data/gpr-plug-in/adaspec.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
-	$(INSTALL) -m644 data/gpr-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 	@echo '------------------------------------------------------------------'
 	@echo '--  AdaSpec has now been installed.'
 	@echo '------------------------------------------------------------------'
@@ -321,21 +326,37 @@ install: bin/adaspec.rel
 	@echo '--  $(DESTDIR)$(GPRDIR)'
 	@echo '------------------------------------------------------------------'
 
-uninstall:
+install-gps: lib/gps/libadaspecgps.so
+	$(INSTALL) -m644 data/gpr-plug-in/adaspec.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
+	$(INSTALL) -m644 data/gpr-plug-in/adaspec.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
+	$(INSTALL) -m644 data/gpr-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
+	$(INSTALL) -m755 lib/gps/libadaspecgps.so          $(DESTDIR)$(LIBDIR)/libadaspecgps.so
+
+uninstall: uninstall-gps
 	-$(RM) -rf $(DESTDIR)$(BINDIR)/adaspec
 	-$(RM) -rf $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
 	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/adaspeclib
 	-$(RM) -rf $(DESTDIR)$(LIBDIR)/adaspeclib
 	-$(RM) -rf $(DESTDIR)$(DOCDIR)
 	-$(RM) -rf $(DESTDIR)$(DATADIR)/AdaSpec
+
+uninstall-gps:
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libadaspecgps.so
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 
 install-gps-local:
 	ln -sf "`pwd`"/data/gpr-plug-in/*.{xml,py} ~/.gps/plug-ins
+	ln -sf "`pwd`"/lib/gps/libadaspecgps.so ~/.local/lib
 
-.PHONY: install uninstall install-gps-local
+uninstall-gps-local:
+	-$(RM) ~/.gps/plug-ins/adaspec.xml
+	-$(RM) ~/.gps/plug-ins/adaspec.py
+	-$(RM) ~/.gps/plug-ins/feature-lang.xml
+	-$(RM) ~/.local/lib/libadaspecgps.so
+
+.PHONY: install install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
 
 show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
@@ -345,8 +366,9 @@ help:
 	@echo
 	@echo "Targets:"
 	@echo
-	@echo "    all:            Build everything    [bin tests doc]"
+	@echo "    all:            Build everything    [bin gps-plugin tests doc]"
 	@echo "    bin:            Build project       [bin/adaspec]"
+	@echo "    gos-plugin:     Build GPS plugin    [lib/gps]"
 	@echo "    tests:          Build tests         [bin/unit_tests]"
 	@echo "    doc:            Build documentation [README.html]"
 	@echo "    coverage:       Run coverage tests  [coverage/]"
