@@ -14,6 +14,7 @@ package AdaSpecLib.Report is
          Count_Steps_Failed    : Natural := 0;
          Count_Steps_Skipped   : Natural := 0;
          Count_Steps_Passed    : Natural := 0;
+         Num_Steps             : Natural := 0;
       end record;
    --  GCOV_IGNORE_END
 

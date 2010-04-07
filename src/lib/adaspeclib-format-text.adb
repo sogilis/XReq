@@ -405,9 +405,10 @@ package body AdaSpecLib.Format.Text is
    is
       Count_Scenarios : constant Natural := Report.Count_Scenario_Failed +
                                             Report.Count_Scenario_Passed;
-      Count_Steps     : constant Natural := Report.Count_Steps_Failed +
-                                            Report.Count_Steps_Skipped +
-                                            Report.Count_Steps_Passed;
+      Count_Steps     : constant Natural := Report.Num_Steps;
+--                                             Report.Count_Steps_Failed +
+--                                             Report.Count_Steps_Skipped +
+--                                             Report.Count_Steps_Passed;
       Need_Comma : Boolean;
    begin
       if not Format.First_Feature then
