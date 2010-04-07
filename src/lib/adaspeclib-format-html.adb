@@ -473,7 +473,9 @@ package body AdaSpecLib.Format.HTML is
          if Format.Has_Debug then
             Tmpl.step_debug_end (Format.Output);
          end if;
-         Tmpl.step_end (Format.Output);
+         Tmpl.step_end (Format.Output,
+            Param_num   => To_String (Format.Exec_Steps),
+            Param_total => To_String (Format.Num_Steps));
       end if;
       Format_Type (Format).Stop_Step;  --  resend
    end Stop_Step;
@@ -559,9 +561,6 @@ package body AdaSpecLib.Format.HTML is
       Count_Scenarios : constant Natural := Report.Count_Scenario_Failed +
                                             Report.Count_Scenario_Passed;
       Count_Steps     : constant Natural := Report.Num_Steps;
---                                             Report.Count_Steps_Failed +
---                                             Report.Count_Steps_Skipped +
---                                             Report.Count_Steps_Passed;
       Status : Status_Type;
       E1     : Menu_Item_1;
       E2     : Menu_Item_2;

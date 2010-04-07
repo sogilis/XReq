@@ -111,6 +111,9 @@ package body AdaSpecLib.Format is
    begin
       Format.Step_ID := Format.Step_ID + 1;
       Format.In_Step := True;
+      if not Format.In_Outline or Format.In_Scenario then
+         Format.Exec_Steps := Format.Exec_Steps + 1;
+      end if;
    end Start_Step;
 
    procedure Stop_Step      (Format     : in out Format_Type) is
@@ -157,6 +160,17 @@ package body AdaSpecLib.Format is
    begin
       Format.Debug_Mode := Debug_Mode;
    end Set_Debug;
+
+   ---------------------
+   --  Set_Num_Steps  --
+   ---------------------
+
+   procedure Set_Num_Steps  (Format     : in out Format_Type;
+                             Num_Steps  : in     Natural)
+   is
+   begin
+      Format.Num_Steps := Num_Steps;
+   end Set_Num_Steps;
 
    --------------------
    --  List_Feature  --

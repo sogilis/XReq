@@ -786,6 +786,7 @@ package body AdaSpec.Generator.Ada05 is
                                               "Count_Mode => True);");
          Next (I);
       end loop;
+      Body_B.Put_Line    ("Format.Set_Num_Steps (Report.Num_Steps);");
       Body_B.Put_Line    ("--  Run Steps");
       I := First (Gens);
       while Has_Element (I) loop

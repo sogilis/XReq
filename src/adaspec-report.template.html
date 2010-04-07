@@ -302,19 +302,31 @@ body {
   list-style-type: none;
 }
 
-.report.fail, #title-background.fail, #title.fail {
+.report.fail, #title-background.fail, #title.fail, #progressbar.fail {
   color: #fffbd3;
   background-color: #c20000;
 }
 
-.report.pass, #title-background.pass, #title.pass {
+#progressbar.fail {
+  border-color: #fffbd3;
+}
+
+.report.pass, #title-background.pass, #title.pass, #progressbar.pass {
   color: #dbffb4;
   background-color: #65c400;
 }
 
-.report.skip, #title-background.skip, #title.skip {
+#progressbar.pass {
+  border-color: #dbffb4;
+}
+
+.report.skip, #title-background.skip, #title.skip, #progressbar.skip {
   color: #004444;
   background-color: aqua;
+}
+
+#progressbar.skip {
+  border-color: #e0ffff;
 }
 
 li.report-steps, li.report-scenarios {
@@ -373,6 +385,31 @@ p.position {
   display: none;
 }
 
+#progressbar {
+  display: none;
+  height: 1em;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background-color: black;
+  z-index: 1;
+  border-width: thin;
+  border-style: solid;
+  border-color: white;
+  border-top: none;
+}
+
+#progressbar-1 {
+  display: none;
+  position: fixed;
+  left: 0.5em;
+  top: 0.1em;
+  color: lightgray;
+  z-index: 2;
+  font-size: 0.7em;
+}
+
     </style>
     <script type="text/javascript">
       var loaded=false;
@@ -427,12 +464,62 @@ p.position {
           }
         }
       }
+
+      var progress_job_id;
+      var progress_job = false;
+
+      function setProgress(curr, total) {
+        if(progress_job) {
+          clearTimeout(progress_job_id);
+          progress_job = false;
+        }
+        var f = function(){
+          clearTimeout(progress_job_id);
+          progress_job = false;
+          var percent = curr * 100 / total;
+          var elem = document.getElementById("progressbar");
+          var elem1 = document.getElementById("progressbar-1");
+          if (curr >= total) {
+            elem1.style.display = "none";
+            elem.style.display = "none";
+          } else {
+            elem1.style.display = "block";
+            elem1.innerHTML = percent.toFixed(2) + "% (" + curr + "/" + total + ")";
+            elem.style.display = "block";
+            elem.style.width = percent.toFixed(4) + "%";
+          }
+        }
+        progress_job = true;
+        progress_job_id = setTimeout(f, 50);
+      }
+
+      var status = "skip";
+
+      function setStatusFailed(){
+        status = "fail";
+        setStatus(status);
+      }
+      function setStatusFinished(){
+        if (status != "fail") {
+          status = "pass";
+        }
+        setStatus(status);
+      }
+
+      function setStatus(status) {
+        document.getElementById("title").className = status;
+        document.getElementById("progressbar").className = status;
+        document.getElementById("progressbar-1").className = status;
+      }
     </script>
   </head>
   <body>
     <script type="text/javascript">/*<![CDATA[*/
-      refresh_periodic(5000);
+      refresh_periodic(2500);
     /*]]>*/</script>
+    <div id="progressbar">
+      <div id="progressbar-1"></div>
+    </div>
     <div id="title">
       <h1>Test suite results</h1>
     </div>
@@ -480,7 +567,7 @@ p.position {
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-1-background-1").className = "scenario fail";
             document.getElementById("feature-1").className = "feature fail";
-            document.getElementById("title").className = "fail";
+            setStatusFailed();
           /*]]>*/</script>
           <p>And a file "<span class="capture">features/step_definitions/steps.ads</span>":</p>
           <pre class="string">with AdaSpecLib;
@@ -616,7 +703,7 @@ end Steps2;
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
-            document.getElementById("title").className = "fail";
+            setStatusFailed();
           /*]]>*/</script>
 <?var name="step-error-scenario"?>
           <hr />
@@ -626,13 +713,16 @@ end Steps2;
           <script type="text/javascript">/*<![CDATA[*/
             document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario fail";
             document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
-            document.getElementById("title").className = "fail";
+            setStatusFailed();
           /*]]>*/</script>
 <?var name="step-debug-end"?>
           <script type="text/javascript">/*<![CDATA[*/
             debugInit();
           /*]]>*/</script>
 <?var name="step-end"?>
+          <script type="text/javascript">/*<![CDATA[*/
+            setProgress(<?placeholder name="num"?>, <?placeholder name="total"?>);
+          /*]]>*/</script>
         </div> <!-- step -->
 <?var name="scenario-end"?>
         <script type="text/javascript">/*<![CDATA[*/
@@ -653,10 +743,7 @@ end Steps2;
     </div> <!-- feature -->
 <?var name="report-begin"?>
     <script tyme="text/javascript">/*<![CDATA[*/
-      var titleElement = document.getElementById("title");
-      if (titleElement.className != "fail") {
-        titleElement.className = "pass";
-      }
+      setStatusFinished();
     /*]]>*/</script>
     <div id="summary" class="<?placeholder name="status"?>">
       <div class="report <?placeholder name="status"?>">

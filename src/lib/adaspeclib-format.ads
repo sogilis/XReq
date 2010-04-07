@@ -68,6 +68,8 @@ package AdaSpecLib.Format is
          Background_ID : Natural := 0;     --  Background number in feature
          Scenario_ID   : Natural := 0;     --  Scenario (outline) n. in feature
          Step_ID       : Natural := 0;     --  Step num. in scenario (outline)
+         Num_Steps     : Natural := 0;     --  How many steps executed in total
+         Exec_Steps    : Natural := 0;     --  Steps executed until now
       end record;
    type Format_Ptr  is access all Format_Type'Class;
 
@@ -150,6 +152,8 @@ package AdaSpecLib.Format is
                              Output     : in     String);
    procedure Set_Debug      (Format     : in out Format_Type;
                              Debug_Mode : in     Boolean);
+   procedure Set_Num_Steps  (Format     : in out Format_Type;
+                             Num_Steps  : in     Natural);
 
    procedure List_Feature   (Format     : in out Format_Type;
                              Name       : in     String);

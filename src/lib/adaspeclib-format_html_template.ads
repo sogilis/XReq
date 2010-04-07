@@ -125,7 +125,9 @@ package AdaSpecLib.Format_HTML_Template is
         (File : in out File_Type);
 
    procedure step_end
-        (File : in out File_Type);
+        (File : in out File_Type;
+         Param_num : in String;
+         Param_total : in String);
 
    procedure scenario_end
         (File : in out File_Type;
