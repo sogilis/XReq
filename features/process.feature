@@ -1,11 +1,11 @@
 Feature: The simplest works
-  In order to use AdaSpec
+  In order to use XReq
   As an AsaSpec user
   I want to be able to generate the ads and adb files for a test and the test
   suite
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     And a file "features/simplest.feature":
       """
@@ -32,8 +32,8 @@ Feature: The simplest works
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
         --  @given ^this step works$
@@ -57,7 +57,7 @@ Feature: The simplest works
       """
 
   Scenario: Test the generation of test packages
-    When I run adaspec --progress features/simplest.feature
+    When I run xreq --progress features/simplest.feature
     Then it should pass with
       """
       --> Compile: features/simplest.feature
@@ -77,7 +77,7 @@ Feature: The simplest works
 
 
   Scenario: Test the generation of the test suite
-    When  I run adaspec -x simplest_test features/simplest.feature
+    When  I run xreq -x simplest_test features/simplest.feature
     Then  it should pass
     And   "features/tests/feature_simplest.ads" should exist
     And   "features/tests/feature_simplest.adb" should exist
@@ -109,7 +109,7 @@ Feature: The simplest works
 
 
   Scenario: Test the generation of the test suite with a project file
-    When  I run adaspec -x suite features/simplest.feature
+    When  I run xreq -x suite features/simplest.feature
     Then  it should pass
     And   "features/tests/feature_simplest.ads" should exist
     And   "features/tests/feature_simplest.adb" should exist
@@ -140,7 +140,7 @@ Feature: The simplest works
       """
 
   Scenario: Test an empty feature
-    When I run adaspec -x empty_suite features/empty.feature
+    When I run xreq -x empty_suite features/empty.feature
     Then it should pass
     When I compile "empty_suite" in features/tests
     Then it should pass

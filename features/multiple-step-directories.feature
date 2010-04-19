@@ -4,7 +4,7 @@ Feature: Multiple step directories
   I want to be able to use step definitions from different directories
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     And a file "features/f.feature":
       """
@@ -27,8 +27,8 @@ Feature: Multiple step directories
       """
     And a file "features/steps1/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
          --  @given ^this step works$
@@ -50,8 +50,8 @@ Feature: Multiple step directories
       """
     And a file "features/steps2/steps2.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps2 is
 
          --  @given ^this step works too$
@@ -73,5 +73,5 @@ Feature: Multiple step directories
       """
 
   Scenario:
-    When I run adaspec -x suite -m -s features/steps1 --step features/steps2 features/f.feature
+    When I run xreq -x suite -m -s features/steps1 --step features/steps2 features/f.feature
     Then it should pass

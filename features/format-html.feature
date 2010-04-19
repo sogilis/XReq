@@ -4,7 +4,7 @@ Feature: HTML reports
   I want to be able to have HTML reports
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     And a file "features/simplest.feature":
       """
@@ -154,8 +154,8 @@ Feature: HTML reports
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
         --  @given ^this step (works)$
@@ -178,9 +178,9 @@ Feature: HTML reports
     And a file "features/step_definitions/steps.adb":
       """
       with Ada.Text_IO;
-      with AdaSpecLib.Asserts;
+      with XReqLib.Asserts;
       use  Ada.Text_IO;
-      use  AdaSpecLib.Asserts;
+      use  XReqLib.Asserts;
       package body Steps is
 
         Num : Positive := 2;
@@ -214,7 +214,7 @@ Feature: HTML reports
       """
 
   Scenario: Generate HTML report that fail
-    When I run adaspec -x test_suite_fail features/simplest.feature features/simplest2.feature features/fail.feature
+    When I run xreq -x test_suite_fail features/simplest.feature features/simplest2.feature features/fail.feature
     Then it should pass
     When I compile "test_suite_fail" in features/tests
     Then it should pass
@@ -230,7 +230,7 @@ Feature: HTML reports
     When I run "cp report-fail.html ../../../reports/sample-html-fail.html"
 
   Scenario: Generate HTML report that pass
-    When I run adaspec -x test_suite_pass features/pass.feature features/pass2.feature
+    When I run xreq -x test_suite_pass features/pass.feature features/pass2.feature
     Then it should pass
     When I compile "test_suite_pass" in features/tests
     Then it should pass

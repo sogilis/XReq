@@ -1,8 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpecLib.Asserts;
+with XReqLib.Asserts;
 
-use AdaSpecLib.Asserts;
+use XReqLib.Asserts;
 
 package body Test_Suite.Lib.Asserts is
 
@@ -16,16 +16,16 @@ package body Test_Suite.Lib.Asserts is
    function  Name (T : in Test_Assert) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpecLib.Asserts";
+      return "XReqLib.Asserts";
    end Name;
 
    procedure Run (T : in out Test_Assert) is
-      package Lib renames AdaSpecLib.Asserts;
+      package Lib renames XReqLib.Asserts;
    begin
       Lib.Assert (True, "This error shouldn't happen");
       begin
          Lib.Assert (False, "errmsg");
-         T.Assert (False, "Assert should raise AdaSpecLib.Asserts.Error");
+         T.Assert (False, "Assert should raise XReqLib.Asserts.Error");
       exception
          when E : Lib.Error =>
             T.Assert (Exception_Message (E) = "errmsg",
@@ -35,14 +35,14 @@ package body Test_Suite.Lib.Asserts is
       Lib.Equals ("a", "a", "This error shouldn't happen");
       begin
          Lib.Equals ("a", "b", "errmsg");
-         T.Assert (False, "Assert should raise AdaSpecLib.Asserts.Error");
+         T.Assert (False, "Assert should raise XReqLib.Asserts.Error");
       exception
          when Lib.Error =>
             T.Assert (True, "");
       end;
       begin
          Lib.Equals ("a", "b");
-         T.Assert (False, "Assert should raise AdaSpecLib.Asserts.Error");
+         T.Assert (False, "Assert should raise XReqLib.Asserts.Error");
       exception
          when Lib.Error =>
             T.Assert (True, "");

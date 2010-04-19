@@ -1,10 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpecLib.Format;
-with AdaSpecLib.Format.Text;
+with XReqLib.Format;
+with XReqLib.Format.Text;
 
-use AdaSpecLib.Format;
-use AdaSpecLib.Format.Text;
+use XReqLib.Format;
+use XReqLib.Format.Text;
 
 package body Test_Suite.Lib.Format.Text is
 
@@ -18,7 +18,7 @@ package body Test_Suite.Lib.Format.Text is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpecLib.Format.Text";
+      return "XReqLib.Format.Text";
    end Name;
 
    procedure Run (T : in out Test_1) is

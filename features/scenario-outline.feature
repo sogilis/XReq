@@ -1,15 +1,15 @@
 Feature: Scenario Outlines
   In order to write scenarios that can be customized with different values
   As a feature writer
-  I want adaspec to support scenario outlines
+  I want xreq to support scenario outlines
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
          --  @given ^there are ([0-9]+) cucumbers$
          procedure Given_there_are_n_cucumbers (Args : in out Arg_Type);
@@ -26,8 +26,8 @@ Feature: Scenario Outlines
       """
     Given a file "features/step_definitions/steps.adb":
       """
-      with AdaSpecLib.Asserts;
-      use  AdaSpecLib.Asserts;
+      with XReqLib.Asserts;
+      use  XReqLib.Asserts;
       package body Steps is
 
          Cukes : Integer := 0;
@@ -61,7 +61,7 @@ Feature: Scenario Outlines
           Then I should have 7 cucumbers
 
       """
-    When I run adaspec -x suite features/eating.feature
+    When I run xreq -x suite features/eating.feature
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
@@ -120,7 +120,7 @@ Feature: Scenario Outlines
         assert_equal (cukes.to_i, @cukes)
       end
       """
-    When I run adaspec -x suite features/outline.feature
+    When I run xreq -x suite features/outline.feature
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
@@ -174,7 +174,7 @@ Feature: Scenario Outlines
             |  20   |  5  |  NaN |
 
       """
-    When I run adaspec -x suite features/outline.feature
+    When I run xreq -x suite features/outline.feature
     Then it should fail
     And the output should contain
       """
@@ -187,15 +187,15 @@ Feature: Scenario Outlines
 
     Given a file "features/step_definitions/steps2.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps2 is
          --  @then ^I should have NaN cucumbers$
          --  @todo
       end Steps2;
       """
 
-    When I run adaspec -x suite features/outline.feature
+    When I run xreq -x suite features/outline.feature
     Then it should pass
 
     When I compile "suite" in features/tests
@@ -220,7 +220,7 @@ Feature: Scenario Outlines
 
           Scenario 2: eating
             Then I should have NaN cucumbers
-              ADASPECLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+              XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
 
           Examples:
             | start | eat | left |

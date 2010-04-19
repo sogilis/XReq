@@ -2,8 +2,8 @@
 -- kate: hl Ada; indent-width 3;
 
 with "unit_tests.gpr";
-with "adaspec.gpr";
-with "adaspeclib.gpr";
+with "xreq.gpr";
+with "xreqlib.gpr";
 
 project Full is
 

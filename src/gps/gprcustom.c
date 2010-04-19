@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "language_custom.h"
 
-char * adaspec_gps_comment_line (char *line, char comment, int length)
+char * xreq_gps_comment_line (char *line, char comment, int length)
 {
   char *s;
 

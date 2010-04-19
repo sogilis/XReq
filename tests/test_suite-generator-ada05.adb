@@ -3,14 +3,14 @@
 with Ada.Strings.Unbounded;
 with Ada.Directories;
 with Util.IO;
-with AdaSpec.Job;
-with AdaSpec.Generator;
+with XReq.Job;
+with XReq.Generator;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
 use Util.IO;
-use AdaSpec.Job;
-use AdaSpec.Generator;
+use XReq.Job;
+use XReq.Generator;
 
 package body Test_Suite.Generator.Ada05 is
 
@@ -26,7 +26,7 @@ package body Test_Suite.Generator.Ada05 is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Generator.Ada05");
+      return ("XReq.Generator.Ada05");
    end Name;
 
    procedure Run (T : in out Test_1) is

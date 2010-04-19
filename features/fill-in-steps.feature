@@ -1,11 +1,11 @@
 Feature: Auto fill in of steps definitions
   In order to make writing steps easier
   As a step writer
-  I want AdaSpec to automatically write a skeleton of step definitions for me.
+  I want XReq to automatically write a skeleton of step definitions for me.
 
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/test.feature":
       """
@@ -27,7 +27,7 @@ Feature: Auto fill in of steps definitions
         --  @todo
       end Steps;
       """
-    When I run adaspec -x suite features/test.feature
+    When I run xreq -x suite features/test.feature
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
@@ -40,7 +40,7 @@ Feature: Auto fill in of steps definitions
       """
     And the output should contain
       """
-      ADASPECLIB.NOT_YET_IMPLEMENTED
+      XREQLIB.NOT_YET_IMPLEMENTED
       """
 
   Scenario: Filling steps
@@ -61,12 +61,12 @@ Feature: Auto fill in of steps definitions
         --  @todo
       end Steps;
       """
-    When I run adaspec --fill-steps features/test.feature
+    When I run xreq --fill-steps features/test.feature
     Then it should pass
     And "features/step_definitions/steps.ads" should contain
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       """
     And "features/step_definitions/steps.ads" should contain
       """
@@ -124,8 +124,8 @@ Feature: Auto fill in of steps definitions
   Scenario: Filling existing steps
     Given a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
          --  @given ^a computer$
@@ -150,7 +150,7 @@ Feature: Auto fill in of steps definitions
 
       end Steps;
       """
-    When I run adaspec --fill-steps -s features/step_definitions
+    When I run xreq --fill-steps -s features/step_definitions
     Then it should pass
     And "features/step_definitions/steps.ads" should contain
       """
@@ -180,14 +180,14 @@ Feature: Auto fill in of steps definitions
       """
 
   Scenario: Filling new steps
-    When I run adaspec --fill-steps-in new_steps -x suite -m features/test.feature
+    When I run xreq --fill-steps-in new_steps -x suite -m features/test.feature
     Then it should pass
     And  "features/step_definitions/new_steps.ads" should exist
     And  "features/step_definitions/new_steps.adb" should exist
     And  "features/step_definitions/new_steps.ads" should contain
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package new_steps is
 
       """
@@ -280,14 +280,14 @@ Feature: Auto fill in of steps definitions
       end New_Steps2;
       """
 
-    When I run adaspec --fill-steps-in new_steps -x suite -m features/test.feature
+    When I run xreq --fill-steps-in new_steps -x suite -m features/test.feature
     Then it should pass
     And  "features/step_definitions/new_steps.ads" should exist
     And  "features/step_definitions/new_steps.adb" should exist
     And  "features/step_definitions/new_steps.ads" should contain
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package New_Steps is
          --  This is my New_Steps package
 
@@ -376,7 +376,7 @@ Feature: Auto fill in of steps definitions
       end New_Steps;
       """
 
-    When I run adaspec --fill-steps-in new_steps -x suite -m features/test.feature
+    When I run xreq --fill-steps-in new_steps -x suite -m features/test.feature
     Then it should pass
     And  "features/step_definitions/steps.ads" should exist
     And  "features/step_definitions/steps.adb" should exist
@@ -384,8 +384,8 @@ Feature: Auto fill in of steps definitions
     And  "features/step_definitions/new_steps.adb" should exist
     And  "features/step_definitions/new_steps.ads" should contain
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package New_Steps is
 
       """
@@ -403,8 +403,8 @@ Feature: Auto fill in of steps definitions
       """
     And  "features/step_definitions/steps.ads" should contain
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
       """

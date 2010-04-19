@@ -21,7 +21,7 @@ LIBDIR     = $(PREFIX)/lib
 GPRDIR     = $(PREFIX)/lib/gnat
 DATADIR    = $(PREFIX)/share
 GPSDATADIR = $(PREFIX_GPS)/share/gps
-DOCDIR     = $(DATADIR)/doc/AdaSpec
+DOCDIR     = $(DATADIR)/doc/XReq
 
 all: bin gps-plugin tests doc
 	@echo
@@ -48,26 +48,26 @@ dir:
 	@-mkdir -p reports
 	@-mkdir -p coverage
 
-bin: bin/adaspec
+bin: bin/xreq
 
-bin/adaspec.cov: dir
-	$(GPRBUILD) -Padaspec.gpr -Xmode=coverage
+bin/xreq.cov: dir
+	$(GPRBUILD) -Pxreq.gpr -Xmode=coverage
 
-bin/adaspec.rel: dir
-	$(GPRBUILD) -Padaspec.gpr -Xmode=release
+bin/xreq.rel: dir
+	$(GPRBUILD) -Pxreq.gpr -Xmode=release
 
-bin/adaspec.dbg: dir
-	$(GPRBUILD) -Padaspec.gpr -Xmode=debug
+bin/xreq.dbg: dir
+	$(GPRBUILD) -Pxreq.gpr -Xmode=debug
 
-bin/adaspec: bin/adaspec.$(CONFIG)
-	-rm -f bin/adaspec
-	ln -s adaspec.$(CONFIG) bin/adaspec
+bin/xreq: bin/xreq.$(CONFIG)
+	-rm -f bin/xreq
+	ln -s xreq.$(CONFIG) bin/xreq
 
-lib/gps/libadaspecgps.so: dir
+lib/gps/libxreqgps.so: dir
 	$(GPRBUILD) -Pgps_plugin.gpr -Xmode=release
 	#$(MAKE) -C src/gps libgprcustom.so && mv src/gps/libgprcustom.so $@
 
-gps-plugin: lib/gps/libadaspecgps.so
+gps-plugin: lib/gps/libxreqgps.so
 
 bin/unit_tests: dir
 	$(GPRBUILD) -Punit_tests.gpr -Xmode=debug
@@ -80,16 +80,16 @@ bootstrap: bin/feature_tests
 bin/feature_tests: bin/feature_tests.dbg
 	ln -s -f feature_tests.dbg $@
 
-bin/feature_tests.dbg: bin/adaspec features/*.feature
+bin/feature_tests.dbg: bin/xreq features/*.feature
 	-$(MKDIR) features/tests/dbg
 	GNAT_FLAGS="-g -gnata -E" \
-	bin/adaspec -m -x feature_tests -o features/tests/dbg features/*.feature
+	bin/xreq -m -x feature_tests -o features/tests/dbg features/*.feature
 	$(CP) features/tests/dbg/feature_tests $@
 
-bin/feature_tests.cov: bin/adaspec features/*.feature
+bin/feature_tests.cov: bin/xreq features/*.feature
 	-$(MKDIR) features/tests/cov
 	GNAT_FLAGS="-g -gnata -E -fprofile-arcs -ftest-coverage" \
-	bin/adaspec -m -x feature_tests -o features/tests/cov features/*.feature
+	bin/xreq -m -x feature_tests -o features/tests/cov features/*.feature
 	$(CP) features/tests/cov/feature_tests $@
 
 tests: dir
@@ -146,18 +146,18 @@ gcov-report: dir bin/unit_tests
 	-bin/unit_tests -suite=coverage -text
 	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
 
-coverage: tests bin/adaspec.cov bin/unit_tests.cov
+coverage: tests bin/xreq.cov bin/unit_tests.cov
 	@echo
 	@echo "##########################"
 	@echo "##  Run coverage tests  ##"
 	@echo "##########################"
 	@echo
-	$(GPRBUILD) -P adaspec.gpr -Xmode=coverage
-	-$(RM) -f bin/adaspec
+	$(GPRBUILD) -P xreq.gpr -Xmode=coverage
+	-$(RM) -f bin/xreq
 	$(MAKE) clean-gcov
 	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
 	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
-	ln -s adaspec.cov bin/adaspec
+	ln -s xreq.cov bin/xreq
 	@echo
 	@echo "==>  Run Unit tests"
 	@echo
@@ -174,8 +174,8 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	bin/adaspec -m -x bootstrap_suite features/*.feature && \
-	features/tests/bootstrap_suite -t ~@bootstrap+~@wip -f html -o reports/features-adaspec.html
+	bin/xreq -m -x bootstrap_suite features/*.feature && \
+	features/tests/bootstrap_suite -t ~@bootstrap+~@wip -f html -o reports/features-xreq.html
 #	-\
 #	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 #	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
@@ -190,9 +190,9 @@ coverage: tests bin/adaspec.cov bin/unit_tests.cov
 	cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature >/dev/null 2>&1
 	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
 	$(MAKE) _gcov-gather-cucumber
-	-$(RM) -f bin/adaspec
+	-$(RM) -f bin/xreq
 	$(MAKE) gcov-report
-	ln -s adaspec.$(CONFIG) bin/adaspec
+	ln -s xreq.$(CONFIG) bin/xreq
 
 _gcov-gather-cucumber:
 	lcov $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info
@@ -231,13 +231,13 @@ rerun-cucumber: bin
 	fi
 	-$(RM) -f cucumber-rerun.txt
 
-run-adaspec: bin
+run-xreq: bin
 	@echo
 	@echo "###################"
-	@echo "##  Run AdaSpec  ##"
+	@echo "##  Run XReq  ##"
 	@echo "###################"
 	@echo
-	bin/adaspec -x suite features/*.feature
+	bin/xreq -x suite features/*.feature
 	$(GPRBUILD) -Pfeatures/tests/suite.gpr
 	features/tests/suite
 
@@ -257,10 +257,10 @@ gnatcheck: dir
 	@echo "##  Run GNAT-Check  ##"
 	@echo "######################"
 	@echo
-	cd reports && gnat check -P../adaspec.gpr -U -rules -from=../gnatcheck.rules
-	cd reports && mv gnatcheck.out gnatcheck.adaspec.out
-	#cd reports && gnat check -P../adaspeclib.gpr -U -rules -from=../gnatcheck.rules
-	#cd reports && mv gnatcheck.out gnatcheck.adaspeclib.out
+	cd reports && gnat check -P../xreq.gpr -U -rules -from=../gnatcheck.rules
+	cd reports && mv gnatcheck.out gnatcheck.xreq.out
+	#cd reports && gnat check -P../xreqlib.gpr -U -rules -from=../gnatcheck.rules
+	#cd reports && mv gnatcheck.out gnatcheck.xreqlib.out
 	#cd reports && gnat check -P../unit_tests.gpr -rules -from=../gnatcheck.rules
 	#cd reports && mv gnatcheck.out gnatcheck.tests.out
 
@@ -268,7 +268,7 @@ test-report:
 	-$(MAKE) coverage
 	-$(MAKE) test-report-unit
 	-$(MAKE) test-report-cucumber
-	-#$(MAKE) test-report-adaspec # Not necessary, bootstrap.feature does it
+	-#$(MAKE) test-report-xreq # Not necessary, bootstrap.feature does it
 
 test-report-unit: tests bin
 	@echo
@@ -292,32 +292,32 @@ test-report-cucumber: bin
 	-cucumber -w -t "@wip" -f junit -o reports/features-wip.junit features/*.feature
 	-cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature
 
-test-report-adaspec: bin reports/features-adaspec.html
+test-report-xreq: bin reports/features-xreq.html
 
-features/tests/suite.gpr: bin/adaspec $(wildcard features/*.feature)
-	bin/adaspec -x suite $(wildcard features/*.feature)
+features/tests/suite.gpr: bin/xreq $(wildcard features/*.feature)
+	bin/xreq -x suite $(wildcard features/*.feature)
 
 features/tests/suite: features/tests/suite.gpr
 	$(GPRBUILD) -Pfeatures/tests/suite.gpr
 
-reports/features-adaspec.html: features/tests/suite
-	-features/tests/suite -f html -o reports/features-adaspec.html
+reports/features-xreq.html: features/tests/suite
+	-features/tests/suite -f html -o reports/features-xreq.html
 
 check: gnatcheck coverage run-cucumber run-tests
 
 .PHONY: gnatcheck test-report test-report-cucumber test-report-unit check
 
-install: bin/adaspec.rel install-gps
-	$(INSTALL) -D bin/adaspec.rel $(DESTDIR)$(BINDIR)/adaspec
-	$(INSTALL) -m644 -D data/adaspeclib.gpr $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
-	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/adaspeclib
-	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/adaspeclib
-	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/adaspeclib
-	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/adaspeclib
+install: bin/xreq.rel install-gps
+	$(INSTALL) -D bin/xreq.rel $(DESTDIR)$(BINDIR)/xreq
+	$(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
+	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/xreqlib
 	@echo '------------------------------------------------------------------'
-	@echo '--  AdaSpec has now been installed.'
+	@echo '--  XReq has now been installed.'
 	@echo '------------------------------------------------------------------'
-	@echo '--  To be able to use the adaspec binary, you may need to update'
+	@echo '--  To be able to use the xreq binary, you may need to update'
 	@echo '--  your PATH to point to'
 	@echo '--  $(DESTDIR)$(BINDIR)'
 	@echo '------------------------------------------------------------------'
@@ -326,35 +326,35 @@ install: bin/adaspec.rel install-gps
 	@echo '--  $(DESTDIR)$(GPRDIR)'
 	@echo '------------------------------------------------------------------'
 
-install-gps: lib/gps/libadaspecgps.so
-	$(INSTALL) -m644 data/gpr-plug-in/adaspec.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
-	$(INSTALL) -m644 data/gpr-plug-in/adaspec.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
+install-gps: lib/gps/libxreqgps.so
+	$(INSTALL) -m644 data/gpr-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
+	$(INSTALL) -m644 data/gpr-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	$(INSTALL) -m644 data/gpr-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
-	$(INSTALL) -m755 lib/gps/libadaspecgps.so          $(DESTDIR)$(LIBDIR)/libadaspecgps.so
+	$(INSTALL) -m755 lib/gps/libxreqgps.so          $(DESTDIR)$(LIBDIR)/libxreqgps.so
 
 uninstall: uninstall-gps
-	-$(RM) -rf $(DESTDIR)$(BINDIR)/adaspec
-	-$(RM) -rf $(DESTDIR)$(GPRDIR)/adaspeclib.gpr
-	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/adaspeclib
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/adaspeclib
+	-$(RM) -rf $(DESTDIR)$(BINDIR)/xreq
+	-$(RM) -rf $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
 	-$(RM) -rf $(DESTDIR)$(DOCDIR)
-	-$(RM) -rf $(DESTDIR)$(DATADIR)/AdaSpec
+	-$(RM) -rf $(DESTDIR)$(DATADIR)/XReq
 
 uninstall-gps:
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libadaspecgps.so
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.xml
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/adaspec.py
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreqgps.so
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 
 install-gps-local:
 	ln -sf "`pwd`"/data/gpr-plug-in/*.{xml,py} ~/.gps/plug-ins
-	ln -sf "`pwd`"/lib/gps/libadaspecgps.so ~/.local/lib
+	ln -sf "`pwd`"/lib/gps/libxreqgps.so ~/.local/lib
 
 uninstall-gps-local:
-	-$(RM) ~/.gps/plug-ins/adaspec.xml
-	-$(RM) ~/.gps/plug-ins/adaspec.py
+	-$(RM) ~/.gps/plug-ins/xreq.xml
+	-$(RM) ~/.gps/plug-ins/xreq.py
 	-$(RM) ~/.gps/plug-ins/feature-lang.xml
-	-$(RM) ~/.local/lib/libadaspecgps.so
+	-$(RM) ~/.local/lib/libxreqgps.so
 
 .PHONY: install install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
 
@@ -367,7 +367,7 @@ help:
 	@echo "Targets:"
 	@echo
 	@echo "    all:            Build everything    [bin gps-plugin tests doc]"
-	@echo "    bin:            Build project       [bin/adaspec]"
+	@echo "    bin:            Build project       [bin/xreq]"
 	@echo "    gos-plugin:     Build GPS plugin    [lib/gps]"
 	@echo "    tests:          Build tests         [bin/unit_tests]"
 	@echo "    doc:            Build documentation [README.html]"
@@ -377,8 +377,8 @@ help:
 	@echo "    run-tests:      Run all unit tests"
 	@echo "    run-cucumber:   Run all cucumber tests"
 	@echo "    clean:          Clean project"
-	@echo "    install:        Install AdaSpec"
-	@echo "    unnstall:       Uninstall AdaSpec"
+	@echo "    install:        Install XReq"
+	@echo "    unnstall:       Uninstall XReq"
 	@echo "    install-gps-local:"
 	@echo "                    Install the GPS plugin in your HOME directory"
 	@echo "                    using symbolic links rather than copying files"
@@ -401,8 +401,8 @@ help:
 
 .PHONY: help show-ignored-coverage
 
-src/lib/adaspeclib-format_html_template.ads src/lib/adaspeclib-format_html_template.adb: src/adaspec-report.template.html ./template.pl
-	./template.pl $< AdaSpecLib.Format_HTML_Template $@
+src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.adb: src/xreq-report.template.html ./template.pl
+	./template.pl $< XReqLib.Format_HTML_Template $@
 
 ### Markdown ###
 

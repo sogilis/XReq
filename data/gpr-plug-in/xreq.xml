@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!--  Add support for features files  -->
+<Custom>
+
+  <tool name="XReq" package="Compiler">
+    <language>Feature</language>
+    <switches>
+      <check switch="--keep-going" label="Keep Going"
+             tip="Continue feature compilation after errors"/>
+      <check switch="--fill-steps" label="Fill Steps"
+             tip="Write a procedure for steps marked with @todo"/>
+    </switches>
+  </tool>
+
+  <filter name="feature file" language="Feature"/>
+
+  <action name="XReq Feature Browser">
+    <shell lang="python">xreq.show_feature_browser();</shell>
+  </action>
+
+  <action name="Edit XReq Makefile">
+    <shell lang="python">xreq.edit_makefile();</shell>
+  </action>
+
+  <action name="Compile Feature">
+    <filter id="feature file"/>
+    <shell lang="python">xreq.compile(GPS.current_context().file().name());</shell>
+  </action>
+
+  <action name="Go To Step Definition">
+    <filter id="feature file"/>
+    <shell lang="python">xreq.go_to_spec();</shell>
+  </action>
+
+  <action name="Compile Test Suite">
+    <shell lang="python">xreq.compile();</shell>
+  </action>
+
+  <contextual action="Compile Feature">
+    <Title>Compile Feature</Title>
+  </contextual>
+
+  <contextual action="Go To Step Definition">
+    <Title>Goto Step Definition</Title>
+  </contextual>
+
+  <submenu>
+    <title>Tools</title>
+
+    <submenu>
+      <title>Views</title>
+      <menu action="XReq Feature Browser">
+        <title>XReq Feature Browser</title>
+      </menu>
+    </submenu>
+
+    <submenu>
+      <title>XReq</title>
+      <menu action="Compile Test Suite">
+        <title>Compile Test Suite</title>
+      </menu>
+      <menu action="Compile Feature">
+        <title>Compile Feature</title>
+      </menu>
+      <menu action="XReq Feature Browser">
+        <title>XReq Feature Browser</title>
+      </menu>
+      <menu action="Edit XReq Makefile">
+        <title>Edit XReq Makefile</title>
+      </menu>
+    </submenu>
+  </submenu>
+
+</Custom>

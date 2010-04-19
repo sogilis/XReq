@@ -1,11 +1,11 @@
 Feature: Generated Test Suite Command Line
   In order to be able to generate different report formats
-  As an adaspec user
+  As an xreq user
   I want to have a command line interface for the reports generated with
-  adaspec -x
+  xreq -x
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     And a file "features/simplest.feature":
       """
@@ -17,8 +17,8 @@ Feature: Generated Test Suite Command Line
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
         --  @given ^this step works$
@@ -41,7 +41,7 @@ Feature: Generated Test Suite Command Line
 
       end Steps;
       """
-    When I run adaspec -x test_suite features/simplest.feature
+    When I run xreq -x test_suite features/simplest.feature
     Then it should pass
     When I compile "test_suite" in features/tests
     Then it should pass

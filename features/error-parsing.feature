@@ -4,7 +4,7 @@ Feature: Parsing Errors
   I want to be notified of syntax errors in features
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
 
   Scenario: And keyword at beginning
@@ -19,7 +19,7 @@ Feature: Parsing Errors
             \"""
 
       """
-    When I run adaspec features/error-and.feature
+    When I run xreq features/error-and.feature
     Then it should pass
     And the output should contain
       """
@@ -28,7 +28,7 @@ Feature: Parsing Errors
              Ignoring step
       """
 
-    When I run adaspec -q features/error-and.feature
+    When I run xreq -q features/error-and.feature
     Then it should pass
     And the output should contain
       """
@@ -49,7 +49,7 @@ Feature: Parsing Errors
           Then use it
 
       """
-    When I run adaspec features/error-and.feature
+    When I run xreq features/error-and.feature
     Then it should fail
     And the output should contain
       """
@@ -57,7 +57,7 @@ Feature: Parsing Errors
 
       """
 
-    When I run adaspec -q features/error-and.feature
+    When I run xreq -q features/error-and.feature
     Then it should fail
     And the output should contain
       """
@@ -77,7 +77,7 @@ Feature: Parsing Errors
           Then use it
 
       """
-    When I run adaspec features/error-and.feature
+    When I run xreq features/error-and.feature
     Then it should fail
     And the output should contain
       """
@@ -85,7 +85,7 @@ Feature: Parsing Errors
 
       """
 
-    When I run adaspec -q features/error-and.feature
+    When I run xreq -q features/error-and.feature
     Then it should fail
     And the output should contain
       """
@@ -113,7 +113,7 @@ Feature: Parsing Errors
       end Steps;
       """
 
-    When I run adaspec features/longstring.feature
+    When I run xreq features/longstring.feature
     Then it should pass
     And the output should contain
       """
@@ -121,7 +121,7 @@ Feature: Parsing Errors
 
       """
 
-    When I run adaspec -q features/longstring.feature
+    When I run xreq -q features/longstring.feature
     Then it should pass
     And the output should contain
       """

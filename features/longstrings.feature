@@ -8,8 +8,8 @@ Feature: Long strings
 
 
   Background:
-    Given adaspec is in the PATH
-    And   the sources of adaspec are in ADA_INCLUDE_PATH
+    Given xreq is in the PATH
+    And   the sources of xreq are in ADA_INCLUDE_PATH
     And   I am in an empty directory
     And   a file "features/test.feature":
       """
@@ -46,9 +46,9 @@ Feature: Long strings
     And   a file "features/step_definitions/steps.ads":
       """
       with Ada.Strings.Unbounded;
-      with AdaSpecLib.General;
+      with XReqLib.General;
       use  Ada.Strings.Unbounded;
-      use  AdaSpecLib.General;
+      use  XReqLib.General;
 
       package Steps is
         First_String  : Unbounded_String;
@@ -69,8 +69,8 @@ Feature: Long strings
       """
     And   a file "features/step_definitions/steps.adb":
       """
-      with AdaSpecLib.Asserts;
-      use  AdaSpecLib.Asserts;
+      with XReqLib.Asserts;
+      use  XReqLib.Asserts;
       package body Steps is
 
         function Decode (Str : in String) return String is
@@ -117,7 +117,7 @@ Feature: Long strings
       """
 
   Scenario: Test long strings
-    When I run adaspec -x suite features/test.feature
+    When I run xreq -x suite features/test.feature
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass
@@ -168,6 +168,6 @@ Feature: Long strings
             Given the long string:
               '''abc'''
       """
-    When I run adaspec features/longstring_error.feature
+    When I run xreq features/longstring_error.feature
     Then "features/tests/longstring_error.adb" should not exist
     Then "features/tests/longstring_error.ads" should not exist

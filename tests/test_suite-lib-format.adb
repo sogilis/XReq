@@ -1,8 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpecLib.Format;
+with XReqLib.Format;
 
-use AdaSpecLib.Format;
+use XReqLib.Format;
 
 package body Test_Suite.Lib.Format is
 
@@ -16,7 +16,7 @@ package body Test_Suite.Lib.Format is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpecLib.Format";
+      return "XReqLib.Format";
    end Name;
 
    procedure Run (T : in out Test_1) is

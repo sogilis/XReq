@@ -4,12 +4,12 @@ Feature: Tags
   I want to specify tags to scenarios
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
          --  @given ^this step works$
          procedure Given_this_step_works (Args : in out Arg_Type);
@@ -45,7 +45,7 @@ Feature: Tags
         Scenario: S
           Given this step works
       """
-    When I run adaspec -x suite features/tags.feature
+    When I run xreq -x suite features/tags.feature
     Then it should pass
 
     When I compile "suite" in features/tests
@@ -59,7 +59,7 @@ Feature: Tags
         @tagB
         Background:
           Given this step doesn't work
-            ADASPECLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+            XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
 
         @tag1
         @tag2
@@ -101,7 +101,7 @@ Feature: Tags
         Scenario: S
           Given this step works
       """
-    When I run adaspec -x suite features/tags.feature
+    When I run xreq -x suite features/tags.feature
     Then it should pass
 
     When I compile "suite" in features/tests
@@ -116,7 +116,7 @@ Feature: Tags
         @tagC
         Background:
           Given this step doesn't work
-            ADASPECLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+            XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
 
         @tag1
         @tag2
@@ -166,7 +166,7 @@ Feature: Tags
         Scenario: S2
           Given this step works
       """
-    When I run adaspec -x suite features/conditional.feature
+    When I run xreq -x suite features/conditional.feature
     Then it should pass
 
     When I compile "suite" in features/tests
@@ -211,7 +211,7 @@ Feature: Tags
         Scenario: S2
           Given this step works
       """
-    When I run adaspec -x suite features/conditional.feature
+    When I run xreq -x suite features/conditional.feature
     Then it should pass
 
     When I compile "suite" in features/tests
@@ -260,7 +260,7 @@ Feature: Tags
         Scenario: S3
           Given this step works
       """
-    When I run adaspec -x suite features/conditional.feature
+    When I run xreq -x suite features/conditional.feature
     Then it should pass
 
     When I compile "suite" in features/tests
@@ -345,7 +345,7 @@ Feature: Tags
         Scenario: S3
           Given this step works
       """
-    When I run adaspec -x suite features/conditional.feature
+    When I run xreq -x suite features/conditional.feature
     Then it should pass
 
     When I compile "suite" in features/tests

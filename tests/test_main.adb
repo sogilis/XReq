@@ -41,7 +41,7 @@ procedure Test_Main is
    procedure Display_Help;
    procedure Display_Help is
    begin
-      Put_Line ("tests - run adaspec test suite");
+      Put_Line ("tests - run xreq test suite");
       Put_Line ("");
       Put_Line ("SYNOPSIS");
       Put_Line ("");

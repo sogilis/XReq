@@ -102,7 +102,7 @@ package body Test_Suite.Main is
                             Argument_String : in String;
                             Expected_Result : in Boolean := True;
                             Directory       : in String := "";
-                            Executable_Name : in String := "bin/adaspec")
+                            Executable_Name : in String := "bin/xreq")
    is
       LF        : constant String := "" & ASCII.LF;
       Cmd_Line  : constant String := Executable_Name & " " & Argument_String;

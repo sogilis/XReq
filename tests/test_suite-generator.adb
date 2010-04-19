@@ -15,13 +15,13 @@ package body Test_Suite.Generator is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpec.Generator";
+      return "XReq.Generator";
    end Name;
 
    procedure Run (T : in out Test_1) is
    begin
 
-      T.Assert (True, "Missing test for AdaSpec.Generator");
+      T.Assert (True, "Missing test for XReq.Generator");
 
    end Run;
 

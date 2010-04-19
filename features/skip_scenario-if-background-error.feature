@@ -1,6 +1,6 @@
 Feature: Skip scenarios after a background error
   In order to avoid executing steps that are sure to fail
-  As an adaspec user
+  As an xreq user
   I want to avoid executing steps when the background was not successfull.
 
   If the first background is unsuccessfull, then the feature should stop
@@ -8,7 +8,7 @@ Feature: Skip scenarios after a background error
   first, just skip this scenario.
 
   Background: Set things up
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     And a file "features/always_fail.feature":
       """
@@ -64,8 +64,8 @@ Feature: Skip scenarios after a background error
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
         --  @given ^this step works(.*)$
@@ -86,9 +86,9 @@ Feature: Skip scenarios after a background error
     And a file "features/step_definitions/steps.adb":
       """
       with Ada.Text_IO;
-      with AdaSpecLib.Asserts;
+      with XReqLib.Asserts;
       use  Ada.Text_IO;
-      use  AdaSpecLib.Asserts;
+      use  XReqLib.Asserts;
       package body Steps is
 
         Num : Positive := 2;
@@ -119,7 +119,7 @@ Feature: Skip scenarios after a background error
       """
 
   Scenario: Always Fail
-    When I run adaspec -x always_fail_suite features/always_fail.feature
+    When I run xreq -x always_fail_suite features/always_fail.feature
     Then it should pass
     When I compile "always_fail_suite" in features/tests
     Then it should pass
@@ -132,7 +132,7 @@ Feature: Skip scenarios after a background error
       This step works BACKGROUND
           Given this step works BACKGROUND
           And it fail
-            ADASPECLIB.ASSERTS.ERROR: Error message
+            XREQLIB.ASSERTS.ERROR: Error message
           And this step works BACKGROUND
 
         Scenario: Run a good step 1
@@ -158,7 +158,7 @@ Feature: Skip scenarios after a background error
 
 
   Scenario: Periodic Fail
-    When I run adaspec -x periodic_fail_suite features/periodic_fail.feature
+    When I run xreq -x periodic_fail_suite features/periodic_fail.feature
     Then it should pass
     When I compile "periodic_fail_suite" in features/tests
     Then it should pass
@@ -183,7 +183,7 @@ Feature: Skip scenarios after a background error
         Scenario: Run a good step 2
       This step works BACKGROUND
           Given this fails periodically
-            ADASPECLIB.ASSERTS.ERROR: Num = 2 /= 1
+            XREQLIB.ASSERTS.ERROR: Num = 2 /= 1
           And this step works BACKGROUND
           And this step works STEP
           And this is ignored
@@ -199,7 +199,7 @@ Feature: Skip scenarios after a background error
         Scenario: Run a good step 4
       This step works BACKGROUND
           Given this fails periodically
-            ADASPECLIB.ASSERTS.ERROR: Num = 2 /= 1
+            XREQLIB.ASSERTS.ERROR: Num = 2 /= 1
           And this step works BACKGROUND
           And this step works STEP
           And this is ignored

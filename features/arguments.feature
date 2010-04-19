@@ -4,7 +4,7 @@ Feature: Run steps with arguments (captures)
   I want to be able to capture the matches of the regular expressions
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And   I am in an empty directory
     And   a file "features/test.feature":
       """
@@ -16,9 +16,9 @@ Feature: Run steps with arguments (captures)
     And   a file "features/step_definitions/steps.ads":
       """
       with Ada.Strings.Unbounded;
-      with AdaSpecLib.General;
+      with XReqLib.General;
       use  Ada.Strings.Unbounded;
-      use  AdaSpecLib.General;
+      use  XReqLib.General;
       package Steps is
         Result : Unbounded_String;
         --  @when ^I concatenate "(.*)" and "(.*)"$
@@ -29,8 +29,8 @@ Feature: Run steps with arguments (captures)
       """
     And   a file "features/step_definitions/steps.adb":
       """
-      with AdaSpecLib.Asserts;
-      use  AdaSpecLib.Asserts;
+      with XReqLib.Asserts;
+      use  XReqLib.Asserts;
       package body Steps is
         procedure Concat (Args : in out Arg_Type) is
         begin
@@ -44,7 +44,7 @@ Feature: Run steps with arguments (captures)
       """
 
   Scenario: Test concatenation using string captures
-    When I run adaspec -x suite features/test.feature
+    When I run xreq -x suite features/test.feature
     Then it should pass
     When I compile "suite" in features/tests
     Then it should pass

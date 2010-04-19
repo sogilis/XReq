@@ -2,12 +2,12 @@
 
 with Ada.Strings;
 with Ada.Strings.Fixed;
-with AdaSpecLib.Tables;
-with AdaSpecLib.String_Tables;
+with XReqLib.Tables;
+with XReqLib.String_Tables;
 
 package body Test_Suite.Lib.Tables is
 
-   package Tables is new AdaSpecLib.Tables (Integer);
+   package Tables is new XReqLib.Tables (Integer);
 
    procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite) is
    begin
@@ -20,7 +20,7 @@ package body Test_Suite.Lib.Tables is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpecLib.Tables";
+      return "XReqLib.Tables";
    end Name;
 
    procedure Run (T : in out Test_1) is
@@ -140,16 +140,16 @@ package body Test_Suite.Lib.Tables is
    function  Name (T : in Test_2) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpecLib.String_Tables";
+      return "XReqLib.String_Tables";
    end Name;
 
    procedure Run (T : in out Test_2) is
-      use AdaSpecLib.String_Tables;
+      use XReqLib.String_Tables;
       use Ada.Strings.Fixed;
       use Ada.Strings;
 
-      Ta : AdaSpecLib.String_Tables.Table;
-      I  : AdaSpecLib.String_Tables.Cursor;
+      Ta : XReqLib.String_Tables.Table;
+      I  : XReqLib.String_Tables.Cursor;
 
       procedure Check_Key (K : Key_Type; Elem : in String);
       procedure Check_Key (K : Key_Type; Elem : in String) is

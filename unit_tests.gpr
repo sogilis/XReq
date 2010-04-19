@@ -3,7 +3,7 @@
 
 with "aunit";
 with "config.gpr";
-with "adaspec.gpr";
+with "xreq.gpr";
 
 project Unit_Tests is
 

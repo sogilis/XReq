@@ -1,11 +1,11 @@
 Feature: ambiguous step definition error reporting
   In order to avoid writing ambiguous step definitions
-  As an adaspec user
+  As an xreq user
   I want to be notified whenever the step definitions regular expressions are
   ambiguous for a given step
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     And a file "features/ambiguous.feature":
       """
@@ -32,8 +32,8 @@ Feature: ambiguous step definition error reporting
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
         --  @given ^this step works$
@@ -49,8 +49,8 @@ Feature: ambiguous step definition error reporting
       """
     And a file "features/step_definitions/steps2.ads":
       """
-      with AdaSpecLib;
-      use  AdaSpecLib;
+      with XReqLib;
+      use  XReqLib;
       package Steps2 is
 
         --  @given ^this step .*works$
@@ -60,7 +60,7 @@ Feature: ambiguous step definition error reporting
       """
 
   Scenario:
-    When I run adaspec features/ambiguous.feature
+    When I run xreq features/ambiguous.feature
     Then it should fail
     And the output should contain
       """
@@ -81,7 +81,7 @@ Feature: ambiguous step definition error reporting
 
       """
 
-    When I run adaspec -q features/ambiguous.feature
+    When I run xreq -q features/ambiguous.feature
     Then it should fail
     And the output should contain
       """
@@ -100,7 +100,7 @@ Feature: ambiguous step definition error reporting
       """
 
   Scenario:
-    When I run adaspec features/ambiguous2.feature
+    When I run xreq features/ambiguous2.feature
     Then it should fail
     And the output should contain
       """
@@ -109,7 +109,7 @@ Feature: ambiguous step definition error reporting
 
       """
 
-    When I run adaspec -q features/ambiguous2.feature
+    When I run xreq -q features/ambiguous2.feature
     Then it should fail
     And the output should contain
       """

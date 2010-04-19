@@ -39,7 +39,7 @@
     </Categories>
 
 
-    <Engine>adaspecgps</Engine>
-    <Comment_Line>adaspec_gps_comment_line</Comment_Line>
+    <Engine>xreqgps</Engine>
+    <Comment_Line>xreq_gps_comment_line</Comment_Line>
   </Language>
 </Custom>

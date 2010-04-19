@@ -1,10 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpecLib;
-with AdaSpec.Steps;
+with XReqLib;
+with XReq.Steps;
 
-use AdaSpecLib;
-use AdaSpec.Steps;
+use XReqLib;
+use XReq.Steps;
 
 package body Test_Suite.Steps is
 
@@ -20,7 +20,7 @@ package body Test_Suite.Steps is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Steps");
+      return ("XReq.Steps");
    end Name;
 
    procedure Run (T : in out Test_1) is

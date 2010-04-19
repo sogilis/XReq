@@ -1,18 +1,18 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec;
-with AdaSpecLib;
-with AdaSpec.Steps;
-with AdaSpec.Scenarios;
-with AdaSpec.Features;
+with XReq;
+with XReqLib;
+with XReq.Steps;
+with XReq.Scenarios;
+with XReq.Features;
 with Util.IO;
 with Util.Strings;
 
-use AdaSpec;
-use AdaSpecLib;
-use AdaSpec.Steps;
-use AdaSpec.Scenarios;
-use AdaSpec.Features;
+use XReq;
+use XReqLib;
+use XReq.Steps;
+use XReq.Scenarios;
+use XReq.Features;
 use Util.IO;
 use Util.Strings;
 
@@ -32,7 +32,7 @@ package body Test_Suite.Features is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Features simplest.feature");
+      return ("XReq.Features simplest.feature");
    end Name;
 
    procedure Run (T : in out Test_1) is
@@ -160,7 +160,7 @@ package body Test_Suite.Features is
    function  Name (T : in Test_2) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Features.Same simplest2.feature");
+      return ("XReq.Features.Same simplest2.feature");
    end Name;
 
    procedure Run (T : in out Test_2) is
@@ -219,7 +219,7 @@ package body Test_Suite.Features is
    function  Name (T : in Test_3) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Scenarios");
+      return ("XReq.Scenarios");
    end Name;
 
    procedure Run (T : in out Test_3) is

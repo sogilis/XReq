@@ -1,10 +1,10 @@
 Feature: Run gnatmake after compiling features
   In order to simplify command line invocations
   As a spec compiler
-  I want AdaSpec to run gnatmake after it generated the Ada source files
+  I want XReq to run gnatmake after it generated the Ada source files
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/simplest.feature":
       """
@@ -19,8 +19,8 @@ Feature: Run gnatmake after compiling features
       """
     And a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
 
         --  @given ^this step works$
@@ -44,7 +44,7 @@ Feature: Run gnatmake after compiling features
       """
 
   Scenario:
-    When I run adaspec -m -x suite features/simplest.feature
+    When I run xreq -m -x suite features/simplest.feature
     Then it should pass
     And the output should contain
       """
@@ -77,7 +77,7 @@ Feature: Run gnatmake after compiling features
       """
 
   Scenario:
-    When I run "GNAT_FLAGS=--non-existing-flag adaspec -m -x suite features/simplest.feature"
+    When I run "GNAT_FLAGS=--non-existing-flag xreq -m -x suite features/simplest.feature"
     Then it should pass
     And the output should contain
       """

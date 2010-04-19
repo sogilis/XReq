@@ -4,26 +4,26 @@ with Ada.Containers.Vectors;
 with Ada.Containers;
 with Util.IO;
 with Util.Strings;
-with AdaSpecLib.String_Tables;
-with AdaSpec.Lang;
-with AdaSpec.Features;
-with AdaSpec.Step_Definitions;
-with AdaSpec.Scenarios;
-with AdaSpec.Steps;
-with AdaSpec.Result_Steps;
-with AdaSpec.Result_Scenarios;
-with AdaSpec.Result_Features;
+with XReqLib.String_Tables;
+with XReq.Lang;
+with XReq.Features;
+with XReq.Step_Definitions;
+with XReq.Scenarios;
+with XReq.Steps;
+with XReq.Result_Steps;
+with XReq.Result_Scenarios;
+with XReq.Result_Features;
 
 use Util.IO;
 use Util.Strings;
-use AdaSpec.Lang;
-use AdaSpec.Features;
-use AdaSpec.Step_Definitions;
-use AdaSpec.Scenarios;
-use AdaSpec.Steps;
-use AdaSpec.Result_Steps;
-use AdaSpec.Result_Scenarios;
-use AdaSpec.Result_Features;
+use XReq.Lang;
+use XReq.Features;
+use XReq.Step_Definitions;
+use XReq.Scenarios;
+use XReq.Steps;
+use XReq.Result_Steps;
+use XReq.Result_Scenarios;
+use XReq.Result_Features;
 
 package body Test_Suite.Result is
 
@@ -43,7 +43,7 @@ package body Test_Suite.Result is
    function  Name (T : in Test_Result_Step_Type) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Result.Result_Step_Type");
+      return ("XReq.Result.Result_Step_Type");
    end Name;
 
    procedure Run (T : in out Test_Result_Step_Type) is
@@ -68,7 +68,7 @@ package body Test_Suite.Result is
                    return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Result.Result_Scenario_Type");
+      return ("XReq.Result.Result_Scenario_Type");
    end Name;
 
    procedure Run (T : in out Test_Result_Scenario_Type) is
@@ -86,7 +86,7 @@ package body Test_Suite.Result is
             return False;
          end if;
          for I in S.Step_First .. S.Step_Last loop
-            if not AdaSpec.Result_Steps.Equals
+            if not XReq.Result_Steps.Equals
                      (S.Step_Element (I), Element (V, I))
             then
                Std_Logger.Put_Line ("Fail at index" & I'Img);
@@ -163,7 +163,7 @@ package body Test_Suite.Result is
                    return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Result.Result_Feature_Type");
+      return ("XReq.Result.Result_Feature_Type");
    end Name;
 
    procedure Run (T : in out Test_Result_Feature_Type) is
@@ -246,7 +246,7 @@ package body Test_Suite.Result is
                    return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Result.To_String");
+      return ("XReq.Result.To_String");
    end Name;
 
    procedure Run (T : in out Test_To_String) is
@@ -291,12 +291,12 @@ package body Test_Suite.Result is
                    return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Result.Result_Scenario_Type with Scenario Outline");
+      return ("XReq.Result.Result_Scenario_Type with Scenario Outline");
    end Name;
 
    procedure Run (T : in out Test_Result_Scenario_Outline) is
       use Ada.Containers;
-      use AdaSpecLib.String_Tables;
+      use XReqLib.String_Tables;
       Scenario  : Scenario_Type := Null_Scenario_Outline;
       Result    : Result_Scenario_Type;
       Steps     : Step_Definitions_Type

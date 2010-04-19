@@ -1,8 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.Lang;
+with XReq.Lang;
 
-use AdaSpec.Lang;
+use XReq.Lang;
 
 package body Test_Suite.Lang is
 
@@ -16,7 +16,7 @@ package body Test_Suite.Lang is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpec.Lang";
+      return "XReq.Lang";
    end Name;
 
    procedure Run (T : in out Test_1) is

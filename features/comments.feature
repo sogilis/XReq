@@ -4,7 +4,7 @@ Feature: Tags
   I want to be able to write comments
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/step_definitions/steps.ads":
       """
@@ -33,5 +33,5 @@ Feature: Tags
           # Comment
           Given this step works
       """
-    When I run adaspec features/comments.feature
+    When I run xreq features/comments.feature
     Then it should pass

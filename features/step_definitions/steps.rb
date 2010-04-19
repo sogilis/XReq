@@ -1,41 +1,41 @@
 # encoding: utf-8
 
-Given /^adaspec is in the PATH$/ do
-  #system("make bin/adaspec");
-  ENV['PATH'] = $adaspec_dir + "/bin" + ":" + ENV['PATH'];
+Given /^xreq is in the PATH$/ do
+  #system("make bin/xreq");
+  ENV['PATH'] = $xreq_dir + "/bin" + ":" + ENV['PATH'];
   if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + ":" + $adaspec_dir + "/src/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
+    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + ":" + $xreq_dir + "/src/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
   else
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + ":" + $adaspec_dir + "/src/lib";
+    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + ":" + $xreq_dir + "/src/lib";
   end
   if ENV['GPR_PROJECT_PATH'] then
-    ENV['GPR_PROJECT_PATH'] = $adaspec_dir + ":" + ENV['GPR_PROJECT_PATH'];
+    ENV['GPR_PROJECT_PATH'] = $xreq_dir + ":" + ENV['GPR_PROJECT_PATH'];
   else
-    ENV['GPR_PROJECT_PATH'] = $adaspec_dir + ":";
+    ENV['GPR_PROJECT_PATH'] = $xreq_dir + ":";
   end
 end
 
-Given /^the sources of adaspec are in ADA_INCLUDE_PATH$/ do
+Given /^the sources of xreq are in ADA_INCLUDE_PATH$/ do
   if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src" + ":" + ENV['ADA_INCLUDE_PATH'];
+    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + "/src" + ":" + ENV['ADA_INCLUDE_PATH'];
   else
-    ENV['ADA_INCLUDE_PATH'] = $adaspec_dir + "/src";
+    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + "/src";
   end
 end
 
 Given /^I am in an empty directory$/ do
   @oldcwd = FileUtils.pwd();
-  dir = "#{$adaspec_dir}/tmp";
-  FileUtils.cd($adaspec_dir);
+  dir = "#{$xreq_dir}/tmp";
+  FileUtils.cd($xreq_dir);
   FileUtils.remove_dir(dir) rescue nil;
   FileUtils.mkdir_p(dir);
   FileUtils.cd(dir);
   #puts FileUtils.pwd();
 end
 
-Given /^I am in the adaspec directory$/ do
+Given /^I am in the xreq directory$/ do
   @oldcwd = FileUtils.pwd();
-  FileUtils.cd($adaspec_dir);
+  FileUtils.cd($xreq_dir);
 end
 
 Given /^I am in "(.*)"$/ do |dir|
@@ -50,8 +50,8 @@ Given /^a file "(.*)":$/ do |filename, filecontent|
   f.close();
 end
 
-When /^I run adaspec (.*)$/ do |args|
-  cmd = "adaspec " + args + " 2>&1";
+When /^I run xreq (.*)$/ do |args|
+  cmd = "xreq " + args + " 2>&1";
   #puts cmd;
   #puts FileUtils.pwd();
   @last_command_output = `#{cmd}`;
@@ -123,7 +123,7 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
   FileUtils::rm_rf("#{dir}/obj");
   FileUtils::mkdir_p("#{dir}/obj");
   f = File.new("#{dir}/main.gpr", "w");
-  f.write("with \"adaspeclib.gpr\";\n");
+  f.write("with \"xreqlib.gpr\";\n");
   f.write("project Main is\n");
   f.write("   for Main        use (\"#{name}\");\n");
   f.write("   for Source_Dirs use (\".\", \"../step_definitions\");\n");

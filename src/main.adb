@@ -6,12 +6,12 @@ with Ada.Exceptions;
 with Ada.Command_Line;
 with GNAT.Command_Line;
 with Util.IO;
-with AdaSpecLib;
-with AdaSpec;
-with AdaSpec.CLI;
-with AdaSpec.Lang;
-with AdaSpec.Job;
-with AdaSpec.Generator;
+with XReqLib;
+with XReq;
+with XReq.CLI;
+with XReq.Lang;
+with XReq.Job;
+with XReq.Generator;
 
 use Ada.Text_IO;
 use Ada.Strings.Unbounded;
@@ -19,11 +19,11 @@ use Ada.Exceptions;
 use Ada.Command_Line;
 use GNAT.Command_Line;
 use Util.IO;
-use AdaSpecLib;
-use AdaSpec;
-use AdaSpec.Lang;
-use AdaSpec.Job;
-use AdaSpec.Generator;
+use XReqLib;
+use XReq;
+use XReq.Lang;
+use XReq.Job;
+use XReq.Generator;
 
 procedure Main is
 
@@ -70,7 +70,7 @@ begin
          Full_Switch = "help" or
          Full_Switch = "-help"
       then
-         AdaSpec.CLI.Help;
+         XReq.CLI.Help;
          Quit := True;
          exit Getopt_Loop;
 
@@ -142,7 +142,7 @@ begin
                Next (J);
             end loop;
             New_Line;
-            AdaSpec.Job.Make (Env,
+            XReq.Job.Make (Env,
                Step_Dir => Step_Dir,
                Out_Dir  => To_String (Out_Dir),
                Language => Language);
@@ -150,7 +150,7 @@ begin
                Fill_Steps => True);
          else
             Put_Line (Standard_Error, "Missing feature filename");
-            AdaSpec.CLI.Help;
+            XReq.CLI.Help;
             Set_Exit_Status (Failure);
          end if;
          Quit := True;
@@ -175,12 +175,12 @@ begin
       --  Get Parameter  --
       ---------------------
 
-      AdaSpec.Job.Make (Env,
+      XReq.Job.Make (Env,
          Step_Dir => Step_Dir,
          Out_Dir  => To_String (Out_Dir),
          Language => Language);
 
-      AdaSpec.Job.Make (Job,
+      XReq.Job.Make (Job,
          Feature_File => To_String (Arg));
 
       Fill_Missing (Env, Feature_File (Job));
@@ -265,20 +265,20 @@ exception
       Free (Logger);
       Put_Line (Standard_Error,
                 "Invalid switch: -" & Full_Switch & " " & Parameter);
-      AdaSpec.CLI.Help;
+      XReq.CLI.Help;
       Set_Exit_Status (Failure);
 
    when Invalid_Parameter =>
       Free (Logger);
       Put_Line (Standard_Error, "Missing parameter for switch -" &
                 Full_Switch);
-      AdaSpec.CLI.Help;
+      XReq.CLI.Help;
       Set_Exit_Status (Failure);
 
    when Invalid_Language =>
       Free (Logger);
       Put_Line (Standard_Error, "Unknown language " & Parameter);
-      AdaSpec.CLI.Help;
+      XReq.CLI.Help;
       Set_Exit_Status (Failure);
 
    --  GCOV_IGNORE_BEGIN

@@ -7,17 +7,17 @@ with Ada.Directories;
 with Ada.Sequential_IO;
 with Ada.IO_Exceptions;
 with GNAT.OS_Lib;
-with AdaSpecLib.Asserts;
+with XReqLib.Asserts;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
-use AdaSpecLib.Asserts;
+use XReqLib.Asserts;
 
 package body Steps is
 
    Last_Exit_Code : Integer := 0;
    Last_Command_Output : Unbounded_String;
-   AdaSpec_Dir : Unbounded_String := To_Unbounded_String (Current_Directory);
+   XReq_Dir : Unbounded_String := To_Unbounded_String (Current_Directory);
 
    package Char_IO is new Ada.Sequential_IO (Character);
    package ENV renames Ada.Environment_Variables;
@@ -58,45 +58,45 @@ package body Steps is
 
    ----------------------------------------------------------------------------
 
-   procedure AdaSpec_in_path (Args : in out Arg_Type) is
+   procedure XReq_in_path (Args : in out Arg_Type) is
    begin
       if ENV.Exists ("PATH") then
-         ENV.Set ("PATH", To_String (AdaSpec_Dir) & "/bin:" &
+         ENV.Set ("PATH", To_String (XReq_Dir) & "/bin:" &
                   ENV.Value ("PATH"));
       else
-         ENV.Set ("PATH", To_String (AdaSpec_Dir) & "/bin");
+         ENV.Set ("PATH", To_String (XReq_Dir) & "/bin");
       end if;
       if ENV.Exists ("GPR_PROJECT_PATH") then
-         ENV.Set ("GPR_PROJECT_PATH", To_String (AdaSpec_Dir) & ":" &
+         ENV.Set ("GPR_PROJECT_PATH", To_String (XReq_Dir) & ":" &
                   ENV.Value ("GPR_PROJECT_PATH"));
       else
-         ENV.Set ("GPR_PROJECT_PATH", To_String (AdaSpec_Dir));
+         ENV.Set ("GPR_PROJECT_PATH", To_String (XReq_Dir));
       end if;
       if ENV.Exists ("ADA_INCLUDE_PATH") then
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src/lib:" &
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib:" &
                   ENV.Value ("ADA_INCLUDE_PATH"));
       else
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src/lib");
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib");
       end if;
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) &
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) &
                   "/src/common:" & ENV.Value ("ADA_INCLUDE_PATH"));
-   end AdaSpec_in_path;
+   end XReq_in_path;
 
-   procedure Given_the_sources_of_Adaspec_are_in_path (Args : in out Arg_Type)
+   procedure Given_the_sources_of_XReq_are_in_path (Args : in out Arg_Type)
    is
    begin
       if ENV.Exists ("ADA_INCLUDE_PATH") then
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src:" &
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src:" &
                   ENV.Value ("ADA_INCLUDE_PATH"));
       else
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (AdaSpec_Dir) & "/src");
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src");
       end if;
-   end Given_the_sources_of_Adaspec_are_in_path;
+   end Given_the_sources_of_XReq_are_in_path;
 
-   procedure Given_I_am_in_adaspec_dir (Args : in out Arg_Type) is
+   procedure Given_I_am_in_xreq_dir (Args : in out Arg_Type) is
    begin
-      Set_Directory (To_String (AdaSpec_Dir));
-   end Given_I_am_in_adaspec_dir;
+      Set_Directory (To_String (XReq_Dir));
+   end Given_I_am_in_xreq_dir;
 
    procedure Given_I_am_in (Args : in out Arg_Type) is
    begin
@@ -104,7 +104,7 @@ package body Steps is
    end Given_I_am_in;
 
    procedure I_am_empty_dir (Args : in out Arg_Type) is
-      Tmp_Dir : constant String := Compose (To_String (AdaSpec_Dir), "tmp");
+      Tmp_Dir : constant String := Compose (To_String (XReq_Dir), "tmp");
    begin
       begin
          Delete_Tree (Tmp_Dir);
@@ -129,12 +129,12 @@ package body Steps is
       Close (File);
    end Given_a_file;
 
-   procedure I_run_adaspec (Args : in out Arg_Type) is
+   procedure I_run_xreq (Args : in out Arg_Type) is
    begin
       Args.Add_Para ("Current Directory:");
       Args.Add_Text (Current_Directory);
-      Execute ("adaspec " & Args.Match (1));
-   end I_run_adaspec;
+      Execute ("xreq " & Args.Match (1));
+   end I_run_xreq;
 
    procedure it_should_pass_fail (Args : in out Arg_Type) is
    begin

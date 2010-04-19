@@ -1,9 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.Job;
+with XReq.Job;
 with Util.IO;
 
-use AdaSpec.Job;
+use XReq.Job;
 use Util.IO;
 
 package body Test_Suite.Job is

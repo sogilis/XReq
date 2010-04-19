@@ -3,16 +3,16 @@
 with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Util.IO;
-with AdaSpec.Lang;
-with AdaSpec.Step_Definitions;
-with AdaSpec.Steps;
+with XReq.Lang;
+with XReq.Step_Definitions;
+with XReq.Steps;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Util.IO;
-use AdaSpec.Lang;
-use AdaSpec.Step_Definitions;
-use AdaSpec.Steps;
+use XReq.Lang;
+use XReq.Step_Definitions;
+use XReq.Steps;
 
 package body Test_Suite.Step_Definitions is
 
@@ -28,7 +28,7 @@ package body Test_Suite.Step_Definitions is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return ("AdaSpec.Steps");
+      return ("XReq.Steps");
    end Name;
 
    procedure Run (T : in out Test_1) is

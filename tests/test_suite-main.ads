@@ -30,6 +30,6 @@ private
                             Argument_String : in String;
                             Expected_Result : in Boolean := True;
                             Directory       : in String := "";
-                            Executable_Name : in String := "bin/adaspec");
+                            Executable_Name : in String := "bin/xreq");
 
 end Test_Suite.Main;

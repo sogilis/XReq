@@ -6,44 +6,44 @@ Entry point: `Main` (`main.ads`, `main.adb`)
 `Util` package
 --------------
 
-Contain utilitarian functions and procedures that are not specific to AdaSpec.
+Contain utilitarian functions and procedures that are not specific to XReq.
 
 - `Util.IO`: tools to read lines and files in `Unbounded_String`s
 - `Util.Strings`: tools to manipulate strings
 - `Util.Strings.Pool`: make sure you get a unique string
 
-`AdaSpec` package
+`XReq` package
 -----------------
 
-- `AdaSpec.CLI`: Help for command line interface
-- `AdaSpec.Features`: Feature file parser and abstract syntax tree
-- `AdaSpec.Stanzas`: Stanza type, represents a Given, When, Then line in a
+- `XReq.CLI`: Help for command line interface
+- `XReq.Features`: Feature file parser and abstract syntax tree
+- `XReq.Stanzas`: Stanza type, represents a Given, When, Then line in a
   scenario
-- `AdaSpec.Steps`: Step definition interface
-- `AdaSpec.Steps.Ada`: Step definition and datatypes for the Ada language
-- `AdaSpec.Job`: Represents a job, something to do. Generally extracted from
+- `XReq.Steps`: Step definition interface
+- `XReq.Steps.Ada`: Step definition and datatypes for the Ada language
+- `XReq.Job`: Represents a job, something to do. Generally extracted from
   the command line
-- `AdaSpec.Result`: The result of a job, when it is executed. It contains all
+- `XReq.Result`: The result of a job, when it is executed. It contains all
   the data to output the test file.
 
 
 Data flow
 =========
 
-First, the command line create a job (`AdaSpec.Job.Job_Type`) containing the
+First, the command line create a job (`XReq.Job.Job_Type`) containing the
 filename of the feature to execute. To run the job, it must be associated with
-and environment (`AdaSpec.Job.Job_Environment`) that contains the output
+and environment (`XReq.Job.Job_Environment`) that contains the output
 directory for the tests and the `step_definitions` directory.
 
-The environment is loaded (`AdaSpec.Job.Load`). This step read the
+The environment is loaded (`XReq.Job.Load`). This step read the
 `step_definitions` directory and all the steps in it. The steps
-(`AdaSpec.Steps.Steps_Type`) are stored in the environment.
+(`XReq.Steps.Steps_Type`) are stored in the environment.
 
-Then, the job is run (`AdaSpec.Job.Run`) and the feature file is parsed
-(`AdaSpec.Features.Feature_Type`) and stored in the job. Then, we match each
+Then, the job is run (`XReq.Job.Run`) and the feature file is parsed
+(`XReq.Features.Feature_Type`) and stored in the job. Then, we match each
 stanza of each scenario of the feature to steps taken from the environment.
 
-The result (`AdaSpec.Result.Result_Feature_Type`) is the list of scenarios
+The result (`XReq.Result.Result_Feature_Type`) is the list of scenarios
 procedures and all the steps they need to call to run the scenario. Then, the
 generator generates Ada code.
 

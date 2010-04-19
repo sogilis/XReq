@@ -1,8 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpecLib.Args;
+with XReqLib.Args;
 
-use AdaSpecLib.Args;
+use XReqLib.Args;
 
 package body Test_Suite.Lib.Args is
 
@@ -16,7 +16,7 @@ package body Test_Suite.Lib.Args is
    function  Name (T : in Test_1) return String is
       pragma Unreferenced (T);
    begin
-      return "AdaSpecLib.Args";
+      return "XReqLib.Args";
    end Name;
 
    procedure Run (T : in out Test_1) is

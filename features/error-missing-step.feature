@@ -1,11 +1,11 @@
 Feature: Auto fill in of steps definitions
   In order to make writing steps easier
   As a step writer
-  I want AdaSpec to automatically write a skeleton of step definitions for me.
+  I want XReq to automatically write a skeleton of step definitions for me.
 
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/test.feature":
       """
@@ -18,7 +18,7 @@ Feature: Auto fill in of steps definitions
       """
 
   Scenario: Reporting of missing steps
-    When I run adaspec features/test.feature
+    When I run xreq features/test.feature
     Then it should fail
     And the output should contain
       """
@@ -40,10 +40,10 @@ Feature: Auto fill in of steps definitions
         --  @then ^I should see "([^"]*)"$
         --  @todo
 
-      AdaSpec can create the procedures for you if you use --fill-steps
+      XReq can create the procedures for you if you use --fill-steps
       """
 
-    When I run adaspec -q features/test.feature
+    When I run xreq -q features/test.feature
     Then it should fail
     And the output should contain
       """

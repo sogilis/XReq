@@ -1,0 +1,795 @@
+<?var name="page-begin"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <title><?placeholder name="title"?></title>
+    <style type="text/css">
+
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+a {
+  color: inherit;
+}
+
+hr.hidden {
+  visibility: hidden;
+}
+
+.clear {
+  clear: both;
+}
+
+.capture {
+  font-weight: bold;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+td {
+  border-collapse: collapse;
+  border: solid thin black;
+}
+
+.fail {
+  color: #c20000;
+}
+
+.pass {
+  color: #3d7700;
+}
+
+.skip {
+  color: #004444;
+}
+
+.feature {
+  border-left-width: 1em;
+  border-left-style: solid;
+}
+
+.feature.fail {
+  border-color: #fffbd3;
+}
+
+.feature.pass {
+  border-color: #dbffb4;
+}
+
+.feature.skip {
+  border-color: #e0ffff;
+}
+
+.feature.fail .feature-header {
+  background-color: #fffbd3;
+}
+
+.feature.pass .feature-header {
+  background-color: #dbffb4;
+}
+
+.feature.skip .feature-header {
+  background-color: #e0ffff;
+}
+
+.scenario {
+  margin-left: 2em;
+  border-left-width: thin;
+  border-left-style: solid;
+}
+
+.scenario.fail {
+  background-color: #fffbd3;
+  border-color: #c20000;
+}
+
+.scenario.pass {
+  background-color: #dbffb4;
+  border-color: #65c400;
+}
+
+.scenario.skip {
+  background-color: #e0ffff;
+  border-color: aqua;
+}
+
+.scenario.fail td {
+  border-color: #c20000;
+}
+
+.scenario.pass td {
+  border-color: #65c400;
+}
+
+.scenario.skip td {
+  border-color: aqua;
+}
+
+.scenario.fail .title {
+  color: #fffbd3;
+  background-color: #c20000;
+}
+
+.scenario.pass .title {
+  color: #dbffb4;
+  background-color: #65c400;
+}
+
+.scenario.skip .title {
+  color: #004444;
+  background-color: aqua;
+}
+
+.outline-examples {
+  margin-left: 4em;
+  margin-top: 0.25em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  padding-left: 0.5em;
+  font-size: 0.8em;
+}
+
+.step {
+  margin-left: 3em;
+  border-left: 1em solid transparent;
+  margin-top: 0.25em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  padding-left: 0.5em;
+  font-size: 0.8em;
+}
+
+.step.fail {
+  border-left-color: #c20000;
+  background-color: #fffbd3;
+  border-top-width: thin;
+  border-top-style: solid;
+  border-bottom-width: thin;
+  border-bottom-style: solid;
+  border-right-width: thin;
+  border-right-style: solid;
+}
+.step.pass {
+  border-left-color: #65c400;
+  background-color: #dbffb4;
+}
+.step.skip {
+  border-left-color: aqua;
+  background-color: #e0ffff;
+}
+
+.step.fail pre.string {
+  background-color: white;
+}
+
+.step.pass pre.string {
+  background-color: white;
+}
+
+.step.skip pre.string {
+  background-color: white;
+}
+
+pre.string {
+  margin: 0.5em;
+  margin-left: 2em;
+  margin-right: 7em;
+  padding: 0.5em 0 0.5em 0.5em;
+  -moz-border-radius-topleft: 1em;
+  -webkit-border-radius-topleft: 1em;
+  border-radius-topleft: 1em;
+  -moz-border-radius-bottomright: 1em;
+  -webkit-border-radius-bottomright: 1em;
+  border-radius-bottomright: 1em;
+}
+
+.trace {
+  margin: 0.5em;
+  margin-left: 2em;
+  margin-right: 7em;
+  padding: 0.5em 0 0.5em 0.5em;
+  background-color: white;
+}
+
+
+
+body {
+  padding-top: 5em;
+  padding-left: 15em;
+}
+
+#title {
+  position: absolute;
+  padding-left: 2em;
+  left: 15em;
+  top: 0;
+  right: 0;
+  overflow: hidden;
+  height: 5em;
+  color: #004444;
+  background-color: aqua;
+}
+
+#summary {
+}
+
+#summary {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 15em;
+  overflow: auto;
+  height: 100%;
+}
+
+#summary .report {
+  /*
+  top: 0;
+  left: 0;
+  width: 15em;
+  height: 8em;
+  overflow: visible;
+  z-index: 1;
+  */
+}
+
+#summary .menu {
+  padding: 0.25em;
+  margin-right: 1em;
+  border-right: thin solid #EEEEEE;
+  background-color: white;
+  /*padding-top: 8em;*/
+}
+
+#summary .report > *, #summary .menu > * {
+  font-size: 0.7em;
+}
+
+.menu a {
+  text-decoration: none;
+}
+
+.menu *.fail > a {
+  font-weight: bold;
+}
+
+.menu > ul ul, .menu > ul ol {
+  padding: 0;
+  padding-left: 1em;
+}
+
+.menu li {
+  margin: 0;
+  padding: 0;
+  margin-left: 1em;
+}
+
+.menu > ul {
+  margin: 0;
+  padding: 0;
+}
+.menu > ul > li {
+  margin-top: 1em;
+}
+.menu > ul > li > ul {
+  margin-top: 0.5em;
+}
+
+#summary .report {
+  border-top: thin solid transparent;
+  /* BUG: without this, there is a spall space at the top */
+  -moz-border-radius-bottomright: 1em;
+  -webkit-border-radius-bottomright: 1em;
+  border-radius-bottomright: 1em;
+}
+
+.report > * {
+  font-size: 0.75em;
+}
+
+.report ul {
+  margin: .25em;
+  padding: .25em;
+  list-style-type: none;
+}
+
+.report.fail, #title-background.fail, #title.fail, #progressbar.fail {
+  color: #fffbd3;
+  background-color: #c20000;
+}
+
+#progressbar.fail {
+  border-color: #fffbd3;
+}
+
+.report.pass, #title-background.pass, #title.pass, #progressbar.pass {
+  color: #dbffb4;
+  background-color: #65c400;
+}
+
+#progressbar.pass {
+  border-color: #dbffb4;
+}
+
+.report.skip, #title-background.skip, #title.skip, #progressbar.skip {
+  color: #004444;
+  background-color: aqua;
+}
+
+#progressbar.skip {
+  border-color: #e0ffff;
+}
+
+li.report-steps, li.report-scenarios {
+  display: block;
+  float: left;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+ul.tags {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  margin-left: 4.5em;
+  font-size: 0.8em;
+}
+
+ul.tags li {
+  margin: 0;
+  padding: 0;
+  display: inline;
+  padding-right: 1em;
+}
+
+p.position {
+  color: transparent;
+  float: right;
+  font-size: 0.7em;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.feature:hover .feature-header .position {
+  color: grey;
+}
+
+.scenario:hover .title .position {
+  color: white;
+}
+
+.step:hover .position {
+  color: grey;
+}
+
+.debug-link {
+  float: right;
+  font-size: 0.7em;
+  margin: 0;
+  padding: 0;
+  margin-left: 1%;
+  margin-right: 1%;
+}
+
+.debug {
+  display: none;
+}
+
+#progressbar {
+  display: none;
+  height: 1em;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background-color: black;
+  z-index: 1;
+  border-width: thin;
+  border-style: solid;
+  border-color: white;
+  border-top: none;
+}
+
+#progressbar-1 {
+  display: none;
+  position: fixed;
+  left: 0.5em;
+  top: 0.1em;
+  color: lightgray;
+  z-index: 2;
+  font-size: 0.7em;
+}
+
+    </style>
+    <script type="text/javascript">
+      var loaded=false;
+      var timeout_id;
+      function refresh(){
+        if(!loaded) {
+          location.reload(true);
+        } else {
+          clearTimeout(timeout_id);
+        }
+      }
+      function stop_refresh() {
+        loaded = true
+        document.getElementById("link-refresh").style.display = "none";
+      }
+      function refresh_periodic(delay) {
+        timeout_id = setTimeout(refresh, delay);
+      }
+
+      function debugLinkClicked(elem){
+        //alert(elem + ": " + elem.is_close);
+        var is_close = elem.is_close;
+        var e = elem.nextSibling;
+        while (e) {
+          if (e.tagName && e.className.indexOf("hidden") == -1) {
+            //alert("current: " + e + (is_close ? "\nclose->open" : "\nopen->close") + "\nclass: " + e.className + "\nnext: " + e.nextSibling);
+            if (is_close) {
+              e.style.display = e.style_display;
+            } else {
+              e.style_display = e.style.display;
+              e.style.display = "none";
+            }
+            //alert (e + "\ndisplay: " + e.style.display + "\nOld display: " + e.style_display);
+          }
+          e = e.nextSibling;
+          //alert ("next: " + e);
+        }
+        elem.is_close = ! is_close;
+        //alert(elem + ": " + elem.is_close);
+      }
+
+      function debugInit(){
+        var t = document.getElementsByClassName("debug-link");
+        for(var i = 0; i < t.length; ++i) {
+          if (t[i].is_close || t[i].debug_init_processed) {
+            // Nothing to do
+          } else {
+            t[i].is_close = false;
+            t[i].debug_init_processed = true;
+            //alert("debugInit: " + i + " debugLinkClicked (" + t[i] + ")")
+            debugLinkClicked (t[i]);
+          }
+        }
+      }
+
+      var progress_job_id;
+      var progress_job = false;
+
+      function setProgress(curr, total) {
+        if(progress_job) {
+          clearTimeout(progress_job_id);
+          progress_job = false;
+        }
+        var f = function(){
+          clearTimeout(progress_job_id);
+          progress_job = false;
+          var percent = curr * 100 / total;
+          var elem = document.getElementById("progressbar");
+          var elem1 = document.getElementById("progressbar-1");
+          if (curr >= total) {
+            elem1.style.display = "none";
+            elem.style.display = "none";
+          } else {
+            elem1.style.display = "block";
+            elem1.innerHTML = percent.toFixed(2) + "% (" + curr + "/" + total + ")";
+            elem.style.display = "block";
+            elem.style.width = percent.toFixed(4) + "%";
+          }
+        }
+        progress_job = true;
+        progress_job_id = setTimeout(f, 50);
+      }
+
+      var status = "skip";
+
+      function setStatusFailed(){
+        status = "fail";
+        setStatus(status);
+      }
+      function setStatusFinished(){
+        if (status != "fail") {
+          status = "pass";
+        }
+        setStatus(status);
+      }
+
+      function setStatus(status) {
+        document.getElementById("title").className = status;
+        document.getElementById("progressbar").className = status;
+        document.getElementById("progressbar-1").className = status;
+      }
+    </script>
+  </head>
+  <body>
+    <script type="text/javascript">/*<![CDATA[*/
+      refresh_periodic(2500);
+    /*]]>*/</script>
+    <div id="progressbar">
+      <div id="progressbar-1"></div>
+    </div>
+    <div id="title">
+      <h1>Test suite results</h1>
+    </div>
+    <p id="link-refresh"><a href="" onClick="stop_refresh(); return false">stop refresh</a></p>
+<?garbage?>
+    <div id="feature-1" class="feature skip">
+      <div class="feature-header">
+        <h2 class="title-feature">Feature: Ambiguous step definition error reporting</h2>
+        <p>In order to avoid writing ambiguous step definitions. As an xreq
+        user. I want to be notified whenever the step definitions regular
+        expressions are ambiguous for a given step</p>
+      </div>
+      <div id="feature-1-background-1" class="scenario skip">
+        <h3 class="title-background">Background:</h3>
+        <ul class="tags">
+          <li>@tag1</li>
+          <li>@tag2</li>
+          <li>@tag3</li>
+        </ul>
+        <div class="step pass"><p>Given xreq is in the PATH</p></div>
+        <div class="step pass"><p>And I am in an empty directory</p></div>
+        <div class="step pass">
+          <p>And a file "<span class="capture">features/ambiguous.feature</span>":</p>
+          <pre class="string">Feature: Sample
+
+  Background: B
+    Given this step works
+
+  Scenario: Run a bad step
+    Given this step doesn't work
+    Given this step works
+
+  Scenario: Run a good step
+    Given this step works
+</pre>
+          <p class="debug-link"><a href="" onClick="debugLinkClicked(this.parentNode); return false;">debug</a></p>
+          <hr class="clear hidden" />
+          <p>Debug output:</p>
+          <pre class="string">OUT</pre>
+          <script type="text/javascript">/*<![CDATA[*/
+            debugInit();
+          /*]]>*/</script>
+        </div>
+        <div class="step fail">
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-1-background-1").className = "scenario fail";
+            document.getElementById("feature-1").className = "feature fail";
+            setStatusFailed();
+          /*]]>*/</script>
+          <p>And a file "<span class="capture">features/step_definitions/steps.ads</span>":</p>
+          <pre class="string">with XReqLib;
+use  XReqLib;
+package Steps is
+
+  --  @given ^this step works$
+  procedure This_Step_Works (Args : in out Arg_Type);
+
+  --  @given ^this is ambiguous$
+  procedure Ambiguous (Args : in out Arg_Type);
+
+  --  @given ^this is( not)? ambiguous$
+  procedure Not_Ambiguous (Args : in out Arg_Type);
+
+end Steps;
+</pre>
+        </div>
+        <div class="step skip">
+          <p>And a file "<span class="capture">features/step_definitions/steps2.ads</span>":</p>
+          <pre class="string">with XReqLib;
+use  XReqLib;
+package Steps2 is
+
+  --  @given ^this step .*works$
+  procedure This_Step_Doest_Work (Args : in out Arg_Type);
+
+end Steps2;
+</pre>
+        </div>
+      </div> <!-- scenario -->
+      <div id="feature-1-scenario-1" class="scenario skip">
+        <h3 class="title-scenario">Scenario: </h3>
+        <div class="step skip"><p>When I run <span class="capture">xreq features/ambiguous.feature</span></p></div>
+        <div class="step skip"><p>Then it should <span class="capture">fail</span></p></div>
+      </div> <!-- scenario -->
+      <div id="feature-1-scenario-2" class="scenario skip">
+        <h3 class="title-scenario">Scenario: </h3>
+        <div class="step skip"><p>When I run <span class="capture">xreq features/ambiguous2.feature</span></p></div>
+        <h4>Scenario 1:</h4>
+        <div class="step skip"><p>Then it should <span class="capture">fail</span></p></div>
+      </div> <!-- scenario -->
+    </div> <!-- feature -->
+<?var name="feature-begin"?>
+    <div id="feature-<?placeholder name="id"?>" class="feature skip">
+      <div class="feature-header">
+        <p class="position"><?placeholder name="position"?></p>
+        <h2 class="title-feature">Feature: <?placeholder name="name"?></h2>
+        <pre><?placeholder name="description"?></pre>
+        <hr class="clear hidden" />
+      </div>
+<?var name="background-begin"?>
+      <div id="feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>" class="scenario skip">
+        <div class="title">
+          <p class="position"><?placeholder name="position"?></p>
+          <h3 class="title-background">Background: <?placeholder name="title"?></h3>
+          <hr class="clear hidden" />
+        </div>
+<?var name="background-end"?>
+        <script type="text/javascript">/*<![CDATA[*/
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>");
+          if (scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
+      </div> <!-- background -->
+<?var name="outline-begin"?>
+      <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
+        <div class="title">
+          <p class="position"><?placeholder name="position"?></p>
+          <h3 class="title-background">Scenario Outline: <?placeholder name="title"?></h3>
+          <hr class="clear hidden" />
+        </div>
+<?var name="outline-examples-begin"?>
+        <h4>Examples:</h4>
+        <div class="outline-examples">
+<?var name="outline-examples-end"?>
+        </div>
+<?var name="outline-end"?>
+        <script type="text/javascript">/*<![CDATA[*/
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
+          if (scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
+      </div> <!-- scenario outline -->
+<?var name="scenario-begin"?>
+      <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
+        <div class="title">
+          <p class="position"><?placeholder name="position"?></p>
+          <h3 class="title-scenario">Scenario: <?placeholder name="title"?></h3>
+          <hr class="clear hidden" />
+        </div>
+<?var name="scenario-tags-begin"?>
+        <ul class="tags">
+<?var name="scenario-tags-item"?>
+          <li><?placeholder name="tag"?></li>
+<?var name="scenario-tags-end"?>
+        </ul>
+<?var name="scenario-label"?>
+        <p><?placeholder name="label"?></p>
+<?var name="outline-scenario"?>
+        <h4><?placeholder name="title"?></h4>
+<?var name="step-begin"?>
+        <div class="step <?placeholder name="status"?>">
+          <p class="position"><?placeholder name="position"?></p>
+          <p><?placeholder name="stanza"?></p>
+          <hr class="clear hidden" />
+<?var name="step-debug"?>
+          <p class="debug-link"><a href="" onClick="debugLinkClicked(this.parentNode); return false;">debug</a></p>
+          <hr class="clear hidden" />
+<?var name="step-string"?>
+          <pre class="string"><?placeholder name="string"?></pre>
+<?var name="step-table-begin"?>
+          <table>
+<?var name="step-table-row-begin"?>
+            <tr>
+<?var name="step-table-cell"?>
+              <td><?placeholder name="string"?></td>
+<?var name="step-table-row-end"?>
+            </tr>
+<?var name="step-table-end"?>
+          </table>
+<?var name="step-separator"?>
+          <hr />
+<?var name="step-paragraph"?>
+          <p><?placeholder name="string"?></p>
+<?var name="step-error-background"?>
+          <hr />
+          <pre class="error"><?placeholder name="error"?></pre>
+          <p>Stack trace:</p>
+          <pre class="error trace"><?placeholder name="trace"?></pre>
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>").className = "scenario fail";
+            document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
+            setStatusFailed();
+          /*]]>*/</script>
+<?var name="step-error-scenario"?>
+          <hr />
+          <pre class="error"><?placeholder name="error"?></pre>
+          <p>Stack trace:</p>
+          <pre class="error trace"><?placeholder name="trace"?></pre>
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario fail";
+            document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
+            setStatusFailed();
+          /*]]>*/</script>
+<?var name="step-debug-end"?>
+          <script type="text/javascript">/*<![CDATA[*/
+            debugInit();
+          /*]]>*/</script>
+<?var name="step-end"?>
+          <script type="text/javascript">/*<![CDATA[*/
+            setProgress(<?placeholder name="num"?>, <?placeholder name="total"?>);
+          /*]]>*/</script>
+        </div> <!-- step -->
+<?var name="scenario-end"?>
+        <script type="text/javascript">/*<![CDATA[*/
+          var backgrnd = document.getElementById("feature-<?placeholder name="feature_id"?>-background-1");
+          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
+          if (backgrnd.className != "scenario fail" && scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
+      </div> <!-- scenario -->
+<?var name="feature-end"?>
+      <script type="text/javascript">/*<![CDATA[*/
+        var feature = document.getElementById("feature-<?placeholder name="feature_id"?>");
+        if (feature.className != "feature fail") {
+          feature.className = "feature pass"
+        };
+      /*]]>*/</script>
+    </div> <!-- feature -->
+<?var name="report-begin"?>
+    <script tyme="text/javascript">/*<![CDATA[*/
+      setStatusFinished();
+    /*]]>*/</script>
+    <div id="summary" class="<?placeholder name="status"?>">
+      <div class="report <?placeholder name="status"?>">
+        <ul>
+          <li class="report-scenarios"><?placeholder name="num_scenarios"?> scenarios
+            <ul>
+              <li><?placeholder name="num_scenarios_fail"?> failed</li>
+              <li><?placeholder name="num_scenarios_pass"?> passed</li>
+            </ul>
+          </li>
+          <li class="report-steps"><?placeholder name="num_steps"?> steps
+            <ul>
+              <li><?placeholder name="num_steps_fail"?> failed</li>
+              <li><?placeholder name="num_steps_skip"?> skipped</li>
+              <li><?placeholder name="num_steps_pass"?> passed</li>
+            </ul>
+          </li>
+          <li class="clear">Finished in <?placeholder name="duration"?></li>
+        </ul>
+      </div>
+<?var name="report-menu-begin"?>
+      <div class="menu">
+        <ul>
+<?var name="report-menu-feature-begin"?>
+          <li class="<?placeholder name="status"?>">
+            <a href="#feature-<?placeholder name="feature_id"?>"><?placeholder name="name"?></a>
+<?var name="report-menu-scenarios-begin"?>
+            <ul>
+<?var name="report-menu-background"?>
+              <li class="title-background <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
+<?var name="report-menu-scenario"?>
+              <li class="title-scenario <?placeholder name="status"?>"><a href="#feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>"><?placeholder name="name"?></a></li>
+<?var name="report-menu-scenarios-end"?>
+            </ul>
+<?var name="report-menu-feature-end"?>
+          </li>
+<?var name="report-menu-end"?>
+        </ul>
+      </div>
+<?var name="report-end"?>
+    </div>
+<?var name="page-end"?>
+  </body>
+  <script type="text/javascript">/*<![CDATA[*/
+    stop_refresh();
+  /*]]>*/</script>
+</html>
+<?garbage?>
+<!-- kate: hl PHP (HTML); -->

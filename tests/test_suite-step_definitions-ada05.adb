@@ -4,19 +4,19 @@ with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Ada.Directories;
 with Util.IO;
-with AdaSpec;
-with AdaSpec.Steps;
-with AdaSpec.Step_Definitions;
-with AdaSpec.Step_Definitions.Ada05;
+with XReq;
+with XReq.Steps;
+with XReq.Step_Definitions;
+with XReq.Step_Definitions.Ada05;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Ada.Directories;
 use Util.IO;
-use AdaSpec;
-use AdaSpec.Steps;
-use AdaSpec.Step_Definitions;
-use AdaSpec.Step_Definitions.Ada05;
+use XReq;
+use XReq.Steps;
+use XReq.Step_Definitions;
+use XReq.Step_Definitions.Ada05;
 
 package body Test_Suite.Step_Definitions.Ada05 is
 

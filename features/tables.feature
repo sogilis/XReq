@@ -4,12 +4,12 @@ Feature: Tables
   I want to write tables in my spec
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
         --  @given ^this step works$
         --  @todo
@@ -23,8 +23,8 @@ Feature: Tables
       """
     Given a file "features/step_definitions/steps.adb":
       """
-      with AdaSpecLib.Asserts;
-      use  AdaSpecLib.Asserts;
+      with XReqLib.Asserts;
+      use  XReqLib.Asserts;
       package body Steps is
 
          T : Table_Type;
@@ -56,7 +56,7 @@ Feature: Tables
             | 4 |           10 |         11 |     12 |
           Given this step works
       """
-    When I run adaspec features/table.feature
+    When I run xreq features/table.feature
     Then it should pass
 
   Scenario: Compare two equal tables
@@ -74,7 +74,7 @@ Feature: Tables
             | c | d |
             | e |
       """
-    When I run adaspec -x equal_table features/equal_table.feature
+    When I run xreq -x equal_table features/equal_table.feature
     Then it should pass
     When I compile "equal_table" in features/tests
     Then it should pass

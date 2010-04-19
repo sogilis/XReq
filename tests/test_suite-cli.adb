@@ -1,6 +1,6 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with AdaSpec.CLI;
+with XReq.CLI;
 
 package body Test_Suite.CLI is
 
@@ -20,7 +20,7 @@ package body Test_Suite.CLI is
    procedure Run (T : in out Test_Help) is
       pragma Unreferenced (T);
    begin
-      AdaSpec.CLI.Help;
+      XReq.CLI.Help;
       --  TODO: what can be dont to test that it is ok ?
    end Run;
 

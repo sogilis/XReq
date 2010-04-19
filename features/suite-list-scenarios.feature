@@ -7,12 +7,12 @@ Feature: List all scenarios compiled in a test suite
   FEATURE_FILENAME:SCENARIO_NUM
 
   Background:
-    Given adaspec is in the PATH
+    Given xreq is in the PATH
     And I am in an empty directory
     Given a file "features/step_definitions/steps.ads":
       """
-      with AdaSpecLib.General;
-      use  AdaSpecLib.General;
+      with XReqLib.General;
+      use  XReqLib.General;
       package Steps is
          --  @given ^this step works$
          procedure Given_this_step_works (Args : in out Arg_Type);
@@ -75,7 +75,7 @@ Feature: List all scenarios compiled in a test suite
         Scenario: S3
           Given this step works
       """
-    When I run adaspec -x suite features/a.feature features/b.feature
+    When I run xreq -x suite features/a.feature features/b.feature
     Then it should pass
 
     When I compile "suite" in features/tests
