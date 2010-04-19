@@ -12,7 +12,7 @@ library project GPS_Plugin is
    for Library_Kind     use "relocatable";
 
    package Compiler is
-      for Default_Switches ("Ada") use ("-g");
+      for Default_Switches ("Ada") use ("-g", "-gnat05");
    end Compiler;
 
    package Binder is
