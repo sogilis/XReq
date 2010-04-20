@@ -3,6 +3,7 @@ Feature: Run steps with arguments (captures)
   As an step writer
   I want to be able to capture the matches of the regular expressions
 
+  @lang-Ada
   Background:
     Given xreq is in the PATH
     And   I am in an empty directory
@@ -43,6 +44,7 @@ Feature: Run steps with arguments (captures)
       end Steps;
       """
 
+  @lang-Ada
   Scenario: Test concatenation using string captures
     When I run xreq -x suite features/test.feature
     Then it should pass

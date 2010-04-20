@@ -8,34 +8,10 @@ Feature: List all scenarios compiled in a test suite
 
   Background:
     Given xreq is in the PATH
-    And I am in an empty directory
-    Given a file "features/step_definitions/steps.ads":
-      """
-      with XReqLib.General;
-      use  XReqLib.General;
-      package Steps is
-         --  @given ^this step works$
-         procedure Given_this_step_works (Args : in out Arg_Type);
-
-         --  @given ^this step doesn't work$
-         --  @todo
-      end Steps;
-      """
-    Given a file "features/step_definitions/steps.adb":
-      """
-      package body Steps is
-
-         procedure Given_this_step_works (Args : in out Arg_Type) is
-            pragma Unreferenced (Args);
-         begin
-            null;
-         end Given_this_step_works;
-
-      end Steps;
-      """
+    And I am in the xreq directory
 
   Scenario: Command line --list
-    Given a file "features/a.feature":
+    Given a file "features/data/tmp-a.feature":
       """
       Feature: A
         Description of A
@@ -55,7 +31,7 @@ Feature: List all scenarios compiled in a test suite
         Scenario: S3
           Given this step works
       """
-    Given a file "features/b.feature":
+    Given a file "features/data/tmp-b.feature":
       """
       Feature: B
         Description of B
@@ -75,25 +51,25 @@ Feature: List all scenarios compiled in a test suite
         Scenario: S3
           Given this step works
       """
-    When I run xreq -x suite features/a.feature features/b.feature
+    When I run xreq -x suite features/data/tmp-a.feature features/data/tmp-b.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run "./suite --list" in features/tests
+    When I run "./suite --list" in features/data/tests
     Then it should pass with
       """
       Feature: A
 
-        features/a.feature:1 S1
-        features/a.feature:2 S2
-        features/a.feature:3 S3
+        features/data/tmp-a.feature:1 S1
+        features/data/tmp-a.feature:2 S2
+        features/data/tmp-a.feature:3 S3
 
       Feature: B
 
-        features/b.feature:1 S1
-        features/b.feature:2 S2
-        features/b.feature:3 S3
+        features/data/tmp-b.feature:1 S1
+        features/data/tmp-b.feature:2 S2
+        features/data/tmp-b.feature:3 S3
 
       """

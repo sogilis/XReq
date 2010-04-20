@@ -5,17 +5,10 @@ Feature: Tags
 
   Background:
     Given xreq is in the PATH
-    And I am in an empty directory
-    Given a file "features/step_definitions/steps.ads":
-      """
-      package Steps is
-        --  @given ^this step works$
-        --  @todo
-      end Steps;
-      """
+    And I am in the xreq directory
 
   Scenario:
-    Given a file "features/comments.feature":
+    Given a file "features/data/tmp-comments.feature":
       """
       Feature: F
 
@@ -33,5 +26,5 @@ Feature: Tags
           # Comment
           Given this step works
       """
-    When I run xreq features/comments.feature
+    When I run xreq features/data/tmp-comments.feature
     Then it should pass

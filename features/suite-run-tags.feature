@@ -5,34 +5,10 @@ Feature: Tags
 
   Background:
     Given xreq is in the PATH
-    And I am in an empty directory
-    Given a file "features/step_definitions/steps.ads":
-      """
-      with XReqLib.General;
-      use  XReqLib.General;
-      package Steps is
-         --  @given ^this step works$
-         procedure Given_this_step_works (Args : in out Arg_Type);
-
-         --  @given ^this step doesn't work$
-         --  @todo
-      end Steps;
-      """
-    Given a file "features/step_definitions/steps.adb":
-      """
-      package body Steps is
-
-         procedure Given_this_step_works (Args : in out Arg_Type) is
-            pragma Unreferenced (Args);
-         begin
-            null;
-         end Given_this_step_works;
-
-      end Steps;
-      """
+    And I am in the xreq directory
 
   Scenario: Show tags
-    Given a file "features/tags.feature":
+    Given a file "features/data/tmp-tags.feature":
       """
       Feature: F
 
@@ -45,13 +21,13 @@ Feature: Tags
         Scenario: S
           Given this step works
       """
-    When I run xreq -x suite features/tags.feature
+    When I run xreq -x suite features/data/tmp-tags.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run the test suite "./suite" in features/tests
+    When I run the test suite "./suite" in features/data/tests
     Then it should fail with
       """
       Feature: F
@@ -59,7 +35,7 @@ Feature: Tags
         @tagB
         Background:
           Given this step doesn't work
-            XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+            XREQLIB.ASSERTS.ERROR: Error message
 
         @tag1
         @tag2
@@ -71,24 +47,24 @@ Feature: Tags
 
       """
 
-    When I run the test suite "./suite -f html -o report.html" in features/tests
+    When I run the test suite "./suite -f html -o report.html" in features/data/tests
     Then it should fail
-    And "features/tests/report.html" should exist
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should exist
+    And "features/data/tests/report.html" should contain
       """
       @tagB
       """
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should contain
       """
       @tag1
       """
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should contain
       """
       @tag2
       """
 
   Scenario: Show tags (2)
-    Given a file "features/tags.feature":
+    Given a file "features/data/tmp-tags.feature":
       """
       Feature: F
 
@@ -101,13 +77,13 @@ Feature: Tags
         Scenario: S
           Given this step works
       """
-    When I run xreq -x suite features/tags.feature
+    When I run xreq -x suite features/data/tmp-tags.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run the test suite "./suite" in features/tests
+    When I run the test suite "./suite" in features/data/tests
     Then it should fail with
       """
       Feature: F
@@ -116,7 +92,7 @@ Feature: Tags
         @tagC
         Background:
           Given this step doesn't work
-            XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+            XREQLIB.ASSERTS.ERROR: Error message
 
         @tag1
         @tag2
@@ -128,28 +104,28 @@ Feature: Tags
 
       """
 
-    When I run the test suite "./suite -f html -o report.html" in features/tests
+    When I run the test suite "./suite -f html -o report.html" in features/data/tests
     Then it should fail
-    And "features/tests/report.html" should exist
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should exist
+    And "features/data/tests/report.html" should contain
       """
       @tagB
       """
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should contain
       """
       @tagC
       """
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should contain
       """
       @tag1
       """
-    And "features/tests/report.html" should contain
+    And "features/data/tests/report.html" should contain
       """
       @tag2
       """
 
   Scenario: Conditional execution
-    Given a file "features/conditional.feature":
+    Given a file "features/data/tmp-conditional.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -166,13 +142,13 @@ Feature: Tags
         Scenario: S2
           Given this step works
       """
-    When I run xreq -x suite features/conditional.feature
+    When I run xreq -x suite features/data/tmp-conditional.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run the test suite "./suite -t @tag1" in features/tests
+    When I run the test suite "./suite -t @tag1" in features/data/tests
     Then it should pass with
       """
       Feature: Feature
@@ -194,7 +170,7 @@ Feature: Tags
       """
 
   Scenario: Negative conditional execution
-    Given a file "features/conditional.feature":
+    Given a file "features/data/tmp-conditional.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -211,13 +187,13 @@ Feature: Tags
         Scenario: S2
           Given this step works
       """
-    When I run xreq -x suite features/conditional.feature
+    When I run xreq -x suite features/data/tmp-conditional.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run the test suite "./suite -t ~@tag1" in features/tests
+    When I run the test suite "./suite -t ~@tag1" in features/data/tests
     Then it should pass with
       """
       Feature: Feature
@@ -239,7 +215,7 @@ Feature: Tags
       """
 
   Scenario: And conditional execution
-    Given a file "features/conditional.feature":
+    Given a file "features/data/tmp-conditional.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -260,13 +236,13 @@ Feature: Tags
         Scenario: S3
           Given this step works
       """
-    When I run xreq -x suite features/conditional.feature
+    When I run xreq -x suite features/data/tmp-conditional.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run the test suite "./suite -t @tag1+@tag2" in features/tests
+    When I run the test suite "./suite -t @tag1+@tag2" in features/data/tests
     Then it should pass with
       """
       0 scenarios
@@ -274,7 +250,7 @@ Feature: Tags
 
       """
 
-    When I run the test suite "./suite -t @tag1+~@tag2" in features/tests
+    When I run the test suite "./suite -t @tag1+~@tag2" in features/data/tests
     Then it should pass with
       """
       Feature: Feature
@@ -301,7 +277,7 @@ Feature: Tags
       """
 
 
-    When I run the test suite "./suite -t ~@t+~@tag2" in features/tests
+    When I run the test suite "./suite -t ~@t+~@tag2" in features/data/tests
     Then it should pass with
       """
       Feature: Feature
@@ -324,7 +300,7 @@ Feature: Tags
 
 
   Scenario: Or conditional execution
-    Given a file "features/conditional.feature":
+    Given a file "features/data/tmp-conditional.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -345,13 +321,13 @@ Feature: Tags
         Scenario: S3
           Given this step works
       """
-    When I run xreq -x suite features/conditional.feature
+    When I run xreq -x suite features/data/tmp-conditional.feature
     Then it should pass
 
-    When I compile "suite" in features/tests
+    When I compile "suite" in features/data/tests
     Then it should pass
 
-    When I run the test suite "./suite -t @tag1a,@tag2" in features/tests
+    When I run the test suite "./suite -t @tag1a,@tag2" in features/data/tests
     Then it should pass with
       """
       Feature: Feature
@@ -377,7 +353,7 @@ Feature: Tags
 
       """
 
-    When I run the test suite "./suite -t ~@tag1,@t" in features/tests
+    When I run the test suite "./suite -t ~@tag1,@t" in features/data/tests
     Then it should pass with
       """
       Feature: Feature
@@ -404,7 +380,7 @@ Feature: Tags
       """
 
 
-    When I run the test suite "./suite -t ~@tag1,~@tag1a" in features/tests
+    When I run the test suite "./suite -t ~@tag1,~@tag1a" in features/data/tests
     Then it should pass with
       """
       Feature: Feature

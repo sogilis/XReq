@@ -8,8 +8,6 @@ Feature: xreq commandline
     And   I am in the xreq directory
     When  I run "rm -f tests/features/tests/*"
     When  I run "rm -f features/data/tests/*"
-    Then "tests/features/tests/feature_simplest.adb" should not exist
-    And  "tests/features/tests/feature_simplest.ads" should not exist
 
   Scenario: Help message
     When I run xreq -h
@@ -22,12 +20,14 @@ Feature: xreq commandline
 
       """
 
+  @lang-Ada
   Scenario: Compile a simple feature
     When I run xreq tests/features/simplest.feature
     Then it should pass
     And "tests/features/tests/feature_simplest.adb" should exist
     And "tests/features/tests/feature_simplest.ads" should exist
 
+  @lang-Ada
   Scenario: Compile a simple feature with --partial
     When I run xreq -x suite --partial features/data/simplest.feature
     Then it should pass with
@@ -44,6 +44,7 @@ Feature: xreq commandline
     And "features/data/tests/suite.adb" should not exist
     And "features/data/tests/suite.gpr" should not exist
 
+  @lang-Ada
   Scenario: Compile a simple feature with --partial --step-matching
     When I run xreq -x suite --partial --step-matching features/data/simplest.feature
     Then it should pass with
@@ -70,6 +71,7 @@ Feature: xreq commandline
       Missing step definition
       """
 
+  @lang-Ada
   Scenario: Compile two features
     When I run xreq tests/features/simplest.feature tests/features/simplest2.feature
     Then it should pass
@@ -118,18 +120,21 @@ Feature: xreq commandline
       Invalid switch
       """
 
+  @lang-Ada
   Scenario: Compile a feature with a defined language and step directory
     When I run xreq --lang=ada --step tests/features/step_definitions tests/features/simplest.feature
     Then it should pass
     And "tests/features/tests/feature_simplest.adb" should exist
     And "tests/features/tests/feature_simplest.ads" should exist
 
+  @lang-Ada
   Scenario: Compile with two step directories
     When I run xreq --step tmp --step tests/features/step_definitions tests/features/simplest.feature
     Then it should pass
     And "tests/features/tests/feature_simplest.adb" should exist
     And "tests/features/tests/feature_simplest.ads" should exist
 
+  @lang-Ada
   Scenario: Create an executable for all features
     When I run xreq -x result1 -k tests/features/simplest.feature tests/features/simplest2.feature
     Then it should pass

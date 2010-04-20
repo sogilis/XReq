@@ -6,46 +6,20 @@ Feature: Generated Test Suite Command Line
 
   Background:
     Given xreq is in the PATH
-    And I am in an empty directory
-    And a file "features/simplest.feature":
+    And I am in the xreq directory
+    And a file "features/data/tmp-simplest.feature":
       """
       Feature: Sample
 
       Scenario: Run a good step
-        Given this step works
+        Given this step works loudly
 
       """
-    And a file "features/step_definitions/steps.ads":
-      """
-      with XReqLib.General;
-      use  XReqLib.General;
-      package Steps is
-
-        --  @given ^this step works$
-        procedure This_Step_Works (Args : in out Arg_Type);
-
-      end Steps;
-      """
-    And a file "features/step_definitions/steps.adb":
-      """
-      with Ada.Text_IO;
-      use Ada.Text_IO;
-      package body Steps is
-
-        procedure This_Step_Works (Args : in out Arg_Type) is
-          pragma Unreferenced (Args);
-        begin
-          Args.Add_Para ("Debug text");
-          Put_Line ("This step works");
-        end This_Step_Works;
-
-      end Steps;
-      """
-    When I run xreq -x test_suite features/simplest.feature
+    When I run xreq -x test_suite features/data/tmp-simplest.feature
     Then it should pass
-    When I compile "test_suite" in features/tests
+    When I compile "test_suite" in features/data/tests
     Then it should pass
-    Given I am in "features/tests"
+    Given I am in "features/data/tests"
     Then "test_suite" should exist
 
   Scenario: Help
