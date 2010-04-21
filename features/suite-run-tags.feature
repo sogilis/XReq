@@ -8,7 +8,7 @@ Feature: Tags
     And I am in the xreq directory
 
   Scenario: Show tags
-    Given a file "features/data/tmp-tags.feature":
+    Given a file "features/data/tmp-tags1.feature":
       """
       Feature: F
 
@@ -21,10 +21,7 @@ Feature: Tags
         Scenario: S
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-tags.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-tags1.feature
     Then it should pass
 
     When I run the test suite "./suite" in features/data/tests
@@ -64,7 +61,7 @@ Feature: Tags
       """
 
   Scenario: Show tags (2)
-    Given a file "features/data/tmp-tags.feature":
+    Given a file "features/data/tmp-tags2.feature":
       """
       Feature: F
 
@@ -77,10 +74,7 @@ Feature: Tags
         Scenario: S
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-tags.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-tags2.feature
     Then it should pass
 
     When I run the test suite "./suite" in features/data/tests
@@ -125,7 +119,7 @@ Feature: Tags
       """
 
   Scenario: Conditional execution
-    Given a file "features/data/tmp-conditional.feature":
+    Given a file "features/data/tmp-tag-conditional1.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -142,10 +136,7 @@ Feature: Tags
         Scenario: S2
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-conditional.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-tag-conditional1.feature
     Then it should pass
 
     When I run the test suite "./suite -t @tag1" in features/data/tests
@@ -170,7 +161,7 @@ Feature: Tags
       """
 
   Scenario: Negative conditional execution
-    Given a file "features/data/tmp-conditional.feature":
+    Given a file "features/data/tmp-tag-conditional2.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -187,10 +178,7 @@ Feature: Tags
         Scenario: S2
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-conditional.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-tag-conditional2.feature
     Then it should pass
 
     When I run the test suite "./suite -t ~@tag1" in features/data/tests
@@ -215,7 +203,7 @@ Feature: Tags
       """
 
   Scenario: And conditional execution
-    Given a file "features/data/tmp-conditional.feature":
+    Given a file "features/data/tmp-tag-conditional3.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -236,10 +224,7 @@ Feature: Tags
         Scenario: S3
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-conditional.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-tag-conditional3.feature
     Then it should pass
 
     When I run the test suite "./suite -t @tag1+@tag2" in features/data/tests
@@ -300,7 +285,7 @@ Feature: Tags
 
 
   Scenario: Or conditional execution
-    Given a file "features/data/tmp-conditional.feature":
+    Given a file "features/data/tmp-tag-conditional4.feature":
       """
       Feature: Feature
         This is executed conditionnally
@@ -321,10 +306,7 @@ Feature: Tags
         Scenario: S3
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-conditional.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-tag-conditional4.feature
     Then it should pass
 
     When I run the test suite "./suite -t @tag1a,@tag2" in features/data/tests

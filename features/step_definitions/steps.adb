@@ -5,6 +5,7 @@ with Ada.Strings.Fixed;
 with Ada.Environment_Variables;
 with Ada.Directories;
 with Ada.Sequential_IO;
+with Ada.Text_IO;
 with Ada.IO_Exceptions;
 with GNAT.OS_Lib;
 with XReqLib.Asserts;
@@ -116,10 +117,13 @@ package body Steps is
    end I_am_empty_dir;
 
    procedure Given_a_file (Args : in out Arg_Type) is
+      --  use Ada.Text_IO;
       use Char_IO;
-      File      : Char_IO.File_Type;
       File_Name : constant String := Args.Match (1);
       Text      : constant String := Args.Text;
+      File      : Char_IO.File_Type;
+      --  File      : File_Type;
+      --  Text_File : Ada.Text_IO.File_Type;
    begin
       Create_Path (Containing_Directory (File_Name));
       Create (File, Out_File, File_Name);
@@ -127,6 +131,25 @@ package body Steps is
          Write (File, Text (I));
       end loop;
       Close (File);
+      --  ---------------------------------------------------------------------
+      --  Create (File, Out_File, File_Name);
+      --  for I in Text'Range loop
+      --     Put (File, Text (I));
+      --  end loop;
+      --  Flush (File);
+      --  Close (File);
+      --  ---------------------------------------------------------------------
+      --  It seems that the file is not completely written after Close, and it
+      --  takes few miliseconds for it to be written. in the meantime, if we
+      --  want to read its content, we risk reading its old content. So we try
+      --  a forced flush.
+      --  ---------------------------------------------------------------------
+      --  delay 10.0;
+      --  ---------------------------------------------------------------------
+      --  Ada.Text_IO.Open  (Text_File, Ada.Text_IO.Append_File, File_Name);
+      --  Ada.Text_IO.Flush (Text_File);
+      --  Ada.Text_IO.Close (Text_File);
+      --  ---------------------------------------------------------------------
    end Given_a_file;
 
    procedure I_run_xreq (Args : in out Arg_Type) is

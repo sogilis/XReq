@@ -64,9 +64,7 @@ Feature: Skip scenarios after a background error
       """
 
   Scenario: Always Fail
-    When I run xreq -x always_fail_suite features/data/tmp-always_fail.feature
-    Then it should pass
-    When I compile "always_fail_suite" in features/data/tests
+    When I run xreq -m -x always_fail_suite features/data/tmp-always_fail.feature
     Then it should pass
     When I run the test suite "./always_fail_suite" in features/data/tests
     Then it should fail with
@@ -103,9 +101,7 @@ Feature: Skip scenarios after a background error
 
 
   Scenario: Periodic Fail
-    When I run xreq -x periodic_fail_suite features/data/tmp-periodic_fail.feature
-    Then it should pass
-    When I compile "periodic_fail_suite" in features/data/tests
+    When I run xreq -m -x periodic_fail_suite features/data/tmp-periodic_fail.feature
     Then it should pass
     When I run the test suite "./periodic_fail_suite" in features/data/tests
     Then it should fail with

@@ -77,15 +77,13 @@ Feature: xreq commandline
 
   @lang-Ada
   Scenario: Create an executable for all features
-    When I run xreq -x result1 -k tests/features/simplest.feature tests/features/simplest2.feature
+    When I run xreq -m -x result1 -k tests/features/simplest.feature tests/features/simplest2.feature
     Then it should pass
     And "tests/features/tests/feature_simplest.adb" should exist
     And "tests/features/tests/feature_simplest.ads" should exist
     And "tests/features/tests/feature_simplest2.adb" should exist
     And "tests/features/tests/feature_simplest2.ads" should exist
     And "tests/features/tests/result1.adb" should exist
-    When I compile "result1" in tests/features/tests
-    Then it should pass
     And "tests/features/tests/result1" should exist
     When I run "tests/features/tests/result1"
     Then it should pass

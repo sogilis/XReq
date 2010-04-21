@@ -154,9 +154,7 @@ Feature: HTML reports
       """
 
   Scenario: Generate HTML report that fail
-    When I run xreq -x test_suite_fail features/data/tmp-simplest.feature features/data/tmp-simplest2.feature features/data/tmp-fail.feature
-    Then it should pass
-    When I compile "test_suite_fail" in features/data/tests
+    When I run xreq -m -x test_suite_fail features/data/tmp-simplest.feature features/data/tmp-simplest2.feature features/data/tmp-fail.feature
     Then it should pass
     Given I am in "features/data/tests"
     Then "test_suite_fail" should exist
@@ -170,9 +168,7 @@ Feature: HTML reports
     When I run "cp report-fail.html ../../../reports/sample-html-fail.html"
 
   Scenario: Generate HTML report that pass
-    When I run xreq -x test_suite_pass features/data/tmp-pass.feature features/data/tmp-pass2.feature
-    Then it should pass
-    When I compile "test_suite_pass" in features/data/tests
+    When I run xreq -m -x test_suite_pass features/data/tmp-pass.feature features/data/tmp-pass2.feature
     Then it should pass
     Given I am in "features/data/tests"
     Then "test_suite_pass" should exist

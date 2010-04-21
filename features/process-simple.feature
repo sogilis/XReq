@@ -54,14 +54,12 @@ Feature: The simplest works
 
   @lang-Ada
   Scenario: Test the generation of the test suite
-    When  I run xreq -x simplest_test features/data/tmp-simplest.feature
+    When  I run xreq -m -x simplest_test features/data/tmp-simplest.feature
     Then  it should pass
     And   "features/data/tests/feature_tmp_simplest.ads" should exist
     And   "features/data/tests/feature_tmp_simplest.adb" should exist
     And   "features/data/tests/simplest_test.adb" should exist
     And   "features/data/tests/simplest_test.gpr" should exist
-    When  I compile "simplest_test" in features/data/tests
-    Then  it should pass
     And   "features/data/tests/simplest_test" should exist
     When  I run the test suite "./simplest_test" in features/data/tests
     Then  it should pass with
@@ -117,9 +115,7 @@ Feature: The simplest works
       """
 
   Scenario: Test an empty feature
-    When I run xreq -x empty_suite features/data/tmp-empty.feature
-    Then it should pass
-    When I compile "empty_suite" in features/data/tests
+    When I run xreq -m -x empty_suite features/data/tmp-empty.feature
     Then it should pass
     When I run the test suite "./empty_suite" in features/data/tests
     Then it should pass with

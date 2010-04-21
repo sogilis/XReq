@@ -39,9 +39,7 @@ Feature: Tables
             | c | d |
             | e |
       """
-    When I run xreq -x equal_table features/data/tmp-equal_table.feature
-    Then it should pass
-    When I compile "equal_table" in features/data/tests
+    When I run xreq -m -x equal_table features/data/tmp-equal_table.feature
     Then it should pass
     When I run the test suite "./equal_table" in features/data/tests
     Then it should pass with

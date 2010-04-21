@@ -46,9 +46,7 @@ Feature: Run steps with arguments (captures)
 
   @lang-Ada
   Scenario: Test concatenation using string captures
-    When I run xreq -x suite features/test.feature
-    Then it should pass
-    When I compile "suite" in features/tests
+    When I run xreq -m -x suite features/test.feature
     Then it should pass
     When I run the test suite "./suite" in features/tests
     Then it should pass with

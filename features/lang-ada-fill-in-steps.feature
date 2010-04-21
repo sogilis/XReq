@@ -28,9 +28,7 @@ Feature: Auto fill in of steps definitions
         --  @todo
       end Steps;
       """
-    When I run xreq -x suite features/test.feature
-    Then it should pass
-    When I compile "suite" in features/tests
+    When I run xreq -m -x suite features/test.feature
     Then it should pass
     When I run "./suite --no-color" in features/tests
     Then it should fail

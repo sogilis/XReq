@@ -15,9 +15,7 @@ Feature: Generated Test Suite Command Line
         Given this step works loudly
 
       """
-    When I run xreq -x test_suite features/data/tmp-simplest.feature
-    Then it should pass
-    When I compile "test_suite" in features/data/tests
+    When I run xreq -m -x test_suite features/data/tmp-simplest.feature
     Then it should pass
     Given I am in "features/data/tests"
     Then "test_suite" should exist

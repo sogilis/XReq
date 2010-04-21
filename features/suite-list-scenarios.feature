@@ -51,10 +51,7 @@ Feature: List all scenarios compiled in a test suite
         Scenario: S3
           Given this step works
       """
-    When I run xreq -x suite features/data/tmp-a.feature features/data/tmp-b.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-a.feature features/data/tmp-b.feature
     Then it should pass
 
     When I run "./suite --list" in features/data/tests

@@ -24,9 +24,7 @@ Feature: Error handling in steps
       """
 
   Scenario: Test error reporting
-    When I run xreq -x suite features/data/tmp-simple_error.feature
-    Then it should pass
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-simple_error.feature
     Then it should pass
     When I run the test suite "./suite" in features/data/tests
     Then it should fail with

@@ -44,9 +44,7 @@ Feature: Long strings
       """
 
   Scenario: Test long strings
-    When I run xreq -x suite features/data/tmp-test.feature
-    Then it should pass
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-test.feature
     Then it should pass
     When I run the test suite "./suite" in features/data/tests
     Then it should pass with

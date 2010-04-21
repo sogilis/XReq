@@ -18,9 +18,7 @@ Feature: Scenario Outlines
           Then I should have 7 cucumbers
 
       """
-    When I run xreq -x suite features/data/tmp-eating.feature
-    Then it should pass
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-eating.feature
     Then it should pass
     When I run the test suite "./suite" in features/data/tests
     Then it should pass with
@@ -60,9 +58,7 @@ Feature: Scenario Outlines
             |  20   |  5  |  15  |
 
       """
-    When I run xreq -x suite features/data/tmp-outline.feature
-    Then it should pass
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-outline.feature
     Then it should pass
 
     When I run the test suite "./suite -f html -o report.html" in features/data/tests
@@ -115,10 +111,7 @@ Feature: Scenario Outlines
 
       """
 
-    When I run xreq -x suite features/data/tmp-outline.feature
-    Then it should pass
-
-    When I compile "suite" in features/data/tests
+    When I run xreq -m -x suite features/data/tmp-outline.feature
     Then it should pass
 
     When I run the test suite "./suite -f html -o report.html" in features/data/tests
