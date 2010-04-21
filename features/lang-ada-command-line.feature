@@ -42,8 +42,8 @@ Feature: xreq commandline
 
     Load Ada steps in: features/data/step_definitions
     Compile: features/data/simplest.feature
-    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.ads:13" procedure Simple_Steps.Given_this_step_works
-    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.ads:13" procedure Simple_Steps.Given_this_step_works
+    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.ads:14" procedure Simple_Steps.Given_this_step_works
+    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.ads:14" procedure Simple_Steps.Given_this_step_works
 
 
     """
