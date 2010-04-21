@@ -7,6 +7,7 @@ Feature: xreq commandline
     Given xreq is in the PATH
     And   I am in the xreq directory
     When  I run "rm -f tests/features/tests/*"
+    When  I run "rm -f features/data/tests/*"
     Then "tests/features/tests/feature_simplest.adb" should not exist
     And  "tests/features/tests/feature_simplest.ads" should not exist
 
@@ -28,38 +29,38 @@ Feature: xreq commandline
     And "tests/features/tests/feature_simplest.ads" should exist
 
   Scenario: Compile a simple feature with --partial
-    When I run xreq -x suite --partial --step features/step_definitions tests/features/simplest.feature
+    When I run xreq -x suite --partial features/data/simplest.feature
     Then it should pass with
     """
-    --> Compile: tests/features/simplest.feature
+    --> Compile: features/data/simplest.feature
 
-    Load Ada steps in: features/step_definitions
-    Compile: tests/features/simplest.feature
+    Load Ada steps in: features/data/step_definitions
+    Compile: features/data/simplest.feature
 
 
     """
-    And "tests/features/tests/feature_simplest.adb" should not exist
-    And "tests/features/tests/feature_simplest.ads" should not exist
-    And "tests/features/tests/suite.adb" should not exist
-    And "tests/features/tests/suite.gpr" should not exist
+    And "features/data/tests/feature_simplest.adb" should not exist
+    And "features/data/tests/feature_simplest.ads" should not exist
+    And "features/data/tests/suite.adb" should not exist
+    And "features/data/tests/suite.gpr" should not exist
 
   Scenario: Compile a simple feature with --partial --step-matching
-    When I run xreq -x suite --partial --step-matching --step features/step_definitions tests/features/simplest.feature
+    When I run xreq -x suite --partial --step-matching features/data/simplest.feature
     Then it should pass with
     """
-    --> Compile: tests/features/simplest.feature
+    --> Compile: features/data/simplest.feature
 
-    Load Ada steps in: features/step_definitions
-    Compile: tests/features/simplest.feature
-    Step Matching: "tests/features/simplest.feature:4" matches "features/step_definitions/sample1.ads:8" procedure Sample1.This_Step_Works
-    Step Matching: "tests/features/simplest.feature:7" matches "features/step_definitions/sample1.ads:8" procedure Sample1.This_Step_Works
+    Load Ada steps in: features/data/step_definitions
+    Compile: features/data/simplest.feature
+    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.ads:12" procedure Simple_Steps.Given_this_step_works
+    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.ads:12" procedure Simple_Steps.Given_this_step_works
 
 
     """
-    And "tests/features/tests/feature_simplest.adb" should not exist
-    And "tests/features/tests/feature_simplest.ads" should not exist
-    And "tests/features/tests/suite.adb" should not exist
-    And "tests/features/tests/suite.gpr" should not exist
+    And "features/data/tests/feature_simplest.adb" should not exist
+    And "features/data/tests/feature_simplest.ads" should not exist
+    And "features/data/tests/suite.adb" should not exist
+    And "features/data/tests/suite.gpr" should not exist
 
   Scenario: Choose a step directory
     When I run xreq -otmp --step tmp tests/features/simplest.feature

@@ -12,4 +12,7 @@ package Cucumbers is
    --  @then ^I should have ([0-9]+) cucumbers$
    procedure Then_i_should_have_n_cucumbers (Args : in out Arg_Type);
 
+   --  @then ^I should have NaN cucumbers$
+   --  @todo
+
 end Cucumbers;

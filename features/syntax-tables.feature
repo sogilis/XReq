@@ -5,45 +5,10 @@ Feature: Tables
 
   Background:
     Given xreq is in the PATH
-    And I am in an empty directory
-    Given a file "features/step_definitions/steps.ads":
-      """
-      with XReqLib.General;
-      use  XReqLib.General;
-      package Steps is
-        --  @given ^this step works$
-        --  @todo
-
-        --  @given ^a table:$
-        procedure Given_a_table (Args : in out Arg_Type);
-
-        --  @then ^the table should be equal to:$
-        procedure Then_the_table_should_be_equal_to (Args : in out Arg_Type);
-      end Steps;
-      """
-    Given a file "features/step_definitions/steps.adb":
-      """
-      with XReqLib.Asserts;
-      use  XReqLib.Asserts;
-      package body Steps is
-
-         T : Table_Type;
-
-         procedure Given_a_table (Args : in out Arg_Type) is
-         begin
-            T := Args.Table;
-         end Given_a_table;
-
-         procedure Then_the_table_should_be_equal_to (Args : in out Arg_Type) is
-         begin
-            Assert (T = Args.Table);
-         end Then_the_table_should_be_equal_to;
-
-      end Steps;
-      """
+    And I am in the xreq directory
 
   Scenario: Parse a table
-    Given a file "features/table.feature":
+    Given a file "features/data/tmp-table.feature":
       """
       Feature: F
 
@@ -56,11 +21,11 @@ Feature: Tables
             | 4 |           10 |         11 |     12 |
           Given this step works
       """
-    When I run xreq features/table.feature
+    When I run xreq features/data/tmp-table.feature
     Then it should pass
 
   Scenario: Compare two equal tables
-    Given a file "features/equal_table.feature":
+    Given a file "features/data/tmp-equal_table.feature":
       """
       Feature: F
 
@@ -74,11 +39,11 @@ Feature: Tables
             | c | d |
             | e |
       """
-    When I run xreq -x equal_table features/equal_table.feature
+    When I run xreq -x equal_table features/data/tmp-equal_table.feature
     Then it should pass
-    When I compile "equal_table" in features/tests
+    When I compile "equal_table" in features/data/tests
     Then it should pass
-    When I run the test suite "./equal_table" in features/tests
+    When I run the test suite "./equal_table" in features/data/tests
     Then it should pass with
       """
       Feature: F
@@ -97,10 +62,10 @@ Feature: Tables
       2 steps (2 passed)
 
       """
-    When I run "./equal_table -f html -o equal_table.html" in features/tests
+    When I run "./equal_table -f html -o equal_table.html" in features/data/tests
     Then it should pass
-    And "features/tests/equal_table.html" should exist
-    And "features/tests/equal_table.html" should contain
+    And "features/data/tests/equal_table.html" should exist
+    And "features/data/tests/equal_table.html" should contain
       """
                 <table>
                   <tr>
