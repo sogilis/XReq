@@ -891,7 +891,7 @@ package body XReq.Generator.Ada05 is
       end;
       if Make then
          declare
-            Arg1    : aliased String := "-m";
+            Arg1    : aliased String := "-f";
             Arg2    : aliased String := "-P" & Gpr_Name;
             Args    : constant Argument_List (1 .. 2)
                     := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
@@ -901,7 +901,7 @@ package body XReq.Generator.Ada05 is
             Success : Boolean;
             Code    : Integer;
          begin
-            Log.Put_Line ("Build: gnatmake -m -P" & Gpr_Name);
+            Log.Put_Line ("Build: gnatmake -f -P" & Gpr_Name);
             Spawn ("gnatmake", Args & Args2.all, Buffer, Success, Code);
             Free (Args2);
             Log.Put_Line (Buffer);
