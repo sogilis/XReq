@@ -55,7 +55,7 @@ Feature: Run gnatmake after compiling features
   @lang-Ada
   Scenario:
     When I run "GNAT_FLAGS=--non-existing-flag xreq -m -x suite features/data/tmp-simplest.feature"
-    Then it should pass
+    Then it should fail
     And the output should contain
       """
       --> Failure

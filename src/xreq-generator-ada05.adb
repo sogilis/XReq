@@ -883,7 +883,7 @@ package body XReq.Generator.Ada05 is
             else
                Log.Put_Line ("--> Failure:" & Code'Img);  --  GCOV_IGNORE
             end if;
-            if not Success and Code /= 0 then   --  GCOV_IGNORE_BEGIN
+            if not Success or Code /= 0 then    --  GCOV_IGNORE_BEGIN
                raise Generation_Error;          --  Same here
             end if;                             --  GCOV_IGNORE_END
          end;
