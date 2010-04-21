@@ -62,6 +62,11 @@ package body XReq.CLI is
       Put_Line ("        the specified features.  If not present, only test packages are");
       Put_Line ("        created.  The TEST_NAME is relative to the output directory");
       Put_Line ("        specified with the -o (--output-dir) option.");
+      Put_Line ("        .");
+      Put_Line ("        ATTENTION: For the Ada language, this option will remove every");
+      Put_Line ("                   other .adb and .ads file in the output directory. This");
+      Put_Line ("                   is necessary for the GPR project file to work.");
+      Put_Line ("        .");
       Put_Line ("");
       Put_Line ("    -o, --output DIR");
       Put_Line ("        Choose in which directory the files will be generated. The test");

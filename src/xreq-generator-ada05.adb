@@ -828,6 +828,7 @@ package body XReq.Generator.Ada05 is
       Gpr_B.Put_Line ("with ""xreqlib"";");
       Gpr_B.Put_Line ("project " & Prc_Name & " is");
       Gpr_B.Indent;
+      Gpr_B.Put_Line ("for Languages   use (""Ada"");");
       Gpr_B.Put_Line ("for Main        use (""" & Prc_Name & """);");
       Gpr_B.Put_Indent;
       Gpr_B.Put      ("for Source_Dirs use ("".""");
@@ -840,18 +841,6 @@ package body XReq.Generator.Ada05 is
       end loop;
       Gpr_B.Put      (");");
       Gpr_B.New_Line;
-      Gpr_B.Put_Indent;
-      Gpr_B.Put      ("for Source_Files use (" & Ada_String (Name & ".adb"));
-      I := First (Gens);
-      while Has_Element (I) loop
-         E := Ada_Generator_Ptr (Element (I));
-         Gpr_B.Put (", " & Ada_String (Simple_Name (To_String (E.Ads_File))) &
-                    ", " & Ada_String (Simple_Name (To_String (E.Adb_File))));
-         Next (I);
-      end loop;
-      Gpr_B.Put      (");");
-      Gpr_B.New_Line;
-
       Gpr_B.Put_Line ("package Compiler is");
       Gpr_B.Indent;
       Gpr_B.Put_Line ("for Default_Switches (""Ada"") use " &
@@ -871,6 +860,35 @@ package body XReq.Generator.Ada05 is
       Log.Put_Line ("Generate: " & Filename);
       Set_File    (Gpr_Name, To_String (Gpr_B.Buffer));
       Log.Put_Line ("Generate: " & Gpr_Name);
+      declare
+         Results   : Search_Type;
+         Dir_Entry : Directory_Entry_Type;
+         Generated : Boolean;
+      begin
+         Start_Search (Results,
+                       Directory => Out_Dir (Env),
+                       Pattern   => "*.ad[bs]",
+                       Filter    => (Ordinary_File => True, others => False));
+         while More_Entries (Results) loop
+            Get_Next_Entry (Results, Dir_Entry);
+            Generated := Simple_Name (Dir_Entry) = Name & ".adb";
+            I := First (Gens);
+            while not Generated and then Has_Element (I) loop
+               E := Ada_Generator_Ptr (Element (I));
+               Generated := Simple_Name (To_String (E.Ads_File)) =
+                                         Simple_Name (Dir_Entry) or
+                            Simple_Name (To_String (E.Adb_File)) =
+                                         Simple_Name (Dir_Entry);
+               Next (I);
+            end loop;
+            if not Generated then
+               Log.Put_Line ("Delete: " &
+                             Compose (Out_Dir (Env), Simple_Name (Dir_Entry)));
+               Delete_File (Full_Name (Dir_Entry));
+            end if;
+         end loop;
+         End_Search (Results);
+      end;
       if Make then
          declare
             Arg1    : aliased String := "-m";
