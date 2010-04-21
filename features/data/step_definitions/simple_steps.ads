@@ -8,6 +8,7 @@ package Simple_Steps is
 
    --  @given ^this is ignored$
    --  @then  ^do nothing$
+   --  @given ^I match "([^"]*)" and "([^"]*)"$
 
    --  @given ^this step works$
    procedure Given_this_step_works (Args : in out Arg_Type);

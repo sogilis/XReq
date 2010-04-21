@@ -5,8 +5,8 @@ Feature: HTML reports
 
   Background:
     Given xreq is in the PATH
-    And I am in an empty directory
-    And a file "features/simplest.feature":
+    And I am in the xreq directory
+    And a file "features/data/tmp-simplest.feature":
       """
       Feature: Sample
 
@@ -22,11 +22,11 @@ Feature: HTML reports
 
       Scenario: Failure
         Given this step works
-        When it fail
+        When it fails
         Then do nothing
 
       """
-    And a file "features/simplest2.feature":
+    And a file "features/data/tmp-simplest2.feature":
       """
       Feature: Periodic Fail
 
@@ -56,12 +56,12 @@ Feature: HTML reports
         And this is ignored
 
       """
-    And a file "features/fail.feature":
+    And a file "features/data/tmp-fail.feature":
       """
       Feature: Feature that fail
 
         Background: definitions
-          Given it fail
+          Given it fails
             \"""
             This is a long string
             that take two lines
@@ -85,13 +85,13 @@ Feature: HTML reports
             Another multi-line string
             \"""
       """
-    And a file "features/pass.feature":
+    And a file "features/data/tmp-pass.feature":
       """
       Feature: Feature that pass
 
         Background: definitions
           Given this step works
-          And   match "this" and "that"
+          And   I match "this" and "that"
             \"""
             This is a long string
             that take two lines
@@ -122,7 +122,7 @@ Feature: HTML reports
             Another multi-line string
             \"""
       """
-    And a file "features/pass2.feature":
+    And a file "features/data/tmp-pass2.feature":
       """
       Feature: Feature that pass (2)
         This is the feature description.
@@ -152,73 +152,13 @@ Feature: HTML reports
           And this is ignored
           Then do nothing
       """
-    And a file "features/step_definitions/steps.ads":
-      """
-      with XReqLib.General;
-      use  XReqLib.General;
-      package Steps is
-
-        --  @given ^this step (works)$
-        --  @given ^match "(.*)" and "(.*)"$
-        procedure This_Step_Works (Args : in out Arg_Type);
-
-        --  @given ^this (fails) periodically$
-        procedure Periodic_Fail (Args : in out Arg_Type);
-
-        --  @given ^it (fails?)$
-        --  @when ^it (fails?)$
-        procedure Make_It_Fail (Args : in out Arg_Type);
-
-        --  @then ^do nothing$
-        --  @given ^this is (ignored)$
-        procedure Do_Nothing (Args : in out Arg_Type) is null;
-
-      end Steps;
-      """
-    And a file "features/step_definitions/steps.adb":
-      """
-      with Ada.Text_IO;
-      with XReqLib.Asserts;
-      use  Ada.Text_IO;
-      use  XReqLib.Asserts;
-      package body Steps is
-
-        Num : Positive := 2;
-
-        procedure This_Step_Works (Args : in out Arg_Type) is
-          pragma Unreferenced (Args);
-        begin
-          Put_Line ("This step works");
-        end This_Step_Works;
-
-        procedure Periodic_Fail (Args : in out Arg_Type) is
-          pragma Unreferenced (Args);
-        begin
-          Num := Num + 1;
-          if Num = 3 then
-            Num := 1;
-          end if;
-          Args.Add_Para ("Debug information:");
-          Args.Add_Text ("Num =" & Num'Img & ASCII.LF &
-                         "Success only when Num = 1");
-          Assert (Num = 1, "Num =" & Num'Img & " /= 1");
-        end Periodic_Fail;
-
-        procedure Make_It_Fail (Args : in out Arg_Type) is
-          pragma Unreferenced (Args);
-        begin
-          Assert (False, "Error message");
-        end Make_It_Fail;
-
-      end Steps;
-      """
 
   Scenario: Generate HTML report that fail
-    When I run xreq -x test_suite_fail features/simplest.feature features/simplest2.feature features/fail.feature
+    When I run xreq -x test_suite_fail features/data/tmp-simplest.feature features/data/tmp-simplest2.feature features/data/tmp-fail.feature
     Then it should pass
-    When I compile "test_suite_fail" in features/tests
+    When I compile "test_suite_fail" in features/data/tests
     Then it should pass
-    Given I am in "features/tests"
+    Given I am in "features/data/tests"
     Then "test_suite_fail" should exist
     When I run "./test_suite_fail -f html -o report-fail.html"
     Then it should fail
@@ -230,11 +170,11 @@ Feature: HTML reports
     When I run "cp report-fail.html ../../../reports/sample-html-fail.html"
 
   Scenario: Generate HTML report that pass
-    When I run xreq -x test_suite_pass features/pass.feature features/pass2.feature
+    When I run xreq -x test_suite_pass features/data/tmp-pass.feature features/data/tmp-pass2.feature
     Then it should pass
-    When I compile "test_suite_pass" in features/tests
+    When I compile "test_suite_pass" in features/data/tests
     Then it should pass
-    Given I am in "features/tests"
+    Given I am in "features/data/tests"
     Then "test_suite_pass" should exist
     When I run "./test_suite_pass -f html -o report-pass.html"
     Then it should pass

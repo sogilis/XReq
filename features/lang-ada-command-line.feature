@@ -9,17 +9,6 @@ Feature: xreq commandline
     When  I run "rm -f tests/features/tests/*"
     When  I run "rm -f features/data/tests/*"
 
-  Scenario: Help message
-    When I run xreq -h
-    Then it should pass
-    And the output should contain
-      """
-      SYNOPSIS
-
-          xreq [OPTIONS] FEATURE ...
-
-      """
-
   @lang-Ada
   Scenario: Compile a simple feature
     When I run xreq tests/features/simplest.feature
@@ -53,8 +42,8 @@ Feature: xreq commandline
 
     Load Ada steps in: features/data/step_definitions
     Compile: features/data/simplest.feature
-    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.ads:12" procedure Simple_Steps.Given_this_step_works
-    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.ads:12" procedure Simple_Steps.Given_this_step_works
+    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.ads:13" procedure Simple_Steps.Given_this_step_works
+    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.ads:13" procedure Simple_Steps.Given_this_step_works
 
 
     """
@@ -62,14 +51,6 @@ Feature: xreq commandline
     And "features/data/tests/feature_simplest.ads" should not exist
     And "features/data/tests/suite.adb" should not exist
     And "features/data/tests/suite.gpr" should not exist
-
-  Scenario: Choose a step directory
-    When I run xreq -otmp --step tmp tests/features/simplest.feature
-    Then it should fail
-    And the output should contain
-      """
-      Missing step definition
-      """
 
   @lang-Ada
   Scenario: Compile two features
@@ -79,46 +60,6 @@ Feature: xreq commandline
     And "tests/features/tests/feature_simplest.ads" should exist
     And "tests/features/tests/feature_simplest2.adb" should exist
     And "tests/features/tests/feature_simplest2.ads" should exist
-
-  Scenario: Run xreq with no features but specify output
-    When I run xreq -o tmp
-    Then it should fail
-    And the output should contain
-      """
-      Missing feature
-      """
-
-  Scenario: Run xreq with no features but specify steps
-    When I run xreq --step=tmp
-    Then it should fail
-    And the output should contain
-      """
-      Missing feature
-      """
-
-  Scenario: Specify a wrong language
-    When I run xreq --lang toto tests/features/simplest.feature
-    Then it should fail
-    And the output should contain
-      """
-      Unknown language toto
-      """
-
-  Scenario: Don't specify an argument to a command line switch
-    When I run xreq --step
-    Then it should fail
-    And the output should contain
-      """
-      Missing parameter for switch --step
-      """
-
-  Scenario: Specify an unknown command line switch
-    When I run xreq --toto
-    Then it should fail
-    And the output should contain
-      """
-      Invalid switch
-      """
 
   @lang-Ada
   Scenario: Compile a feature with a defined language and step directory
