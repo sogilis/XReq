@@ -111,15 +111,15 @@ Feature: Scenario Outlines
 
       """
 
-    When I run xreq -m -x suite features/data/tmp-outline.feature
+    When I run xreq -m -x failing_suite features/data/tmp-outline.feature
     Then it should pass
 
-    When I run the test suite "./suite -f html -o report.html" in features/data/tests
+    When I run the test suite "./failing_suite -f html -o report.html" in features/data/tests
     Then it should fail
     When I run "cp features/data/tests/report.html reports/sample-html-outline-2.html"
     Then it should pass
 
-    When I run the test suite "./suite" in features/data/tests
+    When I run the test suite "./failing_suite" in features/data/tests
     Then it should fail with
       """
       Feature: eating

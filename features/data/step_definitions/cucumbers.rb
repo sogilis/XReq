@@ -10,5 +10,5 @@ When /^I eat ([0-9]+) cucumbers$/ do |cukes|
 end
 
 Then /^I should have ([0-9]+) cucumbers$/ do |cukes|
-  assert_equal (cukes.to_i, @cukes)
+  assert_equal(cukes.to_i, @cukes)
 end
