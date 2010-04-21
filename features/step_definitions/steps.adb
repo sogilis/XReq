@@ -124,6 +124,8 @@ package body Steps is
       File      : Char_IO.File_Type;
       --  File      : File_Type;
       --  Text_File : Ada.Text_IO.File_Type;
+      Buffer    : Unbounded_String;
+      Char      : Character;
    begin
       Create_Path (Containing_Directory (File_Name));
       Create (File, Out_File, File_Name);
@@ -150,6 +152,13 @@ package body Steps is
       --  Ada.Text_IO.Flush (Text_File);
       --  Ada.Text_IO.Close (Text_File);
       --  ---------------------------------------------------------------------
+      --  Open (File, In_File, File_Name);
+      --  while not End_Of_File (File) loop
+      --     Read (File, Char);
+      --     Append (Buffer, Char);
+      --  end loop;
+      --  Close (File);
+      --  Assert (Buffer = Text, "File incorrectly written");
    end Given_a_file;
 
    procedure I_run_xreq (Args : in out Arg_Type) is

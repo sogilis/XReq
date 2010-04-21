@@ -840,6 +840,18 @@ package body XReq.Generator.Ada05 is
       end loop;
       Gpr_B.Put      (");");
       Gpr_B.New_Line;
+      Gpr_B.Put_Indent;
+      Gpr_B.Put      ("for Source_Files use (" & Ada_String (Name & ".adb"));
+      I := First (Gens);
+      while Has_Element (I) loop
+         E := Ada_Generator_Ptr (Element (I));
+         Gpr_B.Put (", " & Ada_String (Simple_Name (To_String (E.Ads_File))) &
+                    ", " & Ada_String (Simple_Name (To_String (E.Adb_File))));
+         Next (I);
+      end loop;
+      Gpr_B.Put      (");");
+      Gpr_B.New_Line;
+
       Gpr_B.Put_Line ("package Compiler is");
       Gpr_B.Indent;
       Gpr_B.Put_Line ("for Default_Switches (""Ada"") use " &
@@ -861,17 +873,17 @@ package body XReq.Generator.Ada05 is
       Log.Put_Line ("Generate: " & Gpr_Name);
       if Make then
          declare
---             Arg1    : aliased String := "-m";
+            Arg1    : aliased String := "-m";
             Arg2    : aliased String := "-P" & Gpr_Name;
-            Args    : constant Argument_List (1 .. 1)
-                    := (Arg2'Unchecked_Access, others => <>);
+            Args    : constant Argument_List (1 .. 2)
+                    := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
             Args2   : Argument_List_Access :=
                       Argument_String_To_List (GetEnv ("GNAT_FLAGS", ""));
             Buffer  : Unbounded_String;
             Success : Boolean;
             Code    : Integer;
          begin
-            Log.Put_Line ("Build: gnatmake -P" & Gpr_Name);
+            Log.Put_Line ("Build: gnatmake -m -P" & Gpr_Name);
             Spawn ("gnatmake", Args & Args2.all, Buffer, Success, Code);
             Free (Args2);
             Log.Put_Line (Buffer);

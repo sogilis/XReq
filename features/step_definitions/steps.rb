@@ -48,6 +48,7 @@ Given /^a file "(.*)":$/ do |filename, filecontent|
   f = File.new(filename, "w");
   f.write(filecontent);
   f.close();
+  # File.open(filename, Cucumber.file_mode('r')).read.should == filecontent;
 end
 
 When /^I run xreq (.*)$/ do |args|
@@ -56,6 +57,7 @@ When /^I run xreq (.*)$/ do |args|
   #puts FileUtils.pwd();
   @last_command_output = `#{cmd}`;
   @last_exit_code = $?.to_i;
+  # puts @last_command_output
 end
 
 When /^I print the last command output$/ do
