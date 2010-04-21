@@ -8,6 +8,7 @@ GPRBUILD=gprbuild
 GPS=gps
 INSTALL=install
 CP=cp -R
+MKDIR=mkdir -p
 
 DESTDIR    =
 PREFIX     =$(shell which $(GPRBUILD) 2>/dev/null | sed -e's/\/bin\/[^/]*//')
