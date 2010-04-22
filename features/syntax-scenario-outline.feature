@@ -111,6 +111,10 @@ Feature: Scenario Outlines
 
       """
 
+    # TODO: the step with NaN shouldn't be implemented by default and we should
+    # check an error in the output from XReq. Just like in older versions of
+    # this feature.
+
     When I run xreq -m -x failing_suite features/data/tmp-outline.feature
     Then it should pass
 
