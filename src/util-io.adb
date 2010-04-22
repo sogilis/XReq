@@ -397,7 +397,10 @@ package body Util.IO is
    begin
       Spawn (Arg0, Args, Output_Buffer, Success, Return_Code, Err_To_Out);
       if not Success then
+         --  GCOV_IGNORE_BEGIN
+         --  Should never happen
          raise Ada.IO_Exceptions.Name_Error with "could not execute shell";
+         --  GCOV_IGNORE_END
       end if;
    end System;
 

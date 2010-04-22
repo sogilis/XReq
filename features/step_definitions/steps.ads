@@ -54,6 +54,9 @@ package Steps is
    --  @then  ^the output should contain$
    procedure Then_the_output_should_contain (Args : in out Arg_Type);
 
+   --  @then  ^the output (shouldn't|should not) contain$
+   procedure Then_the_output_should_not_contain (Args : in out Arg_Type);
+
    --  @then  ^"([^\"]*)" should contain$
    procedure Then_the_file_should_contain (Args : in out Arg_Type);
 

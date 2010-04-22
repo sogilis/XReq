@@ -79,7 +79,7 @@ package body XReq.Step_Definitions is
             XReq.Step_Definitions.Ada05.Parse_Directory
                (Steps, Logger, Directory, Fill_Steps);
          when Lang_C =>
-            raise Not_Yet_Implemented;
+            raise Not_Yet_Implemented;  --  GCOV_IGNORE
       end case;
    end Load;
 
@@ -109,7 +109,7 @@ package body XReq.Step_Definitions is
             XReq.Step_Definitions.Ada05.Add_Steps
                (Steps, New_Steps, Step_Pkg, Directory, Logger);
          when Lang_C =>
-            raise Not_Yet_Implemented;
+            raise Not_Yet_Implemented;  --  GCOV_IGNORE
       end case;
    end Add_Steps;
 

@@ -243,7 +243,6 @@ begin
          else                   Logger2.Put_Line ("--> Failure:" & Status'Img);
          end if;
       end;
-      Logger2.New_Line;
    end if;
    Logger2 := Logger;
 

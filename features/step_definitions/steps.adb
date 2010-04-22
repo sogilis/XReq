@@ -284,6 +284,15 @@ package body Steps is
       end if;
    end Then_the_output_should_contain;
 
+   procedure Then_the_output_should_not_contain (Args : in out Arg_Type) is
+   begin
+      Args.Add_Para ("Command output:");
+      Args.Add_Text (To_String (Last_Command_Output));
+      if Index (Last_Command_Output, Args.Text) /= 0 then
+         Assert (False, "The output match");
+      end if;
+   end Then_the_output_should_not_contain;
+
    procedure Then_the_file_should_contain (Args : in out Arg_Type) is
       use Char_IO;
       File      : Char_IO.File_Type;
