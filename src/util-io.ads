@@ -73,6 +73,11 @@ package Util.IO is
                              Return_Code   : out    Integer;
                              Directory     : in     String := "");
 
+   procedure System         (Script        : in String;
+                             Output_Buffer : in out Unbounded_String;
+                             Return_Code   : out    Integer;
+                             Err_To_Out    : in     Boolean := True);
+
    --------------
    --  GetEnv  --
    --------------

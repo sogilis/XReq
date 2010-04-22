@@ -147,7 +147,7 @@ gcov-report: dir bin/unit_tests
 	-bin/unit_tests -suite=coverage -text
 	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
 
-coverage: tests bin/xreq.cov bin/unit_tests.cov
+coverage: tests bin/xreq.cov bin/unit_tests.cov bin/feature_tests.cov
 	@echo
 	@echo "##########################"
 	@echo "##  Run coverage tests  ##"
@@ -175,25 +175,33 @@ coverage: tests bin/xreq.cov bin/unit_tests.cov
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	bin/xreq -m -x bootstrap_suite features/*.feature && \
-	features/tests/bootstrap_suite -t ~@bootstrap+~@wip -f html -o reports/features-xreq.html
-#	-\
-#	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-#	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-#	cucumber -t "@bootstrap" features/*.feature
+	XREQ_BEFORE_MAKE_SILENT=true \
+	XREQ_BEFORE_MAKE='if [ -n "$$COVERAGE" ]; then n=0; while [ -e "$$COVERAGE/$$n.lcov.info" ]; do let n=n+1; done; f="$$COVERAGE/$$n.lcov.info"; echo "Create: $$f"; lcov -q -c -d "$$COV_OBJ_DIR" -t XReq -o "$$f"; lcov -q -d "$$COV_OBJ_DIR" --zerocounters; if ! [ -s "$$f" ]; then rm "$$f"; fi; fi' \
+	bin/feature_tests.cov -d -t ~@bootstrap+~@wip -f html -o reports/features-xreq.html
 	-\
 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	cucumber -t "~@wip" -t "~@bootstrap" -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
-	-\
-	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature >/dev/null 2>&1
-	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
-	$(MAKE) _gcov-gather-cucumber
+	XREQ_BEFORE_MAKE_SILENT=true \
+	XREQ_BEFORE_MAKE='if [ -n "$$COVERAGE" ]; then n=0; while [ -e "$$COVERAGE/$$n.lcov.info" ]; do let n=n+1; done; f="$$COVERAGE/$$n.lcov.info"; echo "Create: $$f"; lcov -q -c -d "$$COV_OBJ_DIR" -t XReq -o "$$f"; lcov -q -d "$$COV_OBJ_DIR" --zerocounters; if ! [ -s "$$f" ]; then rm "$$f"; fi; fi' \
+	bin/feature_tests.cov -d -t @wip -f html -o reports/features-wip-xreq.html
+# #	-\
+# #	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+# #	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
+# #	cucumber -t "@bootstrap" features/*.feature
+# 	-\
+# 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+# 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
+# 	cucumber -t "~@wip" -t "~@bootstrap" -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
+# 	-\
+# 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+# 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
+# 	cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature >/dev/null 2>&1
+# 	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
 	-$(RM) -f bin/xreq
-	$(MAKE) gcov-report
 	ln -s xreq.$(CONFIG) bin/xreq
+	lcov -q -c -d "obj/coverage" -t XReq -o "coverage/cuke/last.lcov.info"
+	$(MAKE) _gcov-gather-cucumber
+	$(MAKE) gcov-report
 
 _gcov-gather-cucumber:
 	lcov $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info

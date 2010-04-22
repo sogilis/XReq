@@ -382,6 +382,25 @@ package body Util.IO is
       end if;
    end Spawn;
 
+
+   procedure System         (Script        : in String;
+                             Output_Buffer : in out Unbounded_String;
+                             Return_Code   : out    Integer;
+                             Err_To_Out    : in     Boolean := True)
+   is
+      Arg0    : aliased constant String := "sh";
+      Arg1    : aliased String := "-c";
+      Arg2    : aliased String := Script;
+      Args    : constant Argument_List (1 .. 2)
+              := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
+      Success : Boolean;
+   begin
+      Spawn (Arg0, Args, Output_Buffer, Success, Return_Code, Err_To_Out);
+      if not Success then
+         raise Ada.IO_Exceptions.Name_Error with "could not execute shell";
+      end if;
+   end System;
+
    --------------
    --  GetEnv  --
    --------------

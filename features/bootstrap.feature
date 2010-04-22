@@ -13,6 +13,6 @@ Feature: Bootstrapping
     Then it should pass
     When I run xreq -m -x bootstrap_suite features/*.feature
     Then it should pass
-    When I run "features/tests/bootstrap_suite -t ~@bootstrap+~@wip -f html -o reports/features-xreq.html"
+    When I run "features/tests/bootstrap_suite -d -t ~@bootstrap+~@wip -f html -o reports/features-xreq.html"
     Then it should pass
     And "reports/features-xreq.html" should exist

@@ -158,7 +158,7 @@ Feature: HTML reports
     Then it should pass
     Given I am in "features/data/tests"
     Then "test_suite_fail" should exist
-    When I run "./test_suite_fail -f html -o report-fail.html"
+    When I run "./test_suite_fail -d -f html -o report-fail.html"
     Then it should fail
     And  "report-fail.html" should exist
     And  "report-fail.html" should contain
@@ -172,7 +172,7 @@ Feature: HTML reports
     Then it should pass
     Given I am in "features/data/tests"
     Then "test_suite_pass" should exist
-    When I run "./test_suite_pass -f html -o report-pass.html"
+    When I run "./test_suite_pass -d -f html -o report-pass.html"
     Then it should pass
     And  "report-pass.html" should exist
     And  "report-pass.html" should contain

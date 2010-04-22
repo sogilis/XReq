@@ -31,6 +31,7 @@ procedure Main is
    use String_Vectors;
 
    Logger     : Logger_Ptr := Logger_Ptr (New_Standard_Logger);
+   Logger2    : Logger_Ptr := Logger;
    Env        : Job_Environment;
    Job        : Job_Type;
    Quit       : Boolean := False;
@@ -56,6 +57,9 @@ procedure Main is
    J          : String_Vectors.Cursor;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
+   XREQ_BEFORE_MAKE : constant String := GetEnv ("XREQ_BEFORE_MAKE", "");
+   XREQ_BEFORE_MAKE_SILENT : constant String
+              := GetEnv ("XREQ_BEFORE_MAKE_SILENT", "");
 
 begin
 
@@ -222,6 +226,26 @@ begin
       end if;
 
    end loop;
+
+   if XREQ_BEFORE_MAKE /= "" then
+      if XREQ_BEFORE_MAKE_SILENT /= "" then
+         Logger2 := Null_Logger;
+      end if;
+      Logger2.New_Line;
+      Logger2.Put_Line ("--> Execute XREQ_BEFORE_MAKE: " & XREQ_BEFORE_MAKE);
+      declare
+         Buffer  : Unbounded_String;
+         Status  : Integer;
+      begin
+         System (XREQ_BEFORE_MAKE, Buffer, Status);
+         Logger2.Put (Buffer);
+         if Status = 0 then     Logger2.Put_Line ("--> Success");
+         else                   Logger2.Put_Line ("--> Failure:" & Status'Img);
+         end if;
+      end;
+      Logger2.New_Line;
+   end if;
+   Logger2 := Logger;
 
    if not Quit and Executable /= Null_Unbounded_String and not Partial then
 
