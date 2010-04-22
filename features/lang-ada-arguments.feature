@@ -3,11 +3,13 @@ Feature: Run steps with arguments (captures)
   As an step writer
   I want to be able to capture the matches of the regular expressions
 
-  @lang-Ada
   Background:
     Given xreq is in the PATH
     And   I am in an empty directory
-    And   a file "features/test.feature":
+
+  @lang-Ada
+  Scenario: Test concatenation using string captures
+    Given a file "features/test.feature":
       """
       Feature: test
         Scenario: A
@@ -43,9 +45,6 @@ Feature: Run steps with arguments (captures)
         end I_Get;
       end Steps;
       """
-
-  @lang-Ada
-  Scenario: Test concatenation using string captures
     When I run xreq -m -x suite features/test.feature
     Then it should pass
     When I run the test suite "./suite" in features/tests

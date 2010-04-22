@@ -14,6 +14,8 @@ package body XReq.Lang is
    begin
       if L = "ada" then
          return Lang_Ada;
+      elsif L = "c" then
+         return Lang_C;
       else
          raise Invalid_Language with "Unknown language " & Lang;
       end if;

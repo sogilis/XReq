@@ -78,6 +78,8 @@ package body XReq.Step_Definitions is
             Logger.Put_Line ("Load Ada steps in: " & Directory);
             XReq.Step_Definitions.Ada05.Parse_Directory
                (Steps, Logger, Directory, Fill_Steps);
+         when Lang_C =>
+            raise Not_Yet_Implemented;
       end case;
    end Load;
 
@@ -106,6 +108,8 @@ package body XReq.Step_Definitions is
          when Lang_Ada =>
             XReq.Step_Definitions.Ada05.Add_Steps
                (Steps, New_Steps, Step_Pkg, Directory, Logger);
+         when Lang_C =>
+            raise Not_Yet_Implemented;
       end case;
    end Add_Steps;
 

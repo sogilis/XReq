@@ -4,7 +4,7 @@ package XReq.Lang is
 
    Invalid_Language : exception;
 
-   type Language_Type is (Lang_Ada);
+   type Language_Type is (Lang_Ada, Lang_C);
 
    function Get_Language (Lang : in String) return Language_Type;
 
