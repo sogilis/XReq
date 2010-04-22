@@ -882,26 +882,48 @@ package body XReq.Generator.Ada05 is
                Next (I);
             end loop;
             if not Generated then
-               Log.Put_Line ("Delete: " &
-                             Compose (Out_Dir (Env), Simple_Name (Dir_Entry)));
-               Delete_File (Full_Name (Dir_Entry));
+               declare
+                  File     : constant String :=
+                             Compose (Out_Dir (Env), Simple_Name (Dir_Entry));
+                  File_O   : constant String :=
+                             File (File'First .. File'Last - 3) & "o";
+                  File_ALI : constant String :=
+                             File (File'First .. File'Last - 3) & "ali";
+               begin
+                  Log.Put_Line ("Delete: " & File);
+                  Delete_File (File);
+                  --  This is ugly as hell, but what can you do with Ada?
+                  begin
+                     Delete_File (File_O);
+                     Log.Put_Line ("Delete: " & File_O);
+                  exception
+                     when Name_Error => null;
+                  end;
+                  begin
+                     Delete_File (File_ALI);
+                     Log.Put_Line ("Delete: " & File_ALI);
+                  exception
+                     when Name_Error => null;
+                  end;
+               end;
             end if;
          end loop;
          End_Search (Results);
       end;
       if Make then
          declare
-            Arg1    : aliased String := "-f";
+            Arg1    : aliased String := "-m";
             Arg2    : aliased String := "-P" & Gpr_Name;
             Args    : constant Argument_List (1 .. 2)
                     := (Arg1'Unchecked_Access, Arg2'Unchecked_Access);
+--                     := (Arg2'Unchecked_Access, others => <>);
             Args2   : Argument_List_Access :=
                       Argument_String_To_List (GetEnv ("GNAT_FLAGS", ""));
             Buffer  : Unbounded_String;
             Success : Boolean;
             Code    : Integer;
          begin
-            Log.Put_Line ("Build: gnatmake -f -P" & Gpr_Name);
+            Log.Put_Line ("Build: gnatmake -m -P" & Gpr_Name);
             Spawn ("gnatmake", Args & Args2.all, Buffer, Success, Code);
             Free (Args2);
             Log.Put_Line (Buffer);
