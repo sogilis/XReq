@@ -75,7 +75,7 @@ Feature: Skip scenarios after a background error
       This step works BACKGROUND
           Given this step works with BACKGROUND
           And it fails
-            XREQLIB.ASSERTS.ERROR: Error message
+            XREQLIB.ASSERTS.ERROR: Assertion failed
           And this step works with BACKGROUND
 
         Scenario: Run a good step 1

@@ -27,11 +27,11 @@ Feature: ambiguous step definition error reporting
       Feature: Sample
 
         Scenario: Run an ambiguous step
-          Given this is ambiguous
+          Given this is ambiguous too
 
       """
 
-  Scenario:
+  Scenario: Ambiguity within the same step package
     When I run xreq features/data/tmp-ambiguous.feature
     Then it should fail
     And the output should contain
@@ -53,6 +53,7 @@ Feature: ambiguous step definition error reporting
 
       """
 
+  Scenario: Ambiguity within the same step package - Quiet mode
     When I run xreq -q features/data/tmp-ambiguous.feature
     Then it should fail
     And the output should contain
@@ -71,21 +72,22 @@ Feature: ambiguous step definition error reporting
 
       """
 
-  Scenario:
+  Scenario: Ambiguity in two different packages
     When I run xreq features/data/tmp-ambiguous2.feature
     Then it should fail
     And the output should contain
       """
       ERROR: Ambiguous match in features/data/tmp-ambiguous2.feature:4 for:
-        Given this is ambiguous
+        Given this is ambiguous too
 
       """
 
+  Scenario: Ambiguity in two different packages - Quiet mode
     When I run xreq -q features/data/tmp-ambiguous2.feature
     Then it should fail
     And the output should contain
       """
-      features/data/tmp-ambiguous2.feature:4: ERROR: Ambiguous match for: Given this is ambiguous
+      features/data/tmp-ambiguous2.feature:4: ERROR: Ambiguous match for: Given this is ambiguous too
 
       """
 

@@ -32,7 +32,7 @@ Feature: Tags
         @tagB
         Background:
           Given this step doesn't work
-            XREQLIB.ASSERTS.ERROR: Error message
+            XREQLIB.ASSERTS.ERROR: Assertion failed
 
         @tag1
         @tag2
@@ -86,7 +86,7 @@ Feature: Tags
         @tagC
         Background:
           Given this step doesn't work
-            XREQLIB.ASSERTS.ERROR: Error message
+            XREQLIB.ASSERTS.ERROR: Assertion failed
 
         @tag1
         @tag2

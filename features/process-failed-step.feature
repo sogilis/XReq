@@ -36,7 +36,7 @@ Feature: Error handling in steps
 
         Scenario: Run a bad step
           Given this step doesn't work
-            XREQLIB.ASSERTS.ERROR: Error message
+            XREQLIB.ASSERTS.ERROR: Assertion failed
           And this step works
 
         Scenario: Run a good step

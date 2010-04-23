@@ -657,17 +657,15 @@ package body XReq.Step_Definitions.Ada05 is
                Matched  : Match_Array (0 .. Paren_Count (Step.Pattern_R.all));
             begin
 --                Put_Line ("XReq.Steps.Ada.Find: Match """ &
---                          To_String (Stanza.Stanza) & """ against |" &
+--                          Stanza.To_String & """ against |" &
 --                          To_String (Step.Pattern_S) & "|");
                Match (Step.Pattern_R.all, Stanza.Stanza, Matched);
                if Matched (0) /= No_Match then
                   if Result.Match then
                      raise Ambiguous_Match;
                   end if;
---                   Put_Line ("Matched (0) = " &
---                             Slice (Stanza.Stanza,
---                                    Matched (0).First,
---                                    Matched (0).Last));
+--                   Put_Line ("Matched (0) = " & Stanza.Stanza
+--                               (Matched (0).First .. Matched (0).Last));
                   Result.Proc_Name := Step.Proc_Name;
                   Result.Position  := Step.Position;
                   Result.Match     := True;

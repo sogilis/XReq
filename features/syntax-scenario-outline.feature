@@ -94,7 +94,7 @@ Feature: Scenario Outlines
       """
 
   Scenario: Failing Scenario Outline
-    Given a file "features/data/tmp-outline.feature":
+    Given a file "features/data/tmp-outline2.feature":
       """
       Feature: eating
 
@@ -111,11 +111,18 @@ Feature: Scenario Outlines
 
       """
 
-    # TODO: the step with NaN shouldn't be implemented by default and we should
-    # check an error in the output from XReq. Just like in older versions of
-    # this feature.
+    When I run xreq -m -x failing_suite features/data/tmp-outline2.feature
+    Then it should fail
+    And the output should contain
+      """
+      ERROR: Missing step definition in features/data/tmp-outline2.feature:7 for:
+        Then I should have NaN cucumbers
+      You can implement this step by adding on your step definition file:
+        --  @then ^I should have NaN cucumbers$
+        --  @todo
+      """
 
-    When I run xreq -m -x failing_suite features/data/tmp-outline.feature
+    When I run xreq -m -x failing_suite -s features/data/step_definitions -s features/data/step_definitions2 features/data/tmp-outline2.feature
     Then it should pass
 
     When I run the test suite "./failing_suite -d -f html -o report.html" in features/data/tests

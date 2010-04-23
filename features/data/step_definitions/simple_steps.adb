@@ -29,7 +29,7 @@ package body Simple_Steps is
    procedure Given_this_step_doesn_t_work (Args : in out Arg_Type) is
       pragma Unreferenced (Args);
    begin
-      Assert (False, "Error message");
+      Assert (False);
    end Given_this_step_doesn_t_work;
 
    procedure Given_this_fails_periodically (Args : in out Arg_Type) is

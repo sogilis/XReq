@@ -33,7 +33,7 @@ Feature: debug mode for test suites
         Scenario: A
           Given this step works
           And this step doesn't work
-            XREQLIB.ASSERTS.ERROR: Error message
+            XREQLIB.ASSERTS.ERROR: Assertion failed
           And this step works with BAR
 
         Scenario: B

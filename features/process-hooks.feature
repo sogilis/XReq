@@ -8,7 +8,7 @@ Feature: Hooks in XReq
     And I am in the xreq directory
 
   Scenario: XREQ_BEFORE_MAKE: Run a command that succeed
-    When I run "XREQ_BEFORE_MAKE=true xreq -m -x suite features/data/simplest.feature"
+    When I run "XREQ_BEFORE_MAKE_SILENT= XREQ_BEFORE_MAKE=true xreq -m -x suite features/data/simplest.feature"
     Then it should pass
     And the output should contain
       """

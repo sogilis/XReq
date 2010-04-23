@@ -4,8 +4,8 @@ use  XReqLib.General;
 package Simple_Steps is
 
    --  @given ^this( step)? is ambiguous$
-   --  @given ^this( step)? is ambiguous( too)?$
-   --  @given ^this( step)? is( too)? ambiguous.*$
+   --  @given ^this( step)? is( too)? ambiguous$
+   --  @given ^this( step)? is ambiguous too$
 
    --  @given ^this is ignored$
    --  @then  ^do nothing$
