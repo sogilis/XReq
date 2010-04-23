@@ -18,7 +18,7 @@ Feature: xreq commandline
     Load C steps in: features/data/step_definitions
     Compile: features/data/simplest.feature
     Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.h:5" procedure Given_this_step_works
-    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.h:5" procedure ≠Given_this_step_works
+    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.h:5" procedure Given_this_step_works
 
 
     """

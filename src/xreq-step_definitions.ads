@@ -3,6 +3,7 @@
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
+with GNAT.Regpat;
 with Util.IO;
 with Util.Strings;
 with XReqLib;
@@ -41,12 +42,7 @@ package XReq.Step_Definitions is
    --  Step_File_Type  --
    ----------------------
 
-   type Step_File_Type is abstract tagged
-      record
-         File_Name : Unbounded_String;
-      end record;
-      --  I would like this private but I can't
-      --  premature use of type with private component
+   type Step_File_Type is abstract tagged private;
    type Step_File_Ptr  is access all Step_File_Type'Class;
 
    package Step_Definition_Vectors is
@@ -55,8 +51,7 @@ package XReq.Step_Definitions is
    Unparsed_Step : exception;
 
    function  File_Name (S       : in     Step_File_Type) return String;
-   function  Parsed    (S       : in     Step_File_Type)
-                                  return Boolean is abstract;
+   function  Parsed    (S       : in     Step_File_Type) return Boolean;
    procedure Parse     (S       : in out Step_File_Type;
                         Logger  : in     Logger_Ptr) is abstract;
 
@@ -67,17 +62,15 @@ package XReq.Step_Definitions is
                         Stanza  : in  Step_Type) return String;
    function  Find      (S       : in  Step_File_Type;
                         Stanza  : in  Step_Type)
-                        return Step_Match_Type is abstract;
+                        return Step_Match_Type;
    procedure Find      (S       : in  Step_File_Type;
                         Stanza  : in  Step_Type;
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean);
-   procedure Finalize  (S       : in out Step_File_Type)  --  GCOV_IGNORE
-                        is null;
+   procedure Finalize  (S       : in out Step_File_Type);
 
-   procedure Free is new Ada.Unchecked_Deallocation
-      (Step_File_Type'Class, Step_File_Ptr);
+   procedure Free      (S : in out Step_File_Ptr);
 
 
    ------------------
@@ -118,5 +111,33 @@ package XReq.Step_Definitions is
                         Found      : out Boolean);
 
    procedure Free      (Steps      : in out Step_Definitions_Type);
+
+private
+
+   type Pattern_Matcher_Ptr is access all GNAT.Regpat.Pattern_Matcher;
+
+   procedure Free is new Ada.Unchecked_Deallocation
+      (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
+
+   type Step_Definition_Type is
+      record
+         Prefix    : Step_Kind;
+         Pattern_R : Pattern_Matcher_Ptr;
+         Pattern_S : Unbounded_String;
+         Proc_Name : Unbounded_String;
+         Position  : Position_Type;
+      end record;
+
+   package Step_Container is new
+      Ada.Containers.Vectors (Natural, Step_Definition_Type);
+
+   procedure Finalize (Steps : in out Step_Container.Vector);
+
+   type Step_File_Type is abstract tagged
+      record
+         Parsed     : Boolean := False;
+         File_Name  : Unbounded_String;
+         Steps      : Step_Container.Vector;
+      end record;
 
 end XReq.Step_Definitions;
