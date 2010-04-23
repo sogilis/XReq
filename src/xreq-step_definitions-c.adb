@@ -1,7 +1,13 @@
 
 with Ada.Directories;
+with Ada.Text_IO;
+with Ada.Strings;
+with GNAT.Regpat;
 
 use Ada.Directories;
+use Ada.Text_IO;
+use Ada.Strings;
+use GNAT.Regpat;
 
 package body XReq.Step_definitions.C is
 
@@ -52,10 +58,111 @@ package body XReq.Step_definitions.C is
    procedure Parse     (S          : in out C_Step_File_Type;
                         Logger     : in     Logger_Ptr)
    is
-      pragma Unreferenced (Logger);
+      type Found_Type is (Found_None, Found_TODO, Found_Step, Found_Regexp);
+      use Step_Container;
+      Tokens        : constant String_List
+                    := (To_Unbounded_String ("XREQ_GIVEN"),
+                        To_Unbounded_String ("XREQ_WHEN"),
+                        To_Unbounded_String ("XREQ_THEN"),
+                        To_Unbounded_String ("XREQ_STEP_TODO"),
+                        To_Unbounded_String ("XREQ_STEP"));
+      File          : File_Type;
+      Position      : Position_Type;
+      Line_S        : Unbounded_String;
+      Idx_Next      : Natural;
+      Idx_Tk        : Natural;
+      Idx, Idx2     : Natural;
+      Prefix        : Step_Kind;
+      Found         : Found_Type;
+      Pattern       : Unbounded_String;
+      Current_Steps : Step_Container.Vector;
+      I             : Step_Container.Cursor;
+      Current_Step  : Step_Definition_Type;
+      Procedure_S   : Unbounded_String;
    begin
+      Finalize (S.Steps);
+      Position.File := S.File_Name;
+      Open (File, In_File, To_String (S.File_Name));
+      while not End_Of_File (File) loop
+         --
+         --  Read Line
+         --
+         Line_S := Get_Whole_Line (File);
+         Position.Line := Position.Line + 1;
+
+         --
+         --  Read Token
+         --
+         Find_Token (To_String (Line_S), Tokens, Idx_Next, Idx_Tk);
+         case Idx_Tk is
+            when 1 =>      Prefix := Step_Given; Found := Found_Regexp;
+            when 2 =>      Prefix := Step_When;  Found := Found_Regexp;
+            when 3 =>      Prefix := Step_Then;  Found := Found_Regexp;
+            when 4 =>      Found := Found_TODO;
+            when 5 =>      Found := Found_Step;
+            when others => Found := Found_None;
+         end case;
+
+         --
+         --  XREQ_GIVEN, XREQ_WHEN, XREQ_THEN
+         --
+         if Found = Found_Regexp then
+            Idx  := Index (Line_S, "(""", Idx_Tk);
+            Idx2 := Index (Line_S, """)", Backward);
+            if Idx /= 0  and Idx2 /= 0 then
+               Pattern := To_Unbounded_String
+                 (Decode_Python (Slice (Line_S, Idx + 2, Idx2 - 1)));
+               Current_Step := Step_Definition_Type'(
+                  Prefix    => Prefix,
+                  --  TODO: free memory
+                  Pattern_R => new Pattern_Matcher'(
+                               Compile (To_String (Pattern))),
+                  Pattern_S => Pattern,
+                  Position  => Position,
+                  others    => <>);
+               Append (Current_Steps, Current_Step);
+            else
+               Logger.Put_Line
+                 ("WARNING: Syntax error in " & To_String (Position));
+            end if;
+
+         --
+         --  XREQ_STEP
+         --
+         elsif Found = Found_Step then
+            Idx  := Index (Line_S, "(", Idx_Tk);
+            Idx2 := Index (Line_S, ")", Idx2);
+            if Idx /= 0  and Idx2 /= 0 then
+               Procedure_S := Unbounded_Slice (Line_S, Idx + 1, Idx2 - 1);
+               I := First (Current_Steps);
+               while Has_Element (I) loop
+                  Current_Step := Element (I);
+                  Current_Step.Proc_Name := Procedure_S;
+                  S.Steps.Append (Current_Step);
+                  Next (I);
+               end loop;
+               Clear (Current_Steps);
+            else
+               Logger.Put_Line
+                 ("WARNING: Syntax error in " & To_String (Position));
+            end if;
+
+         --
+         --  XREQ_STEP_TODO
+         --
+         elsif Found = Found_TODO then
+            I := First (Current_Steps);
+            while Has_Element (I) loop
+               Current_Step := Element (I);
+               Current_Step.Proc_Name := Null_Unbounded_String;
+               S.Steps.Append (Current_Step);
+               Next (I);
+            end loop;
+            Clear (Current_Steps);
+         end if;
+      end loop;
+      Close (File);
       S.Parsed := True;
-      raise Not_Yet_Implemented;
    end Parse;
 
 
