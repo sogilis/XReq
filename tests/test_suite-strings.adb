@@ -20,6 +20,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_To_Identifier);
       Ret.Add_Test (new Test_Buffer);
       Ret.Add_Test (new Test_Ada_string);
+      Ret.Add_Test (new Test_C_String);
       Ret.Add_Test (new Test_Decode_Python);
       Ret.Add_Test (new Test_Decode_String);
       Ret.Add_Test (new Test_Relative_Path);
@@ -200,6 +201,39 @@ package body Test_Suite.Strings is
       B.Put (To_Unbounded_String ("titi"));
       T.Assert (B.Value = "   tata" & B.CRLF & "titi",
               "(UnIndent (3); Put) not OK");
+
+   end Run;
+
+   --  Test_C_String  ------------------------------------------------------
+
+   function  Name (T : in Test_C_String) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.C_String");
+   end Name;
+
+   procedure Run (T : in out Test_C_String) is
+      Test1 : constant String := "This ""is"" a test";
+      Res1  : constant String := """This \""is\"" a test""";
+
+      Test2 : constant String := "This ""is"" a test" & ASCII.LF;
+      Res2  : constant String := """This \""is\"" a test\012""";
+
+      Test3 : constant String := "This ""is"" a test" & ASCII.LF & "nl";
+      Res3  : constant String := """This \""is\"" a test\012nl""";
+   begin
+
+      T.Assert (C_String (Test1) = Res1,
+              "Failed: " & Res1 & ASCII.LF &
+              "Got: " & C_String (Test1));
+
+      T.Assert (C_String (Test2) = Res2,
+              "Failed: " & Res2 & ASCII.LF &
+              "Got: " & C_String (Test2));
+
+      T.Assert (C_String (Test3) = Res3,
+              "Failed: " & Res3 & ASCII.LF &
+              "Got: " & C_String (Test3));
 
    end Run;
 

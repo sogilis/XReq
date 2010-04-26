@@ -53,19 +53,16 @@ package body XReq.Generator.Ada05 is
       Basename    : Unbounded_String;
       Pkgname     : constant String :=
                      "Feature_" & Base_Name (Feature_File (Job));
-      Generator   : Ada_Generator_Type := (
-                     Feature  => Job.Result,
-                     others   => <>);
    begin
+      Gen.Feature := Job.Result;
       Get_Unique_String (
-         Gen.Pool, To_Identifier (Pkgname),      Generator.Id_Pkgname);
+         Gen.Pool, To_Identifier (Pkgname),      Gen.Id_Pkgname);
       Get_Unique_String (
-         Gen.Pool, To_Identifier ("Background"), Generator.Fn_Backgnd);
+         Gen.Pool, To_Identifier ("Background"), Gen.Fn_Backgnd);
       Basename := To_Unbounded_String (Compose (Out_Dir (Env),
-                  To_Lower (To_String (Generator.Id_Pkgname))));
-      Generator.Ads_File := Basename & ".ads";
-      Generator.Adb_File := Basename & ".adb";
-      Gen := Generator;
+                  To_Lower (To_String (Gen.Id_Pkgname))));
+      Gen.Ads_File := Basename & ".ads";
+      Gen.Adb_File := Basename & ".adb";
    end Make;
 
    ----------------------

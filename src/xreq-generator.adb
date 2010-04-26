@@ -1,8 +1,8 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with XReq.Generator.Ada05;
+with XReq.Generator.C;
 with XReq.Lang;
-with XReqLib;
 
 use XReq.Lang;
 
@@ -19,7 +19,7 @@ package body XReq.Generator is
          when Lang_Ada =>
             G := new Ada05.Ada_Generator_Type;
          when Lang_C =>
-            raise XReqLib.Not_Yet_Implemented;
+            G := new C.C_Generator_Type;
       end case;
       G.Make (Job, Env);
       G.Generate (Log);
@@ -47,7 +47,7 @@ package body XReq.Generator is
          when Lang_Ada =>
             Ada05.Generate_Suite (Gens, Name, Env, Log, Make);
          when Lang_C =>
-            raise XReqLib.Not_Yet_Implemented;
+            C.Generate_Suite (Gens, Name, Env, Log, Make);
       end case;
    end Generate_Suite;
 

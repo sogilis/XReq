@@ -230,6 +230,40 @@ package body Util.Strings is
       return To_String (Buffer);
    end Ada_String;
 
+   ------------------
+   --  C_String  --
+   ------------------
+
+   function C_String    (Source : in String) return String is
+      use Ada.Strings;
+      Buffer    : Unbounded_String := To_Unbounded_String ("""");
+      C         : Character;
+      X, Y, Z   : Integer range 0 .. 9;
+      A         : Integer;
+   begin
+      for I in Source'Range loop
+         C := Source (I);
+         case C is
+            when '"' =>
+               Append (Buffer, "\""");
+            when Character'Val (32) .. Character'Val (33)  |
+                 Character'Val (35) .. Character'Val (126) =>
+               Append (Buffer, C);
+            when others =>
+               A := Character'Pos (C);
+               X := A / 8#100#;
+               A := A - 8#100# * X;
+               Y := A / 8#10#;
+               Z := A - 8#10# * Y;
+               Append (Buffer, "\" & Trim (X'Img, Left) & Trim (Y'Img, Left) &
+                       Trim (Z'Img, Left));
+         end case;
+      end loop;
+      Append (Buffer, """");
+      return To_String (Buffer);
+   end C_String;
+
+
    ---------------------
    --  Decode_Python  --
    ---------------------

@@ -16,6 +16,7 @@ package Test_Suite.Strings is
    type Test_To_Identifier is new Test_Case_Type with null record;
    type Test_Buffer is new Test_Case_Type with null record;
    type Test_Ada_string is new Test_Case_Type with null record;
+   type Test_C_String is new Test_Case_Type with null record;
    type Test_Decode_Python is new Test_Case_Type with null record;
    type Test_Decode_String is new Test_Case_Type with null record;
    type Test_Relative_Path is new Test_Case_Type with null record;
@@ -46,6 +47,10 @@ package Test_Suite.Strings is
    --  Operation on Test_Ada_string
    function  Name (T : in     Test_Ada_string) return String;
    procedure Run  (T : in out Test_Ada_string);
+
+   --  Operation on Test_C_String
+   function  Name (T : in     Test_C_String) return String;
+   procedure Run  (T : in out Test_C_String);
 
    --  Operation on Test_Decode_Python
    function  Name (T : in     Test_Decode_Python) return String;
