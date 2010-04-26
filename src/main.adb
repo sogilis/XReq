@@ -41,6 +41,7 @@ procedure Main is
               "q -quiet -fill-steps-in=";
    Arg        : Unbounded_String;
    Step_Dir   : String_Vector;
+   Lang       : Unbounded_String;
    Out_Dir    : Unbounded_String;
    Language   : Language_Type := Language_Type'First;
    Executable : Unbounded_String;
@@ -57,6 +58,7 @@ procedure Main is
    J          : String_Vectors.Cursor;
    Args       : array (1 .. Argument_Count + 1) of Unbounded_String;
    Args_Last  : Natural := 0;
+   XREQ_LANG        : constant String := GetEnv ("XREQ_LANG", "");
    XREQ_BEFORE_MAKE : constant String := GetEnv ("XREQ_BEFORE_MAKE", "");
    XREQ_BEFORE_MAKE_SILENT : constant String
               := GetEnv ("XREQ_BEFORE_MAKE_SILENT", "");
@@ -66,6 +68,11 @@ begin
    -------------------
    --  Get Options  --
    -------------------
+
+   if XREQ_LANG /= "" then
+      Lang := To_Unbounded_String (XREQ_LANG);
+      Language := Get_Language (XREQ_LANG);
+   end if;
 
    Getopt_Loop :
    while Getopt (Options) /= ASCII.NUL loop
@@ -122,6 +129,7 @@ begin
          Out_Dir  := To_Unbounded_String (Parameter);
 
       elsif Full_Switch = "l" or Full_Switch = "-lang" then
+         Lang := To_Unbounded_String (Parameter);
          Language := Get_Language (Parameter);
 
       else  --  Never happen unless a bug in Getopt     --  GCOV_IGNORE
@@ -300,7 +308,7 @@ exception
 
    when Invalid_Language =>
       Free (Logger);
-      Put_Line (Standard_Error, "Unknown language " & Parameter);
+      Put_Line (Standard_Error, "Unknown language " & To_String (Lang));
       XReq.CLI.Help;
       Set_Exit_Status (Failure);
 

@@ -45,7 +45,15 @@ Feature: xreq commandline
       """
 
   Scenario: Specify a wrong language
-    When I run xreq --lang toto tests/features/simplest.feature
+    When I run xreq --lang toto features/data/simplest.feature
+    Then it should fail
+    And the output should contain
+      """
+      Unknown language toto
+      """
+
+  Scenario: Specify a wrong language (environment variable)
+    When I run "XREQ_LANG=toto xreq features/data/simplest.feature"
     Then it should fail
     And the output should contain
       """
