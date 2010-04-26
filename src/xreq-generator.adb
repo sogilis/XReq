@@ -1,6 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
 with XReq.Generator.Ada05;
+with XReq.Lang;
+with XReqLib;
+
+use XReq.Lang;
 
 package body XReq.Generator is
 
@@ -9,12 +13,17 @@ package body XReq.Generator is
                        Log : in  Logger_Ptr;
                        Gen : out Generator_Ptr)
    is
-      Ada_Gen : constant Ada05.Ada_Generator_Ptr
-              := new Ada05.Ada_Generator_Type;
+      G : Generator_Ptr;
    begin
-      Ada_Gen.Make (Job, Env);
-      Ada_Gen.Generate (Log);
-      Gen := Generator_Ptr (Ada_Gen);
+      case Env.Language is
+         when Lang_Ada =>
+            G := new Ada05.Ada_Generator_Type;
+         when Lang_C =>
+            raise XReqLib.Not_Yet_Implemented;
+      end case;
+      G.Make (Job, Env);
+      G.Generate (Log);
+      Gen := G;
    end Generate;
 
    procedure Generate  (Job : in  Job_Type;
@@ -34,7 +43,12 @@ package body XReq.Generator is
                              Make : in Boolean := False)
    is
    begin
-      Ada05.Generate_Suite (Gens, Name, Env, Log, Make);
+      case Env.Language is
+         when Lang_Ada =>
+            Ada05.Generate_Suite (Gens, Name, Env, Log, Make);
+         when Lang_C =>
+            raise XReqLib.Not_Yet_Implemented;
+      end case;
    end Generate_Suite;
 
 end XReq.Generator;
