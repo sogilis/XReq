@@ -8,6 +8,11 @@ Given /^xreq is in the PATH$/ do
   else
     ENV['ADA_INCLUDE_PATH'] = $xreq_dir + ":" + $xreq_dir + "/src/lib";
   end
+  if ENV['C_INCLUDE_PATH'] then
+    ENV['C_INCLUDE_PATH'] = $xreq_dir + "/src/lib" + ":" + ENV['C_INCLUDE_PATH'];
+  else
+    ENV['C_INCLUDE_PATH'] = $xreq_dir + "/src/lib";
+  end
   if ENV['GPR_PROJECT_PATH'] then
     ENV['GPR_PROJECT_PATH'] = $xreq_dir + ":" + ENV['GPR_PROJECT_PATH'];
   else

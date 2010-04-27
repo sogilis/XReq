@@ -79,8 +79,14 @@ package body Steps is
       else
          ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib");
       end if;
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) &
-                  "/src/common:" & ENV.Value ("ADA_INCLUDE_PATH"));
+      ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) &
+               "/src/common:" & ENV.Value ("ADA_INCLUDE_PATH"));
+      if ENV.Exists ("C_INCLUDE_PATH") then
+         ENV.Set ("C_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib:" &
+                  ENV.Value ("C_INCLUDE_PATH"));
+      else
+         ENV.Set ("C_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib");
+      end if;
    end XReq_in_path;
 
    procedure Given_the_sources_of_XReq_are_in_path (Args : in out Arg_Type)
