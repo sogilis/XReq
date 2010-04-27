@@ -18,6 +18,11 @@ Given /^xreq is in the PATH$/ do
   else
     ENV['GPR_PROJECT_PATH'] = $xreq_dir + ":";
   end
+  if ENV['LIBRARY_PATH'] then
+    ENV['LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":" + ENV['LIBRARY_PATH'];
+  else
+    ENV['LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":";
+  end
 end
 
 Given /^the sources of xreq are in ADA_INCLUDE_PATH$/ do

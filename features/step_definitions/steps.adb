@@ -87,6 +87,12 @@ package body Steps is
       else
          ENV.Set ("C_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib");
       end if;
+      if ENV.Exists ("LIBRARY_PATH") then
+         ENV.Set ("C_INCLUDE_PATH", To_String (XReq_Dir) & "/lib/debug:" &
+                  ENV.Value ("LIBRARY_PATH"));
+      else
+         ENV.Set ("LIBRARY_PATH", To_String (XReq_Dir) & "/lib/debug");
+      end if;
    end XReq_in_path;
 
    procedure Given_the_sources_of_XReq_are_in_path (Args : in out Arg_Type)
