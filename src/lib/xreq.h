@@ -22,6 +22,7 @@ struct XReq_Error;
 typedef struct XReq_Error XReq_Error;
 
 typedef unsigned short XReq_Status;
+typedef unsigned short XReq_Kind;
 typedef unsigned long  XReq_Duration;
 typedef const char*    XReq_Cstr;
 typedef short          XReq_Bool;
@@ -30,7 +31,7 @@ typedef XReq_Cstr*     XReq_Tags;
 void XReq_Time_Start (XReq_Duration*);
 void XReq_Time_Stop  (XReq_Duration*);
 
-void XReq_Format_Set_Num_Tests (XReq_Format*, long);
+void XReq_Format_Set_Num_Steps (XReq_Format*, long);
 void XReq_Format_List_Feature  (XReq_Format*, XReq_Cstr);
 void XReq_Format_List_Scenario (XReq_Format*, XReq_Cstr, XReq_Cstr, long);
 void XReq_Format_Free          (XReq_Format*);
@@ -60,7 +61,7 @@ void XReq_Format_Put_Scenario_Outline (XReq_Format*, long, XReq_Cstr, XReq_Cstr,
 void XReq_Format_Stop_Scenario        (XReq_Format*);
 
 void XReq_Format_Start_Step (XReq_Format*);
-void XReq_Format_Put_Step   (XReq_Format*, XReq_Cstr, XReq_Cstr, XReq_Args*, XReq_Status);
+void XReq_Format_Put_Step   (XReq_Format*, XReq_Kind, XReq_Cstr, XReq_Cstr, XReq_Args*, XReq_Status);
 void XReq_Format_Put_Error  (XReq_Format*, XReq_Error*);
 void XReq_Format_Stop_Step  (XReq_Format*);
 

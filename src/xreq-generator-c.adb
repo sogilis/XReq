@@ -731,7 +731,7 @@ package body XReq.Generator.C is
                                    " (format, cond, report, 0, 1);");
          Next (I);
       end loop;
-      Body_B.Put_Line    ("XReq_Format_Set_Num_Tests (format, " &
+      Body_B.Put_Line    ("XReq_Format_Set_Num_Steps (format, " &
                           "XReq_Report_get_num_steps (report));");
       Body_B.Put_Line    ("/* Run Steps */");
       I := First (Gens);

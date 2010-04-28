@@ -18,7 +18,7 @@ package XReqLib.C_Interface is
    ---  struct XReq_Format;
    ---  typedef struct XReq_Format XReq_Format;
    subtype XReq_Format     is XReqLib.Format.Format_Type;
-   type    XReq_Format_Ptr is access all XReq_Format;
+   subtype XReq_Format_Ptr is XReqLib.Format.Format_Ptr;
    ---
    ---  struct XReq_Conditional;
    ---  typedef struct XReq_Conditional XReq_Conditional;
@@ -46,11 +46,13 @@ package XReqLib.C_Interface is
    type    XReq_Error_Ptr is access all XReq_Error;
    ---
    ---  typedef unsigned short XReq_Status;
+   ---  typedef unsigned short XReq_Kind;
    ---  typedef unsigned long  XReq_Duration;
    ---  typedef const char*    XReq_Cstr;
    ---  typedef short          XReq_Bool;
    ---  typedef XReq_Cstr*     XReq_Tags;
    type XReq_Status       is new unsigned_short;
+   type XReq_Kind         is new unsigned_short;
    type XReq_Duration     is new unsigned_long;
    type XReq_Duration_Ptr is access all XReq_Duration;
    type XReq_Cstr         is new chars_ptr;
@@ -62,12 +64,12 @@ package XReqLib.C_Interface is
    procedure XReq_Time_Start (Duration : in XReq_Duration_Ptr);
    procedure XReq_Time_Stop  (Duration : in XReq_Duration_Ptr);
    ---
-   ---  void XReq_Format_Set_Num_Tests (XReq_Format*, long);
+   ---  void XReq_Format_Set_Num_Steps (XReq_Format*, long);
    ---  void XReq_Format_List_Feature  (XReq_Format*, XReq_Cstr);
    ---  void XReq_Format_List_Scenario (XReq_Format*, XReq_Cstr, XReq_Cstr,
    ---                                  long);
    ---  void XReq_Format_Free          (XReq_Format*);
-   procedure XReq_Format_Set_Num_Tests (Format : in XReq_Format_Ptr;
+   procedure XReq_Format_Set_Num_Steps (Format : in XReq_Format_Ptr;
                                         Num    : in long);
    procedure XReq_Format_List_Feature  (Format : in XReq_Format_Ptr;
                                         A      : in XReq_Cstr);
@@ -99,11 +101,13 @@ package XReqLib.C_Interface is
    ---  void XReq_Format_Put_Background       (XReq_Format*, XReq_Cstr,
    ---                                         XReq_Cstr, XReq_Tags);
    ---  void XReq_Format_Stop_Background      (XReq_Format*, XReq_Bool);
-   procedure XReq_Format_Start_Background     (Format : in XReq_Format_Ptr);
+   procedure XReq_Format_Start_Background     (Format : in XReq_Format_Ptr;
+                                               First  : in XReq_Bool);
    procedure XReq_Format_Put_Background       (Format : in XReq_Format_Ptr;
                                                A, B   : in XReq_Cstr;
                                                Tags   : in XReq_Tags);
-   procedure XReq_Format_Stop_Background      (Format : in XReq_Format_Ptr);
+   procedure XReq_Format_Stop_Background      (Format : in XReq_Format_Ptr;
+                                               First  : in XReq_Bool);
    ---
    ---  void XReq_Format_Enter_Outline        (XReq_Format*);
    ---  void XReq_Format_Start_Outline        (XReq_Format*);
@@ -117,7 +121,7 @@ package XReqLib.C_Interface is
                                                A, B   : in XReq_Cstr;
                                                Tags   : in XReq_Tags);
    procedure XReq_Format_Put_Outline_Report   (Format : in XReq_Format_Ptr;
-                                               Table  : in XReq_Table);
+                                               Table  : in XReq_Table_Ptr);
    procedure XReq_Format_Stop_Outline         (Format : in XReq_Format_Ptr);
    ---
    ---  void XReq_Format_Enter_Scenario       (XReq_Format*);
@@ -139,12 +143,13 @@ package XReqLib.C_Interface is
    procedure XReq_Format_Stop_Scenario        (Format : in XReq_Format_Ptr);
    ---
    ---  void XReq_Format_Start_Step (XReq_Format*);
-   ---  void XReq_Format_Put_Step   (XReq_Format*, XReq_Cstr, XReq_Cstr,
-   ---                               XReq_Args*, XReq_Status);
+   ---  void XReq_Format_Put_Step   (XReq_Format*, XReq_Kind, XReq_Cstr,
+   ---                               XReq_Cstr, XReq_Args*, XReq_Status);
    ---  void XReq_Format_Put_Error  (XReq_Format*, XReq_Error*);
    ---  void XReq_Format_Stop_Step  (XReq_Format*);
    procedure XReq_Format_Start_Step (Format : in XReq_Format_Ptr);
    procedure XReq_Format_Put_Step   (Format : in XReq_Format_Ptr;
+                                     Kind   : in XReq_Kind;
                                      A, B   : in XReq_Cstr;
                                      Args   : in XReq_Args_Ptr;
                                      Status : in XReq_Status);
@@ -163,7 +168,8 @@ package XReqLib.C_Interface is
                                              Tags : in XReq_Tags)
                                                return XReq_Bool;
    function  XReq_Conditional_Eval_Position (Cond : in XReq_Conditional_Ptr;
-                                             Pos  : in XReq_Cstr)
+                                             Pos  : in XReq_Cstr;
+                                             N    : in long)
                                                 return XReq_Bool;
    ---
    ---  XReq_Report* XReq_Report_New   ();
@@ -203,9 +209,9 @@ package XReqLib.C_Interface is
 
    pragma Export (C, XReq_Time_Start,            "XReq_Time_Start");
    pragma Export (C, XReq_Time_Stop,             "XReq_Time_Stop");
-   pragma Export (C, XReq_Format_Set_Num_Tests,  "XReq_Format_Set_Num_Tests");
+   pragma Export (C, XReq_Format_Set_Num_Steps,  "XReq_Format_Set_Num_Steps");
    pragma Export (C, XReq_Format_List_Feature,   "XReq_Format_List_Feature");
-   pragma Export (C, XReq_Format_List_Scenario,   "XReq_Format_List_Scenario");
+   pragma Export (C, XReq_Format_List_Scenario,  "XReq_Format_List_Scenario");
    pragma Export (C, XReq_Format_Free,           "XReq_Format_Free");
    pragma Export (C, XReq_Format_Start_Tests,    "XReq_Format_Start_Tests");
    pragma Export (C, XReq_Format_Put_Summary,    "XReq_Format_Put_Summary");
