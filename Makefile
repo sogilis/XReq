@@ -3,6 +3,25 @@
 GNATMAKE=gnatmake
 TEST_SUITES=test coverage
 CONFIG=dbg
+MODE=
+LIBTYPE=dynamic
+LIBEXT=
+
+ifeq ($(CONFIG),dbg)
+MODE=debug
+endif
+ifeq ($(CONFIG),rel)
+MODE=release
+endif
+ifeq ($(CONFIG),cov)
+MODE=coverage
+endif
+ifeq ($(LIBTYPE),static)
+LIBEXT=a
+endif
+ifeq ($(LIBTYPE),dynamic)
+LIBEXT=so
+endif
 
 GPRBUILD=gprbuild
 GPS=gps
@@ -24,7 +43,7 @@ DATADIR    = $(PREFIX)/share
 GPSDATADIR = $(PREFIX_GPS)/share/gps
 DOCDIR     = $(DATADIR)/doc/XReq
 
-all: bin gps-plugin tests doc
+all: bin lib gps-plugin tests doc
 	@echo
 	@echo "####################################################"
 	@echo "##                                                ##"
@@ -33,7 +52,8 @@ all: bin gps-plugin tests doc
 	@echo "####################################################"
 
 dir:
-	@-mkdir -p src/common
+	@-mkdir -p src/lib/static
+	@-mkdir -p src/lib/dynamic
 	@-mkdir -p lib
 	@-mkdir -p lib/gps
 	@-mkdir -p lib/release
@@ -51,14 +71,49 @@ dir:
 
 bin: bin/xreq
 
+lib: lib/$(MODE)/libxreqlib.$(LIBEXT)
+
+lib/debug/libxreqlib.so: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
+
+lib/release/libxreqlib.so: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
+
+lib/coverage/libxreqlib.so: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+
+lib/debug/libxreqlib.a: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+
+lib/release/libxreqlib.a: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=release
+
+lib/coverage/libxreqlib.a: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
+
 bin/xreq.cov: dir
-	$(GPRBUILD) -Pxreq.gpr -Xmode=coverage
+	# GPRBuild is a really broken piece of software. It seems that there is
+	# no way to tell the compiler to static-link a specific library. So, we
+	# have ro remove it beforehand to make sure we use the dynamic library.
+	-mv lib/coverage/libxreqlib.so lib/coverage/libxreqlib.so-
+	$(GPRBUILD) -Pxreq.gpr    -Xtype=static -Xmode=coverage
+	-mv lib/coverage/libxreqlib.so- lib/coverage/libxreqlib.so
 
 bin/xreq.rel: dir
-	$(GPRBUILD) -Pxreq.gpr -Xmode=release
+	# GPRBuild is a really broken piece of software. It seems that there is
+	# no way to tell the compiler to static-link a specific library. So, we
+	# have ro remove it beforehand to make sure we use the dynamic library.
+	-mv lib/release/libxreqlib.so lib/release/libxreqlib.so-
+	$(GPRBUILD) -Pxreq.gpr    -Xtype=static -Xmode=release
+	-mv lib/release/libxreqlib.so- lib/release/libxreqlib.so
 
 bin/xreq.dbg: dir
-	$(GPRBUILD) -Pxreq.gpr -Xmode=debug
+	# GPRBuild is a really broken piece of software. It seems that there is
+	# no way to tell the compiler to static-link a specific library. So, we
+	# have ro remove it beforehand to make sure we use the dynamic library.
+	-mv lib/debug/libxreqlib.so lib/debug/libxreqlib.so-
+	$(GPRBUILD) -Pxreq.gpr    -Xtype=static -Xmode=debug
+	-mv lib/debug/libxreqlib.so- lib/debug/libxreqlib.so
 
 bin/xreq: bin/xreq.$(CONFIG)
 	-rm -f bin/xreq
@@ -112,7 +167,7 @@ clean: clean-gcov
 	-$(RM) reports/features*.html
 	-$(RM) reports/features*.junit/*
 
-.PHONY: all dir bin gps-plugin tests bootstrap doc clean
+.PHONY: all dir lib bin gps-plugin tests bootstrap doc clean
 
 
 

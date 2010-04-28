@@ -2,6 +2,8 @@
 
 package body XReqLib.C_Interface is
 
+   pragma Warnings (off);
+
    procedure XReq_Time_Start (Duration : in XReq_Duration_Ptr) is
    begin
       null;
@@ -234,5 +236,7 @@ package body XReqLib.C_Interface is
    begin
       return 0;  --  TODO
    end XReq_Report_Status;
+
+   pragma Warnings (On);
 
 end XReqLib.C_Interface;

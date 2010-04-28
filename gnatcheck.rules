@@ -12,7 +12,7 @@
 +REXIT_Statements_With_No_Loop_Name
 +RExpanded_Loop_Exit_Names
 +RGOTO_Statements
-+RImplicit_IN_Mode_Parameters
+-- +RImplicit_IN_Mode_Parameters -- Nobody uses that anyway, difficult to share code
 -- +RLocal_Packages
 +RMisnamed_Identifiers
 -- +RName_Clashes

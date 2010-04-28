@@ -21,15 +21,6 @@ Feature: The simplest works
         Given this step works loudly
 
       """
-    And a file "features/data/tmp-empty.feature":
-      """
-      Feature: Empty
-
-        Scenario: Empty
-          # empty
-
-
-      """
 
   @lang-Ada
   Scenario: Test the generation of test packages
@@ -115,7 +106,7 @@ Feature: The simplest works
       """
 
   Scenario: Test an empty feature
-    When I run xreq -m -x empty_suite features/data/tmp-empty.feature
+    When I run xreq -m -x empty_suite features/data/empty.feature
     Then it should pass
     When I run the test suite "./empty_suite" in features/data/tests
     Then it should pass with

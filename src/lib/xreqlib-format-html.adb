@@ -3,7 +3,7 @@
 with Ada.Strings;
 with Ada.Strings.Fixed;
 --  with Ada.Exceptions.Traceback;
-with GNAT.Traceback.Symbolic;
+with XReqLib.Error_Handling;
 with XReqLib.Format_HTML_Template;
 
 use Ada.Strings;
@@ -443,7 +443,7 @@ package body XReqLib.Format.HTML is
                              Err        : in Exception_Occurrence)
    is
       --  use Ada.Exceptions.Traceback;
-      use GNAT.Traceback.Symbolic;
+      use XReqLib.Error_Handling;
       --  Trace : constant Tracebacks_Array := Tracebacks (Err);
       Error : constant String :=
          Exception_Name (Err) & ": " & Exception_Message (Err) & ASCII.LF;

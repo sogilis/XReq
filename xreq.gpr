@@ -9,11 +9,20 @@ project XReq is
    type Mode_Type is ("debug", "release", "coverage");
    Mode : Mode_Type := external ("mode", "debug");
 
+   type Lib_Type is ("static", "dynamic");
+   Lib_Kind : Lib_Type := external ("type", "static");
+
    for Languages   use ("Ada");
    for Main        use ("main");
    for Source_Dirs use ("src");
    for Object_Dir  use "obj/" & Mode;
    for Exec_Dir    use "bin";
+
+   Extra_Linker_Flags := ();
+--    case Lib_Kind is
+--       when "static" =>  Extra_Linker_Flags := ("-static");
+--       when "dynamic" => Extra_Linker_Flags := ();
+--    end case;
 
    package Builder is
       case Mode is
@@ -51,11 +60,11 @@ project XReq is
    package Linker is
       case Mode is
          when "debug" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug;
+            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug & Extra_Linker_Flags;
          when "coverage" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
+            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage & Extra_Linker_Flags;
          when others =>
-            null;
+            for Default_Switches ("Ada") use Extra_Linker_Flags;
       end case;
    end Linker;
 
