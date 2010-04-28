@@ -63,9 +63,17 @@ package XReqLib.C_Interface is
    procedure XReq_Time_Stop  (Duration : in XReq_Duration_Ptr);
    ---
    ---  void XReq_Format_Set_Num_Tests (XReq_Format*, long);
+   ---  void XReq_Format_List_Feature  (XReq_Format*, XReq_Cstr);
+   ---  void XReq_Format_List_Scenario (XReq_Format*, XReq_Cstr, XReq_Cstr,
+   ---                                  long);
    ---  void XReq_Format_Free          (XReq_Format*);
    procedure XReq_Format_Set_Num_Tests (Format : in XReq_Format_Ptr;
                                         Num    : in long);
+   procedure XReq_Format_List_Feature  (Format : in XReq_Format_Ptr;
+                                        A      : in XReq_Cstr);
+   procedure XReq_Format_List_Scenario (Format : in XReq_Format_Ptr;
+                                        A, B   : in XReq_Cstr;
+                                        C      : in long);
    procedure XReq_Format_Free          (Format : in XReq_Format_Ptr);
    ---
    ---  void XReq_Format_Start_Tests   (XReq_Format*);
@@ -181,10 +189,23 @@ package XReqLib.C_Interface is
    function  XReq_Report_Status        (Report : in XReq_Report_Ptr)
                                              return XReq_Bool;
 
+   --  void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**,
+   --                                   XReq_Bool*, XReq_Conditional**,
+   --                                   XReq_Bool*, XReq_Cstr);
+   procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
+                                        Format     : access XReq_Format_Ptr;
+                                        Continue   : access Boolean;
+                                        Cond : access XReq_Conditional_Ptr;
+                                        List_Mode  : access Boolean;
+                                        Name       : in     String);
+
+
 
    pragma Export (C, XReq_Time_Start,            "XReq_Time_Start");
    pragma Export (C, XReq_Time_Stop,             "XReq_Time_Stop");
    pragma Export (C, XReq_Format_Set_Num_Tests,  "XReq_Format_Set_Num_Tests");
+   pragma Export (C, XReq_Format_List_Feature,   "XReq_Format_List_Feature");
+   pragma Export (C, XReq_Format_List_Scenario,   "XReq_Format_List_Scenario");
    pragma Export (C, XReq_Format_Free,           "XReq_Format_Free");
    pragma Export (C, XReq_Format_Start_Tests,    "XReq_Format_Start_Tests");
    pragma Export (C, XReq_Format_Put_Summary,    "XReq_Format_Put_Summary");
@@ -229,6 +250,7 @@ package XReqLib.C_Interface is
    pragma Export (C, XReq_Report_num_steps_inc,  "XReq_Report_num_steps_inc");
    pragma Export (C, XReq_Report_get_num_steps,  "XReq_Report_get_num_steps");
    pragma Export (C, XReq_Report_Status,         "XReq_Report_Status");
+   pragma Export (C, XReq_CLI_Parse_Arguments,   "XReq_CLI_Parse_Arguments");
 
    pragma Warnings (On);
 

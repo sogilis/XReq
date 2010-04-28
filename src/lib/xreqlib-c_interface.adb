@@ -20,6 +20,19 @@ package body XReqLib.C_Interface is
    begin
       null;  --  TODO
    end XReq_Format_Set_Num_Tests;
+   procedure XReq_Format_List_Feature  (Format : in XReq_Format_Ptr;
+                                        A      : in XReq_Cstr)
+   is
+   begin
+      null;
+   end XReq_Format_List_Feature;
+   procedure XReq_Format_List_Scenario (Format : in XReq_Format_Ptr;
+                                        A, B   : in XReq_Cstr;
+                                        C      : in long)
+   is
+   begin
+      null;
+   end XReq_Format_List_Scenario;
    procedure XReq_Format_Free          (Format : in XReq_Format_Ptr) is
    begin
       null;  --  TODO
@@ -236,6 +249,17 @@ package body XReqLib.C_Interface is
    begin
       return 0;  --  TODO
    end XReq_Report_Status;
+
+   procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
+                                        Format     : access XReq_Format_Ptr;
+                                        Continue   : access Boolean;
+                                        Cond : access XReq_Conditional_Ptr;
+                                        List_Mode  : access Boolean;
+                                        Name       : in     String)
+   is
+   begin
+      null;
+   end XReq_CLI_Parse_Arguments;
 
    pragma Warnings (On);
 

@@ -31,6 +31,8 @@ void XReq_Time_Start (XReq_Duration*);
 void XReq_Time_Stop  (XReq_Duration*);
 
 void XReq_Format_Set_Num_Tests (XReq_Format*, long);
+void XReq_Format_List_Feature  (XReq_Format*, XReq_Cstr);
+void XReq_Format_List_Scenario (XReq_Format*, XReq_Cstr, XReq_Cstr, long);
 void XReq_Format_Free          (XReq_Format*);
 
 void XReq_Format_Start_Tests   (XReq_Format*);
@@ -78,5 +80,6 @@ void XReq_Report_num_steps_inc (XReq_Report*, long);
 long XReq_Report_get_num_steps (XReq_Report*);
 XReq_Bool XReq_Report_Status   (XReq_Report*);
 
+void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**, XReq_Bool*, XReq_Conditional**, XReq_Bool*, XReq_Cstr);
 
 #endif

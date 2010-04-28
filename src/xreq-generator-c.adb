@@ -625,12 +625,12 @@ package body XReq.Generator.C is
       Gen.C.New_Line;
       Gen.C.Put_Line ("if (is_list_mode) {");
       Gen.C.Indent (2);
-      Gen.C.Put_Line ("XReq_Format_list_feature (format, " &
+      Gen.C.Put_Line ("XReq_Format_List_Feature (format, " &
                       C_String (Gen.Feature.Name) & ");");
 
       for I in Gen.Feature.Scenario_First .. Gen.Feature.Scenario_Last loop
          E := Gen.Feature.Scenario_Element (I);
-         Gen.C.Put_Line ("XReq_Format_list_scenario (" &
+         Gen.C.Put_Line ("XReq_Format_List_Scenario (format, " &
                            C_String (E.Name) & ", " &
                            C_String (To_String (E.Position.File)) &
                            "," & Num'Img & ");");
@@ -641,7 +641,7 @@ package body XReq.Generator.C is
       Gen.C.Put_Line ("} else {");
       Gen.C.Indent (2);
       Gen.C.Put_Line ("if (!is_count_mode) {");
-      Gen.C.Put_Line ("  XReq_Format_start_feature();");
+      Gen.C.Put_Line ("  XReq_Format_Start_Feature(format);");
       Gen.C.Put_Line ("}");
 
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
@@ -650,7 +650,7 @@ package body XReq.Generator.C is
       end loop;
 
       Gen.C.Put_Line ("if (!is_count_mode) {");
-      Gen.C.Put_Line ("   XReq_Format_stop_feature();");
+      Gen.C.Put_Line ("   XReq_Format_Stop_Feature(format);");
       Gen.C.Put_Line ("}");
       Gen.C.UnIndent (2);
       Gen.C.Put_Line ("}");
@@ -716,8 +716,8 @@ package body XReq.Generator.C is
       Body_B.Put_Line ("XReq_Duration     time_delta = 0;");
       Body_B.Put_Line ("int               exit_code  = 0;");
       Body_B.New_Line;
-      Body_B.Put_Line ("Parse_Arguments (format, cont, cond, " &
-                                        "list_mode, self_name);");
+      Body_B.Put_Line ("XReq_CLI_Parse_Arguments (argc, argv, &format, " &
+                                   "&cont, &cond, &list_mode, self_name);");
       Body_B.Put_Line ("if (cont) {");
       Body_B.Indent (2);
       Body_B.Put_Line    ("XReq_Format_Start_Tests (format);");
@@ -731,7 +731,7 @@ package body XReq.Generator.C is
                                    " (format, cond, report, 0, 1);");
          Next (I);
       end loop;
-      Body_B.Put_Line    ("XReq_Format_Set_Num_Steps (format, " &
+      Body_B.Put_Line    ("XReq_Format_Set_Num_Tests (format, " &
                           "XReq_Report_get_num_steps (report));");
       Body_B.Put_Line    ("/* Run Steps */");
       I := First (Gens);
