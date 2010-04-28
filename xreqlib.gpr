@@ -11,11 +11,26 @@ library project XReqLib is
    type Lib_Type is ("static", "dynamic");
    Lib_Kind : Lib_Type := external ("type", "static");
 
-   for Library_Name     use "xreqlib";
-   for Source_Dirs      use ("src/lib", "src/common", "src/lib/" & Lib_Kind);
-   for Object_Dir       use "obj/" & Mode;
-   for Library_Dir      use "lib/" & Mode;
-   for Library_Kind     use Lib_Kind;
+   for Library_Name      use "xreqlib";
+   for Source_Dirs       use ("src/lib", "src/common", "src/lib/" & Lib_Kind);
+   for Object_Dir        use "obj/" & Mode;
+   for Library_Dir       use "lib/" & Mode;
+   for Library_Kind      use Lib_Kind;
+   for Library_Interface use ("XReqLib",
+                              "XReqLib.Report",
+                              "XReqLib.Args",
+                              "XReqLib.General",
+                              "XReqLib.Asserts",
+                              "XReqLib.C_Interface",
+                              "XReqLib.CLI",
+--                               "XReqLib.Util",
+                              "XReqLib.String_Tables",
+--                               "XReqLib.ANSI",
+--                               "XReqLib.Error_Handling",
+                              "XReqLib.Format",
+                              "XReqLib.Format.HTML",
+                              "XReqLib.Format.Text");
+
 
    package Compiler is
       case Mode is
