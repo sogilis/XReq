@@ -11,7 +11,6 @@ package XReq.Steps is
 
    subtype Step_Type is Steps_Pkg.Step_Type;
 
-
    function  Stanza_Given (S    : in String;
                            File : in String := "";
                            Line : in Natural := 0) return Step_Type;
@@ -25,4 +24,3 @@ package XReq.Steps is
    function Equals (Left, Right : in Step_Type) return Boolean;
 
 end XReq.Steps;
-

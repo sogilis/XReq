@@ -56,5 +56,4 @@ package body XReq.Steps is
       return Steps_Pkg."=" (L.all, R.all);
    end Equals;
 
-
 end XReq.Steps;

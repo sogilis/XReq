@@ -509,5 +509,4 @@ package body Util.Strings is
       return To_String (Buffer.Buffer);
    end Value;
 
-
 end Util.Strings;

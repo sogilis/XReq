@@ -182,7 +182,6 @@ package Util.IO is
    procedure Put_Always    (Log : in out Buffer_Logger_Type;
                             S   : in     String);
 
-
 private
 
 --    type Logger_Type is abstract tagged
