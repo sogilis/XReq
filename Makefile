@@ -432,7 +432,7 @@ help:
 	@echo
 	@echo "    all:            Build everything    [bin gps-plugin tests doc]"
 	@echo "    bin:            Build project       [bin/xreq]"
-	@echo "    gos-plugin:     Build GPS plugin    [lib/gps]"
+	@echo "    gps-plugin:     Build GPS plugin    [lib/gps]"
 	@echo "    tests:          Build tests         [bin/unit_tests]"
 	@echo "    doc:            Build documentation [README.html]"
 	@echo "    coverage:       Run coverage tests  [coverage/]"
