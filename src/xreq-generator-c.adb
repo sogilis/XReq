@@ -320,7 +320,7 @@ package body XReq.Generator.C is
       end if;
       S.C.Put_Line ("int         num_step = 0;");
       S.C.Put_Line ("int         fail     = stop;");
-      S.C.Put_Line ("XReq_Tags   tags     = {");
+      S.C.Put_Line ("XReq_Cstr   tags[]   = {");
       S.C.Indent (2);
       S.C.Put_Indent;
       for I in Scenario.Tag_First .. Scenario.Tag_Last loop
@@ -707,6 +707,7 @@ package body XReq.Generator.C is
       Body_B.Indent (2);
       Body_B.Put_Line ("#define           self_name    " &
                        C_String (Prc_Name));
+      Body_B.Put_Line ("xreqlibinit();");
       Body_B.Put_Line ("XReq_Bool         cont       = 0;");
       Body_B.Put_Line ("XReq_Report      *report     = XReq_Report_New();");
       Body_B.Put_Line ("XReq_Format      *format     = NULL;");
@@ -717,7 +718,7 @@ package body XReq.Generator.C is
       Body_B.Put_Line ("int               exit_code  = 0;");
       Body_B.New_Line;
       Body_B.Put_Line ("XReq_CLI_Parse_Arguments (argc, argv, &format, " &
-                                   "&cont, &cond, &list_mode, self_name);");
+                                   "&cont, cond, &list_mode, self_name);");
       Body_B.Put_Line ("if (cont) {");
       Body_B.Indent (2);
       Body_B.Put_Line    ("XReq_Format_Start_Tests (format);");
@@ -759,6 +760,7 @@ package body XReq.Generator.C is
       Body_B.Put_Line ("XReq_Format_Free (format);");
       Body_B.Put_Line ("XReq_Conditional_Free (cond);");
       Body_B.Put_Line ("XReq_Report_step_Free (report);");
+      Body_B.Put_Line ("xreqlibfinal();");
       Body_B.Put_Line ("return exit_code;");
       Body_B.Put_Line ("#undef self_name");
       Body_B.UnIndent (2);

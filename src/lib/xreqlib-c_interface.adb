@@ -23,14 +23,18 @@ package body XReqLib.C_Interface is
       use Ada.Containers;
       use XReqLib.Format;
       use String_Vectors;
+      function Convert is new Ada.Unchecked_Conversion (XReq_Tags, chars_ptr);
       Vec : String_Vector;
-      I   : size_t := Tags'First;
+      I   : size_t;
    begin
-      while Tags (I) /= Null_Ptr loop
-         Append (Vec, To_Unbounded_String (Value (Tags (I))));
-         I := I + 1;
-      end loop;
-      return Arr : Tag_Array_Type (1 .. Integer (Length (Vec)) + 1) do
+      if Convert (Tags) /= Null_Ptr then
+         I := Tags'First;
+         while Tags (I) /= Null_Ptr loop
+            Append (Vec, To_Unbounded_String (Value (Tags (I))));
+            I := I + 1;
+         end loop;
+      end if;
+      return Arr : Tag_Array_Type (1 .. Integer (Length (Vec))) do
          for J in Arr'Range loop
             Arr (J) := Element (Vec, J - 1);
          end loop;
@@ -357,13 +361,13 @@ package body XReqLib.C_Interface is
    is
       use GNAT.OS_Lib;
       use XReqLib.Format;
-      Args       : Argument_List_Access (1 .. Integer (argc));
+      Args       : Argument_List_Access (1 .. Integer (argc - 1));
       Res_Continue, Res_List_Mode : Boolean;
       Res_Format : Format_Ptr;
       Res_Cond   : Conditional_Type;
    begin
-      Args := new Argument_List (1 .. Integer (argc));
-      for I in 1 .. Integer (argc) loop
+      Args := new Argument_List (1 .. Integer (argc - 1));
+      for I in 1 .. Integer (argc - 1) loop
          Args.all (I) := new String'(Value (argv (size_t (I))));
       end loop;
       XReqLib.CLI.Parse_Arguments
