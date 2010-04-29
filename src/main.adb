@@ -77,25 +77,25 @@ begin
    Getopt_Loop :
    while Getopt (Options) /= ASCII.NUL loop
 
-      if Full_Switch = "h" or
-         Full_Switch = "help" or
+      if Full_Switch = "h" or else
+         Full_Switch = "help" or else
          Full_Switch = "-help"
       then
          XReq.CLI.Help;
          Quit := True;
          exit Getopt_Loop;
 
-      elsif Full_Switch = "k" or
+      elsif Full_Switch = "k" or else
          Full_Switch = "-keep-going"
       then
          Keep_Going := True;
 
-      elsif Full_Switch = "m" or
+      elsif Full_Switch = "m" or else
          Full_Switch = "-make"
       then
          Make := not Partial;
 
-      elsif Full_Switch = "q" or
+      elsif Full_Switch = "q" or else
          Full_Switch = "-quiet"
       then
          Logger.Set_Verbosity (-1);
@@ -117,18 +117,18 @@ begin
       elsif Full_Switch = "-step-matching" then
          Step_Match := True;
 
-      elsif Full_Switch = "x" or
+      elsif Full_Switch = "x" or else
          Full_Switch = "-executable"
       then
          Executable := To_Unbounded_String (Parameter);
 
-      elsif Full_Switch = "s" or Full_Switch = "-step" then
+      elsif Full_Switch = "s" or else Full_Switch = "-step" then
          Append (Step_Dir, To_Unbounded_String (Parameter));
 
-      elsif Full_Switch = "o" or Full_Switch = "-output" then
+      elsif Full_Switch = "o" or else Full_Switch = "-output" then
          Out_Dir  := To_Unbounded_String (Parameter);
 
-      elsif Full_Switch = "l" or Full_Switch = "-lang" then
+      elsif Full_Switch = "l" or else Full_Switch = "-lang" then
          Lang := To_Unbounded_String (Parameter);
          Language := Get_Language (Parameter);
 
