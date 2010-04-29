@@ -4,6 +4,8 @@ with Ada.Real_Time;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
+with GNAT.OS_Lib;
+with XReqLib.CLI;
 
 
 package body XReqLib.C_Interface is
@@ -260,7 +262,7 @@ package body XReqLib.C_Interface is
 
    function  XReq_Conditional_New               return XReq_Conditional_Ptr is
    begin
-      return new XReq_Conditional;
+      return new XReqLib.Format.Conditional_Type;
    end XReq_Conditional_New;
 
    procedure XReq_Conditional_Free          (Cond : in XReq_Conditional_Ptr) is
@@ -290,66 +292,91 @@ package body XReqLib.C_Interface is
 
    function  XReq_Report_New                 return XReq_Report_Ptr is
    begin
-      return null;  --  TODO
+      return new XReq_Report;
    end XReq_Report_New;
 
    procedure XReq_Report_step_Free     (Report : in XReq_Report_Ptr) is
+      procedure Dealloc is new Ada.Unchecked_Deallocation
+         (XReq_Report, XReq_Report_Ptr);
+      Ptr : XReq_Report_Ptr := Report;
    begin
-      null;  --  TODO
+      Dealloc (Ptr);
    end XReq_Report_step_Free;
 
    procedure XReq_Report_step_skip     (Report : in XReq_Report_Ptr) is
    begin
-      null;  --  TODO
+      Report.all.Count_Steps_Skipped := Report.all.Count_Steps_Skipped + 1;
    end XReq_Report_step_skip;
 
    procedure XReq_Report_step_pass     (Report : in XReq_Report_Ptr) is
    begin
-      null;  --  TODO
+      Report.all.Count_Steps_Passed := Report.all.Count_Steps_Passed + 1;
    end XReq_Report_step_pass;
 
    procedure XReq_Report_step_fail     (Report : in XReq_Report_Ptr) is
    begin
-      null;  --  TODO
+      Report.all.Count_Steps_Failed := Report.all.Count_Steps_Failed + 1;
    end XReq_Report_step_fail;
 
    procedure XReq_Report_scenario_pass (Report : in XReq_Report_Ptr) is
    begin
-      null;  --  TODO
+      Report.all.Count_Scenario_Passed := Report.all.Count_Scenario_Passed + 1;
    end XReq_Report_scenario_pass;
 
    procedure XReq_Report_scenario_fail (Report : in XReq_Report_Ptr) is
    begin
-      null;  --  TODO
+      Report.all.Count_Scenario_Failed := Report.all.Count_Scenario_Failed + 1;
    end XReq_Report_scenario_fail;
 
    procedure XReq_Report_num_steps_inc (Report : in XReq_Report_Ptr;
                                         N      : in long)
    is
    begin
-      null;  --  TODO
+      Report.all.Num_Steps := Report.all.Num_Steps + Integer (N);
    end XReq_Report_num_steps_inc;
-   procedure XReq_Report_get_num_steps (Report : in XReq_Report_Ptr) is
+
+   function XReq_Report_get_num_steps (Report : in XReq_Report_Ptr) return long
+   is
    begin
-      null;  --  TODO
+      return long (Report.all.Num_Steps);
    end XReq_Report_get_num_steps;
 
    function  XReq_Report_Status        (Report : in XReq_Report_Ptr)
                                              return XReq_Bool
    is
    begin
-      return 0;  --  TODO
+      return Convert (XReqLib.Report.Status (Report.all));
    end XReq_Report_Status;
 
    procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
                                         Format     : access XReq_Format_Ptr;
-                                        Continue   : access Boolean;
-                                        Cond : access XReq_Conditional_Ptr;
-                                        List_Mode  : access Boolean;
-                                        Name       : in     String)
+                                        Continue   : access XReq_Bool;
+                                        Cond       : in XReq_Conditional_Ptr;
+                                        List_Mode  : access XReq_Bool;
+                                        Name       : in     XReq_Cstr)
    is
+      use GNAT.OS_Lib;
+      use XReqLib.Format;
+      Args       : Argument_List_Access (1 .. Integer (argc));
+      Res_Continue, Res_List_Mode : Boolean;
+      Res_Format : Format_Ptr;
+      Res_Cond   : Conditional_Type;
    begin
-      null;
+      Args := new Argument_List (1 .. Integer (argc));
+      for I in 1 .. Integer (argc) loop
+         Args.all (I) := new String'(Value (argv (size_t (I))));
+      end loop;
+      XReqLib.CLI.Parse_Arguments
+        (Args      => Args,
+         Format    => Res_Format,
+         Continue  => Res_Continue,
+         Cond      => Res_Cond,
+         List_Mode => Res_List_Mode,
+         Name      => Value (Name));
+      Format.all    := Res_Format;
+      Continue.all  := Convert (Res_Continue);
+      Cond.all      := Res_Cond;
+      List_Mode.all := Convert (Res_List_Mode);
    end XReq_CLI_Parse_Arguments;
 
    pragma Warnings (On);

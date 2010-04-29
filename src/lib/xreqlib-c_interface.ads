@@ -191,7 +191,8 @@ package XReqLib.C_Interface is
    procedure XReq_Report_scenario_fail (Report : in XReq_Report_Ptr);
    procedure XReq_Report_num_steps_inc (Report : in XReq_Report_Ptr;
                                         N      : in long);
-   procedure XReq_Report_get_num_steps (Report : in XReq_Report_Ptr);
+   function  XReq_Report_get_num_steps (Report : in XReq_Report_Ptr)
+                                             return long;
    function  XReq_Report_Status        (Report : in XReq_Report_Ptr)
                                              return XReq_Bool;
 
@@ -200,10 +201,10 @@ package XReqLib.C_Interface is
    --                                   XReq_Bool*, XReq_Cstr);
    procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
                                         Format     : access XReq_Format_Ptr;
-                                        Continue   : access Boolean;
-                                        Cond : access XReq_Conditional_Ptr;
-                                        List_Mode  : access Boolean;
-                                        Name       : in     String);
+                                        Continue   : access XReq_Bool;
+                                        Cond       : in XReq_Conditional_Ptr;
+                                        List_Mode  : access XReq_Bool;
+                                        Name       : in     XReq_Cstr);
 
 
 

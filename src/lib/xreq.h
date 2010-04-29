@@ -81,6 +81,6 @@ void XReq_Report_num_steps_inc (XReq_Report*, long);
 long XReq_Report_get_num_steps (XReq_Report*);
 XReq_Bool XReq_Report_Status   (XReq_Report*);
 
-void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**, XReq_Bool*, XReq_Conditional**, XReq_Bool*, XReq_Cstr);
+void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**, XReq_Bool*, XReq_Conditional*, XReq_Bool*, XReq_Cstr);
 
 #endif
