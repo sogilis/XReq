@@ -82,38 +82,14 @@ lib/release/libxreqlib.so: dir
 lib/coverage/libxreqlib.so: dir
 	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
 
-lib/debug/libxreqlib.a: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=debug
-
-lib/release/libxreqlib.a: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=release
-
-lib/coverage/libxreqlib.a: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
-
 bin/xreq.cov: dir
-	# GPRBuild is a really broken piece of software. It seems that there is
-	# no way to tell the compiler to static-link a specific library. So, we
-	# have ro remove it beforehand to make sure we use the dynamic library.
-	-mv lib/coverage/libxreqlib.so lib/coverage/libxreqlib.so-
-	$(GPRBUILD) -Pxreq.gpr    -Xtype=static -Xmode=coverage
-	-mv lib/coverage/libxreqlib.so- lib/coverage/libxreqlib.so
+	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
 
 bin/xreq.rel: dir
-	# GPRBuild is a really broken piece of software. It seems that there is
-	# no way to tell the compiler to static-link a specific library. So, we
-	# have ro remove it beforehand to make sure we use the dynamic library.
-	-mv lib/release/libxreqlib.so lib/release/libxreqlib.so-
-	$(GPRBUILD) -Pxreq.gpr    -Xtype=static -Xmode=release
-	-mv lib/release/libxreqlib.so- lib/release/libxreqlib.so
+	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=release
 
 bin/xreq.dbg: dir
-	# GPRBuild is a really broken piece of software. It seems that there is
-	# no way to tell the compiler to static-link a specific library. So, we
-	# have ro remove it beforehand to make sure we use the dynamic library.
-	-mv lib/debug/libxreqlib.so lib/debug/libxreqlib.so-
-	$(GPRBUILD) -Pxreq.gpr    -Xtype=static -Xmode=debug
-	-mv lib/debug/libxreqlib.so- lib/debug/libxreqlib.so
+	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
 
 bin/xreq: bin/xreq.$(CONFIG)
 	-rm -f bin/xreq
