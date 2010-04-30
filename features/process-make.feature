@@ -18,7 +18,7 @@ Feature: Run gnatmake after compiling features
 
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario:
     When I run xreq -m -x suite features/data/tmp-simplest.feature
     Then it should pass
@@ -52,7 +52,7 @@ Feature: Run gnatmake after compiling features
 
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario:
     When I run "GNAT_FLAGS=--non-existing-flag xreq -m -x suite features/data/tmp-simplest.feature"
     Then it should fail

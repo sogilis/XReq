@@ -17,7 +17,7 @@ Feature: Auto fill in of steps definitions
           Then I should see "toto"
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Reporting of missing steps with Ada snippets
     When I run xreq features/data/tmp-test.feature
     Then it should fail

@@ -7,7 +7,7 @@ Feature: Run steps with arguments (captures)
     Given xreq is in the PATH
     And   I am in an empty directory
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Test concatenation using string captures
     Given a file "features/test.feature":
       """

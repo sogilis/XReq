@@ -22,7 +22,7 @@ Feature: The simplest works
 
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Test the generation of test packages
     When I run xreq --progress features/data/tmp-simplest.feature
     Then it should pass with
@@ -43,7 +43,7 @@ Feature: The simplest works
     Then it should pass
 
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Test the generation of the test suite
     When  I run xreq -m -x simplest_test features/data/tmp-simplest.feature
     Then  it should pass
@@ -73,7 +73,7 @@ Feature: The simplest works
 
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Test the generation of the test suite with a project file
     When  I run xreq -x suite features/data/tmp-simplest.feature
     Then  it should pass

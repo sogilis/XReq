@@ -7,7 +7,7 @@ Feature: xreq commandline
     Given xreq is in the PATH
     And   I am in the xreq directory
 
-  @lang-C
+  @lang @lang-C
   Scenario: Step matching only (--partial --step-matching)
     When I run xreq -x suite -lC --partial --step-matching features/data/simplest.feature
     Then it should pass with

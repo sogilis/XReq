@@ -17,7 +17,7 @@ Feature: Auto fill in of steps definitions
           Then I should see "toto"
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Executing @todo steps
     Given a file "features/step_definitions/steps.ads":
       """
@@ -42,7 +42,7 @@ Feature: Auto fill in of steps definitions
       XREQLIB.NOT_YET_IMPLEMENTED
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Filling steps
     Given a file "features/step_definitions/steps.ads":
       """
@@ -121,7 +121,7 @@ Feature: Auto fill in of steps definitions
       end Steps;
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Filling existing steps
     Given a file "features/step_definitions/steps.ads":
       """
@@ -180,7 +180,7 @@ Feature: Auto fill in of steps definitions
       end Steps;
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Filling new steps
     When I run xreq --fill-steps-in new_steps -x suite -m features/test.feature
     Then it should pass
@@ -251,7 +251,7 @@ Feature: Auto fill in of steps definitions
       """
 
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Filling new steps in an existing step package
     Given a file "features/step_definitions/a_step_package.ads":
       """
@@ -359,7 +359,7 @@ Feature: Auto fill in of steps definitions
 
       """
 
-  @lang-Ada
+  @lang @lang-Ada
   Scenario: Filling new steps in an existing step package containing @todo
     Given a file "features/step_definitions/steps.ads":
       """
