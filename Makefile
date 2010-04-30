@@ -264,20 +264,38 @@ _gcov-gather-cucumber:
 
 .PHONY: clean-gcov gcov-report _gcov-gather-cucumber coverage
 
-
-run-wip-cucumber: bin
+_cucumber_clean_rerun:
 	-$(RM) -f cucumber-rerun.txt
-	cucumber -w -t "@wip" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
 run-cucumber: bin
+	$(MAKE) run-cucumber-wip
+	$(MAKE) run-cucumber-ada
+	$(MAKE) run-cucumber-c
+
+run-cucumber-wip: bin _cucumber_clean_rerun
 	@echo
-	@echo "####################"
-	@echo "##  Run cucumber  ##"
-	@echo "####################"
+	@echo "#########################################"
+	@echo "##  Run cucumber for work in progress  ##"
+	@echo "#########################################"
+	cucumber -w -t "@wip" -f progress features/*.feature
+
+run-cucumber-c: bin _cucumber_clean_rerun
 	@echo
-	@$(MAKE) run-wip-cucumber
-	-$(RM) -f cucumber-rerun.txt
-	cucumber -t "~@wip" -t "~@bootstrap" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
+	@echo "##########################"
+	@echo "##  Run cucumber for C  ##"
+	@echo "##########################"
+	@echo
+	XREQ_LANG=C \
+	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
+
+run-cucumber-ada: bin _cucumber_clean_rerun
+	@echo
+	@echo "############################"
+	@echo "##  Run cucumber for Ada  ##"
+	@echo "############################"
+	@echo
+	XREQ_LANG=Ada \
+	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
 run-bootstrap: bin
 	cucumber -t "~@wip" -t "@bootstrap" features/*.feature
@@ -313,7 +331,7 @@ run-tests: tests bin
 	@echo
 	bin/unit_tests
 
-.PHONY: run-cucumber rerun-cucumber run-wip-cucumber run-tests
+.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-tests
 
 gnatcheck: dir
 	@echo

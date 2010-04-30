@@ -23,6 +23,11 @@ Given /^xreq is in the PATH$/ do
   else
     ENV['LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":";
   end
+  if ENV['LD_LIBRARY_PATH'] then
+    ENV['LD_LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":" + ENV['LD_LIBRARY_PATH'];
+  else
+    ENV['LD_LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":";
+  end
 end
 
 Given /^the sources of xreq are in ADA_INCLUDE_PATH$/ do
