@@ -3,19 +3,37 @@
 
 with "config";
 
-library project XReqLib is
+library project LibXReq is
 
    type Mode_Type is ("debug", "release", "coverage");
    Mode : Mode_Type := external ("mode", "debug");
 
-   type Lib_Type is ("dynamic", "static");
-   Lib_Kind : Lib_Type := external ("type", "static");
+   type Lib_Type is ("dynamic");  --  "static"
+   Lib_Kind : Lib_Type := external ("type", "dynamic");
+   --  Static libraries don't work stand alone (with elaboration). Some symbols
+   --  of the elaboration will appear twice making the linking impossible.
 
-   for Library_Name      use "xreqlib";
+   for Library_Name      use "xreq";
    for Source_Dirs       use ("src/lib", "src/common", "src/lib/" & Lib_Kind);
    for Object_Dir        use "obj/" & Mode;
    for Library_Dir       use "lib/" & Mode;
    for Library_Kind      use Lib_Kind;
+   for Library_Auto_Init use "true";
+   for Library_Interface use ("XReqLib",
+                              "XReqLib.Report",
+                              "XReqLib.Args",
+                              "XReqLib.String_Tables",
+                              "XReqLib.Tables",
+                              "XReqLib.General",
+                              "XReqLib.Asserts",
+                              "XReqLib.C_Interface",
+                              "XReqLib.CLI",
+                              "XReqLib.Util",
+                              "XReqLib.ANSI",
+                              "XReqLib.Error_Handling",
+                              "XReqLib.Format",
+                              "XReqLib.Format.HTML",
+                              "XReqLib.Format.Text");
 
    package Compiler is
       case Mode is
@@ -39,4 +57,4 @@ library project XReqLib is
       end case;
    end Binder;
 
-end XReqLib;
+end LibXReq;

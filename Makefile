@@ -71,7 +71,16 @@ dir:
 
 bin: bin/xreq
 
-lib: lib/$(MODE)/libxreqlib.$(LIBEXT)
+lib: lib/$(MODE)/libxreqlib.$(LIBEXT) lib/$(MODE)/libxreq.so
+
+lib/debug/libxreq.so: dir
+	$(GPRBUILD) -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
+
+lib/release/libxreq.so: dir
+	$(GPRBUILD) -Plibxreq.gpr -Xtype=dynamic -Xmode=release
+
+lib/coverage/libxreq.so: dir
+	$(GPRBUILD) -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
 
 lib/debug/libxreqlib.so: dir
 	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
@@ -81,6 +90,15 @@ lib/release/libxreqlib.so: dir
 
 lib/coverage/libxreqlib.so: dir
 	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+
+lib/debug/libxreqlib.a: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+
+lib/release/libxreqlib.a: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=release
+
+lib/coverage/libxreqlib.a: dir
+	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
 
 bin/xreq.cov: dir
 	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
@@ -262,7 +280,7 @@ run-cucumber-c: bin _cucumber_clean_rerun
 	@echo "##########################"
 	@echo
 	XREQ_LANG=C \
-	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
+	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
 run-cucumber-ada: bin _cucumber_clean_rerun
 	@echo
@@ -365,13 +383,15 @@ check: gnatcheck coverage run-cucumber run-tests
 
 .PHONY: gnatcheck test-report test-report-cucumber test-report-unit check
 
-install: bin/xreq.rel install-gps
+install: bin/xreq.rel lib/release/libxreq.so install-gps
 	$(INSTALL) -D bin/xreq.rel $(DESTDIR)$(BINDIR)/xreq
 	$(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
 	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/xreqlib
+	$(INSTALL) -m755 -D lib/release/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
+	$(INSTALL) -m644 -D src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
 	@echo '------------------------------------------------------------------'
 	@echo '--  XReq has now been installed.'
 	@echo '------------------------------------------------------------------'
@@ -379,9 +399,13 @@ install: bin/xreq.rel install-gps
 	@echo '--  your PATH to point to'
 	@echo '--  $(DESTDIR)$(BINDIR)'
 	@echo '------------------------------------------------------------------'
-	@echo '--  To be able to use the library, you may need to update your'
-	@echo '--  ADA_PROJECT_PATH or GPR_PROJECT_PATH to point to the path'
+	@echo '--  To be able to use the library for Ada, you may need to update'
+	@echo '--  your ADA_PROJECT_PATH or GPR_PROJECT_PATH to point to the path'
 	@echo '--  $(DESTDIR)$(GPRDIR)'
+	@echo '------------------------------------------------------------------'
+	@echo '--  To be able to use the library for C, you may need to update'
+	@echo '--  your LD_LIBRARY_PATH to point to the path'
+	@echo '--  $(DESTDIR)$(LIBDIR)'
 	@echo '------------------------------------------------------------------'
 
 install-gps: lib/gps/libxreqgps.so
@@ -395,6 +419,8 @@ uninstall: uninstall-gps
 	-$(RM) -rf $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	-$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreq.so
+	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreq.h
 	-$(RM) -rf $(DESTDIR)$(DOCDIR)
 	-$(RM) -rf $(DESTDIR)$(DATADIR)/XReq
 
@@ -449,8 +475,8 @@ help:
 	@echo "    PREFIX          prefix for installation   [$(PREFIX)]"
 	@echo "    PREFIX_GPS      prefix for GPS plugin     [$(PREFIX_GPS)]"
 	@echo "    BINDIR          user executables          [$(BINDIR)]"
-	@echo "    INCLUDEDIR      ???                       [$(INCLUDEDIR)]"
-	@echo "    LIBDIR          ???                       [$(LIBDIR)]"
+	@echo "    INCLUDEDIR      path for C header files   [$(INCLUDEDIR)]"
+	@echo "    LIBDIR          path for library          [$(LIBDIR)]"
 	@echo "    GPRDIR          GNAT Project files        [$(GPRDIR)]"
 	@echo "    DOCDIR          Documentation directory   [$(DOCDIR)]"
 	@echo "    DATADIR         Read only architecture-independant data"

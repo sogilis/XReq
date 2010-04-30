@@ -798,7 +798,7 @@ package body XReq.Generator.C is
       end loop;
       Mak_B.New_Line;
       Mak_B.Put_Line (Name & ": $(OBJECTS_" & Name & ")");
-      Mak_B.Put_Line (Name & ": LDFLAGS+=-lxreqlib");
+      Mak_B.Put_Line (Name & ": LDFLAGS+=-lxreq");
       Mak_B.New_Line;
 
       Set_File    (Filename, To_String (With_B.Buffer));
