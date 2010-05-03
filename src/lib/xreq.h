@@ -3,9 +3,9 @@
 #ifndef XREQ_H
 #define XREQ_H
 
-#define XREQ_GIVEN
-#define XREQ_WHEN
-#define XREQ_THEN
+#define XREQ_GIVEN(PAT)
+#define XREQ_WHEN(PAT)
+#define XREQ_THEN(PAT)
 #define XREQ_STEP_TODO
 #define XREQ_STEP(function_name) \
   void function_name (XReq_Args *__xreq_args, XReq_Error *__xreq_err)

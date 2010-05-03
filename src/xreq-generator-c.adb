@@ -105,6 +105,7 @@ package body XReq.Generator.C is
       use String_Sets;
       use Match_Vectors;
       Procname : constant String := Step.Procedure_Name;
+      H_File   : constant String := Step.File_Name;
       E        : Match_Location;
       E2       : Argument_Type;
    begin
@@ -194,8 +195,8 @@ package body XReq.Generator.C is
          S.C.Put_Line ("if (!XReq_Error_Is_Null (err)) {");
       else
          --  Generate extern declaration
-         if not Contains (S.Declare_Func, To_Unbounded_String (Procname)) then
-            Insert (S.Declare_Func, To_Unbounded_String (Procname));
+         if not Contains (S.Headers, To_Unbounded_String (H_File)) then
+            Insert (S.Headers, To_Unbounded_String (H_File));
          end if;
          --  Call to step
          S.C.Put_Line (Procname & " (args, err);");
@@ -557,12 +558,17 @@ package body XReq.Generator.C is
    ---------------------
 
    procedure Generate_With     (S          : in out C_Generator_Type) is
+      use Ada.Directories;
       use String_Sets;
-      J   : String_Sets.Cursor := First (S.Declare_Func);
+      J   : String_Sets.Cursor := First (S.Headers);
       Buf : Unbounded_String;
    begin
       while Has_Element (J) loop
-         Append (Buf, "extern XREQ_STEP(" & Element (J) & ");" & S.C.CRLF);
+         Append (Buf, "#include """ &
+                 Relative_Path (Reverse_Path (Containing_Directory
+                                                       (To_String (S.H_File))),
+                                To_String (Element (J))) &
+                 """" & S.C.CRLF);
          Next (J);
       end loop;
       S.C.Buffer := "#include <xreq.h>" & S.C.CRLF & S.C.CRLF &

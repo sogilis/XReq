@@ -116,6 +116,15 @@ package body XReq.Result_Steps is
       Res.Make (Stanza, Match);
    end Process_Step;
 
+   ---------------------------------------
+   --  Result_Step_Type  --  File_Name  --
+   ---------------------------------------
+
+   function File_Name (S : in Result_Step_Type) return String is
+   begin
+      return To_String (S.Match.Position.File);
+   end File_Name;
+
    --------------------------------------------
    --  Result_Step_Type  --  Procedure_Name  --
    --------------------------------------------

@@ -49,6 +49,7 @@ package XReq.Result_Steps is
 
 
    function  Procedure_Name     (S   : in     Result_Step_Type) return String;
+   function  File_Name          (S   : in     Result_Step_Type) return String;
    procedure Set_Procedure_Name (S   : in out Result_Step_Type;
                                  Prc : in     String);
 
