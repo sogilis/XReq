@@ -38,7 +38,7 @@ package body Test_Suite.Generator.Ada05 is
       Result  : Integer;
       Flags   : constant String
               := "-gnat05 -c -aI../step_definitions -aI../../../src/lib" &
-                 "  -aI../../../src/common";
+                 "  -aI../../../src/common  -aI../../../src/lib/static";
       pragma Unreferenced (Gen);
    begin
 

@@ -2,6 +2,7 @@
 
 with Ada.Containers.Vectors;
 with Ada.Containers;
+with Ada.Strings.Unbounded;
 with Util.IO;
 with Util.Strings;
 with XReqLib.String_Tables;
@@ -14,6 +15,7 @@ with XReq.Result_Steps;
 with XReq.Result_Scenarios;
 with XReq.Result_Features;
 
+use Ada.Strings.Unbounded;
 use Util.IO;
 use Util.Strings;
 use XReq.Lang;
@@ -50,7 +52,8 @@ package body Test_Suite.Result is
       Step : Result_Step_Type;
    begin
 
-      Step.Make (Stanza_Given (""), "Proc");
+      Step.Make (Stanza_Given (""), (Proc_Name => To_Unbounded_String ("Proc"),
+                                     others    => <>));
 
       T.Assert (Step.Procedure_Name = "Proc",
               "Wrong procedure name");
@@ -115,12 +118,12 @@ package body Test_Suite.Result is
 
       T.Assert (not Errors, "Errors happened while processing scenario (1)");
 
-      Append (Ideal_Result,
-              New_Result_Step (Stanza_Given ("this step works"),
-                               "Sample1.This_Step_Works"));
-      Append (Ideal_Result,
-              New_Result_Step (Stanza_When ("this step works too"),
-                               "Sample1.This_Step_Works_Too"));
+      Append (Ideal_Result, New_Result_Step
+              (Stanza_Given ("this step works"),
+               Find (Steps, Stanza_Given ("this step works"))));
+      Append (Ideal_Result, New_Result_Step
+              (Stanza_When ("this step works too"),
+               Find (Steps, Stanza_When  ("this step works too"))));
 
       T.Assert (Result.Step_Count = 2,
               "Wrong length of result, " & Result.Step_Count'Img &
@@ -128,11 +131,15 @@ package body Test_Suite.Result is
 
       A := Result.Step_Element (0);
       B := Element (Ideal_Result, 0);
+      T.Assert (A.Procedure_Name = "Sample1.This_Step_Works",
+                "Wrong Step #0: " & A.To_Code);
       T.Assert (A = B,
               "Wrong Step #0: " & A.To_Code & " /= " & B.To_Code);
 
       A := Result.Step_Element (1);
       B := Element (Ideal_Result, 1);
+      T.Assert (A.Procedure_Name = "Sample1.This_Step_Works_Too",
+                "Wrong Step #1: " & A.To_Code);
       T.Assert (A = B,
               "Wrong Step #1: " & A.To_Code & " /= " & B.To_Code);
 
@@ -219,7 +226,9 @@ package body Test_Suite.Result is
               "Feature name incorrect (2)");
 
       R_Scen.Step_Append (New_Result_Step (Stanza_Given ("this step works"),
-                                           "Sample1.This_Step_Works"));
+                                           (Proc_Name => To_Unbounded_String
+                                                   ("Sample1.This_Step_Works"),
+                                            others => <>)));
       Expected.Set_Background (R_Scen);
       R_Scen.Set_Name ("Run a good step");
       Expected.Scenario_Append (R_Scen);
@@ -270,8 +279,10 @@ package body Test_Suite.Result is
 
       Append (Matches, (1, 15));
       R_Scen.Step_Append (New_Result_Step (Stanza_Given ("this step works"),
-                                           "Sample1.This_Step_Works",
-                                           Matches));
+                                           (Proc_Name => To_Unbounded_String
+                                                   ("Sample1.This_Step_Works"),
+                                            Matches   => Matches,
+                                            others    => <>)));
       R_Scen.Set_Name ("BG");
       Feature.Set_Background (R_Scen);
       R_Scen.Set_Name ("Run a good step");

@@ -1,7 +1,9 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings.Unbounded;
 with XReqLib;
 
+use Ada.Strings.Unbounded;
 use XReqLib;
 
 package body XReq.Result_Steps is
@@ -13,15 +15,11 @@ package body XReq.Result_Steps is
 
    procedure Make           (Self           : out Result_Step_Type;
                              Step           : in  Step_Type;
-                             Procedure_Name : in  String := "";
-                             Matches        : in  Match_Vectors.Vector
-                             := Match_Vectors.Empty_Vector)
+                             Match          : in  Step_Match_Type
+                                            := Step_Match_Type'(others => <>))
    is
    begin
-      Self := Result_Step_Type'
-        (Step with
-         Procedure_Name => To_Unbounded_String (Procedure_Name),
-         Matches        => Matches);
+      Self := Result_Step_Type'(Step with Match => Match);
    end Make;
 
    ---------------------------------------------
@@ -29,26 +27,16 @@ package body XReq.Result_Steps is
    ---------------------------------------------
 
    function  New_Result_Step (Step           : in  Step_Type;
-                              Procedure_Name : in  String := "";
-                              Matches        : in  Match_Vectors.Vector
-                                             := Match_Vectors.Empty_Vector)
+                              Match          : in  Step_Match_Type
+                                             := Step_Match_Type'(others => <>))
                                              return Result_Step_Type
    is
    begin
       return Self : Result_Step_Type do
-         Self.Make (Step, Procedure_Name, Matches);
+         Self.Make (Step, Match);
       end return;
    end New_Result_Step;
 
-
-   --------------------------------------------
-   --  Result_Step_Type  --  Procedure_Name  --
-   --------------------------------------------
-
-   function Procedure_Name (S : in Result_Step_Type) return String is
-   begin
-      return To_String (S.Procedure_Name);
-   end Procedure_Name;
 
    -------------------------------------
    --  Result_Step_Type  --  To_Code  --
@@ -125,10 +113,17 @@ package body XReq.Result_Steps is
                        """ matches """ & To_String (Match.Position) &
                        """ procedure " & To_String (Match.Proc_Name));
       end if;
-      Res.Make (Stanza);
-      Res.Procedure_Name := Match.Proc_Name;
-      Res.Matches        := Match.Matches;
+      Res.Make (Stanza, Match);
    end Process_Step;
+
+   --------------------------------------------
+   --  Result_Step_Type  --  Procedure_Name  --
+   --------------------------------------------
+
+   function Procedure_Name (S : in Result_Step_Type) return String is
+   begin
+      return To_String (S.Match.Proc_Name);
+   end Procedure_Name;
 
    --------------------------
    --  Set_Procedure_Name  --
@@ -137,7 +132,7 @@ package body XReq.Result_Steps is
    procedure Set_Procedure_Name (S   : in out Result_Step_Type;
                                  Prc : in     String) is
    begin
-      S.Procedure_Name := To_Unbounded_String (Prc);
+      S.Match.Proc_Name := To_Unbounded_String (Prc);
    end Set_Procedure_Name;
 
    ----------------------------------
@@ -166,7 +161,7 @@ package body XReq.Result_Steps is
    function Match_Count   (S : in Result_Step_Type) return Natural is
       use Match_Vectors;
    begin
-      return Integer (Length (S.Matches));
+      return Integer (Length (S.Match.Matches));
    end Match_Count;
 
    ------------------------------------
@@ -178,7 +173,7 @@ package body XReq.Result_Steps is
    is
       use Match_Vectors;
    begin
-      return Element (S.Matches, I);
+      return Element (S.Match.Matches, I);
    end Match_Element;
 
 end XReq.Result_Steps;

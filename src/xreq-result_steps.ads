@@ -1,12 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
-with Ada.Strings.Unbounded;
 with Util.IO;
 with Util.Strings;
 with XReq.Steps;
 with XReq.Step_Definitions;
 
-use Ada.Strings.Unbounded;
 use Util.IO;
 use Util.Strings;
 use XReq.Steps;
@@ -24,17 +22,15 @@ package XReq.Result_Steps is
 
    --  Creation  --------------------------------------------------------------
 
-   function New_Result_Step (Step           : in  Step_Type;
-                             Procedure_Name : in  String := "";
-                             Matches        : in  Match_Vectors.Vector
-                                            := Match_Vectors.Empty_Vector)
+   function  New_Result_Step (Step           : in  Step_Type;
+                              Match          : in  Step_Match_Type
+                                             := Step_Match_Type'(others => <>))
                              return Result_Step_Type;
 
    procedure Make           (Self           : out Result_Step_Type;
                              Step           : in  Step_Type;
-                             Procedure_Name : in  String := "";
-                             Matches        : in  Match_Vectors.Vector
-                                            := Match_Vectors.Empty_Vector);
+                             Match          : in  Step_Match_Type
+                                            := Step_Match_Type'(others => <>));
 
    --  Processing  ------------------------------------------------------------
 
@@ -70,8 +66,7 @@ private
 
    type Result_Step_Type is new Step_Type with
       record
-         Procedure_Name : Unbounded_String;
-         Matches        : Match_Vectors.Vector;
+         Match : Step_Match_Type;
       end record;
 
 end XReq.Result_Steps;
