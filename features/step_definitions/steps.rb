@@ -38,6 +38,11 @@ Given /^the sources of xreq are in ADA_INCLUDE_PATH$/ do
   end
 end
 
+Given /^"([^"]*)" is empty$/ do |dir|
+  FileUtils.remove_dir(dir) rescue nil;
+  FileUtils.mkdir_p(dir);
+end
+
 Given /^I am in an empty directory$/ do
   @oldcwd = FileUtils.pwd();
   dir = "#{$xreq_dir}/tmp";

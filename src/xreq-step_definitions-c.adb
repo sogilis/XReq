@@ -2,11 +2,13 @@
 with Ada.Directories;
 with Ada.Text_IO;
 with Ada.Strings;
+with Ada.Strings.Fixed;
 with GNAT.Regpat;
 
 use Ada.Directories;
 use Ada.Text_IO;
 use Ada.Strings;
+use Ada.Strings.Fixed;
 use GNAT.Regpat;
 
 package body XReq.Step_definitions.C is
@@ -58,12 +60,16 @@ package body XReq.Step_definitions.C is
    procedure Parse     (S          : in out C_Step_File_Type;
                         Logger     : in     Logger_Ptr)
    is
-      type Found_Type is (Found_None, Found_TODO, Found_Step, Found_Regexp);
+      type Found_Type is (Found_None, Found_TODO, Found_Step,
+                          Found_Regexp, Found_Regexp2);
       use Step_Container;
       Tokens        : constant String_List
                     := (To_Unbounded_String ("XREQ_GIVEN"),
                         To_Unbounded_String ("XREQ_WHEN"),
                         To_Unbounded_String ("XREQ_THEN"),
+                        To_Unbounded_String ("@given"),
+                        To_Unbounded_String ("@when"),
+                        To_Unbounded_String ("@then"),
                         To_Unbounded_String ("XREQ_STEP_TODO"),
                         To_Unbounded_String ("XREQ_STEP"));
       File          : File_Type;
@@ -98,8 +104,11 @@ package body XReq.Step_definitions.C is
             when 1 =>      Prefix := Step_Given; Found := Found_Regexp;
             when 2 =>      Prefix := Step_When;  Found := Found_Regexp;
             when 3 =>      Prefix := Step_Then;  Found := Found_Regexp;
-            when 4 =>      Found := Found_TODO;
-            when 5 =>      Found := Found_Step;
+            when 4 =>      Prefix := Step_Given; Found := Found_Regexp2;
+            when 5 =>      Prefix := Step_When;  Found := Found_Regexp2;
+            when 6 =>      Prefix := Step_Then;  Found := Found_Regexp2;
+            when 7 =>      Found := Found_TODO;
+            when 8 =>      Found := Found_Step;
             when others => Found := Found_None;
          end case;
 
@@ -107,7 +116,7 @@ package body XReq.Step_definitions.C is
          --  XREQ_GIVEN, XREQ_WHEN, XREQ_THEN
          --
          if Found = Found_Regexp then
-            Idx  := Index (Line_S, "(""", Idx_Tk);
+            Idx  := Index (Line_S, "(""", Idx_Next);
             Idx2 := Index (Line_S, """)", Backward);
             if Idx /= 0  and Idx2 /= 0 then
                Pattern := To_Unbounded_String
@@ -124,6 +133,30 @@ package body XReq.Step_definitions.C is
             else
                Logger.Put_Line
                  ("WARNING: Syntax error in " & To_String (Position));
+            end if;
+
+         --
+         --  @given, @when, @then
+         --
+         elsif Found = Found_Regexp2 then
+            Idx := Index_Non_Blank (Line_S, Idx_Next);
+            if Idx /= 0 then
+               Pattern := Unbounded_Slice (Line_S, Idx, Length (Line_S));
+               Current_Step := Step_Definition_Type'(
+                  Prefix    => Prefix,
+                  --  TODO: free memory
+                  Pattern_R => new Pattern_Matcher'(
+                               Compile (To_String (Pattern))),
+                  Pattern_S => Pattern,
+                  Position  => Position,
+                  others    => <>);
+               Append (Current_Steps, Current_Step);
+            else
+               --  TODO: use better reporting method
+               Logger.Put_Line (String'(
+                  "WARNING: Expecting argument in " &
+                  To_String (Position) & ":" &
+                  Trim (Idx_Next'Img, Left)));
             end if;
 
          --

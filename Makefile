@@ -260,6 +260,7 @@ _gcov-gather-cucumber:
 
 _cucumber_clean_rerun:
 	-$(RM) -f cucumber-rerun.txt
+	-$(RM) -f cucumber-rerun-lang.txt
 
 run-cucumber: bin
 	$(MAKE) run-cucumber-wip
@@ -279,6 +280,7 @@ run-cucumber-c: bin _cucumber_clean_rerun
 	@echo "##  Run cucumber for C  ##"
 	@echo "##########################"
 	@echo
+	echo C > cucumber-rerun-lang.txt
 	XREQ_LANG=C \
 	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
@@ -288,6 +290,7 @@ run-cucumber-ada: bin _cucumber_clean_rerun
 	@echo "##  Run cucumber for Ada  ##"
 	@echo "############################"
 	@echo
+	echo Ada > cucumber-rerun-lang.txt
 	XREQ_LANG=Ada \
 	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
@@ -302,8 +305,8 @@ rerun-cucumber: bin
 	@echo
 	touch cucumber-rerun.txt
 	@if [ -s cucumber-rerun.txt ]; then \
-		xargs echo cucumber < cucumber-rerun.txt; \
-		xargs cucumber < cucumber-rerun.txt; \
+		xargs echo XREQ_LANG=$$(cat cucumber-rerun-lang.txt) cucumber < cucumber-rerun.txt; \
+		XREQ_LANG=$$(cat cucumber-rerun-lang.txt) xargs cucumber < cucumber-rerun.txt; \
 	fi
 	-$(RM) -f cucumber-rerun.txt
 

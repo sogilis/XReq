@@ -4,4 +4,4 @@
 *.gcno
 README.html
 /tmp/
-/cucumber-rerun.txt
+/cucumber-rerun*.txt

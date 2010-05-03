@@ -6,6 +6,7 @@ Feature: xreq commandline
   Background:
     Given xreq is in the PATH
     And   I am in the xreq directory
+    And   "features/data/tests" is empty
 
   @lang @lang-C
   Scenario: Step matching only (--partial --step-matching)
@@ -16,8 +17,8 @@ Feature: xreq commandline
 
     Load C steps in: features/data/step_definitions
     Compile: features/data/simplest.feature
-    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.h:4" procedure Given_this_step_works
-    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.h:4" procedure Given_this_step_works
+    Step Matching: "features/data/simplest.feature:4" matches "features/data/step_definitions/simple_steps.h:14" procedure Given_this_step_works
+    Step Matching: "features/data/simplest.feature:7" matches "features/data/step_definitions/simple_steps.h:14" procedure Given_this_step_works
 
 
     """
