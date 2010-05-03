@@ -45,7 +45,7 @@ private
          Header_Name  : Unbounded_String;
          Fn_Backgnd   : Unbounded_String;
          Fn_Steps     : String_Vector;
-         With_Headers : String_Sets.Set;
+         Declare_Func : String_Sets.Set;
       end record;
 
 

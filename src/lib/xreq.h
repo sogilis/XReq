@@ -3,6 +3,13 @@
 #ifndef XREQ_H
 #define XREQ_H
 
+#define XREQ_GIVEN
+#define XREQ_WHEN
+#define XREQ_THEN
+#define XREQ_STEP_TODO
+#define XREQ_STEP(function_name) \
+  void function_name (XReq_Args *__xreq_args, XReq_Error *__xreq_err)
+
 struct XReq_Format;
 typedef struct XReq_Format XReq_Format;
 
@@ -27,6 +34,16 @@ typedef unsigned long  XReq_Duration;
 typedef const char*    XReq_Cstr;
 typedef short          XReq_Bool;
 typedef XReq_Cstr*     XReq_Tags;
+
+#define XReq_Status_Passed  0
+#define XReq_Status_Skipped 1
+#define XReq_Status_Failed  2
+#define XReq_Status_Outline 3
+
+#define XReq_Kind_Null  0
+#define XReq_Kind_Given 1
+#define XReq_Kind_When  2
+#define XReq_Kind_Then  3
 
 void XReq_Time_Start (XReq_Duration*);
 void XReq_Time_Stop  (XReq_Duration*);
@@ -82,5 +99,19 @@ long XReq_Report_get_num_steps (XReq_Report*);
 XReq_Bool XReq_Report_Status   (XReq_Report*);
 
 void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**, XReq_Bool*, XReq_Conditional*, XReq_Bool*, XReq_Cstr);
+
+XReq_Args*  XReq_Args_New  ();
+XReq_Table* XReq_Table_New ();
+XReq_Error* XReq_Error_New ();
+
+void XReq_Args_Make      (XReq_Args*, XReq_Cstr);
+void XReq_Args_Add_Match (XReq_Args*, long, long);
+void XReq_Args_Add_Sep   (XReq_Args*, long);
+void XReq_Args_Free      (XReq_Args*);
+
+void XReq_Table_Free     (XReq_Table*);
+
+void XReq_Error_Clear    (XReq_Error*);
+void XReq_Error_Free     (XReq_Error*);
 
 #endif

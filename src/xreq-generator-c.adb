@@ -105,15 +105,13 @@ package body XReq.Generator.C is
       use String_Sets;
       use Match_Vectors;
       Procname : constant String := Step.Procedure_Name;
-      Pkgname  : Unbounded_String;
-      Copy     : Boolean := False;
       E        : Match_Location;
       E2       : Argument_Type;
    begin
       S.C.Put_Line ("/*");
       S.C.Put_Line (" * " & Num'Img & ". " & Step_Type (Step).To_String);
       S.C.Put_Line (" */");
-      S.C.Put_Line ("Num_Step :=" & Num'Img & ";");
+      S.C.Put_Line ("num_step =" & Num'Img & ";");
       S.C.Put_Line ("XReq_Format_Start_Step (format);");
 
       -------------------------------------------------------------------------
@@ -125,138 +123,136 @@ package body XReq.Generator.C is
       --  Stanza : Step sentance
       --  Pos    : String filename:line
 
-      S.C.Put_Line ("declare");
+      S.C.Put_Line ("{");
       S.C.Indent (2);
-      S.C.Put_Line ("Args   : Arg_Type;");
       S.C.Put_Indent;
-      S.C.Put      ("Prefix : constant Step_Kind := ");
+      S.C.Put      ("#define prefix ");
       case Step.Kind is
-         when Step_Given => S.C.Put ("Step_Given;");
-         when Step_When  => S.C.Put ("Step_When;");
-         when Step_Then  => S.C.Put ("Step_Then;");
+         when Step_Given => S.C.Put ("XReq_Kind_Given");
+         when Step_When  => S.C.Put ("XReq_Kind_When");
+         when Step_Then  => S.C.Put ("XReq_Kind_Then");
       end case;
       S.C.New_Line;
-      S.C.Put_Line ("Stanza : constant String    := " &
-                      C_String (Step.Stanza) & ";");
-      S.C.Put_Line ("Pos    : constant String    := " &
-                      C_String (To_String (Step.Position)) & ";");
-      S.C.UnIndent (2);
+      S.C.Put_Line ("#define stanza " & C_String (Step.Stanza));
+      S.C.Put_Line ("#define pos    " & C_String (To_String (Step.Position)));
+      S.C.Put_Line ("XReq_Args  *args = XReq_Args_New ();");
+      S.C.Put_Line ("XReq_Table *tble = XReq_Table_New();");
+      S.C.Put_Line ("XReq_Error *err  = XReq_Error_New();");
 
       -------------------------------------------------------------------------
       --  Begin  --------------------------------------------------------------
       -------------------------------------------------------------------------
 
-      S.C.Put_Line ("begin");
-      S.C.Indent (2);
-
       --------------------
       --  Fill in Args  --
       -------------------------------------------------------------------------
-      S.C.Put_Line ("Make (Args, " &
-                      C_String (Step.Stanza) & ");");
+      S.C.Put_Line ("XReq_Args_Make      (args, stanza);");
       for I in Step.Match_First .. Step.Match_Last loop
          E := Step.Match_Element (I);
-         S.C.Put_Line ("Add_Match (Args," & E.First'Img & "," &
+         S.C.Put_Line ("XReq_Args_Add_Match (args," & E.First'Img & "," &
                                      E.Last'Img & ");");
       end loop;
       for I2 in Step.Arg_First .. Step.Arg_Last loop
          E2 := Step.Arg_Element (I2);
          case E2.Typ is
             when Text =>
-               S.C.Put_Line ("Add_Text  (Args, " &
+               S.C.Put_Line ("XReq_Args_Add_Text  (args, " &
                                C_String (To_String (E2.Text)) & ");");
             when Table =>
-               S.C.Put_Line ("declare");
-               S.C.Indent (2);
-               S.C.Put_Line ("Tble : Table_Type;");
-               S.C.UnIndent (2);
-               S.C.Put_Line ("begin");
-               S.C.Indent (2);
-               Generate_Table (S, "Tble", E2.Table);
-               S.C.Put_Line ("Args.Add_Table (Tble);");
-               S.C.UnIndent (2);
-               S.C.Put_Line ("end;");
+               Generate_Table (S, "tble", E2.Table);
+               S.C.Put_Line ("XReq_Args_Add_Table (args, tble);");
             when others =>
                null;    --  GCOV_IGNORE (never happens)
          end case;
       end loop;
-      S.C.Put_Line ("Add_Sep   (Args, 1);");
+      S.C.Put_Line ("XReq_Args_Add_Sep   (args, 1);");
       --  Skip if failure
-      S.C.Put_Line ("if Fail then");
+      S.C.Put_Line ("if (fail) {");
       S.C.Indent (2);
       S.C.Put_Line ("XReq_Report_step_skip (report);");
       if Background then
-         S.C.Put_Line ("if not Stop then");
+         S.C.Put_Line ("if (!stop) {");
          S.C.Indent (2);
       end if;
-      S.C.Put_Line ("XReq_Format_Put_Step  (format, Prefix, Stanza, Pos, " &
-                      "Args, Status_Skipped);");
+      S.C.Put_Line ("XReq_Format_Put_Step  (format, prefix, stanza, pos, " &
+                      "args, XReq_Status_Skipped);");
       if Background then
          S.C.UnIndent (2);
-         S.C.Put_Line ("end if;");
+         S.C.Put_Line ("}");
       end if;
       S.C.UnIndent (2);
-      S.C.Put_Line ("else");
+      S.C.Put_Line ("} else {");
       S.C.Indent (2);
+      S.C.Put_Line ("XReq_Error_Clear (err);");
       if Fake then
-         S.C.Put_Line ("XReq_Format_Put_Step (format, Prefix, Stanza, Pos, " &
-                         "Args, Status_Outline);");
+         S.C.Put_Line ("XReq_Format_Put_Step (format, prefix, stanza, pos, " &
+                         "args, XReq_Status_Outline);");
       elsif Procname = "" then
          S.C.Put_Line ("raise XReqLib.Not_Yet_Implemented");
          S.C.Put_Line ("   with ""The step definition cound not be " &
                          "found"";");
+         S.C.Put_Line ("if (!XReq_Error_Is_Null (err)) {");
       else
-         --  Generate with clause
-         for K in reverse Procname'Range loop
-            if Copy then
-               Pkgname := Procname (K) & Pkgname;
-            elsif Procname (K) = '.' then
-               Copy := True;
-            end if;
-         end loop;
-         if not Contains (S.With_Headers, Pkgname) then
-            Insert (S.With_Headers, Pkgname);
+         --  Generate extern declaration
+         if not Contains (S.Declare_Func, To_Unbounded_String (Procname)) then
+            Insert (S.Declare_Func, To_Unbounded_String (Procname));
          end if;
          --  Call to step
-         S.C.Put_Line (Procname & " (Args);");
+         S.C.Put_Line (Procname & " (args, err);");
+         S.C.Put_Line ("if (XReq_Error_Is_Null (err)) {");
+         S.C.Indent (2);
          --  Count step
          S.C.Put_Line ("XReq_Report_step_pass (report);");
          --  Print the step
          if Background then
-            S.C.Put_Line ("if First then");
+            S.C.Put_Line ("if (first) {");
             S.C.Indent (2);
          end if;
-         S.C.Put_Line ("XReq_Format_Put_Step (format, Prefix, Stanza, Pos, " &
-                        "Args, Status_Passed);");
+         S.C.Put_Line ("XReq_Format_Put_Step (format, prefix, stanza, pos, " &
+                        "args, XReq_Status_Passed);");
          if Background then
             S.C.UnIndent (2);
-            S.C.Put_Line ("end if;");
+            S.C.Put_Line ("}");
          end if;
+         S.C.UnIndent (2);
+         S.C.Put_Line ("} else {");
       end if;
+      -------------------------------------------------------------------------
+      --  Exception  ----------------------------------------------------------
+      -------------------------------------------------------------------------
+      if not Fake then
+         S.C.Indent (2);
+         S.C.Put_Line ("XReq_Report_step_fail (report);");
+         S.C.Put_Line ("fail = 1;");
+         if Outline then
+            S.C.Put_Line ("Priv_Put_Scenario;");
+         end if;
+         S.C.Put_Line ("XReq_Format_Put_Step  (format, prefix, stanza, " &
+                              "pos, args, XReq_Status_Failed);");
+         S.C.Put_Line ("XReq_Format_Put_Error (format, err);");
+         S.C.UnIndent (2);
+         S.C.Put_Line ("}");
+      end if;
+
       --  End if skip
       S.C.UnIndent (2);
-      S.C.Put_Line ("end if;");
+      S.C.Put_Line ("}");
+      --  End block
+      S.C.Put_Line ("XReq_Error_Free (err);");
+      S.C.Put_Line ("XReq_Table_Free (tble);");
+      S.C.Put_Line ("XReq_Args_Free  (args);");
+      S.C.Put_Line ("#undef pos");
+      S.C.Put_Line ("#undef stanza");
+      S.C.Put_Line ("#undef prefix");
       S.C.UnIndent (2);
+      S.C.Put_Line ("}");
+      S.C.Put_Line ("XReq_Format_Stop_Step (format);");
 
       -------------------------------------------------------------------------
       --  Exception  ----------------------------------------------------------
       -------------------------------------------------------------------------
 
-      if not Fake then
-         S.C.Put_Line ("exception");
-         S.C.Put_Line ("   when Err : others =>");
-         S.C.Put_Line ("     XReq_Report_step_fail (report);");
-         S.C.Put_Line ("     Fail := True;");
-         if Outline then
-            S.C.Put_Line ("     Priv_Put_Scenario;");
-         end if;
-         S.C.Put_Line ("     XReq_Format_Put_Step  (format, Prefix, Stanza, " &
-                              "Pos, Args, Status_Failed);");
-         S.C.Put_Line ("     XReq_Format_Put_Error (format, Err);");
-      end if;
-      --  End block
-      S.C.Put_Line ("end;");
-      S.C.Put_Line ("XReq_Format_Stop_Step (format);");
+
    end Generate_Step;
 
    -------------------------
@@ -562,14 +558,16 @@ package body XReq.Generator.C is
 
    procedure Generate_With     (S          : in out C_Generator_Type) is
       use String_Sets;
-      J   : String_Sets.Cursor := First (S.With_Headers);
+      J   : String_Sets.Cursor := First (S.Declare_Func);
       Buf : Unbounded_String;
    begin
       while Has_Element (J) loop
-         Append (Buf, "#include """ & Element (J) & """" & S.C.CRLF);
+         Append (Buf, "extern XREQ_STEP(" & Element (J) & ");" & S.C.CRLF);
          Next (J);
       end loop;
-      S.C.Buffer := Buf & S.C.CRLF & S.C.Buffer;
+      S.C.Buffer := "#include <xreq.h>" & S.C.CRLF & S.C.CRLF &
+                    Buf                 & S.C.CRLF &
+                    S.C.Buffer;
    end Generate_With;
 
    ----------------
