@@ -195,9 +195,9 @@ package body XReq.Generator.C is
          S.C.Put_Line ("if (!XReq_Error_Is_Null (err)) {");
       else
          --  Generate extern declaration
-         if not Contains (S.Headers, To_Unbounded_String (H_File)) then
-            Insert (S.Headers, To_Unbounded_String (H_File));
-         end if;
+         Include (S.Headers, To_Unbounded_String (H_File));
+         Include (S.C_Steps, To_Unbounded_String
+            (H_File (H_File'First .. H_File'Last - 2) & ".c"));
          --  Call to step
          S.C.Put_Line (Procname & " (args, err);");
          S.C.Put_Line ("if (XReq_Error_Is_Null (err)) {");
@@ -478,7 +478,8 @@ package body XReq.Generator.C is
          S.C.Put_Line ("/*******************************");
          S.C.Put_Line ("**  Scenario Outline Summary  **");
          S.C.Put_Line ("*******************************/");
-         S.C.Put_Line ("fomat->Put_Outline_Report (format, Outline_Table);");
+         S.C.Put_Line ("XReq_Format_Put_Outline_Report " &
+                                        "(format, Outline_Table);");
       end if;
       S.C.Put_Line ("/*******************");
       S.C.Put_Line ("**  Finalization  **");
@@ -493,7 +494,7 @@ package body XReq.Generator.C is
          S.C.Put_Line ("}");
       else
          if Scenario.Outline then
-            S.C.Put_Line ("fomat->Stop_Outline (format);");
+            S.C.Put_Line ("XReq_Format_Stop_Outline (format);");
          else
             S.C.Put_Line ("if (fail) {");
             S.C.Put_Line ("  XReq_Report_scenario_fail (report);");
@@ -695,6 +696,7 @@ package body XReq.Generator.C is
       use GNAT.OS_Lib;
       use Generator_Vectors;
       use String_Vectors;
+      use String_Sets;
       Filename : constant String := Out_Dir (Env) & "/" & Name & ".c";
       Mak_Name : constant String := Out_Dir (Env) & "/" & Name & ".Makefile";
       With_B   : Buffer_Type;
@@ -703,6 +705,8 @@ package body XReq.Generator.C is
       I        : Generator_Vectors.Cursor;
       E        : C_Generator_Ptr;
       Prc_Name : constant String := To_Identifier (Name);
+      Sources  : String_Sets.Set;
+      J        : String_Sets.Cursor;
    begin
       With_B.Put_Line ("/* File: " & Filename & " */");
       With_B.Put_Line ("#include <xreq.h>");
@@ -779,12 +783,25 @@ package body XReq.Generator.C is
       I := First (Gens);
       while Has_Element (I) loop
          E := C_Generator_Ptr (Element (I));
-         Mak_B.Put ("  " & Relative_Path (Reverse_Path (Out_Dir (Env)),
-                                          To_String (E.C_File)));
+         Include (Sources, To_Unbounded_String
+           (Relative_Path (Reverse_Path (Out_Dir (Env)),
+                           To_String (E.C_File))));
+         J := First (E.C_Steps);
+         while Has_Element (J) loop
+            Include (Sources, To_Unbounded_String
+              (Relative_Path (Reverse_Path (Out_Dir (Env)),
+                              To_String (Element (J)))));
+            Next (J);
+         end loop;
          Next (I);
-         if Has_Element (I) then
+      end loop;
+      J := First (Sources);
+      while Has_Element (J) loop
+         Mak_B.Put ("  " & Element (J));
+         if Has_Element (J) then
             Mak_B.Put (" \");
          end if;
+         Next (J);
          Mak_B.New_Line;
       end loop;
       Mak_B.New_Line;

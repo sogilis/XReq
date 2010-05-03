@@ -46,7 +46,7 @@ private
          Fn_Backgnd   : Unbounded_String;
          Fn_Steps     : String_Vector;
          Headers      : String_Sets.Set;
-         C_Defs       : String_Sets.Set;
+         C_Steps      : String_Sets.Set;
       end record;
 
 
