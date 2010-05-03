@@ -199,7 +199,7 @@ package body XReq.Generator.C is
          Include (S.C_Steps, To_Unbounded_String
             (H_File (H_File'First .. H_File'Last - 2) & ".c"));
          --  Call to step
-         S.C.Put_Line (Procname & " (args, err);");
+         S.C.Put_Line ("XReq_Step__" & Procname & " (args, err);");
          S.C.Put_Line ("if (XReq_Error_Is_Null (err)) {");
          S.C.Indent (2);
          --  Count step

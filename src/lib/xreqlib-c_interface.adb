@@ -18,6 +18,7 @@ package body XReqLib.C_Interface is
 
 
 
+
    function Value (Tags : in XReq_Tags) return XReqLib.Format.Tag_Array_Type is
       use Ada.Strings.Unbounded;
       use Ada.Containers;
@@ -382,6 +383,66 @@ package body XReqLib.C_Interface is
       Cond.all      := Res_Cond;
       List_Mode.all := Convert (Res_List_Mode);
    end XReq_CLI_Parse_Arguments;
+
+   function XReq_Args_New   return XReq_Args_Ptr is
+   begin
+      return null;  --  TODO
+   end XReq_Args_New;
+
+   function XReq_Table_New return XReq_Table_Ptr is
+   begin
+      return null;  --  TODO
+   end XReq_Table_New;
+
+   function XReq_Error_New return XReq_Error_Ptr is
+   begin
+      return null;  --  TODO
+   end XReq_Error_New;
+
+
+   procedure XReq_Args_Make      (Args : in XReq_Args_Ptr; S : in XReq_Cstr) is
+   begin
+      null;  --  TODO
+   end XReq_Args_Make;
+
+   procedure XReq_Args_Add_Match (Args : in XReq_Args_Ptr; A, B : in long) is
+   begin
+      null;  --  TODO
+   end XReq_Args_Add_Match;
+
+   procedure XReq_Args_Add_Sep   (Args : in XReq_Args_Ptr; A    : in long) is
+   begin
+      null;  --  TODO
+   end XReq_Args_Add_Sep;
+
+   procedure XReq_Args_Free      (Args : in XReq_Args_Ptr) is
+   begin
+      null;  --  TODO
+   end XReq_Args_Free;
+
+
+   procedure XReq_Table_Free     (Tble : in XReq_Table_Ptr) is
+   begin
+      null;  --  TODO
+   end XReq_Table_Free;
+
+
+   procedure XReq_Error_Clear    (Err : in XReq_Error_Ptr) is
+   begin
+      null;  --  TODO
+   end XReq_Error_Clear;
+
+   function  XReq_Error_Is_Null      (Err : in XReq_Error_Ptr)
+                                        return XReq_Bool is
+   begin
+      return 0;  --  TODO
+   end XReq_Error_Is_Null;
+
+   procedure XReq_Error_Free     (Err : in XReq_Error_Ptr) is
+   begin
+      null;  --  TODO
+   end XReq_Error_Free;
+
 
    pragma Warnings (On);
 

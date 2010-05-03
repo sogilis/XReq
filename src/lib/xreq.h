@@ -8,7 +8,7 @@
 #define XREQ_THEN(PAT)
 #define XREQ_STEP_TODO
 #define XREQ_STEP(function_name) \
-  void function_name (XReq_Args *__xreq_args, XReq_Error *__xreq_err)
+  void XReq_Step__##function_name (XReq_Args *__xreq_args, XReq_Error *__xreq_err)
 
 struct XReq_Format;
 typedef struct XReq_Format XReq_Format;
@@ -111,7 +111,8 @@ void XReq_Args_Free      (XReq_Args*);
 
 void XReq_Table_Free     (XReq_Table*);
 
-void XReq_Error_Clear    (XReq_Error*);
-void XReq_Error_Free     (XReq_Error*);
+void XReq_Error_Clear        (XReq_Error*);
+XReq_Bool XReq_Error_Is_Null (XReq_Error*);
+void XReq_Error_Free         (XReq_Error*);
 
 #endif

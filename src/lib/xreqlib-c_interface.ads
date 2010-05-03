@@ -196,9 +196,9 @@ package XReqLib.C_Interface is
    function  XReq_Report_Status        (Report : in XReq_Report_Ptr)
                                              return XReq_Bool;
 
-   --  void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**,
-   --                                   XReq_Bool*, XReq_Conditional**,
-   --                                   XReq_Bool*, XReq_Cstr);
+   ---  void XReq_CLI_Parse_Arguments  (long, char**, XReq_Format**,
+   ---                                  XReq_Bool*, XReq_Conditional**,
+   ---                                  XReq_Bool*, XReq_Cstr);
    procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
                                         Format     : access XReq_Format_Ptr;
                                         Continue   : access XReq_Bool;
@@ -206,7 +206,36 @@ package XReqLib.C_Interface is
                                         List_Mode  : access XReq_Bool;
                                         Name       : in     XReq_Cstr);
 
+   ---  XReq_Args*  XReq_Args_New  ();
+   ---  XReq_Table* XReq_Table_New ();
+   ---  XReq_Error* XReq_Error_New ();
 
+   function XReq_Args_New  return XReq_Args_Ptr;
+   function XReq_Table_New return XReq_Table_Ptr;
+   function XReq_Error_New return XReq_Error_Ptr;
+
+   ---  void XReq_Args_Make      (XReq_Args*, XReq_Cstr);
+   ---  void XReq_Args_Add_Match (XReq_Args*, long, long);
+   ---  void XReq_Args_Add_Sep   (XReq_Args*, long);
+   ---  void XReq_Args_Free      (XReq_Args*);
+
+   procedure XReq_Args_Make      (Args : in XReq_Args_Ptr; S : in XReq_Cstr);
+   procedure XReq_Args_Add_Match (Args : in XReq_Args_Ptr; A, B : in long);
+   procedure XReq_Args_Add_Sep   (Args : in XReq_Args_Ptr; A    : in long);
+   procedure XReq_Args_Free      (Args : in XReq_Args_Ptr);
+
+   ---  void XReq_Table_Free     (XReq_Table*);
+
+   procedure XReq_Table_Free     (Tble : in XReq_Table_Ptr);
+
+   ---  void XReq_Error_Clear        (XReq_Error*);
+   ---  XReq_Bool XReq_Error_Is_Null (XReq_Error*);
+   ---  void XReq_Error_Free         (XReq_Error*);
+
+   procedure XReq_Error_Clear        (Err : in XReq_Error_Ptr);
+   function  XReq_Error_Is_Null      (Err : in XReq_Error_Ptr)
+                                        return XReq_Bool;
+   procedure XReq_Error_Free         (Err : in XReq_Error_Ptr);
 
    pragma Export (C, XReq_Time_Start,            "XReq_Time_Start");
    pragma Export (C, XReq_Time_Stop,             "XReq_Time_Stop");
@@ -258,6 +287,17 @@ package XReqLib.C_Interface is
    pragma Export (C, XReq_Report_get_num_steps,  "XReq_Report_get_num_steps");
    pragma Export (C, XReq_Report_Status,         "XReq_Report_Status");
    pragma Export (C, XReq_CLI_Parse_Arguments,   "XReq_CLI_Parse_Arguments");
+   pragma Export (C, XReq_Args_New,              "XReq_Args_New");
+   pragma Export (C, XReq_Table_New,             "XReq_Table_New");
+   pragma Export (C, XReq_Error_New,             "XReq_Error_New");
+   pragma Export (C, XReq_Args_Make,             "XReq_Args_Make");
+   pragma Export (C, XReq_Args_Add_Match,        "XReq_Args_Add_Match");
+   pragma Export (C, XReq_Args_Add_Sep,          "XReq_Args_Add_Sep");
+   pragma Export (C, XReq_Args_Free,             "XReq_Args_Free");
+   pragma Export (C, XReq_Table_Free,            "XReq_Table_Free");
+   pragma Export (C, XReq_Error_Clear,           "XReq_Error_Clear");
+   pragma Export (C, XReq_Error_Is_Null,         "XReq_Error_Is_Null");
+   pragma Export (C, XReq_Error_Free,            "XReq_Error_Free");
 
    pragma Warnings (On);
 
