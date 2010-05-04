@@ -164,7 +164,7 @@ package body XReq.Step_definitions.C is
          --
          elsif Found = Found_Step then
             Idx  := Index (Line_S, "(", Idx_Tk);
-            Idx2 := Index (Line_S, ")", Idx2);
+            Idx2 := Index (Line_S, ")", Idx);
             if Idx /= 0  and Idx2 /= 0 then
                Procedure_S := Unbounded_Slice (Line_S, Idx + 1, Idx2 - 1);
                I := First (Current_Steps);

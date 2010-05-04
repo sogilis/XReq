@@ -63,6 +63,7 @@ Feature: Skip scenarios after a background error
 
       """
 
+  @lang @lang-Ada
   Scenario: Always Fail
     When I run xreq -m -x always_fail_suite features/data/tmp-always_fail.feature
     Then it should pass
@@ -99,7 +100,46 @@ Feature: Skip scenarios after a background error
 
       """
 
+  @lang @lang-C
+  Scenario: Always Fail
+    When I run xreq -m -x always_fail_suite features/data/tmp-always_fail.feature
+    Then it should pass
+    When I run the test suite "./always_fail_suite" in features/data/tests
+    Then it should fail with
+      """
+      Feature: Always Fail
 
+        Background: Set things up
+      This step works BACKGROUND
+          Given this step works with BACKGROUND
+          And it fails
+            XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
+      in: ../../../features/data/step_definitions/simple_steps.c:22
+
+          And this step works with BACKGROUND
+
+        Scenario: Run a good step 1
+          Given this step works with STEP
+          And this is ignored
+
+        Scenario: Run a good step 2
+          Given this step works with STEP
+          And this is ignored
+
+        Scenario: Run a good step 3
+          Given this step works with STEP
+          And this is ignored
+
+        Scenario: Run a good step 4
+          Given this step works with STEP
+          And this is ignored
+
+      4 scenarios (4 failed)
+      20 steps (1 failed, 18 skipped, 1 passed)
+
+      """
+
+  @lang @lang-Ada
   Scenario: Periodic Fail
     When I run xreq -m -x periodic_fail_suite features/data/tmp-periodic_fail.feature
     Then it should pass
@@ -149,3 +189,60 @@ Feature: Skip scenarios after a background error
       20 steps (2 failed, 6 skipped, 12 passed)
 
       """
+
+
+  @lang @lang-C
+  Scenario: Periodic Fail
+    When I run xreq -m -x periodic_fail_suite features/data/tmp-periodic_fail.feature
+    Then it should pass
+    When I run the test suite "./periodic_fail_suite" in features/data/tests
+    Then it should fail with
+      """
+      Feature: Periodic Fail
+
+        Background: Set things up
+      This step works BACKGROUND
+          Given this step works with BACKGROUND
+      State is TRUE OK
+          And this fails periodically
+      This step works BACKGROUND
+          And this step works with BACKGROUND
+
+        Scenario: Run a good step 1
+      This step works STEP
+          Given this step works with STEP
+          And this is ignored
+
+        Scenario: Run a good step 2
+      This step works BACKGROUND
+          Given this fails periodically
+            XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: State is FALSE (should be TRUE)
+      in: ../../../features/data/step_definitions/simple_steps.c:31
+
+          And this step works with BACKGROUND
+          And this step works with STEP
+          And this is ignored
+
+        Scenario: Run a good step 3
+      This step works BACKGROUND
+      State is TRUE OK
+      This step works BACKGROUND
+      This step works STEP
+          Given this step works with STEP
+          And this is ignored
+
+        Scenario: Run a good step 4
+      This step works BACKGROUND
+          Given this fails periodically
+            XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: State is FALSE (should be TRUE)
+      in: ../../../features/data/step_definitions/simple_steps.c:31
+
+          And this step works with BACKGROUND
+          And this step works with STEP
+          And this is ignored
+
+      4 scenarios (2 failed, 2 passed)
+      20 steps (2 failed, 6 skipped, 12 passed)
+
+      """
+

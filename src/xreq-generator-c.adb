@@ -79,7 +79,7 @@ package body XReq.Generator.C is
       I := T.First;
       while Has_Element (I) loop
          K := Key (I);
-         S.C.Put_Line (Name & ".Put (" &
+         S.C.Put_Line ("XReq_Table_Put (" & Name & ", " &
             Trim (K.X'Img, Left)                 & ", " &
             Trim (K.Y'Img, Left)                 & ", " &
             C_String (To_String (Element (I))) & ");");

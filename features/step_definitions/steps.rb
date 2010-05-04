@@ -109,12 +109,12 @@ end
 
 When /^I run the test suite "([^"]*)" in (.*)$/ do |command, dir|
   When("I run \"#{command} --no-color\" in #{dir}")
-  @last_command_output.sub!(/Finished in ([0-9]*m)?[0-9]*s\n$/, "");
+  @last_command_output.sub!(/Finished in ([0-9]*m )?[0-9]*s\n$/, "");
 end
 
 When /^I run the test suite "([^"]*)"$/ do |command|
   When("I run \"#{command} --no-color\"")
-  @last_command_output.sub!(/Finished in ([0-9]*m)?[0-9]*s\n$/, "");
+  @last_command_output.sub!(/Finished in ([0-9]+m )?[0-9]+s\n$/, "");
 end
 
 When /^I run '(.*)' aloud$/ do |command|
@@ -192,6 +192,10 @@ end
 
 Then /^the output should be$/ do |text|
   @last_command_output.should == text
+end
+
+Then /^the output should match$/ do |text|
+  @last_command_output.should =~ Regexp.new(text)
 end
 
 Then /^"([^\"]*)" should match "([^\"]*)"$/ do |file, text|

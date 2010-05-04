@@ -104,14 +104,18 @@ XReq_Args*  XReq_Args_New  ();
 XReq_Table* XReq_Table_New ();
 XReq_Error* XReq_Error_New ();
 
-void XReq_Args_Make       (XReq_Args*, XReq_Cstr);
-void XReq_Args_Add_Match  (XReq_Args*, long, long);
-void XReq_Args_Add_Sep    (XReq_Args*, long);
-void XReq_Args_Add_Para   (XReq_Args*, XReq_Cstr);
-XReq_Cstr XReq_Args_Match (XReq_Args*, long);
-void      XReq_Args_Free  (XReq_Args*);
+void XReq_Args_Make          (XReq_Args*, XReq_Cstr);
+void XReq_Args_Add_Match     (XReq_Args*, long, long);
+void XReq_Args_Add_Sep       (XReq_Args*, long);
+void XReq_Args_Add_Para      (XReq_Args*, XReq_Cstr);
+void XReq_Args_Add_Table     (XReq_Args*, XReq_Table*);
+XReq_Cstr   XReq_Args_Match  (XReq_Args*, long);
+XReq_Table* XReq_Args_Table  (XReq_Args*, long);
+void        XReq_Args_Free   (XReq_Args*);
 
-void XReq_Table_Free     (XReq_Table*);
+void XReq_Table_Put          (XReq_Table*, long, long, XReq_Cstr);
+XReq_Bool XReq_Table_Equals  (XReq_Table*, XReq_Table*);
+void XReq_Table_Free         (XReq_Table*);
 
 void XReq_Error_Clear        (XReq_Error*);
 void XReq_Error_Make         (XReq_Error*, XReq_Cstr, XReq_Cstr, long);
@@ -124,6 +128,8 @@ void XReq_String_Free        (XReq_Cstr);
 #define XREQ_FAIL_NULL XReq_Error_Make(__xreq_err, "", __FILE__, __LINE__); return;
 #define XREQ_FAIL_GOTO(message,label) XReq_Error_Make(__xreq_err, (message), __FILE__, __LINE__); goto label;
 #define XREQ_FAIL_NULL_GOTO(label) XReq_Error_Make(__xreq_err, "", __FILE__, __LINE__); goto label;
+
+#define XREQ_ASSERT(condition,message) if(!(condition)){XREQ_FAIL(message)}
 
 #define XREQ_ARG (__xreq_args)
 

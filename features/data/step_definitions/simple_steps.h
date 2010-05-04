@@ -28,4 +28,8 @@ XREQ_GIVEN("^it fails$")
 XREQ_WHEN ("^it fails$")
 XREQ_STEP (Given_this_step_doesn_t_work);
 
+
+// @given ^this fails periodically$
+XREQ_STEP(Given_this_fails_periodically);
+
 #endif

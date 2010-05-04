@@ -231,12 +231,20 @@ package XReqLib.C_Interface is
    procedure XReq_Args_Add_Match  (Args : in XReq_Args_Ptr; A, B : in long);
    procedure XReq_Args_Add_Sep    (Args : in XReq_Args_Ptr; A    : in long);
    procedure XReq_Args_Add_Para   (Args : in XReq_Args_Ptr; A : in XReq_Cstr);
+   procedure XReq_Args_Add_Table  (Args : in XReq_Args_Ptr;
+                                   Tble : in XReq_Table_Ptr);
    function  XReq_Args_Match      (Args : in XReq_Args_Ptr; A    : in long)
                                       return XReq_Cstr;
+   function  XReq_Args_Table      (Args : in XReq_Args_Ptr; A    : in long)
+                                      return XReq_Table_Ptr;
    procedure XReq_Args_Free       (Args : in XReq_Args_Ptr);
 
    ---  void XReq_Table_Free     (XReq_Table*);
 
+   procedure XReq_Table_Put      (Tble : in XReq_Table_Ptr;
+                                  X, Y : in long;
+                                  Str  : in XReq_Cstr);
+   function  XReq_Table_Equals   (A, B : in XReq_Table_Ptr) return XReq_Bool;
    procedure XReq_Table_Free     (Tble : in XReq_Table_Ptr);
 
    ---  void XReq_Error_Clear        (XReq_Error*);
@@ -310,9 +318,13 @@ package XReqLib.C_Interface is
    pragma Export (C, XReq_Args_Make,             "XReq_Args_Make");
    pragma Export (C, XReq_Args_Add_Match,        "XReq_Args_Add_Match");
    pragma Export (C, XReq_Args_Add_Sep,          "XReq_Args_Add_Sep");
-   pragma Export (C, XReq_Args_Add_Para,          "XReq_Args_Add_Para");
+   pragma Export (C, XReq_Args_Add_Para,         "XReq_Args_Add_Para");
+   pragma Export (C, XReq_Args_Add_Table,        "XReq_Args_Add_Table");
    pragma Export (C, XReq_Args_Match,            "XReq_Args_Match");
+   pragma Export (C, XReq_Args_Table,            "XReq_Args_Table");
    pragma Export (C, XReq_Args_Free,             "XReq_Args_Free");
+   pragma Export (C, XReq_Table_Put,             "XReq_Table_Put");
+   pragma Export (C, XReq_Table_Equals,          "XReq_Table_Equals");
    pragma Export (C, XReq_Table_Free,            "XReq_Table_Free");
    pragma Export (C, XReq_Error_Clear,           "XReq_Error_Clear");
    pragma Export (C, XReq_Error_Make,            "XReq_Error_Make");

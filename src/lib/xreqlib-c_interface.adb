@@ -434,11 +434,24 @@ package body XReqLib.C_Interface is
       Args.Add_Para (Value (A));
    end XReq_Args_Add_Para;
 
+   procedure XReq_Args_Add_Table  (Args : in XReq_Args_Ptr;
+                                   Tble : in XReq_Table_Ptr) is
+   begin
+      Args.Add_Table (Tble.all);
+   end XReq_Args_Add_Table;
+
    function  XReq_Args_Match      (Args : in XReq_Args_Ptr; A    : in long)
                                       return XReq_Cstr is
    begin
       return New_String (Args.Match (Integer (A)));
    end XReq_Args_Match;
+
+
+   function  XReq_Args_Table      (Args : in XReq_Args_Ptr; A    : in long)
+                                      return XReq_Table_Ptr is
+   begin
+      return new XReq_Table'(Args.Table (Integer (A)));
+   end XReq_Args_Table;
 
    procedure XReq_Args_Free      (Args : in XReq_Args_Ptr) is
       procedure Dealloc is new Ada.Unchecked_Deallocation
@@ -448,6 +461,20 @@ package body XReqLib.C_Interface is
       Dealloc (Ptr);
    end XReq_Args_Free;
 
+
+
+   procedure XReq_Table_Put      (Tble : in XReq_Table_Ptr;
+                                  X, Y : in long;
+                                  Str  : in XReq_Cstr) is
+   begin
+      Tble.Put (Integer (X), Integer (Y), Value (Str));
+   end XReq_Table_Put;
+
+   function  XReq_Table_Equals   (A, B : in XReq_Table_Ptr) return XReq_Bool is
+      use XReqLib.String_Tables;
+   begin
+      return Convert (A.all = B.all);
+   end XReq_Table_Equals;
 
    procedure XReq_Table_Free     (Tble : in XReq_Table_Ptr) is
       procedure Dealloc is new Ada.Unchecked_Deallocation

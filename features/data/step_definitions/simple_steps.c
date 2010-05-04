@@ -19,5 +19,15 @@ XREQ_STEP (Given_this_step_works_with)
 
 XREQ_STEP (Given_this_step_doesn_t_work)
 {
-  XREQ_FAIL_NULL;
+  XREQ_ASSERT(0, "Assertion failed");
+}
+
+XREQ_STEP(Given_this_fails_periodically)
+{
+  static int state = 0;
+  state = !state;
+  char assert_message[1024];
+  snprintf(assert_message, 1024, "State is %s (should be TRUE)", state ? "TRUE":"FALSE");
+  XREQ_ASSERT (state, assert_message);
+  printf ("State is %s OK\n", state ? "TRUE":"FALSE");
 }
