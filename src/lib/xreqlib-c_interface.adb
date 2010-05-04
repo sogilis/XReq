@@ -258,13 +258,16 @@ package body XReqLib.C_Interface is
    is
       use Ada.Strings;
       use Ada.Strings.Fixed;
+      Message : Unbounded_String;
       Step_Error : exception;
    begin
       if Error.all.Error then
-         raise Step_Error with
-            To_String (Error.all.Message) & ASCII.LF &
-            "in: " & To_String (Error.all.File) & ":" &
-                     Trim (Error.all.Line'Img, Left) & ASCII.LF;
+         Append (Message, Error.all.Message);
+         if Error.all.File /= Null_Unbounded_String then
+            Append (Message, ASCII.LF & "in: " & Error.all.File & ":" &
+                             Trim (Error.all.Line'Img, Left));
+         end if;
+         raise Step_Error with To_String (Message);
       end if;
    exception
       when E : Step_Error =>

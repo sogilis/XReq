@@ -64,7 +64,6 @@ Feature: Error handling in steps
           Given this step doesn't work
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
       in: ../../../features/data/step_definitions/simple_steps.c:22
-
           And this step works
 
         Scenario: Run a good step

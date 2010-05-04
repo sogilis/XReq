@@ -130,6 +130,7 @@ void XReq_String_Free        (XReq_Cstr);
 #define XREQ_FAIL_NULL_GOTO(label) XReq_Error_Make(__xreq_err, "", __FILE__, __LINE__); goto label;
 
 #define XREQ_ASSERT(condition,message) if(!(condition)){XREQ_FAIL(message)}
+#define XREQ_ASSERT_GOTO(condition,label,message) if(!(condition)){XREQ_FAIL_GOTO(message,label)}
 
 #define XREQ_ARG (__xreq_args)
 

@@ -26,7 +26,8 @@ package body XReq.Generator.C is
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
-                                Outline    : in     Boolean := False);
+                                Outline    : in     Boolean := False;
+                                Num_Outlne : in     Natural := 1);
    procedure Generate_Scenario (S          : in out C_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
                                 Name       : in     Unbounded_String;
@@ -97,9 +98,9 @@ package body XReq.Generator.C is
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
-                                Outline    : in     Boolean := False)
+                                Outline    : in     Boolean := False;
+                                Num_Outlne : in     Natural := 1)
    is
-      pragma Unreferenced (Scenario);
       use Ada.Strings;
       use Ada.Strings.Fixed;
       use String_Sets;
@@ -189,10 +190,9 @@ package body XReq.Generator.C is
          S.C.Put_Line ("XReq_Format_Put_Step (format, prefix, stanza, pos, " &
                          "args, XReq_Status_Outline);");
       elsif Procname = "" then
-         S.C.Put_Line ("raise XReqLib.Not_Yet_Implemented");
-         S.C.Put_Line ("   with ""The step definition cound not be " &
-                         "found"";");
-         S.C.Put_Line ("if (!XReq_Error_Is_Null (err)) {");
+         S.C.Put_Line ("XReq_Error_Make (err, ""The step definition cound " &
+                       "not be found"", """", 0);");
+         S.C.Put_Line ("if (1) {");
       else
          --  Generate extern declaration
          Include (S.Headers, To_Unbounded_String (H_File));
@@ -226,7 +226,11 @@ package body XReq.Generator.C is
          S.C.Put_Line ("XReq_Report_step_fail (report);");
          S.C.Put_Line ("fail = 1;");
          if Outline then
-            S.C.Put_Line ("Priv_Put_Scenario;");
+            S.C.Put_Line ("XReq_Format_Put_Scenario_Outline (format" & ", " &
+                          Trim (Num_Outlne'Img, Left)                & ", " &
+                          C_String (Scenario.Name)                   & ", " &
+                          C_String (To_String (Scenario.Position))   & ", " &
+                          "tags);");
          end if;
          S.C.Put_Line ("XReq_Format_Put_Step  (format, prefix, stanza, " &
                               "pos, args, XReq_Status_Failed);");
@@ -313,11 +317,11 @@ package body XReq.Generator.C is
       S.C.Put_Line ("#define stop           (*is_stop)");
       S.C.Put_Line ("#define count_mode     (is_count_mode)");
       if Scenario.Outline then
-         S.C.Put_Line ("Table_Type outline_table;");
+         S.C.Put_Line ("XReq_Table* outline_table = XReq_Table_New();");
       end if;
-      S.C.Put_Line ("int         num_step = 0;");
-      S.C.Put_Line ("int         fail     = stop;");
-      S.C.Put_Line ("XReq_Cstr   tags[]   = {");
+      S.C.Put_Line ("int         num_step      = 0;");
+      S.C.Put_Line ("int         fail          = stop;");
+      S.C.Put_Line ("XReq_Cstr   tags[]        = {");
       S.C.Indent (2);
       S.C.Put_Indent;
       for I in Scenario.Tag_First .. Scenario.Tag_Last loop
@@ -348,7 +352,7 @@ package body XReq.Generator.C is
          S.C.Put_Line ("  __feature (format);");
          S.C.Put_Line ("}");
          if Scenario.Outline then
-            Generate_Table (S, "Outline_Table", Scenario.Table);
+            Generate_Table (S, "outline_table", Scenario.Table);
             S.C.Put_Line ("XReq_Format_Enter_Outline (format);");
          else
             S.C.Put_Line ("XReq_Format_Enter_Scenario (format);");
@@ -437,49 +441,32 @@ package body XReq.Generator.C is
             S.C.Put_Line ("fail = stop;");
             if not First then
                S.C.Put_Line (S.Fn_Backgnd &
-                              " (Format, report, First, Cond, Fail);");
+                              " (format, report, is_first, cond, &fail, 1);");
                S.C.Put_Line ("stop = stop || (first && fail);");
             end if;
             S.C.Put_Line ("XReq_Format_Start_Scenario (format);");
-            S.C.Put_Line ("declare");
-            S.C.Indent (2);
-            S.C.Put_Line ("procedure Priv_Put_Scenario;");
-            S.C.Put_Line ("procedure Priv_Put_Scenario is");
-            S.C.Put_Line ("begin");
-            S.C.Put_Line ("  XReq_Format_Put_Scenario_Outline (format, " &
-                            Ada.Strings.Fixed.Trim
-                              (N'Img, Ada.Strings.Left) & ", " &
-                            C_String (Scenario.Name) & ", " &
-                            C_String (To_String (Scenario.Position)) & ", " &
-                            "tags);");
-            S.C.Put_Line ("end Priv_Put_Scenario;");
-            S.C.UnIndent (2);
-            S.C.Put_Line ("begin");
-            S.C.Indent (2);
             for I in Scenario.Outline_Step_First (J) ..
                               Scenario.Outline_Step_Last (J)
             loop
                Generate_Step (S, Scenario,
                               Scenario.Outline_Step_Element (J, I), M,
-                              Background, False, True);
+                              Background, False, True, N);
                M := M + 1;
                Steps_Count := Steps_Count + 1;
             end loop;
-            S.C.UnIndent (2);
-            S.C.Put_Line ("end;");
             S.C.Put_Line ("if (fail) {");
             S.C.Put_Line ("  XReq_Report_scenario_fail (report);");
             S.C.Put_Line ("} else {");
             S.C.Put_Line ("  XReq_Report_scenario_pass (report);");
             S.C.Put_Line ("}");
-            S.C.Put_Line ("XReq_Format_Stop_Scenario ();");
+            S.C.Put_Line ("XReq_Format_Stop_Scenario (format);");
             First := False;
          end loop;
          S.C.Put_Line ("/*******************************");
          S.C.Put_Line ("**  Scenario Outline Summary  **");
          S.C.Put_Line ("*******************************/");
          S.C.Put_Line ("XReq_Format_Put_Outline_Report " &
-                                        "(format, Outline_Table);");
+                                        "(format, outline_table);");
       end if;
       S.C.Put_Line ("/*******************");
       S.C.Put_Line ("**  Finalization  **");
@@ -513,6 +500,9 @@ package body XReq.Generator.C is
          S.C.Put_Line ("}");
          S.C.UnIndent (2);
          S.C.Put_Line ("}");
+      end if;
+      if Scenario.Outline then
+         S.C.Put_Line ("XReq_Table_Free (outline_table);");
       end if;
       S.C.Put_Line ("#undef count_mode");
       S.C.Put_Line ("#undef stop");
