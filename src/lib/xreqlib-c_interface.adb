@@ -1,9 +1,10 @@
 --                         Copyright (C) 2010, Sogilis                       --
 
+with Ada.Strings;
+with Ada.Strings.Fixed;
 with Ada.Real_Time;
 with Ada.Unchecked_Conversion;
 with Ada.Unchecked_Deallocation;
-with Ada.Strings.Unbounded;
 with GNAT.OS_Lib;
 with XReqLib.CLI;
 
@@ -20,7 +21,6 @@ package body XReqLib.C_Interface is
 
 
    function Value (Tags : in XReq_Tags) return XReqLib.Format.Tag_Array_Type is
-      use Ada.Strings.Unbounded;
       use Ada.Containers;
       use XReqLib.Format;
       use String_Vectors;
@@ -252,12 +252,25 @@ package body XReqLib.C_Interface is
       Format.all.Put_Step (Value (Kind), Value (A), Value (B), Args.all,
                            Value (Status));
    end XReq_Format_Put_Step;
+
    procedure XReq_Format_Put_Error  (Format : in XReq_Format_Ptr;
                                      Error  : in XReq_Error_Ptr)
    is
+      use Ada.Strings;
+      use Ada.Strings.Fixed;
+      Step_Error : exception;
    begin
-      Format.all.Put_Error (Error.all);
+      if Error.all.Error then
+         raise Step_Error with
+            To_String (Error.all.Message) & ASCII.LF &
+            "in: " & To_String (Error.all.File) & ":" &
+                     Trim (Error.all.Line'Img, Left) & ASCII.LF;
+      end if;
+   exception
+      when E : Step_Error =>
+         Format.all.Put_Error (E);
    end XReq_Format_Put_Error;
+
    procedure XReq_Format_Stop_Step  (Format : in XReq_Format_Ptr) is
    begin
       Format.all.Stop_Step;
@@ -386,62 +399,101 @@ package body XReqLib.C_Interface is
 
    function XReq_Args_New   return XReq_Args_Ptr is
    begin
-      return null;  --  TODO
+      return new XReq_Args;
    end XReq_Args_New;
 
    function XReq_Table_New return XReq_Table_Ptr is
    begin
-      return null;  --  TODO
+      return new XReq_Table;
    end XReq_Table_New;
 
    function XReq_Error_New return XReq_Error_Ptr is
    begin
-      return null;  --  TODO
+      return new XReq_Error;
    end XReq_Error_New;
 
 
    procedure XReq_Args_Make      (Args : in XReq_Args_Ptr; S : in XReq_Cstr) is
    begin
-      null;  --  TODO
+      Args.Make (Value (S));
    end XReq_Args_Make;
 
    procedure XReq_Args_Add_Match (Args : in XReq_Args_Ptr; A, B : in long) is
    begin
-      null;  --  TODO
+      Args.Add_Match (Integer (A), Integer (B));
    end XReq_Args_Add_Match;
 
    procedure XReq_Args_Add_Sep   (Args : in XReq_Args_Ptr; A    : in long) is
    begin
-      null;  --  TODO
+      Args.Add_Sep (Integer (A));
    end XReq_Args_Add_Sep;
 
-   procedure XReq_Args_Free      (Args : in XReq_Args_Ptr) is
+
+   procedure XReq_Args_Add_Para (Args : in XReq_Args_Ptr; A : in XReq_Cstr) is
    begin
-      null;  --  TODO
+      Args.Add_Para (Value (A));
+   end XReq_Args_Add_Para;
+
+   function  XReq_Args_Match      (Args : in XReq_Args_Ptr; A    : in long)
+                                      return XReq_Cstr is
+   begin
+      return New_String (Args.Match (Integer (A)));
+   end XReq_Args_Match;
+
+   procedure XReq_Args_Free      (Args : in XReq_Args_Ptr) is
+      procedure Dealloc is new Ada.Unchecked_Deallocation
+         (XReq_Args, XReq_Args_Ptr);
+      Ptr : XReq_Args_Ptr := Args;
+   begin
+      Dealloc (Ptr);
    end XReq_Args_Free;
 
 
    procedure XReq_Table_Free     (Tble : in XReq_Table_Ptr) is
+      procedure Dealloc is new Ada.Unchecked_Deallocation
+         (XReq_Table, XReq_Table_Ptr);
+      Ptr : XReq_Table_Ptr := Tble;
    begin
-      null;  --  TODO
+      Dealloc (Ptr);
    end XReq_Table_Free;
 
 
    procedure XReq_Error_Clear    (Err : in XReq_Error_Ptr) is
    begin
-      null;  --  TODO
+      Err.all.Error := False;
    end XReq_Error_Clear;
+
+   procedure XReq_Error_Make         (Err  : in XReq_Error_Ptr;
+                                      A, B : in XReq_Cstr;
+                                      Line : in long)
+   is
+   begin
+      Err.all :=
+        (Error   => True,
+         Message => To_Unbounded_String (Value (A)),
+         File    => To_Unbounded_String (Value (A)),
+         Line    => Integer (Line));
+   end XReq_Error_Make;
 
    function  XReq_Error_Is_Null      (Err : in XReq_Error_Ptr)
                                         return XReq_Bool is
    begin
-      return 0;  --  TODO
+      return Convert (not Err.all.Error);
    end XReq_Error_Is_Null;
 
    procedure XReq_Error_Free     (Err : in XReq_Error_Ptr) is
+      procedure Dealloc is new Ada.Unchecked_Deallocation
+         (XReq_Error, XReq_Error_Ptr);
+      Ptr : XReq_Error_Ptr := Err;
    begin
-      null;  --  TODO
+      Dealloc (Ptr);
    end XReq_Error_Free;
+
+   procedure XReq_String_Free        (Str : in XReq_Cstr) is
+      Ptr : chars_ptr := chars_ptr (Str);
+   begin
+      Free (Ptr);
+   end XReq_String_Free;
 
 
    pragma Warnings (On);

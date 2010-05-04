@@ -715,7 +715,7 @@ package body XReq.Generator.C is
       Body_B.Indent (2);
       Body_B.Put_Line ("#define           self_name    " &
                        C_String (Prc_Name));
-      Body_B.Put_Line ("xreqlibinit();");
+      Body_B.Put_Line ("xreqinit();");
       Body_B.Put_Line ("XReq_Bool         cont       = 0;");
       Body_B.Put_Line ("XReq_Report      *report     = XReq_Report_New();");
       Body_B.Put_Line ("XReq_Format      *format     = NULL;");
@@ -768,7 +768,7 @@ package body XReq.Generator.C is
       Body_B.Put_Line ("XReq_Format_Free (format);");
       Body_B.Put_Line ("XReq_Conditional_Free (cond);");
       Body_B.Put_Line ("XReq_Report_step_Free (report);");
-      Body_B.Put_Line ("xreqlibfinal();");
+      Body_B.Put_Line ("xreqfinal();");
       Body_B.Put_Line ("return exit_code;");
       Body_B.Put_Line ("#undef self_name");
       Body_B.UnIndent (2);
@@ -819,7 +819,23 @@ package body XReq.Generator.C is
       end loop;
       Mak_B.New_Line;
       Mak_B.Put_Line (Name & ": $(OBJECTS_" & Name & ")");
-      Mak_B.Put_Line (Name & ": LDFLAGS+=-lxreq");
+      Mak_B.Put_Line (Name & ": LDFLAGS += -lxreq");
+      Mak_B.New_Line;
+      Mak_B.Put_Line ("clean:");
+      Mak_B.Put_Line (ASCII.HT & "-$(RM) " & Name);
+      Mak_B.Put_Line (ASCII.HT & "-$(RM) $(OBJECTS_" & Name & ")");
+      Mak_B.Put_Line (".PHONY: clean");
+      Mak_B.New_Line;
+      Mak_B.Put_Line ("%.d: %.c");
+      Mak_B.Put_Line (ASCII.HT & "$(SHELL) -ec '$(CC) -M $(CPPFLAGS) $< | " &
+                           "sed -r ""s/^(\S.*)\.o([ :])/\1.o \1.d\2/"" > $@'");
+      Mak_B.New_Line;
+      Mak_B.Put_Line ("depend: $(SOURCES_" & Name & ":.c=.d)");
+      Mak_B.Put_Line ("clean-depend:");
+      Mak_B.Put_Line (ASCII.HT & "-$(RM) $(SOURCES_" & Name & ":.c=.d)");
+      Mak_B.Put_Line (".PHONY: depend clean-depend");
+      Mak_B.New_Line;
+      Mak_B.Put_Line ("include $(SOURCES_" & Name & ":.c=.d)");
       Mak_B.New_Line;
 
       Set_File    (Filename, To_String (With_B.Buffer));
