@@ -471,7 +471,7 @@ package body XReqLib.C_Interface is
       Err.all :=
         (Error   => True,
          Message => To_Unbounded_String (Value (A)),
-         File    => To_Unbounded_String (Value (A)),
+         File    => To_Unbounded_String (Value (B)),
          Line    => Integer (Line));
    end XReq_Error_Make;
 

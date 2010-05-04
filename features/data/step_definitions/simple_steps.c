@@ -12,8 +12,8 @@ XREQ_STEP (Given_this_step_works_with)
   size_t len = 1024 + strlen(match_1);
   char string[len];
   snprintf(string, len, "Debug text for working step %s", match_1);
-  XReq_Args_Add_Para (string);
-  printf("This step works %s", match_1);
+  XReq_Args_Add_Para (XREQ_ARG, string);
+  printf("This step works %s\n", match_1);
   XReq_String_Free (match_1);
 }
 
