@@ -237,6 +237,8 @@ package XReqLib.C_Interface is
                                    Tble : in XReq_Table_Ptr);
    function  XReq_Args_Match      (Args : in XReq_Args_Ptr; A    : in long)
                                       return XReq_Cstr;
+   function  XReq_Args_Text       (Args : in XReq_Args_Ptr; A    : in long)
+                                      return XReq_Cstr;
    function  XReq_Args_Table      (Args : in XReq_Args_Ptr; A    : in long)
                                       return XReq_Table_Ptr;
    procedure XReq_Args_Free       (Args : in XReq_Args_Ptr);
@@ -324,6 +326,7 @@ package XReqLib.C_Interface is
    pragma Export (C, XReq_Args_Add_Text,         "XReq_Args_Add_Text");
    pragma Export (C, XReq_Args_Add_Table,        "XReq_Args_Add_Table");
    pragma Export (C, XReq_Args_Match,            "XReq_Args_Match");
+   pragma Export (C, XReq_Args_Text,             "XReq_Args_Text");
    pragma Export (C, XReq_Args_Table,            "XReq_Args_Table");
    pragma Export (C, XReq_Args_Free,             "XReq_Args_Free");
    pragma Export (C, XReq_Table_Put,             "XReq_Table_Put");

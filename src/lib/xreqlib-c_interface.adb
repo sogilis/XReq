@@ -458,6 +458,12 @@ package body XReqLib.C_Interface is
       return New_String (Args.Match (Integer (A)));
    end XReq_Args_Match;
 
+   function  XReq_Args_Text       (Args : in XReq_Args_Ptr; A    : in long)
+                                      return XReq_Cstr is
+   begin
+      return New_String (Args.Text (Integer (A)));
+   end XReq_Args_Text;
+
 
    function  XReq_Args_Table      (Args : in XReq_Args_Ptr; A    : in long)
                                       return XReq_Table_Ptr is
