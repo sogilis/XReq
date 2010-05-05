@@ -246,10 +246,10 @@ package body Util.Strings is
          case C is
             when '"' =>
                Append (Buffer, "\""");
-            when Character'Val (32) .. Character'Val (33)  |
-                 Character'Val (35) .. Character'Val (126) =>
-               Append (Buffer, C);
-            when others =>
+            when '\' =>
+               Append (Buffer, "\\");
+            when Character'First     .. Character'Val (31) |
+                 Character'Val (127) .. Character'Last =>
                A := Character'Pos (C);
                X := A / 8#100#;
                A := A - 8#100# * X;
@@ -257,6 +257,8 @@ package body Util.Strings is
                Z := A - 8#10# * Y;
                Append (Buffer, "\" & Trim (X'Img, Left) & Trim (Y'Img, Left) &
                        Trim (Z'Img, Left));
+            when others =>
+               Append (Buffer, C);
          end case;
       end loop;
       Append (Buffer, """");

@@ -48,7 +48,7 @@ package body Strings is
 
    procedure When_I_compare_it_with (Args : in out Arg_Type) is
    begin
-          Second_String := Decode (Args.Match (1));
+      Second_String := Decode (Args.Match (1));
    end When_I_compare_it_with;
 
    procedure Then_they_are_equal (Args : in out Arg_Type) is
