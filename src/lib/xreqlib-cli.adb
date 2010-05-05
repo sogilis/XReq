@@ -82,6 +82,7 @@ package body XReqLib.CLI is
                               Continue   : out    Boolean;
                               Cond       : out    Conditional_Type;
                               List_Mode  : out    Boolean;
+                              Success    : out    Boolean;
                               Name       : in     String := Command_Name)
    is
       use String_Vectors;
@@ -92,6 +93,7 @@ package body XReqLib.CLI is
       Arg        : Unbounded_String;
       Debug_Mode : Boolean := False;
    begin
+      Success    := True;
       List_Mode  := False;
       Cond       := Null_Condition;
       Initialize_Option_Scan (Parser, Args);
@@ -176,7 +178,7 @@ package body XReqLib.CLI is
          Free (Parser);
          Free (Format);
          Help (Name);
-         Set_Exit_Status (Failure);
+         Success    := False;
          Continue   := False;
          List_Mode  := False;
          Cond       := Null_Condition;
@@ -186,7 +188,7 @@ package body XReqLib.CLI is
          Free (Parser);
          Free (Format);
          Help (Name);
-         Set_Exit_Status (Failure);
+         Success    := False;
          Continue   := False;
          List_Mode  := False;
          Cond       := Null_Condition;
@@ -209,9 +211,13 @@ package body XReqLib.CLI is
                               Name       : in     String := Command_Name)
    is
       Args : Argument_List_Access;
+      Succ : Boolean;
    begin
       Get_Arguments   (Args);
-      Parse_Arguments (Args, Format, Continue, Cond, List_Mode, Name);
+      Parse_Arguments (Args, Format, Continue, Cond, List_Mode, Succ, Name);
+      if not Succ then
+         Set_Exit_Status (Failure);
+      end if;
    end Parse_Arguments;
 
 end XReqLib.CLI;

@@ -98,7 +98,7 @@ void XReq_Report_num_steps_inc (XReq_Report*, long);
 long XReq_Report_get_num_steps (XReq_Report*);
 XReq_Bool XReq_Report_Status   (XReq_Report*);
 
-void XReq_CLI_Parse_Arguments   (long, char**, XReq_Format**, XReq_Bool*, XReq_Conditional*, XReq_Bool*, XReq_Cstr);
+XReq_Bool XReq_CLI_Parse_Arguments (long, char**, XReq_Format**, XReq_Bool*, XReq_Conditional*, XReq_Bool*, XReq_Cstr);
 
 XReq_Args*  XReq_Args_New  ();
 XReq_Table* XReq_Table_New ();
@@ -108,6 +108,7 @@ void XReq_Args_Make          (XReq_Args*, XReq_Cstr);
 void XReq_Args_Add_Match     (XReq_Args*, long, long);
 void XReq_Args_Add_Sep       (XReq_Args*, long);
 void XReq_Args_Add_Para      (XReq_Args*, XReq_Cstr);
+void XReq_Args_Add_Text      (XReq_Args*, XReq_Cstr);
 void XReq_Args_Add_Table     (XReq_Args*, XReq_Table*);
 XReq_Cstr   XReq_Args_Match  (XReq_Args*, long);
 XReq_Table* XReq_Args_Table  (XReq_Args*, long);

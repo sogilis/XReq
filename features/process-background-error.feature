@@ -114,7 +114,7 @@ Feature: Skip scenarios after a background error
           Given this step works with BACKGROUND
           And it fails
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
-      in: ../../../features/data/step_definitions/simple_steps.c:22
+      in: ../../../features/data/step_definitions/simple_steps.c:28
           And this step works with BACKGROUND
 
         Scenario: Run a good step 1
@@ -216,7 +216,7 @@ Feature: Skip scenarios after a background error
       This step works BACKGROUND
           Given this fails periodically
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: State is FALSE (should be TRUE)
-      in: ../../../features/data/step_definitions/simple_steps.c:31
+      in: ../../../features/data/step_definitions/simple_steps.c:37
           And this step works with BACKGROUND
           And this step works with STEP
           And this is ignored
@@ -233,7 +233,7 @@ Feature: Skip scenarios after a background error
       This step works BACKGROUND
           Given this fails periodically
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: State is FALSE (should be TRUE)
-      in: ../../../features/data/step_definitions/simple_steps.c:31
+      in: ../../../features/data/step_definitions/simple_steps.c:37
           And this step works with BACKGROUND
           And this step works with STEP
           And this is ignored

@@ -7,6 +7,7 @@ Feature: Tags
     Given xreq is in the PATH
     And I am in the xreq directory
 
+  @lang @lang-Ada
   Scenario: Show tags
     Given a file "features/data/tmp-tags1.feature":
       """
@@ -60,6 +61,62 @@ Feature: Tags
       @tag2
       """
 
+  @lang @lang-C
+  Scenario: Show tags
+    Given a file "features/data/tmp-tags1.feature":
+      """
+      Feature: F
+
+        @tagB
+
+        Background:
+          Given this step doesn't work
+
+        @tag1 @tag2
+        Scenario: S
+          Given this step works
+      """
+    When I run xreq -m -x suite features/data/tmp-tags1.feature
+    Then it should pass
+
+    When I run the test suite "./suite" in features/data/tests
+    Then it should fail with
+      """
+      Feature: F
+
+        @tagB
+        Background:
+          Given this step doesn't work
+            XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
+      in: ../../../features/data/step_definitions/simple_steps.c:28
+
+        @tag1
+        @tag2
+        Scenario: S
+          Given this step works
+
+      1 scenario (1 failed)
+      2 steps (1 failed, 1 skipped)
+
+      """
+
+    When I run the test suite "./suite -f html -o report.html" in features/data/tests
+    Then it should fail
+    And "features/data/tests/report.html" should exist
+    And "features/data/tests/report.html" should contain
+      """
+      @tagB
+      """
+    And "features/data/tests/report.html" should contain
+      """
+      @tag1
+      """
+    And "features/data/tests/report.html" should contain
+      """
+      @tag2
+      """
+
+  @lang @lang-Ada
   Scenario: Show tags (2)
     Given a file "features/data/tmp-tags2.feature":
       """
@@ -87,6 +144,66 @@ Feature: Tags
         Background:
           Given this step doesn't work
             XREQLIB.ASSERTS.ERROR: Assertion failed
+
+        @tag1
+        @tag2
+        Scenario: S
+          Given this step works
+
+      1 scenario (1 failed)
+      2 steps (1 failed, 1 skipped)
+
+      """
+
+    When I run the test suite "./suite -f html -o report.html" in features/data/tests
+    Then it should fail
+    And "features/data/tests/report.html" should exist
+    And "features/data/tests/report.html" should contain
+      """
+      @tagB
+      """
+    And "features/data/tests/report.html" should contain
+      """
+      @tagC
+      """
+    And "features/data/tests/report.html" should contain
+      """
+      @tag1
+      """
+    And "features/data/tests/report.html" should contain
+      """
+      @tag2
+      """
+
+  @lang @lang-C
+  Scenario: Show tags (2)
+    Given a file "features/data/tmp-tags2.feature":
+      """
+      Feature: F
+
+        @tagB @tagC
+
+        Background:
+          Given this step doesn't work
+
+        @tag1 @tag2
+        Scenario: S
+          Given this step works
+      """
+    When I run xreq -m -x suite features/data/tmp-tags2.feature
+    Then it should pass
+
+    When I run the test suite "./suite" in features/data/tests
+    Then it should fail with
+      """
+      Feature: F
+
+        @tagB
+        @tagC
+        Background:
+          Given this step doesn't work
+            XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
+      in: ../../../features/data/step_definitions/simple_steps.c:28
 
         @tag1
         @tag2

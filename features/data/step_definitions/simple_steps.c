@@ -6,6 +6,12 @@ XREQ_STEP (Given_this_step_works)
 {
 }
 
+XREQ_STEP(Given_this_step_works_loudly)
+{
+  XReq_Args_Add_Para (XREQ_ARG, "Debug text");
+  printf("This step works\n");
+}
+
 XREQ_STEP (Given_this_step_works_with)
 {
   const char* match_1 = XReq_Args_Match(XREQ_ARG, 1);

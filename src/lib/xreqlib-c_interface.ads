@@ -206,12 +206,13 @@ package XReqLib.C_Interface is
    ---  void XReq_CLI_Parse_Arguments  (long, char**, XReq_Format**,
    ---                                  XReq_Bool*, XReq_Conditional**,
    ---                                  XReq_Bool*, XReq_Cstr);
-   procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
+   function  XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
                                         Format     : access XReq_Format_Ptr;
                                         Continue   : access XReq_Bool;
                                         Cond       : in XReq_Conditional_Ptr;
                                         List_Mode  : access XReq_Bool;
-                                        Name       : in     XReq_Cstr);
+                                        Name       : in     XReq_Cstr)
+                                                     return XReq_Bool;
 
    ---  XReq_Args*  XReq_Args_New  ();
    ---  XReq_Table* XReq_Table_New ();
@@ -231,6 +232,7 @@ package XReqLib.C_Interface is
    procedure XReq_Args_Add_Match  (Args : in XReq_Args_Ptr; A, B : in long);
    procedure XReq_Args_Add_Sep    (Args : in XReq_Args_Ptr; A    : in long);
    procedure XReq_Args_Add_Para   (Args : in XReq_Args_Ptr; A : in XReq_Cstr);
+   procedure XReq_Args_Add_Text   (Args : in XReq_Args_Ptr; A : in XReq_Cstr);
    procedure XReq_Args_Add_Table  (Args : in XReq_Args_Ptr;
                                    Tble : in XReq_Table_Ptr);
    function  XReq_Args_Match      (Args : in XReq_Args_Ptr; A    : in long)
@@ -319,6 +321,7 @@ package XReqLib.C_Interface is
    pragma Export (C, XReq_Args_Add_Match,        "XReq_Args_Add_Match");
    pragma Export (C, XReq_Args_Add_Sep,          "XReq_Args_Add_Sep");
    pragma Export (C, XReq_Args_Add_Para,         "XReq_Args_Add_Para");
+   pragma Export (C, XReq_Args_Add_Text,         "XReq_Args_Add_Text");
    pragma Export (C, XReq_Args_Add_Table,        "XReq_Args_Add_Table");
    pragma Export (C, XReq_Args_Match,            "XReq_Args_Match");
    pragma Export (C, XReq_Args_Table,            "XReq_Args_Table");

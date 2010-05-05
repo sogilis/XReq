@@ -93,6 +93,7 @@ Feature: Scenario Outlines
 
       """
 
+  @lang @lang-Ada
   Scenario: Failing Scenario Outline
     Given a file "features/data/tmp-outline2.feature":
       """
@@ -145,6 +146,70 @@ Feature: Scenario Outlines
           Scenario 2: eating
             Then I should have NaN cucumbers
               XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
+
+          Examples:
+            | start | eat | left |
+            |    12 |   5 |    7 |
+            |    20 |   5 | NaN  |
+
+      2 scenarios (1 failed, 1 passed)
+      6 steps (1 failed, 5 passed)
+
+      """
+
+  @lang @lang-C
+  Scenario: Failing Scenario Outline
+    Given a file "features/data/tmp-outline2.feature":
+      """
+      Feature: eating
+
+        @tag1 @tag2
+        Scenario Outline: eating
+          Given there are <start> cucumbers
+          When I eat <eat> cucumbers
+          Then I should have <left> cucumbers
+
+          Examples:
+            | start | eat | left |
+            |  12   |  5  |  7   |
+            |  20   |  5  |  NaN |
+
+      """
+
+    When I run xreq -m -x failing_suite features/data/tmp-outline2.feature
+    Then it should fail
+    And the output should contain
+      """
+      ERROR: Missing step definition in features/data/tmp-outline2.feature:7 for:
+        Then I should have NaN cucumbers
+      You can implement this step by adding on your step definition file:
+        --  @then ^I should have NaN cucumbers$
+        --  @todo
+      """
+
+    When I run xreq -m -x failing_suite -s features/data/step_definitions -s features/data/step_definitions2 features/data/tmp-outline2.feature
+    Then it should pass
+
+    When I run the test suite "./failing_suite -d -f html -o report.html" in features/data/tests
+    Then it should fail
+    When I run "cp features/data/tests/report.html reports/sample-html-outline-2.html"
+    Then it should pass
+
+    When I run the test suite "./failing_suite" in features/data/tests
+    Then it should fail with
+      """
+      Feature: eating
+
+        @tag1
+        @tag2
+        Scenario Outline: eating
+          Given there are <start> cucumbers
+          When I eat <eat> cucumbers
+          Then I should have <left> cucumbers
+
+          Scenario 2: eating
+            Then I should have NaN cucumbers
+              XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: The step definition cound not be found
 
           Examples:
             | start | eat | left |

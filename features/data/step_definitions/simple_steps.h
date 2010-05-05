@@ -3,29 +3,29 @@
 #ifndef SIMPLE_STEPS_H
 #define SIMPLE_STEPS_H
 
-XREQ_GIVEN("^this( step)? is ambiguous$")
-XREQ_GIVEN("^this( step)? is( too)? ambiguous$")
-XREQ_GIVEN("^this( step)? is ambiguous too$")
+// @given ^this( step)? is ambiguous$
+// @given ^this( step)? is( too)? ambiguous$
+// @given ^this( step)? is ambiguous too$
 
-XREQ_GIVEN("^this is ignored$")
-XREQ_GIVEN("^do nothing$")
-XREQ_GIVEN("^I match \"([^\"]*)\" and \"([^\"]*)\"$")
+// @given ^this is ignored$
+// @given ^I match \"([^\"]*)\" and \"([^\"]*)\"$
+// @then ^do nothing$
 
-XREQ_GIVEN("^this step works$")
+// @given ^this step works$
 
 XREQ_STEP (Given_this_step_works);
 
 
-
 // @given ^this step works with (.*)$
-
 XREQ_STEP (Given_this_step_works_with);
 
 
+// @given ^this step works loudly$
+XREQ_STEP(Given_this_step_works_loudly);
 
-XREQ_GIVEN("^this step doesn't work$")
-XREQ_GIVEN("^it fails$")
-XREQ_WHEN ("^it fails$")
+// @given ^this step doesn't work$
+// @given ^it fails$
+// @when  ^it fails$
 XREQ_STEP (Given_this_step_doesn_t_work);
 
 

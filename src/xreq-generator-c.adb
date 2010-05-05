@@ -715,8 +715,9 @@ package body XReq.Generator.C is
       Body_B.Put_Line ("XReq_Duration     time_delta = 0;");
       Body_B.Put_Line ("int               exit_code  = 0;");
       Body_B.New_Line;
-      Body_B.Put_Line ("XReq_CLI_Parse_Arguments (argc, argv, &format, " &
-                                   "&cont, cond, &list_mode, self_name);");
+      Body_B.Put_Line ("if(!XReq_CLI_Parse_Arguments (argc, argv," &
+                           " &format, &cont, cond, &list_mode, self_name)) " &
+                           "exit_code = 1;");
       Body_B.Put_Line ("if (cont) {");
       Body_B.Indent (2);
       Body_B.Put_Line    ("XReq_Format_Start_Tests (format);");

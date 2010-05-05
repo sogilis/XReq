@@ -369,12 +369,13 @@ package body XReqLib.C_Interface is
       return Convert (XReqLib.Report.Status (Report.all));
    end XReq_Report_Status;
 
-   procedure XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
+   function  XReq_CLI_Parse_Arguments  (argc : long; argv : chars_ptr_array;
                                         Format     : access XReq_Format_Ptr;
                                         Continue   : access XReq_Bool;
                                         Cond       : in XReq_Conditional_Ptr;
                                         List_Mode  : access XReq_Bool;
                                         Name       : in     XReq_Cstr)
+                                                     return XReq_Bool
    is
       use GNAT.OS_Lib;
       use XReqLib.Format;
@@ -382,6 +383,7 @@ package body XReqLib.C_Interface is
       Res_Continue, Res_List_Mode : Boolean;
       Res_Format : Format_Ptr;
       Res_Cond   : Conditional_Type;
+      Success    : Boolean := True;
    begin
       Args := new Argument_List (1 .. Integer (argc - 1));
       for I in 1 .. Integer (argc - 1) loop
@@ -393,11 +395,13 @@ package body XReqLib.C_Interface is
          Continue  => Res_Continue,
          Cond      => Res_Cond,
          List_Mode => Res_List_Mode,
+         Success   => Success,
          Name      => Value (Name));
       Format.all    := Res_Format;
       Continue.all  := Convert (Res_Continue);
       Cond.all      := Res_Cond;
       List_Mode.all := Convert (Res_List_Mode);
+      return Convert (Success);
    end XReq_CLI_Parse_Arguments;
 
    function XReq_Args_New   return XReq_Args_Ptr is
@@ -436,6 +440,11 @@ package body XReqLib.C_Interface is
    begin
       Args.Add_Para (Value (A));
    end XReq_Args_Add_Para;
+
+   procedure XReq_Args_Add_Text (Args : in XReq_Args_Ptr; A : in XReq_Cstr) is
+   begin
+      Args.Add_Text (Value (A));
+   end XReq_Args_Add_Text;
 
    procedure XReq_Args_Add_Table  (Args : in XReq_Args_Ptr;
                                    Tble : in XReq_Table_Ptr) is

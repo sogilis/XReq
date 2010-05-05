@@ -20,6 +20,7 @@ package XReqLib.CLI is
                               Continue   : out    Boolean;
                               Cond       : out    Conditional_Type;
                               List_Mode  : out    Boolean;
+                              Success    : out    Boolean;
                               Name       : in     String := Command_Name);
 
    procedure Parse_Arguments (Format     : out    Format_Ptr;
