@@ -835,20 +835,24 @@ package body XReq.Generator.C is
       Set_File    (Mak_Name, To_String (Mak_B.Buffer));
       Log.Put_Line ("Generate: " & Mak_Name);
       if Make then
+         --  Using make(1) -b flag to force recompilation in case the .c file
+         --  is newer than the .o file for less than a second.
          declare
             Arg1    : aliased String := "-C";
             Arg2    : aliased String := Out_Dir (Env);
             Arg3    : aliased String := "-f";
             Arg4    : aliased String := Name & ".Makefile";
-            Args    : constant Argument_List (1 .. 4)
+            Arg5    : aliased String := "-B";
+            Args    : constant Argument_List (1 .. 5)
                     := (Arg1'Unchecked_Access, Arg2'Unchecked_Access,
-                        Arg3'Unchecked_Access, Arg4'Unchecked_Access);
+                        Arg3'Unchecked_Access, Arg4'Unchecked_Access,
+                        Arg5'Unchecked_Access);
             Buffer  : Unbounded_String;
             Success : Boolean;
             Code    : Integer;
          begin
             Log.Put_Line ("Build: make -C " & Out_Dir (Env) &
-                                     " -f " & Name & ".Makefile");
+                                     " -f " & Name & ".Makefile -B");
             Spawn ("make", Args, Buffer, Success, Code);
             Log.Put_Line (Buffer);
             if not Success then

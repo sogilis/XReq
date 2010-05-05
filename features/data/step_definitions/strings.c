@@ -34,8 +34,6 @@ XREQ_STEP(Given_the_long_string)
 
 XREQ_STEP(When_I_compare_it_with)
 {
-  puts("XReq_Args_Match:");
-  puts(XReq_Args_Match (XREQ_ARG, 0));
   const char* str1 = XReq_Args_Match (XREQ_ARG, 1);
   size_t len = strlen(str1);
   string2 = malloc (len+1);
