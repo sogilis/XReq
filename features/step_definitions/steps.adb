@@ -331,4 +331,21 @@ package body Steps is
       Assert (False, "Not Yet Implemented");
    end Not_Yet_Implemented;
 
+   procedure Given_is_empty (Args : in out Arg_Type) is
+      Search : Search_Type;
+      Entryy : Directory_Entry_Type;
+   begin
+      Start_Search (Search, Args.Match (1), "");
+      while More_Entries (Search) loop
+         Get_Next_Entry (Search, Entryy);
+         case Kind (Entryy) is
+            when Directory =>
+               Delete_Tree (Full_Name (Entryy));
+            when others =>
+               Delete_File (Full_Name (Entryy));
+         end case;
+      end loop;
+      End_Search (Search);
+   end Given_is_empty;
+
 end Steps;

@@ -64,4 +64,7 @@ package Steps is
 
    procedure Not_Yet_Implemented (Args : in out Arg_Type);
 
+   --  @given ^"([^"]*)" is empty$
+   procedure Given_is_empty (Args : in out Arg_Type);
+
 end Steps;

@@ -262,7 +262,7 @@ _cucumber_clean_rerun:
 	-$(RM) -f cucumber-rerun.txt
 	-$(RM) -f cucumber-rerun-lang.txt
 
-run-cucumber: bin
+run-cucumber:
 	$(MAKE) run-cucumber-wip
 	$(MAKE) run-cucumber-ada
 	$(MAKE) run-cucumber-c
@@ -310,15 +310,36 @@ rerun-cucumber: bin
 	fi
 	-$(RM) -f cucumber-rerun.txt
 
-run-xreq: bin
+run-xreq:
+	$(MAKE) run-xreq-wip
+	$(MAKE) run-xreq-ada
+	$(MAKE) run-xreq-c
+
+run-xreq-wip: features/tests/suite
 	@echo
-	@echo "###################"
-	@echo "##  Run XReq  ##"
-	@echo "###################"
+	@echo "#####################################"
+	@echo "##  Run XReq for work in progress  ##"
+	@echo "#####################################"
 	@echo
-	bin/xreq -x suite features/*.feature
-	$(GPRBUILD) -Pfeatures/tests/suite.gpr
-	features/tests/suite
+	features/tests/suite -t '@wip'
+
+run-xreq-ada: features/tests/suite
+	@echo
+	@echo "########################"
+	@echo "##  Run XReq for Ada  ##"
+	@echo "########################"
+	@echo
+	XREQ_LANG=Ada \
+	features/tests/suite -t '~@wip,~@bootstrap,~@lang+~@wip,~@bootstrap,@lang-Ada'
+
+run-xreq-c: features/tests/suite
+	@echo
+	@echo "######################"
+	@echo "##  Run XReq for C  ##"
+	@echo "######################"
+	@echo
+	XREQ_LANG=C \
+	features/tests/suite -t '~@wip,~@bootstrap,~@lang+~@wip,~@bootstrap,@lang-C'
 
 run-tests: tests bin
 	@echo

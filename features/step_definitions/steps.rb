@@ -39,8 +39,10 @@ Given /^the sources of xreq are in ADA_INCLUDE_PATH$/ do
 end
 
 Given /^"([^"]*)" is empty$/ do |dir|
-  FileUtils.remove_dir(dir) rescue nil;
-  FileUtils.mkdir_p(dir);
+  Dir.foreach(dir) do |f|
+    if f == '.' or f == '..' then next end
+    FileUtils.rm_rf("#{dir}/#{f}")
+  end
 end
 
 Given /^I am in an empty directory$/ do
