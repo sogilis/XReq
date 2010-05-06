@@ -20,8 +20,8 @@ project Unit_Tests is
       case Mode is
          when "coverage" =>
             for Executable ("test_main.adb") use "unit_tests.cov";
-         when others =>
-            for Executable ("test_main.adb") use "unit_tests";
+         when "debug" =>
+            for Executable ("test_main.adb") use "unit_tests.dbg";
       end case;
    end Builder;
 

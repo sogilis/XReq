@@ -4,7 +4,9 @@ GNATMAKE=gnatmake
 TEST_SUITES=test coverage
 CONFIG=dbg
 MODE=
-LIBTYPE=dynamic
+LIBTYPE=static
+# dynamic makes gcov unhappy: hidden symbol `__gcov_merge_add' is referenced by
+# DSO (Dynamic Shared Object).
 LIBEXT=
 
 ifeq ($(CONFIG),dbg)
@@ -23,11 +25,21 @@ ifeq ($(LIBTYPE),dynamic)
 LIBEXT=so
 endif
 
+VERBOSE=
+
 GPRBUILD=gprbuild
 GPS=gps
 INSTALL=install
 CP=cp -R
 MKDIR=mkdir -p
+
+ifeq ($(VERBOSE),)
+GPRBUILD_FLAGS=-p -q
+XREQ_FLAGS=-q
+else
+GPRBUILD_FLAGS=-p -v
+XREQ_FLAGS=
+endif
 
 DESTDIR    =
 PREFIX     =$(shell which $(GPRBUILD) 2>/dev/null | sed -e's/\/bin\/[^/]*//')
@@ -54,6 +66,8 @@ all: bin lib gps-plugin tests doc
 
 
 check-all: all gnatcheck run-unit run-cucumber run-xreq coverage
+
+$(VERBOSE).SILENT:
 
 ########################
 ##                    ##
@@ -84,74 +98,94 @@ bin: bin/xreq
 lib: lib/$(MODE)/libxreqlib.$(LIBEXT) lib/$(MODE)/libxreq.so
 
 lib/debug/libxreq.so: dir
-	$(GPRBUILD) -p -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
 
 lib/release/libxreq.so: dir
-	$(GPRBUILD) -p -Plibxreq.gpr -Xtype=dynamic -Xmode=release
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=release
 
 lib/coverage/libxreq.so: dir
-	$(GPRBUILD) -p -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
 
 lib/debug/libxreqlib.so: dir
-	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
 
 lib/release/libxreqlib.so: dir
-	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
 
 lib/coverage/libxreqlib.so: dir
-	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
 
 lib/debug/libxreqlib.a: dir
-	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=static  -Xmode=debug
 
 lib/release/libxreqlib.a: dir
-	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=static  -Xmode=release
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=static  -Xmode=release
 
 lib/coverage/libxreqlib.a: dir
-	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
 
-bin/xreq.cov: dir
-	$(GPRBUILD) -p -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
+bin/xreq.cov: lib/coverage/libxreqlib.$(LIBEXT)
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=coverage
 
-bin/xreq.rel: dir
-	$(GPRBUILD) -p -Pxreq.gpr    -Xtype=dynamic -Xmode=release
+bin/xreq.rel: lib/release/libxreqlib.$(LIBEXT)
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=release
 
-bin/xreq.dbg: dir
-	$(GPRBUILD) -p -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
+bin/xreq.dbg: lib/debug/libxreqlib.$(LIBEXT)
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=debug
 
 bin/xreq: bin/xreq.$(CONFIG)
+	@echo "LINK    $@"
 	-rm -f bin/xreq
 	ln -s xreq.$(CONFIG) bin/xreq
 
 lib/gps/libxreqgps.so: dir
-	$(GPRBUILD) -Pgps_plugin.gpr -Xmode=release
+	@echo "LINK    $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pgps_plugin.gpr -Xmode=release
 	#$(MAKE) -C src/gps libgprcustom.so && mv src/gps/libgprcustom.so $@
 
 gps-plugin: lib/gps/libxreqgps.so
 
-bin/unit_tests: dir
-	$(GPRBUILD) -Punit_tests.gpr -Xmode=debug
+bin/unit_tests.dbg: dir
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Punit_tests.gpr -Xmode=debug
 
 bin/unit_tests.cov: dir
-	$(GPRBUILD) -Punit_tests.gpr -Xmode=coverage
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Punit_tests.gpr -Xmode=coverage
 
 bin/feature_tests: bin/feature_tests.dbg
+	@echo "LINK    $@"
 	ln -s -f feature_tests.dbg $@
 
 bin/feature_tests.dbg: bin/xreq features/*.feature
+	@echo "XREQ    $@"
 	-$(MKDIR) features/tests/dbg
 	GNAT_FLAGS="-g -gnata -E" \
-	bin/xreq -m -x feature_tests -o features/tests/dbg features/*.feature
+	bin/xreq $(XREQ_FLAGS) -m -x feature_tests -o features/tests/dbg features/*.feature
 	$(CP) features/tests/dbg/feature_tests $@
 
 bin/feature_tests.cov: bin/xreq features/*.feature
+	@echo "XREQ    $@"
 	-$(MKDIR) features/tests/cov
 	GNAT_FLAGS="-g -gnata -E -fprofile-arcs -ftest-coverage" \
-	bin/xreq -m -x feature_tests -o features/tests/cov features/*.feature
+	bin/xreq $(XREQ_FLAGS) -m -x feature_tests -o features/tests/cov features/*.feature
 	$(CP) features/tests/cov/feature_tests $@
 
-bin/unit_tests: dir
-	$(GPRBUILD) -p -Punit_tests.gpr
+bin/unit_tests: bin/unit_tests.dbg
+	@echo "LINK    $@"
+	ln -s -f unit_tests.dbg $@
 
 tests: bin/unit_tests bin/feature_tests
 
@@ -185,6 +219,11 @@ clean: clean-gcov
 	-$(RM) reports/*.gcov
 	-$(RM) reports/features*.html
 	-$(RM) reports/features*.junit/*
+	-$(RM) features/data/tmp-*
+	-$(RM) features/data/step_definitions*/*.[od]
+	-$(RM) -rf features/tests/*
+	-$(RM) -rf tests/features/tests/*
+	-find . -name "*~" -print0 | xargs -0 rm
 
 _tests_requirements: bin lib
 
@@ -197,6 +236,69 @@ _tests_requirements: bin lib
 ##                ##
 ####################
 
+cov-init:
+	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
+
+cov-test-base:
+	@echo "LCOV    --zerocounters"
+	-lcov -q -d obj/coverage --zerocounters
+	@echo "LCOV    --initial -t Base"
+	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
+
+cov-test-ignore:
+	@echo "COV     coverage/2-ignore.lcov.info"
+	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
+	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
+	-rm coverage/2-ignore.lcov.info.tmp
+
+cov-test-unit: bin/unit_tests.cov
+	@echo "LCOV    --zerocounters"
+	lcov -q -d obj/coverage --zerocounters
+	@echo "RUN     bin/unit_tests.cov"
+	-bin/unit_tests.cov -text -o reports/test.aunit.txt > reports/test-debug.aunit.txt 2>&1
+	@echo "LCOV    coverage/10-unit.lcov.info"
+	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
+
+cov-test-cucumber-ada: _tests_requirements bin/xreq.cov
+	@echo "LCOV    --zerocounters"
+	lcov -q -d obj/coverage --zerocounters
+	@echo "RM      bin/xreq"
+	-$(RM) bin/xreq
+	@echo "LINK    bin/xreq"
+	ln -s -f xreq.cov bin/xreq
+	@echo "MAKE    run-cucumber-ada"
+	-@$(MAKE) run-cucumber-ada >/dev/null 2>&1
+	@echo "RM      bin/xreq"
+	-$(RM) bin/xreq
+	@echo "MAKE    bin/xreq"
+	$(MAKE) bin/xreq
+
+cov-html:
+	@echo "LCOV    --zerocounters"
+	-lcov -q -d obj/coverage --zerocounters
+	@echo "LCOV    coverage/lcov.info"
+	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '*~*'    -o coverage/lcov.info
+	lcov --remove coverage/lcov.info '*__*'   -o coverage/lcov.info
+	@echo "GENHTML coverage/lcov.info"
+	genhtml --show-details --no-function-coverage -o coverage coverage/lcov.info || \
+	genhtml --show-details -o coverage coverage/lcov.info
+
+cov: bin/xreq.cov lib/coverage/libxreq.so bin/unit_tests.cov
+	@echo "MAKE    cov-init"
+	$(MAKE) cov-init
+	@echo "MAKE    cov-test-base"
+	$(MAKE) cov-test-base
+	@echo "MAKE    cov-test-unit"
+	$(MAKE) cov-test-unit
+	@echo "MAKE    cov-test-ignore"
+	$(MAKE) cov-test-ignore
+	@echo "MAKE    cov-html"
+	$(MAKE) cov-html
+
+.PHO?Y: cov cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html
 
 clean-gcov:
 	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
@@ -235,7 +337,7 @@ coverage: tests bin/xreq.cov bin/unit_tests.cov bin/feature_tests.cov
 	@echo "##  Run coverage tests  ##"
 	@echo "##########################"
 	@echo
-	$(GPRBUILD) -P xreq.gpr -Xmode=coverage
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -P xreq.gpr -Xmode=coverage
 	-$(RM) -f bin/xreq
 	$(MAKE) clean-gcov
 	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
@@ -299,10 +401,12 @@ _gcov-gather-cucumber:
 
 
 features/tests/suite.gpr: bin/xreq $(wildcard features/*.feature)
-	bin/xreq -x suite $(wildcard features/*.feature)
+	@echo "XREQ    $@"
+	bin/xreq $(XREQ_FLAGS) -x suite $(wildcard features/*.feature)
 
 features/tests/suite: features/tests/suite.gpr
-	$(GPRBUILD) -Pfeatures/tests/suite.gpr
+	@echo "GNAT    BUILD   $@"
+	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pfeatures/tests/suite.gpr
 .PHONY: features/tests/suite
 
 _cucumber_clean_rerun:
@@ -313,14 +417,14 @@ run-cucumber:
 	$(MAKE) run-cucumber-ada
 	$(MAKE) run-cucumber-c
 
-run-cucumber-wip: bin _cucumber_clean_rerun
+run-cucumber-wip: _tests_requirements _cucumber_clean_rerun
 	@echo
 	@echo "#########################################"
 	@echo "##  Run cucumber for work in progress  ##"
 	@echo "#########################################"
 	cucumber -w -t "@wip" -f progress features/*.feature
 
-run-cucumber-c: bin _cucumber_clean_rerun
+run-cucumber-c: _tests_requirements _cucumber_clean_rerun
 	@echo
 	@echo "##########################"
 	@echo "##  Run cucumber for C  ##"
@@ -330,7 +434,7 @@ run-cucumber-c: bin _cucumber_clean_rerun
 	XREQ_LANG=C \
 	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
-run-cucumber-ada: bin _cucumber_clean_rerun
+run-cucumber-ada: _tests_requirements _cucumber_clean_rerun
 	@echo
 	@echo "############################"
 	@echo "##  Run cucumber for Ada  ##"
@@ -340,18 +444,10 @@ run-cucumber-ada: bin _cucumber_clean_rerun
 	XREQ_LANG=Ada \
 	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
-reports/cucumber-c.html: _tests_requirements
-	-XREQ_LANG=C cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f html -o $@ features/*.feature
-
-reports/cucumber-ada.html: _tests_requirements
-	-XREQ_LANG=Ada cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f html -o $@ features/*.feature
-
-report-cucumber: reports/cucumber-ada.html reports/cucumber-c.html
-
-run-bootstrap: bin
+run-bootstrap: _tests_requirements
 	cucumber -t "~@wip" -t "@bootstrap" features/*.feature
 
-rerun-cucumber: bin
+rerun-cucumber: _tests_requirements
 	@echo
 	@echo "##########################################"
 	@echo "##  Run cucumber scenarios that failed  ##"
@@ -368,7 +464,7 @@ run-xreq:
 	$(MAKE) run-xreq-ada
 	$(MAKE) run-xreq-c
 
-run-xreq-wip: features/tests/suite
+run-xreq-wip: bin/feature_tests _tests_requirements
 	@echo
 	@echo "#####################################"
 	@echo "##  Run XReq for work in progress  ##"
@@ -376,7 +472,7 @@ run-xreq-wip: features/tests/suite
 	@echo
 	$< -t '@wip'
 
-run-xreq-ada: features/tests/suite
+run-xreq-ada: bin/feature_tests _tests_requirements
 	@echo
 	@echo "########################"
 	@echo "##  Run XReq for Ada  ##"
@@ -384,24 +480,13 @@ run-xreq-ada: features/tests/suite
 	@echo
 	XREQ_LANG=Ada $< -t '~@wip+~@bootstrap+~@lang,@lang-Ada'
 
-run-xreq-c: features/tests/suite
+run-xreq-c: bin/feature_tests _tests_requirements
 	@echo
 	@echo "######################"
 	@echo "##  Run XReq for C  ##"
 	@echo "######################"
 	@echo
 	XREQ_LANG=C $< -t '~@wip+~@bootstrap+~@lang,@lang-C'
-
-reports/xreq-ada.html: features/tests/suite _tests_requirements
-	-XREQ_LANG=Ada $< -d -t "~@wip+~@bootstrap+~@lang,@lang-Ada" -f html -o $@
-
-reports/xreq-c.html: features/tests/suite _tests_requirements
-	-XREQ_LANG=C $< -d -t "~@wip+~@bootstrap+~@lang,@lang-C" -f html -o $@
-
-report-xreq: reports/xreq-ada.html reports/xreq-c.html
-
-report-c:   reports/cucumber-c.html reports/xreq-c.html  
-report-ada: reports/cucumber-ada.html reports/xreq-ada.html
 
 run-unit: tests bin
 	@echo
@@ -411,7 +496,106 @@ run-unit: tests bin
 	@echo
 	bin/unit_tests
 
-.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-xreq run-xreq-c run-xreq-ada run-unit reports/xreq-ada.html reports/xreq-c.html reports/cucumber-ada.html reports/cucumber-c.html report-xreq report-cucumber report-c report-ada
+.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-xreq run-xreq-c run-xreq-ada run-unit
+
+########################
+##                    ##
+##    TEST REPORTS    ##
+##                    ##
+########################
+
+reports/cucumber-ada.html: _tests_requirements
+	@echo "CUKE    $@"
+	if XREQ_LANG=Ada cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f html -o $@ features/*.feature; then \
+		echo OK >$(@:%.html=%.status); \
+	else \
+		: >$(@:%.html=%.status); \
+	fi
+
+reports/cucumber-c.html: _tests_requirements
+	@echo "CUKE    $@"
+	if XREQ_LANG=C cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f html -o $@ features/*.feature; then \
+		echo OK >$(@:%.html=%.status); \
+	else \
+		: >$(@:%.html=%.status); \
+	fi
+
+reports/xreq-ada.html: bin/feature_tests _tests_requirements
+	@echo "FEATURE $@"
+	if XREQ_LANG=Ada $< -d -t "~@wip+~@bootstrap+~@lang,@lang-Ada" -f html -o $@; then \
+		echo OK >$(@:%.html=%.status); \
+	else \
+		: >$(@:%.html=%.status); \
+	fi
+
+reports/xreq-c.html: bin/feature_tests _tests_requirements
+	@echo "FEATURE $@"
+	if XREQ_LANG=C $< -d -t "~@wip+~@bootstrap+~@lang,@lang-C" -f html -o $@; then \
+		echo OK >$(@:%.html=%.status); \
+	else \
+		: >$(@:%.html=%.status); \
+	fi
+
+reports/%.status:
+	$(MAKE) $(@:%.status=%.html)
+
+reports/unit.status:
+	$(MAKE) reports/unit.txt
+
+reports/unit.txt reports/unit-debug.txt: bin/unit_tests
+	@echo "AUNIT   $@"
+	if bin/unit_tests -text -o reports/unit.txt >reports/unit-debug.txt 2>&1; then \
+		echo OK >reports/unit.status; \
+	else \
+		: >reports/unit.status; \
+	fi
+
+report-cucumber: reports/cucumber-ada.html reports/cucumber-c.html
+report-xreq: reports/xreq-ada.html reports/xreq-c.html
+
+report-c:   reports/cucumber-c.html reports/xreq-c.html  
+report-ada: reports/cucumber-ada.html reports/xreq-ada.html
+
+report-unit: reports/unit.txt
+
+report-all: report-cucumber report-xreq report-unit
+
+.PHONY: reports/xreq-ada.html reports/xreq-c.html reports/cucumber-ada.html reports/cucumber-c.html report-unit report-all report-xreq report-cucumber report-c report-ada
+
+
+
+#######################
+##                   ##
+##    CHECK TESTS    ##
+##                   ##
+#######################
+
+define _CHECK_TESTS
+	@echo "CHECK   $+"; \
+	exit_code=0; \
+	for t in $+; do \
+		if ! [ -f "$$t" ]; then \
+			echo "        MISS $$t"; \
+			let exit_code=exit_code+2; \
+		elif [ -s "$$t" ]; then \
+			echo "        PASS $$t"; \
+		else \
+			echo "        FAIL $$t"; \
+			let exit_code=exit_code+1; \
+		fi; \
+	done; \
+	exit $$exit_code
+endef
+
+check-cucumber-ada: reports/cucumber-ada.status ; $(_CHECK_TESTS)
+check-cucumber-c:   reports/cucumber-c.status   ; $(_CHECK_TESTS)
+check-xreq-ada:     reports/xreq-ada.status     ; $(_CHECK_TESTS)
+check-xreq-c:       reports/xreq-c.status       ; $(_CHECK_TESTS)
+
+check-tests: reports/cucumber-ada.status reports/cucumber-c.status reports/xreq-ada.status reports/xreq-c.status reports/unit.status
+	$(_CHECK_TESTS)
+
+.PHONY: check-tests check-cucumber-ada check-cucumber-c check-xreq-ada check-xreq-c
 
 ########################
 ##                    ##
@@ -421,17 +605,8 @@ run-unit: tests bin
 
 
 gnatcheck: dir
-	@echo
-	@echo "######################"
-	@echo "##  Run GNAT-Check  ##"
-	@echo "######################"
-	@echo
+	@echo "GNAT    CHECK   xreq.gpr"
 	cd reports && gnat check -P../xreq.gpr -U -rules -from=../gnatcheck.rules
-	cd reports && mv gnatcheck.out gnatcheck.xreq.out
-	#cd reports && gnat check -P../xreqlib.gpr -U -rules -from=../gnatcheck.rules
-	#cd reports && mv gnatcheck.out gnatcheck.xreqlib.out
-	#cd reports && gnat check -P../unit_tests.gpr -rules -from=../gnatcheck.rules
-	#cd reports && mv gnatcheck.out gnatcheck.tests.out
 
 ########################
 ##                    ##
@@ -470,8 +645,8 @@ test-report-cucumber: bin
 test-report-xreq: bin reports/features-xreq.html
 
 
-reports/features-xreq.html: features/tests/suite
-	-features/tests/suite -f html -o reports/features-xreq.html
+reports/features-xreq.html: bin/feature_tests
+	-bin/feature_tests -f html -o reports/features-xreq.html
 
 check: gnatcheck coverage run-cucumber run-unit
 
@@ -563,16 +738,16 @@ help:
 	@echo "    gps-plugin:     Build GPS plugin     [lib/gps]"
 	@echo "    tests:          Build tests          [bin/*_tests]"
 	@echo "    doc:            Build documentation  [README.html]"
-	@echo "Testing:"
+	@echo "Checking:"
+	@echo "    coverage:       Run coverage tests   [coverage/]"
+	@echo "    gnatcheck:      Run gnatcheck        [reports/gnatcheck*]"
+	@echo "    report-all:     Create HTML reports  [reports/*.html]"
+	@echo "    check-tests:    Check tests passed"
+	@echo "Testing (interactive use):"
 	@echo "    run-unit:       Run all unit tests"
 	@echo "    run-xreq:       Run all cucumber tests with XReq"
 	@echo "    run-cucumber:   Run all cucumber tests"
 	@echo "    rerun-cucumber: Run last failed cucumber tests"
-	@echo "    test-report:    Create test reports  [reports/]"
-	@echo "Checking:"
-	@echo "    coverage:       Run coverage tests   [coverage/]"
-	@echo "    gnatcheck:      Run gnatcheck        [reports/gnatcheck*]"
-	@echo "    check-all:      Check everything for continuous integration"
 	@echo "Other:"
 	@echo "    clean:          Clean project"
 	@echo "    install:        Install XReq"
@@ -613,16 +788,21 @@ MARKDOWN_DIR=Markdown_1.0.1
 MARKDOWN_CMDLINE=./Markdown.pl <$< >$@
 
 Markdown.zip:
+	@echo "WGET    $@"
 	wget $(MARKDOWN_URL) -O $@
 
 Markdown.pl:
+	@echo "UNZIP   $@"
 	$(MAKE) Markdown.zip
 	unzip -u -j Markdown.zip $(MARKDOWN_DIR)/$@
+	@echo "CHMOD   $@"
 	chmod +x $@
 	-$(RM) Markdown.zip
 
 %.html: %.mdwn Markdown.pl
+	@echo "MDWN    $@"
 	$(MARKDOWN_CMDLINE)
 
 %.html: % Markdown.pl
+	@echo "MDWN    $@"
 	$(MARKDOWN_CMDLINE)
