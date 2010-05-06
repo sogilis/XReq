@@ -75,9 +75,11 @@ package body Steps is
       end if;
       if ENV.Exists ("ADA_INCLUDE_PATH") then
          ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib:" &
+                  To_String (XReq_Dir) & "/src/lib/dynamic:" &
                   ENV.Value ("ADA_INCLUDE_PATH"));
       else
-         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib");
+         ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib" &
+                  To_String (XReq_Dir) & "/src/lib/dynamic");
       end if;
       ENV.Set ("ADA_INCLUDE_PATH", To_String (XReq_Dir) &
                "/src/common:" & ENV.Value ("ADA_INCLUDE_PATH"));
@@ -88,7 +90,7 @@ package body Steps is
          ENV.Set ("C_INCLUDE_PATH", To_String (XReq_Dir) & "/src/lib");
       end if;
       if ENV.Exists ("LIBRARY_PATH") then
-         ENV.Set ("C_INCLUDE_PATH", To_String (XReq_Dir) & "/lib/debug:" &
+         ENV.Set ("LIBRARY_PATH", To_String (XReq_Dir) & "/lib/debug:" &
                   ENV.Value ("LIBRARY_PATH"));
       else
          ENV.Set ("LIBRARY_PATH", To_String (XReq_Dir) & "/lib/debug");
@@ -137,7 +139,6 @@ package body Steps is
       --  File      : File_Type;
       --  Text_File : Ada.Text_IO.File_Type;
       Buffer    : Unbounded_String;
-      Char      : Character;
    begin
       Create_Path (Containing_Directory (File_Name));
       Create (File, Out_File, File_Name);
@@ -174,10 +175,21 @@ package body Steps is
    end Given_a_file;
 
    procedure I_run_xreq (Args : in out Arg_Type) is
+      Buffer : Unbounded_String;
+      procedure FillEnv (Name, Value : String) is
+      begin
+         Append(Buffer, Name & "=" & Value & ASCII.LF);
+      end FillEnv;
    begin
+      Ada.Environment_Variables.Iterate (FillEnv'Access);
       Args.Add_Para ("Current Directory:");
       Args.Add_Text (Current_Directory);
       Execute ("xreq " & Args.Match (1));
+      Args.Add_Para ("Exit code:" & Last_Exit_Code'Img);
+      Args.Add_Para ("Command Output:");
+      Args.Add_Text (To_String (Last_Command_Output));
+      Args.Add_Para ("Environment Variables:");
+      Args.Add_Text (To_String (Buffer));
    end I_run_xreq;
 
    procedure it_should_pass_fail (Args : in out Arg_Type) is
@@ -340,7 +352,10 @@ package body Steps is
          Get_Next_Entry (Search, Entryy);
          case Kind (Entryy) is
             when Directory =>
-               Delete_Tree (Full_Name (Entryy));
+               if Simple_Name (Entryy) /= "." and Simple_Name (Entryy) /= ".."
+               then
+                  Delete_Tree (Full_Name (Entryy));
+               end if;
             when others =>
                Delete_File (Full_Name (Entryy));
          end case;

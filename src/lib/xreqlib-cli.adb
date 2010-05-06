@@ -194,6 +194,7 @@ package body XReqLib.CLI is
          Cond       := Null_Condition;
       --  GCOV_IGNORE_BEGIN
       when E : others =>
+         Success    := False;
          Format     := null;
          Continue   := False;
          List_Mode  := False;

@@ -10,3 +10,8 @@ index.html
 features*.html
 sample-html*.html
 *.aunit.txt
+
+/xreq-ada.html
+/xreq-c.html
+/cucumber-ada.html
+/cucumber-c.html

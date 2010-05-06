@@ -51,6 +51,16 @@ all: bin lib gps-plugin tests doc
 	@echo "##                                                ##"
 	@echo "####################################################"
 
+
+
+check-all: all gnatcheck run-unit run-cucumber run-xreq coverage
+
+########################
+##                    ##
+##    MAIN TARGETS    ##
+##                    ##
+########################
+
 dir:
 	@-mkdir -p src/lib/static
 	@-mkdir -p src/lib/dynamic
@@ -74,40 +84,40 @@ bin: bin/xreq
 lib: lib/$(MODE)/libxreqlib.$(LIBEXT) lib/$(MODE)/libxreq.so
 
 lib/debug/libxreq.so: dir
-	$(GPRBUILD) -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
+	$(GPRBUILD) -p -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
 
 lib/release/libxreq.so: dir
-	$(GPRBUILD) -Plibxreq.gpr -Xtype=dynamic -Xmode=release
+	$(GPRBUILD) -p -Plibxreq.gpr -Xtype=dynamic -Xmode=release
 
 lib/coverage/libxreq.so: dir
-	$(GPRBUILD) -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
+	$(GPRBUILD) -p -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
 
 lib/debug/libxreqlib.so: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
+	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
 
 lib/release/libxreqlib.so: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
+	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
 
 lib/coverage/libxreqlib.so: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
 
 lib/debug/libxreqlib.a: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=static  -Xmode=debug
 
 lib/release/libxreqlib.a: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=release
+	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=static  -Xmode=release
 
 lib/coverage/libxreqlib.a: dir
-	$(GPRBUILD) -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
+	$(GPRBUILD) -p -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
 
 bin/xreq.cov: dir
-	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
+	$(GPRBUILD) -p -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
 
 bin/xreq.rel: dir
-	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=release
+	$(GPRBUILD) -p -Pxreq.gpr    -Xtype=dynamic -Xmode=release
 
 bin/xreq.dbg: dir
-	$(GPRBUILD) -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
+	$(GPRBUILD) -p -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
 
 bin/xreq: bin/xreq.$(CONFIG)
 	-rm -f bin/xreq
@@ -125,8 +135,6 @@ bin/unit_tests: dir
 bin/unit_tests.cov: dir
 	$(GPRBUILD) -Punit_tests.gpr -Xmode=coverage
 
-bootstrap: bin/feature_tests
-
 bin/feature_tests: bin/feature_tests.dbg
 	ln -s -f feature_tests.dbg $@
 
@@ -142,15 +150,32 @@ bin/feature_tests.cov: bin/xreq features/*.feature
 	bin/xreq -m -x feature_tests -o features/tests/cov features/*.feature
 	$(CP) features/tests/cov/feature_tests $@
 
-tests: dir
-	$(GPRBUILD) -Punit_tests.gpr
+bin/unit_tests: dir
+	$(GPRBUILD) -p -Punit_tests.gpr
+
+tests: bin/unit_tests bin/feature_tests
 
 doc: dir README.html src/README.html reports/index.html
 	
 clean: clean-gcov
+	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
+	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=release
+	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
+	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=debug
+	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=release
+	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=coverage
+	-gprclean -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
+	-gprclean -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
+	-gprclean -Plibxreq.gpr -Xtype=dynamic -Xmode=release
+	-gprclean -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
+	-gprclean -Pxreqlib.gpr -Xtype=static  -Xmode=release
+	-gprclean -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+	-gprclean -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+	-gprclean -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
+	-gprclean -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
 	-$(RM) -rf tmp
-	-$(RM) -rf obj/*
-	-$(RM) -rf lib/*
+	-$(RM) -rf obj/*/*
+	-$(RM) -rf lib/*/*
 	-$(RM) bin/*
 	-$(RM) README.html
 	-$(RM) src/README.html
@@ -161,8 +186,16 @@ clean: clean-gcov
 	-$(RM) reports/features*.html
 	-$(RM) reports/features*.junit/*
 
-.PHONY: all dir lib bin gps-plugin tests bootstrap doc clean
+_tests_requirements: bin lib
 
+.PHONY: all check-all dir lib bin gps-plugin tests bootstrap doc clean _tests_requirements
+
+
+####################
+##                ##
+##    COVERAGE    ##
+##                ##
+####################
 
 
 clean-gcov:
@@ -258,12 +291,25 @@ _gcov-gather-cucumber:
 
 .PHONY: clean-gcov gcov-report _gcov-gather-cucumber coverage
 
+#################
+##             ##
+##    TESTS    ##
+##             ##
+#################
+
+
+features/tests/suite.gpr: bin/xreq $(wildcard features/*.feature)
+	bin/xreq -x suite $(wildcard features/*.feature)
+
+features/tests/suite: features/tests/suite.gpr
+	$(GPRBUILD) -Pfeatures/tests/suite.gpr
+.PHONY: features/tests/suite
+
 _cucumber_clean_rerun:
 	-$(RM) -f cucumber-rerun.txt
 	-$(RM) -f cucumber-rerun-lang.txt
 
 run-cucumber:
-	$(MAKE) run-cucumber-wip
 	$(MAKE) run-cucumber-ada
 	$(MAKE) run-cucumber-c
 
@@ -294,6 +340,14 @@ run-cucumber-ada: bin _cucumber_clean_rerun
 	XREQ_LANG=Ada \
 	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
 
+reports/cucumber-c.html: _tests_requirements
+	-XREQ_LANG=C cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f html -o $@ features/*.feature
+
+reports/cucumber-ada.html: _tests_requirements
+	-XREQ_LANG=Ada cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f html -o $@ features/*.feature
+
+report-cucumber: reports/cucumber-ada.html reports/cucumber-c.html
+
 run-bootstrap: bin
 	cucumber -t "~@wip" -t "@bootstrap" features/*.feature
 
@@ -311,7 +365,6 @@ rerun-cucumber: bin
 	-$(RM) -f cucumber-rerun.txt
 
 run-xreq:
-	$(MAKE) run-xreq-wip
 	$(MAKE) run-xreq-ada
 	$(MAKE) run-xreq-c
 
@@ -321,7 +374,7 @@ run-xreq-wip: features/tests/suite
 	@echo "##  Run XReq for work in progress  ##"
 	@echo "#####################################"
 	@echo
-	features/tests/suite -t '@wip'
+	$< -t '@wip'
 
 run-xreq-ada: features/tests/suite
 	@echo
@@ -329,8 +382,7 @@ run-xreq-ada: features/tests/suite
 	@echo "##  Run XReq for Ada  ##"
 	@echo "########################"
 	@echo
-	XREQ_LANG=Ada \
-	features/tests/suite -t '~@wip,~@bootstrap,~@lang+~@wip,~@bootstrap,@lang-Ada'
+	XREQ_LANG=Ada $< -t '~@wip+~@bootstrap+~@lang,@lang-Ada'
 
 run-xreq-c: features/tests/suite
 	@echo
@@ -338,10 +390,20 @@ run-xreq-c: features/tests/suite
 	@echo "##  Run XReq for C  ##"
 	@echo "######################"
 	@echo
-	XREQ_LANG=C \
-	features/tests/suite -t '~@wip,~@bootstrap,~@lang+~@wip,~@bootstrap,@lang-C'
+	XREQ_LANG=C $< -t '~@wip+~@bootstrap+~@lang,@lang-C'
 
-run-tests: tests bin
+reports/xreq-ada.html: features/tests/suite _tests_requirements
+	-XREQ_LANG=Ada $< -d -t "~@wip+~@bootstrap+~@lang,@lang-Ada" -f html -o $@
+
+reports/xreq-c.html: features/tests/suite _tests_requirements
+	-XREQ_LANG=C $< -d -t "~@wip+~@bootstrap+~@lang,@lang-C" -f html -o $@
+
+report-xreq: reports/xreq-ada.html reports/xreq-c.html
+
+report-c:   reports/cucumber-c.html reports/xreq-c.html  
+report-ada: reports/cucumber-ada.html reports/xreq-ada.html
+
+run-unit: tests bin
 	@echo
 	@echo "######################"
 	@echo "##  Run unit tests  ##"
@@ -349,7 +411,14 @@ run-tests: tests bin
 	@echo
 	bin/unit_tests
 
-.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-tests
+.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-xreq run-xreq-c run-xreq-ada run-unit reports/xreq-ada.html reports/xreq-c.html reports/cucumber-ada.html reports/cucumber-c.html report-xreq report-cucumber report-c report-ada
+
+########################
+##                    ##
+##    STYLE CHECKS    ##
+##                    ##
+########################
+
 
 gnatcheck: dir
 	@echo
@@ -363,6 +432,12 @@ gnatcheck: dir
 	#cd reports && mv gnatcheck.out gnatcheck.xreqlib.out
 	#cd reports && gnat check -P../unit_tests.gpr -rules -from=../gnatcheck.rules
 	#cd reports && mv gnatcheck.out gnatcheck.tests.out
+
+########################
+##                    ##
+##    TEST REPORTS    ##
+##                    ##
+########################
 
 test-report:
 	-$(MAKE) coverage
@@ -394,18 +469,19 @@ test-report-cucumber: bin
 
 test-report-xreq: bin reports/features-xreq.html
 
-features/tests/suite.gpr: bin/xreq $(wildcard features/*.feature)
-	bin/xreq -x suite $(wildcard features/*.feature)
-
-features/tests/suite: features/tests/suite.gpr
-	$(GPRBUILD) -Pfeatures/tests/suite.gpr
 
 reports/features-xreq.html: features/tests/suite
 	-features/tests/suite -f html -o reports/features-xreq.html
 
-check: gnatcheck coverage run-cucumber run-tests
+check: gnatcheck coverage run-cucumber run-unit
 
 .PHONY: gnatcheck test-report test-report-cucumber test-report-unit check
+
+###################
+##               ##
+##    INSTALL    ##
+##               ##
+###################
 
 install: bin/xreq.rel lib/release/libxreq.so install-gps
 	$(INSTALL) -D bin/xreq.rel $(DESTDIR)$(BINDIR)/xreq
@@ -466,6 +542,12 @@ uninstall-gps-local:
 
 .PHONY: install install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
 
+################
+##            ##
+##    HELP    ##
+##            ##
+################
+
 show-ignored-coverage:
 	find src -name "*.ad[bs]" -print0 | xargs -0 grep -Rn GCOV_IGNORE
 
@@ -474,16 +556,24 @@ help:
 	@echo
 	@echo "Targets:"
 	@echo
-	@echo "    all:            Build everything    [bin gps-plugin tests doc]"
-	@echo "    bin:            Build project       [bin/xreq]"
-	@echo "    gps-plugin:     Build GPS plugin    [lib/gps]"
-	@echo "    tests:          Build tests         [bin/unit_tests]"
-	@echo "    doc:            Build documentation [README.html]"
-	@echo "    coverage:       Run coverage tests  [coverage/]"
-	@echo "    gnatcheck:      Run gnatcheck       [reports/gnatcheck*]"
-	@echo "    test-report:    Create test reports [reports/]"
-	@echo "    run-tests:      Run all unit tests"
+	@echo "Building:"
+	@echo "    all:            Build everything     [bin gps-plugin tests doc]"
+	@echo "    bin:            Build XReq           [bin/xreq]"
+	@echo "    bin:            Build XReq libraries [lib]"
+	@echo "    gps-plugin:     Build GPS plugin     [lib/gps]"
+	@echo "    tests:          Build tests          [bin/*_tests]"
+	@echo "    doc:            Build documentation  [README.html]"
+	@echo "Testing:"
+	@echo "    run-unit:       Run all unit tests"
+	@echo "    run-xreq:       Run all cucumber tests with XReq"
 	@echo "    run-cucumber:   Run all cucumber tests"
+	@echo "    rerun-cucumber: Run last failed cucumber tests"
+	@echo "    test-report:    Create test reports  [reports/]"
+	@echo "Checking:"
+	@echo "    coverage:       Run coverage tests   [coverage/]"
+	@echo "    gnatcheck:      Run gnatcheck        [reports/gnatcheck*]"
+	@echo "    check-all:      Check everything for continuous integration"
+	@echo "Other:"
 	@echo "    clean:          Clean project"
 	@echo "    install:        Install XReq"
 	@echo "    unnstall:       Uninstall XReq"
@@ -512,7 +602,11 @@ help:
 src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.adb: src/xreq-report.template.html ./template.pl
 	./template.pl $< XReqLib.Format_HTML_Template $@
 
-### Markdown ###
+####################
+##                ##
+##    MARKDOWN    ##
+##                ##
+####################
 
 MARKDOWN_URL=http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip
 MARKDOWN_DIR=Markdown_1.0.1
