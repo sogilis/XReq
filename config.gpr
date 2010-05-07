@@ -6,6 +6,7 @@ abstract project Config is
    --  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
 
    Ada_Switches := (
+      "-fPIC",          --  Position Independant Code
       "-gnat05",        --  Ada 2005
       "-gnata",         --  Assertions enabled
       "-gnatwa",        --  All warnings
