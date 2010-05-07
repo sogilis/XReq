@@ -20,11 +20,11 @@ library project XReqLib is
    package Compiler is
       case Mode is
          when "debug" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
+            for Default_Switches ("Ada") use Config.Ada_Switches_Debug & ("-fPIC");
          when "release" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Release;
+            for Default_Switches ("Ada") use Config.Ada_Switches_Release & ("-fPIC");
          when "coverage" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage;
+            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage & ("-fPIC");
       end case;
    end Compiler;
 
@@ -38,5 +38,16 @@ library project XReqLib is
             null;
       end case;
    end Binder;
+
+   package Linker is
+      case Mode is
+         when "debug" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug;
+         when "coverage" =>
+            for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
+         when others =>
+            null;
+      end case;
+   end Linker;
 
 end XReqLib;

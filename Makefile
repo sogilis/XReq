@@ -255,13 +255,28 @@ coverage/21-cucumber-c.lcov.info:   LCOVFLAGS += -t Cucumber_C
 coverage/22-xreq-ada.lcov.info:     LCOVFLAGS += -t XReq_Ada
 coverage/23-xreq-c.lcov.info:       LCOVFLAGS += -t XReq_C
 
+ifneq ($(cov_only_cucumber_c),)
+cov_ignore_base=1
+cov_ignore_ignore=1
+cov_ignore_unit=1
+cov_ignore_cucumber_ada=1
+endif
+
+ifneq ($(cov_only_cucumber_ada),)
+cov_ignore_base=1
+cov_ignore_ignore=1
+cov_ignore_unit=1
+cov_ignore_cucumber_c=1
+endif
 
 cov-init:
 	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
 
 cov-test-base:
+ifeq ($(cov_ignore_base),)
 	$(_LCOV_ZERO)
 	$(MAKE) coverage/01-base.lcov.info
+endif
 
 cov-test-ignore:
 ifeq ($(cov_ignore_ignore),)
@@ -298,7 +313,7 @@ cov-test-cucumber-c: _tests_requirements bin/xreq.cov
 ifeq ($(cov_ignore_cucumber_c)$(cov_ignore_cucumber)$(cov_ignore_c),)
 	$(_LCOV_ZERO)
 	@echo "MAKE    run-cucumber-c"
-	@-mode=coverage CFLAGS="-ftest-coverage -fprofile-arcs -g" \
+	@-mode=coverage LDFLAGS="-fprofile-arcs" CFLAGS="-ftest-coverage -fprofile-arcs -g" \
 	$(MAKE) run-cucumber-c
 	$(MAKE) coverage/21-cucumber-c.lcov.info
 endif
