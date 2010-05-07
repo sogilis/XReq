@@ -2,40 +2,21 @@
 
 Given /^xreq is in the PATH$/ do
   #system("make bin/xreq");
-  ENV['PATH'] = $xreq_dir + "/bin" + ":" + ENV['PATH'];
-  if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + ":" + $xreq_dir + "/src/lib" + ":" + ENV['ADA_INCLUDE_PATH'];
+  if ENV['mode'] then
+    libdir = ENV['mode']
   else
-    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + ":" + $xreq_dir + "/src/lib";
+    libdir = 'debug'
   end
-  if ENV['C_INCLUDE_PATH'] then
-    ENV['C_INCLUDE_PATH'] = $xreq_dir + "/src/lib" + ":" + ENV['C_INCLUDE_PATH'];
-  else
-    ENV['C_INCLUDE_PATH'] = $xreq_dir + "/src/lib";
-  end
-  if ENV['GPR_PROJECT_PATH'] then
-    ENV['GPR_PROJECT_PATH'] = $xreq_dir + ":" + ENV['GPR_PROJECT_PATH'];
-  else
-    ENV['GPR_PROJECT_PATH'] = $xreq_dir + ":";
-  end
-  if ENV['LIBRARY_PATH'] then
-    ENV['LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":" + ENV['LIBRARY_PATH'];
-  else
-    ENV['LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":";
-  end
-  if ENV['LD_LIBRARY_PATH'] then
-    ENV['LD_LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":" + ENV['LD_LIBRARY_PATH'];
-  else
-    ENV['LD_LIBRARY_PATH'] = $xreq_dir + "/lib/debug" + ":";
-  end
+  ENV['LIBRARY_PATH']     = "#{$xreq_dir}/lib/#{libdir}:#{ENV['LIBRARY_PATH']}";
+  ENV['LD_LIBRARY_PATH']  = "#{$xreq_dir}/lib/#{libdir}:#{ENV['LD_LIBRARY_PATH']}";
+  ENV['PATH']             = "#{$xreq_dir}/bin:#{ENV['PATH']}";
+  ENV['ADA_INCLUDE_PATH'] = "#{$xreq_dir}:#{$xreq_dir}/src/lib:#{ENV['ADA_INCLUDE_PATH']}";
+  ENV['C_INCLUDE_PATH']   = "#{$xreq_dir}/src/lib:#{ENV['C_INCLUDE_PATH']}";
+  ENV['GPR_PROJECT_PATH'] = "#{$xreq_dir}:#{ENV['GPR_PROJECT_PATH']}";
 end
 
 Given /^the sources of xreq are in ADA_INCLUDE_PATH$/ do
-  if ENV['ADA_INCLUDE_PATH'] then
-    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + "/src" + ":" + ENV['ADA_INCLUDE_PATH'];
-  else
-    ENV['ADA_INCLUDE_PATH'] = $xreq_dir + "/src";
-  end
+  ENV['ADA_INCLUDE_PATH'] = "#{$xreq_dir}/src:#{ENV['ADA_INCLUDE_PATH']}";
 end
 
 Given /^"([^"]*)" is empty$/ do |dir|

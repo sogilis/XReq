@@ -115,7 +115,8 @@ package XReq.Step_Definitions is
 
 private
 
-   type Pattern_Matcher_Ptr is access all GNAT.Regpat.Pattern_Matcher;
+   type Pattern_Matcher_Ptr is                  --  GCOV_IGNORE
+      access all GNAT.Regpat.Pattern_Matcher;   --  GCOV_IGNORE
 
    procedure Free is new Ada.Unchecked_Deallocation
       (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);

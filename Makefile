@@ -191,7 +191,7 @@ tests: bin/unit_tests bin/feature_tests
 
 doc: dir README.html src/README.html reports/index.html
 	
-clean: clean-gcov
+clean: cov-clean
 	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
 	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=release
 	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
@@ -343,9 +343,13 @@ else
 	$(MAKE) cov-html
 endif
 
+cov-clean:
+	-$(RM) coverage/*.lcov.info
+	-$(RM) coverage/*.gcov
+
 coverage: cov
 
-.PHONY: cov coverage cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html cov-cucumber-setup cov-cucumber-teardown
+.PHONY: cov cov-clean coverage cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html cov-cucumber-setup cov-cucumber-teardown
 
 #################
 ##             ##
