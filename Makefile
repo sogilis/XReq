@@ -236,46 +236,79 @@ _tests_requirements: bin lib
 ##                ##
 ####################
 
+define _LCOV_ZERO
+	@echo "LCOV    --zerocounters"
+	-lcov -q -d obj/coverage --zerocounters
+endef
+
+LCOVFLAGS = -q -c -d obj/coverage
+coverage/%.lcov.info:
+	@echo "LCOV    $@"
+	lcov $(LCOVFLAGS) -o $@
+
+coverage/01-base.lcov.info:         LCOVFLAGS += -t Base --initial
+coverage/10-unit.lcov.info:         LCOVFLAGS += -t Unit_Tests
+coverage/20-cucumber-ada.lcov.info: LCOVFLAGS += -t Cucumber_Ada
+coverage/21-cucumber-c.lcov.info:   LCOVFLAGS += -t Cucumber_C
+coverage/22-xreq-ada.lcov.info:     LCOVFLAGS += -t XReq_Ada
+coverage/23-xreq-c.lcov.info:       LCOVFLAGS += -t XReq_C
+
+
 cov-init:
 	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
 
 cov-test-base:
-	@echo "LCOV    --zerocounters"
-	-lcov -q -d obj/coverage --zerocounters
-	@echo "LCOV    --initial -t Base"
-	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
+	$(_LCOV_ZERO)
+	$(MAKE) coverage/01-base.lcov.info
 
 cov-test-ignore:
-	@echo "COV     coverage/2-ignore.lcov.info"
-	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
-	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
-	-rm coverage/2-ignore.lcov.info.tmp
+ifeq ($(cov_ignore_ignore),)
+	@echo "COV     coverage/02-ignore.lcov.info"
+	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/02-ignore.lcov.info.tmp
+	perl gcov-ignore.pl coverage/02-ignore.lcov.info.tmp > coverage/02-ignore.lcov.info
+	-rm coverage/02-ignore.lcov.info.tmp
+endif
 
 cov-test-unit: bin/unit_tests.cov
-	@echo "LCOV    --zerocounters"
-	lcov -q -d obj/coverage --zerocounters
+ifeq ($(cov_ignore_unit),)
+	$(_LCOV_ZERO)
 	@echo "RUN     bin/unit_tests.cov"
 	-bin/unit_tests.cov -text -o reports/test.aunit.txt > reports/test-debug.aunit.txt 2>&1
-	@echo "LCOV    coverage/10-unit.lcov.info"
-	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
+	$(MAKE) coverage/10-unit.lcov.info
+endif
 
-cov-test-cucumber-ada: _tests_requirements bin/xreq.cov
-	@echo "LCOV    --zerocounters"
-	lcov -q -d obj/coverage --zerocounters
+cov-cucumber-setup:
 	@echo "RM      bin/xreq"
 	-$(RM) bin/xreq
 	@echo "LINK    bin/xreq"
 	ln -s -f xreq.cov bin/xreq
+
+cov-test-cucumber-ada: _tests_requirements bin/xreq.cov
+ifeq ($(cov_ignore_cucumber_ada)$(cov_ignore_cucumber)$(cov_ignore_ada),)
+	$(_LCOV_ZERO)
 	@echo "MAKE    run-cucumber-ada"
-	-@$(MAKE) run-cucumber-ada >/dev/null 2>&1
+	@-mode=coverage GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
+	$(MAKE) run-cucumber-ada
+	$(MAKE) coverage/20-cucumber-ada.lcov.info
+endif
+
+cov-test-cucumber-c: _tests_requirements bin/xreq.cov
+ifeq ($(cov_ignore_cucumber_c)$(cov_ignore_cucumber)$(cov_ignore_c),)
+	$(_LCOV_ZERO)
+	@echo "MAKE    run-cucumber-c"
+	@-mode=coverage CFLAGS="-ftest-coverage -fprofile-arcs -g" \
+	$(MAKE) run-cucumber-c
+	$(MAKE) coverage/21-cucumber-c.lcov.info
+endif
+
+cov-cucumber-teardown:
 	@echo "RM      bin/xreq"
 	-$(RM) bin/xreq
 	@echo "MAKE    bin/xreq"
 	$(MAKE) bin/xreq
 
 cov-html:
-	@echo "LCOV    --zerocounters"
-	-lcov -q -d obj/coverage --zerocounters
+	$(_LCOV_ZERO)
 	@echo "LCOV    coverage/lcov.info"
 	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
 	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
@@ -287,6 +320,9 @@ cov-html:
 	genhtml --show-details -o coverage coverage/lcov.info
 
 cov: bin/xreq.cov lib/coverage/libxreq.so bin/unit_tests.cov
+ifneq ($(CONFIG),cov)
+	$(MAKE) CONFIG=cov $@
+else
 	@echo "MAKE    cov-init"
 	$(MAKE) cov-init
 	@echo "MAKE    cov-test-base"
@@ -295,103 +331,21 @@ cov: bin/xreq.cov lib/coverage/libxreq.so bin/unit_tests.cov
 	$(MAKE) cov-test-unit
 	@echo "MAKE    cov-test-ignore"
 	$(MAKE) cov-test-ignore
+	@echo "MAKE    cov-cucumber-setup"
+	$(MAKE) cov-cucumber-setup
+	@echo "MAKE    cov-test-cucumber-ada"
+	$(MAKE) cov-test-cucumber-ada
+	@echo "MAKE    cov-test-cucumber-c"
+	$(MAKE) cov-test-cucumber-c
+	@echo "MAKE    cov-cucumber-teardown"
+	$(MAKE) cov-cucumber-teardown
 	@echo "MAKE    cov-html"
 	$(MAKE) cov-html
+endif
 
-.PHO?Y: cov cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html
+coverage: cov
 
-clean-gcov:
-	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
-	-lcov -q -d obj/coverage --zerocounters
-	
-
-gcov-report: dir bin/unit_tests
-	@echo
-	@echo "###############################"
-	@echo "##  Create coverage reports  ##"
-	@echo "###############################"
-	@echo
-	lcov -q -c -i -d obj/coverage -t "Base" -o coverage/1-base.lcov.info
-	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
-	lcov --remove coverage/lcov.info '/opt/*' -o coverage/lcov.info
-	lcov --remove coverage/lcov.info '/usr/*' -o coverage/lcov.info
-	lcov --remove coverage/lcov.info '*~*'    -o coverage/lcov.info
-	lcov --remove coverage/lcov.info '*__*'   -o coverage/lcov.info
-	#perl gcov-ignore.pl coverage/lcov.info > coverage/ignore.lcov.info
-	genhtml --show-details --no-function-coverage -o coverage coverage/lcov.info || \
-	genhtml --show-details -o coverage coverage/lcov.info
-	#cd coverage && gcov -o ../obj/coverage ../src/*.adb ../src/lib/*.adb > gcov.summary.txt
-	#for gcov in coverage/*.gcov; do \
-	#	base="`basename "$$gcov"`"; \
-	#	if [ ! -e "src/$${base%.gcov}" ] && [ ! -e "src/lib/$${base%.gcov}" ]; then \
-	#		rm "$$gcov"; \
-	#	fi; \
-	#done
-	lcov -d obj/coverage --zerocounters
-	-bin/unit_tests -suite=coverage -text
-	bin/unit_tests -suite=coverage -xml -o reports/coverage.aunit.xml
-
-coverage: tests bin/xreq.cov bin/unit_tests.cov bin/feature_tests.cov
-	@echo
-	@echo "##########################"
-	@echo "##  Run coverage tests  ##"
-	@echo "##########################"
-	@echo
-	$(GPRBUILD) $(GPRBUILD_FLAGS) -P xreq.gpr -Xmode=coverage
-	-$(RM) -f bin/xreq
-	$(MAKE) clean-gcov
-	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/2-ignore.lcov.info.tmp
-	perl gcov-ignore.pl coverage/2-ignore.lcov.info.tmp > coverage/2-ignore.lcov.info
-	ln -s xreq.cov bin/xreq
-	@echo
-	@echo "==>  Run Unit tests"
-	@echo
-	lcov -q -d obj/coverage --zerocounters
-	-bin/unit_tests.cov -text -o reports/test.aunit.txt > reports/test-debug.aunit.txt 2>&1
-	lcov -q -c -d obj/coverage -t "Unit_Tests" -o coverage/10-unit.lcov.info
-	@echo
-	@echo "==>  Run Cucumber"
-	@echo
-	-rm -rf coverage/cuke
-	-mkdir -p coverage/cuke
-	lcov -q -d obj/coverage --zerocounters
-	-make -C features/tests clean
-	-\
-	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	XREQ_BEFORE_MAKE_SILENT=true \
-	XREQ_BEFORE_MAKE='if [ -n "$$COVERAGE" ]; then n=0; while [ -e "$$COVERAGE/$$n.lcov.info" ]; do let n=n+1; done; f="$$COVERAGE/$$n.lcov.info"; echo "Create: $$f"; lcov -q -c -d "$$COV_OBJ_DIR" -t XReq -o "$$f"; lcov -q -d "$$COV_OBJ_DIR" --zerocounters; if ! [ -s "$$f" ]; then rm "$$f"; fi; fi' \
-	bin/feature_tests.cov -d -t ~@bootstrap+~@wip -f html -o reports/features-xreq.html
-	-\
-	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-	XREQ_BEFORE_MAKE_SILENT=true \
-	XREQ_BEFORE_MAKE='if [ -n "$$COVERAGE" ]; then n=0; while [ -e "$$COVERAGE/$$n.lcov.info" ]; do let n=n+1; done; f="$$COVERAGE/$$n.lcov.info"; echo "Create: $$f"; lcov -q -c -d "$$COV_OBJ_DIR" -t XReq -o "$$f"; lcov -q -d "$$COV_OBJ_DIR" --zerocounters; if ! [ -s "$$f" ]; then rm "$$f"; fi; fi' \
-	bin/feature_tests.cov -d -t @wip -f html -o reports/features-wip-xreq.html
-# #	-\
-# #	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-# #	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-# #	cucumber -t "@bootstrap" features/*.feature
-# 	-\
-# 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-# 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-# 	cucumber -t "~@wip" -t "~@bootstrap" -f html  -o reports/features.html      features/*.feature >/dev/null 2>&1
-# 	-\
-# 	GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
-# 	COVERAGE="`pwd`/coverage/cuke" COV_OBJ_DIR="`pwd`/obj/coverage" mode=coverage \
-# 	cucumber -w -t "@wip" -f html  -o reports/features-wip.html  features/*.feature >/dev/null 2>&1
-# 	lcov -q -c -d obj/coverage -t "Cucumber" -o coverage/cuke/last.lcov.info
-	-$(RM) -f bin/xreq
-	ln -s xreq.$(CONFIG) bin/xreq
-	lcov -q -c -d "obj/coverage" -t XReq -o "coverage/cuke/last.lcov.info"
-	$(MAKE) _gcov-gather-cucumber
-	$(MAKE) gcov-report
-
-_gcov-gather-cucumber:
-	lcov $(foreach lcov,$(wildcard coverage/cuke/*.lcov.info),-a $(lcov)) -o coverage/11-cucumber.lcov.info
-	-rm -rf coverage/cuke
-
-.PHONY: clean-gcov gcov-report _gcov-gather-cucumber coverage
+.PHONY: cov coverage cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html cov-cucumber-setup cov-cucumber-teardown
 
 #################
 ##             ##
