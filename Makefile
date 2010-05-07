@@ -221,6 +221,8 @@ clean: cov-clean
 	-$(RM) reports/features*.junit/*
 	-$(RM) features/data/tmp-*
 	-$(RM) features/data/step_definitions*/*.[od]
+	-$(RM) features/data/step_definitions*/*.gcda
+	-$(RM) features/data/step_definitions*/*.gcno
 	-$(RM) -rf features/tests/*
 	-$(RM) -rf tests/features/tests/*
 	-find . -name "*~" -print0 | xargs -0 rm
