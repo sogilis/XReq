@@ -1,3 +1,0 @@
-- AUnit test results must show properly in Hudson without trying to separate the
-  name of the test as a package name
-- Create a unit test for gnatcheck

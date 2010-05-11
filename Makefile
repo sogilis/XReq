@@ -294,7 +294,7 @@ cov-test-ignore:
 ifeq ($(cov_ignore_ignore),)
 	@echo "COV     coverage/02-ignore.lcov.info"
 	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/02-ignore.lcov.info.tmp
-	perl gcov-ignore.pl coverage/02-ignore.lcov.info.tmp > coverage/02-ignore.lcov.info
+	perl tools/gcov-ignore.pl coverage/02-ignore.lcov.info.tmp > coverage/02-ignore.lcov.info
 	-rm coverage/02-ignore.lcov.info.tmp
 endif
 
@@ -397,8 +397,8 @@ features/tests/suite: features/tests/suite.gpr
 .PHONY: features/tests/suite
 
 _cucumber_clean_rerun:
-	-$(RM) -f cucumber-rerun.txt
-	-$(RM) -f cucumber-rerun-lang.txt
+	-$(RM) -f .cucumber-rerun.txt
+	-$(RM) -f .cucumber-rerun-lang.txt
 
 run-cucumber:
 	$(MAKE) run-cucumber-ada
@@ -417,9 +417,9 @@ run-cucumber-c: _tests_requirements _cucumber_clean_rerun
 	@echo "##  Run cucumber for C  ##"
 	@echo "##########################"
 	@echo
-	echo C > cucumber-rerun-lang.txt
+	echo C > .cucumber-rerun-lang.txt
 	XREQ_LANG=C \
-	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
+	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-C,~@lang" -f progress -f rerun -o .cucumber-rerun.txt features/*.feature
 
 run-cucumber-ada: _tests_requirements _cucumber_clean_rerun
 	@echo
@@ -427,9 +427,9 @@ run-cucumber-ada: _tests_requirements _cucumber_clean_rerun
 	@echo "##  Run cucumber for Ada  ##"
 	@echo "############################"
 	@echo
-	echo Ada > cucumber-rerun-lang.txt
+	echo Ada > .cucumber-rerun-lang.txt
 	XREQ_LANG=Ada \
-	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o cucumber-rerun.txt features/*.feature
+	cucumber -t "~@wip" -t "~@bootstrap" -t "@lang-Ada,~@lang" -f progress -f rerun -o .cucumber-rerun.txt features/*.feature
 
 run-bootstrap: _tests_requirements
 	cucumber -t "~@wip" -t "@bootstrap" features/*.feature
@@ -440,12 +440,12 @@ rerun-cucumber: _tests_requirements
 	@echo "##  Run cucumber scenarios that failed  ##"
 	@echo "##########################################"
 	@echo
-	touch cucumber-rerun.txt
-	@if [ -s cucumber-rerun.txt ]; then \
-		xargs echo XREQ_LANG=$$(cat cucumber-rerun-lang.txt) cucumber < cucumber-rerun.txt; \
-		XREQ_LANG=$$(cat cucumber-rerun-lang.txt) xargs cucumber < cucumber-rerun.txt; \
+	touch .cucumber-rerun.txt
+	@if [ -s .cucumber-rerun.txt ]; then \
+		xargs echo XREQ_LANG=$$(cat .cucumber-rerun-lang.txt) cucumber < .cucumber-rerun.txt; \
+		XREQ_LANG=$$(cat .cucumber-rerun-lang.txt) xargs cucumber < .cucumber-rerun.txt; \
 	fi
-	-$(RM) -f cucumber-rerun.txt
+	-$(RM) -f .cucumber-rerun.txt
 
 run-xreq:
 	$(MAKE) run-xreq-ada
@@ -593,7 +593,7 @@ check-tests: reports/cucumber-ada.status reports/cucumber-c.status reports/xreq-
 
 gnatcheck: dir
 	@echo "GNAT    CHECK   xreq.gpr"
-	cd reports && gnat check -P../xreq.gpr -U -rules -from=../gnatcheck.rules
+	cd reports && gnat check -P../xreq.gpr -U -rules -from=../data/gnatcheck.rules
 
 ########################
 ##                    ##
@@ -763,8 +763,8 @@ help:
 
 .PHONY: help show-ignored-coverage
 
-src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.adb: src/xreq-report.template.html ./template.pl
-	./template.pl $< XReqLib.Format_HTML_Template $@
+src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.adb: src/xreq-report.template.html tools/template.pl
+	perl tools/template.pl $< XReqLib.Format_HTML_Template $@
 
 ####################
 ##                ##
@@ -774,24 +774,25 @@ src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.ad
 
 MARKDOWN_URL=http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip
 MARKDOWN_DIR=Markdown_1.0.1
-MARKDOWN_CMDLINE=./Markdown.pl <$< >$@
+MARKDOWN_CMDLINE=tools/Markdown.pl <$< >$@
 
-Markdown.zip:
+tools/Markdown.zip:
 	@echo "WGET    $@"
 	wget $(MARKDOWN_URL) -O $@
 
-Markdown.pl:
-	@echo "UNZIP   $@"
+tools/Markdown.pl:
 	$(MAKE) Markdown.zip
-	unzip -u -j Markdown.zip $(MARKDOWN_DIR)/$@
+	@echo "UNZIP   $@"
+	unzip -u -j tools/Markdown.zip $(MARKDOWN_DIR)/Markdown.pl -d tools
 	@echo "CHMOD   $@"
 	chmod +x $@
-	-$(RM) Markdown.zip
+	@echo "RM      tools/Markdown.zip"
+	-$(RM) tools/Markdown.zip
 
-%.html: %.mdwn Markdown.pl
+%.html: %.mdwn tools/Markdown.pl
 	@echo "MDWN    $@"
 	$(MARKDOWN_CMDLINE)
 
-%.html: % Markdown.pl
+%.html: % tools/Markdown.pl
 	@echo "MDWN    $@"
 	$(MARKDOWN_CMDLINE)
