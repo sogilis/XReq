@@ -637,7 +637,9 @@ install: bin/xreq.rel lib/release/libxreq.so install-gps
 	$(INSTALL) -D bin/xreq.rel $(DESTDIR)$(BINDIR)/xreq
 	$(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(CP) src/common/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
 	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/xreqlib
 	$(INSTALL) -m755 -D lib/release/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
