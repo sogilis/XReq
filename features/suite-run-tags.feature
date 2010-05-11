@@ -88,7 +88,7 @@ Feature: Tags
         Background:
           Given this step doesn't work
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
-      in: ../../../features/data/step_definitions/simple_steps.c:28
+      in: ../step_definitions/simple_steps.c:28
 
         @tag1
         @tag2
@@ -203,7 +203,7 @@ Feature: Tags
         Background:
           Given this step doesn't work
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
-      in: ../../../features/data/step_definitions/simple_steps.c:28
+      in: ../step_definitions/simple_steps.c:28
 
         @tag1
         @tag2

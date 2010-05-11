@@ -66,7 +66,7 @@ Feature: debug mode for test suites
           Given this step works
           And this step doesn't work
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
-      in: ../../../features/data/step_definitions/simple_steps.c:28
+      in: ../step_definitions/simple_steps.c:28
           And this step works with BAR
 
         Scenario: B

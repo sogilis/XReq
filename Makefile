@@ -48,8 +48,13 @@ ifeq ($(VERBOSE),)
 GPRBUILD_FLAGS=-p -q
 XREQ_FLAGS=-q
 else
+ifeq ($(VERBOSE),0)
+GPRBUILD_FLAGS=-p
+XREQ_FLAGS=
+else
 GPRBUILD_FLAGS=-p -v
 XREQ_FLAGS=
+endif
 endif
 
 DESTDIR    =

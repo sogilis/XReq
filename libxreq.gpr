@@ -15,7 +15,7 @@ library project LibXReq is
 
    for Library_Name      use "xreq";
    for Source_Dirs       use ("src/lib", "src/common", "src/lib/" & Lib_Kind);
-   for Object_Dir        use "obj/" & Mode;
+   for Object_Dir        use "obj/" & Lib_Kind & "-" & Mode;
    for Library_Dir       use "lib/" & Mode;
    for Library_Kind      use Lib_Kind;
    for Library_Auto_Init use "true";
