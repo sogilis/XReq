@@ -3,11 +3,22 @@
 GNATMAKE=gnatmake
 TEST_SUITES=test coverage
 CONFIG=dbg
+INSTALL_CONFIG=rel
 MODE=
 LIBTYPE=static
 # dynamic makes gcov unhappy: hidden symbol `__gcov_merge_add' is referenced by
 # DSO (Dynamic Shared Object).
 LIBEXT=
+
+ifeq ($(INSTALL_CONFIG),dbg)
+INSTALL_MODE=debug
+endif
+ifeq ($(INSTALL_CONFIG),rel)
+INSTALL_MODE=release
+endif
+ifeq ($(INSTALL_CONFIG),cov)
+INSTALL_MODE=coverage
+endif
 
 ifeq ($(CONFIG),dbg)
 MODE=debug
@@ -633,16 +644,16 @@ check: gnatcheck coverage run-cucumber run-unit
 ##               ##
 ###################
 
-install: bin/xreq.rel lib/release/libxreq.so install-gps
-	$(INSTALL) -D bin/xreq.rel $(DESTDIR)$(BINDIR)/xreq
+install: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreq.so install-gps
+	$(INSTALL) -D bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
 	$(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/common/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
-	$(CP) lib/release/* $(DESTDIR)$(LIBDIR)/xreqlib
-	$(INSTALL) -m755 -D lib/release/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
+	$(CP) lib/$(INSTALL_MODE)/* $(DESTDIR)$(LIBDIR)/xreqlib
+	$(INSTALL) -m755 -D lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
 	$(INSTALL) -m644 -D src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
 	@echo '------------------------------------------------------------------'
 	@echo '--  XReq has now been installed.'
