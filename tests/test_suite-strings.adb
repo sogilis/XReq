@@ -25,6 +25,7 @@ package body Test_Suite.Strings is
       Ret.Add_Test (new Test_Decode_String);
       Ret.Add_Test (new Test_Relative_Path);
       Ret.Add_Test (new Test_Reverse_Path);
+      Ret.Add_Test (new Test_Goto_Path);
       Ret.Add_Test (new Test_Replace);
       Ret.Add_Test (new Test_Package_File_Id);
    end Add_Tests;
@@ -402,6 +403,40 @@ package body Test_Suite.Strings is
       Check ("toto/tata/",      "../..");
       Check ("toto",            "..");
       Check ("/toto",           "/");
+
+   end Run;
+
+   --  Test_Goto_Path  --------------------------------------------------------
+
+   function  Name (T : in Test_Goto_Path) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("Util.Strings.Goto_Path");
+   end Name;
+
+   procedure Run (T : in out Test_Goto_Path) is
+
+      procedure Check (P1, P2, Result : in String);
+      procedure Check (P1, P2, Result : in String) is
+         Res : constant String := Goto_Path (P1, P2);
+      begin
+         T.Assert (Result = Res,
+                   "Reverse_Path (""" & P1 & """, """ & P2 & """) " &
+                   "= """ & Res & """ /= """ & Result & """");
+      end Check;
+
+   begin
+
+      Check ("toto/tata",       "toto/titi",            "../titi");
+      Check ("../toto/tata/",   "../tutu",              "../../tutu");
+      Check ("toto/tata",       "toto/tata/titi",       "titi");
+      Check ("toto/tata",       "toto/tatatiti",        "../tatatiti");
+      Check ("toto/tata",       "toto",                 "..");
+      Check ("toto/tata",       "tototata",             "../../tototata");
+      Check ("feat/tests",      "feat/tests/a",         "a");
+      Check ("feat/tests",      "feat/a.f",             "../a.f");
+      Check ("feat/tests",      "feat/",                "..");
+      Check ("feat/tests",      "feat",                 "..");
 
    end Run;
 

@@ -831,10 +831,9 @@ package body XReq.Generator.Ada05 is
       Gpr_B.Put      ("for Source_Dirs use ("".""");
 
       for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
-         Gpr_B.Put (", """ & Relative_Path (Reverse_Path (Out_Dir (Env)),
-                                            To_String (Element (Env.Step_Dir,
-                                                                I))
-                                           ) & """");
+         Gpr_B.Put (", """ & Goto_Path (Out_Dir (Env),
+                                        To_String (Element (Env.Step_Dir, I)))
+                    & """");
       end loop;
       Gpr_B.Put      (");");
       Gpr_B.New_Line;

@@ -457,6 +457,54 @@ package body Util.Strings is
       end if;
    end Reverse_Path;
 
+   -----------------
+   --  Goto_Path  --
+   -----------------
+
+   function Goto_Path     (Origin  : in String;
+                           Target  : in String) return String
+   is
+      I        : Integer := Origin'First;
+      Last_Sep : Integer := Origin'First - 1;
+   begin
+      while I <= Integer'Min (Origin'Last, Target'Last) and then
+            Origin (I) = Target (I)
+      loop
+         if Origin (I) = '/' or else (I = Origin'Last and I = Target'Last) then
+            Last_Sep := I;
+         elsif (I = Origin'Last and then Target (I + 1) = '/')  or else
+               (I = Target'Last and then Origin (I + 1) = '/')
+         then
+            Last_Sep := I + 1;
+         end if;
+         I := I + 1;
+      end loop;
+      --
+      --  Last_Sep contains the last index where '/' can be found, or the last
+      --  of the shortest string if the shortest string corresponds to the
+      --  beginning of the longet string.
+      --
+      --  We can then cut the two strings starting at Last_Sep + 1 to get
+      --  the reduced paths.
+      --
+      if Last_Sep >= Origin'Last and Last_Sep >= Target'Last then
+         --  Target and Origin are the same
+         return ".";
+      elsif Last_Sep >= Origin'Last then
+         --  Target is a subdirectory of Origin
+         return Target (Last_Sep + 1 .. Target'Last);
+      elsif Last_Sep >= Target'Last then
+         --  Origin is a subdirectory of Target
+         return Reverse_Path (Origin (Last_Sep + 1 .. Origin'Last));
+      else
+         --  Origin and Target are in different directories
+         --  First reverse the Origin path and branch to Target
+         return Relative_Path
+           (Reverse_Path (Origin (Last_Sep + 1 .. Origin'Last)),
+            Target (Last_Sep + 1 .. Target'Last));
+      end if;
+   end Goto_Path;
+
    --------------
    --  Buffer  --
    --------------

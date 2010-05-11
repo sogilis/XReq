@@ -63,6 +63,9 @@ package Util.Strings is
 
    function Reverse_Path  (Path    : in String) return String;
 
+   function Goto_Path     (Origin  : in String;
+                           Target  : in String) return String;
+
 
    --------------
    --  Buffer  --

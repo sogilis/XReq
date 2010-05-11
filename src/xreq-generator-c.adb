@@ -556,9 +556,8 @@ package body XReq.Generator.C is
    begin
       while Has_Element (J) loop
          Append (Buf, "#include """ &
-                 Relative_Path (Reverse_Path (Containing_Directory
-                                                       (To_String (S.H_File))),
-                                To_String (Element (J))) &
+                 Goto_Path (Containing_Directory (To_String (S.H_File)),
+                            To_String (Element (J))) &
                  """" & S.C.CRLF);
          Next (J);
       end loop;
@@ -775,13 +774,11 @@ package body XReq.Generator.C is
       while Has_Element (I) loop
          E := C_Generator_Ptr (Element (I));
          Include (Sources, To_Unbounded_String
-           (Relative_Path (Reverse_Path (Out_Dir (Env)),
-                           To_String (E.C_File))));
+           (Goto_Path (Out_Dir (Env), To_String (E.C_File))));
          J := First (E.C_Steps);
          while Has_Element (J) loop
             Include (Sources, To_Unbounded_String
-              (Relative_Path (Reverse_Path (Out_Dir (Env)),
-                              To_String (Element (J)))));
+              (Goto_Path (Out_Dir (Env), To_String (Element (J)))));
             Next (J);
          end loop;
          Next (I);
@@ -801,8 +798,7 @@ package body XReq.Generator.C is
       Mak_B.Put_Line ("CFLAGS += \");
       for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
          Mak_B.Put ("  -I" &
-            Relative_Path (Reverse_Path (Out_Dir (Env)),
-                           To_String (Element (Env.Step_Dir, I))));
+            Goto_Path (Out_Dir (Env), To_String (Element (Env.Step_Dir, I))));
          if I < Last_Index (Env.Step_Dir) then
             Mak_B.Put (" \");
          end if;

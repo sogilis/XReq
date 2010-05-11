@@ -21,6 +21,7 @@ package Test_Suite.Strings is
    type Test_Decode_String is new Test_Case_Type with null record;
    type Test_Relative_Path is new Test_Case_Type with null record;
    type Test_Reverse_Path is new Test_Case_Type with null record;
+   type Test_Goto_Path is new Test_Case_Type with null record;
    type Test_Replace is new Test_Case_Type with null record;
    type Test_Package_File_Id is new Test_Case_Type with null record;
 
@@ -67,6 +68,10 @@ package Test_Suite.Strings is
    --  Operation on Test_Reverse_Path
    function  Name (T : in     Test_Reverse_Path) return String;
    procedure Run  (T : in out Test_Reverse_Path);
+
+   --  Operation on Test_Goto_Path
+   function  Name (T : in     Test_Goto_Path) return String;
+   procedure Run  (T : in out Test_Goto_Path);
 
    --  Operation on Test_Replace
    function  Name (T : in     Test_Replace) return String;

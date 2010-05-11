@@ -240,6 +240,7 @@ clean: cov-clean
 
 _tests_requirements: bin lib
 
+.PHONY: bin/xreq bin/unit_tests
 .PHONY: all check-all dir lib bin gps-plugin tests bootstrap doc clean _tests_requirements
 
 
