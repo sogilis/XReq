@@ -5,24 +5,8 @@ library project XReqLib is
    for Library_Name      use "xreqlib";
    for Source_Dirs       use ("../../include/xreqlib");
    for Library_Dir       use "../../lib/xreqlib";
-   for Library_Kind      use "dynamic";
+   for Library_Kind      use "static";
    for Externally_Built  use "true";
-   for Library_Auto_Init use "true";
-   for Library_Interface use ("XReqLib",
-                              "XReqLib.Report",
-                              "XReqLib.Args",
-                              "XReqLib.String_Tables",
-                              "XReqLib.Tables",
-                              "XReqLib.General",
-                              "XReqLib.Asserts",
-                              "XReqLib.C_Interface",
-                              "XReqLib.CLI",
-                              "XReqLib.Util",
-                              "XReqLib.ANSI",
-                              "XReqLib.Error_Handling",
-                              "XReqLib.Format",
-                              "XReqLib.Format.HTML",
-                              "XReqLib.Format.Text");
 
 end XReqLib;
 
