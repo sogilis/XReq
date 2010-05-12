@@ -92,18 +92,11 @@ $(VERBOSE).SILENT:
 ########################
 
 dir:
-	@-mkdir -p src/lib/static
-	@-mkdir -p src/lib/dynamic
 	@-mkdir -p lib
 	@-mkdir -p lib/gps
 	@-mkdir -p lib/release
 	@-mkdir -p lib/debug
 	@-mkdir -p lib/coverage
-	@-mkdir -p obj
-	@-mkdir -p obj/gps
-	@-mkdir -p obj/release
-	@-mkdir -p obj/debug
-	@-mkdir -p obj/coverage
 	@-mkdir -p bin
 	@-mkdir -p doc
 	@-mkdir -p reports
@@ -208,21 +201,21 @@ tests: bin/unit_tests bin/feature_tests
 doc: dir README.html src/README.html reports/index.html
 	
 clean: cov-clean
-	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
-	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=release
-	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
-	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=debug
-	-gprclean -Pxreq.gpr    -Xtype=dynamic -Xmode=release
-	-gprclean -Pxreq.gpr    -Xtype=static  -Xmode=coverage
-	-gprclean -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
-	-gprclean -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
-	-gprclean -Plibxreq.gpr -Xtype=dynamic -Xmode=release
-	-gprclean -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
-	-gprclean -Pxreqlib.gpr -Xtype=static  -Xmode=release
-	-gprclean -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
-	-gprclean -Pxreqlib.gpr -Xtype=static  -Xmode=debug
-	-gprclean -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
-	-gprclean -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
+	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
+	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=release
+	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
+	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=debug
+	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=release
+	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=coverage
+	-gprclean -q -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
+	-gprclean -q -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
+	-gprclean -q -Plibxreq.gpr -Xtype=dynamic -Xmode=release
+	-gprclean -q -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
+	-gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=release
+	-gprclean -q -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+	-gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+	-gprclean -q -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
+	-gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
 	-$(RM) -rf tmp
 	-$(RM) -rf obj/*/*
 	-$(RM) -rf lib/*/*

@@ -164,7 +164,7 @@ package body XReqLib.Tables is
    exception
       when Constraint_Error =>
          Ok := False;
-         Elem := Elem;
+         --  Elem := Elem;
    end Item;
 
    -------------

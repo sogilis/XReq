@@ -13,7 +13,11 @@ library project XReqLib is
 
    for Library_Name      use "xreqlib";
    for Source_Dirs       use ("src/lib", "src/common", "src/lib/" & Lib_Kind);
-   for Object_Dir        use "obj/" & Lib_Kind & "-" & Mode;
+   --  for Object_Dir        use "obj/" & Lib_Kind & "-" & Mode;
+   --  For some unknown reason, changing the object directory creates a whole
+   --  lot of problems. Compilation of programs using this library fails with:
+   --  undefined reference to `gnat__traceback__symbolic__symbolic_traceback__2'
+   for Object_Dir        use "obj/" & Mode;
    for Library_Dir       use "lib/" & Mode;
    for Library_Kind      use Lib_Kind;
 
