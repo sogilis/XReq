@@ -650,8 +650,9 @@ install: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreq.so install-gps
 	$(CP) src/common/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
-	$(CP) lib/$(INSTALL_MODE)/* $(DESTDIR)$(LIBDIR)/xreqlib
+	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
 	$(INSTALL) -m755 -D lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
 	$(INSTALL) -m644 -D src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
 	@echo '------------------------------------------------------------------'
