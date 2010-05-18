@@ -15,7 +15,7 @@ package body XReq.Job is
    --  Job_Environment  -- Make   --
    ---------------------------------
 
-   procedure Make         (Env      : out    Job_Environment;
+   procedure Make         (Env      : in out Job_Environment;
                            Step_Dir : in     String_Vector :=
                                              Empty_String_Vector;
                            Out_Dir  : in     String := "";
@@ -25,6 +25,7 @@ package body XReq.Job is
          Step_Dir => Step_Dir,
          Out_Dir  => To_Unbounded_String (Out_Dir),
          Language => Language,
+         Options  => Env.Options,
          others   => <>);
    end Make;
 
@@ -32,7 +33,7 @@ package body XReq.Job is
    --  Job_Environment  -- Make   --
    ---------------------------------
 
-   procedure Make         (Env      : out    Job_Environment;
+   procedure Make         (Env      : in out Job_Environment;
                            Step_Dir : in     String;
                            Out_Dir  : in     String := "";
                            Language : in     Language_Type := Lang_Ada)

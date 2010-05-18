@@ -2,6 +2,7 @@
 
 with Ada.Text_IO;
 with Ada.Strings.Unbounded;
+with Ada.Strings.Fixed;
 with Ada.Exceptions;
 with Ada.Command_Line;
 with GNAT.Command_Line;
@@ -15,6 +16,7 @@ with XReq.Generator;
 
 use Ada.Text_IO;
 use Ada.Strings.Unbounded;
+use Ada.Strings.Fixed;
 use Ada.Exceptions;
 use Ada.Command_Line;
 use GNAT.Command_Line;
@@ -38,7 +40,7 @@ procedure Main is
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
               "-fill-steps -progress -partial -step-matching m -make " &
-              "q -quiet -fill-steps-in=";
+              "q -quiet -fill-steps-in= c: ";
    Arg        : Unbounded_String;
    Step_Dir   : String_Vector;
    Lang       : Unbounded_String;
@@ -131,6 +133,20 @@ begin
       elsif Full_Switch = "l" or else Full_Switch = "-lang" then
          Lang := To_Unbounded_String (Parameter);
          Language := Get_Language (Parameter);
+
+      elsif Full_Switch = "c" then
+         declare
+            Op_Full : constant String  := Parameter;
+            Idx_Eq  : constant Natural := Index (Op_Full, "=");
+         begin
+            if Idx_Eq in Op_Full'Range then
+               Set_Option (Env,
+                           Op_Full (Op_Full'First .. Idx_Eq - 1),
+                           Op_Full (Idx_Eq + 1    .. Op_Full'Last));
+            else
+               raise Invalid_Option;
+            end if;
+         end;
 
       else  --  Never happen unless a bug in Getopt     --  GCOV_IGNORE
          raise Invalid_Switch;                          --  GCOV_IGNORE
@@ -309,6 +325,12 @@ exception
    when Invalid_Language =>
       Free (Logger);
       Put_Line (Standard_Error, "Unknown language " & To_String (Lang));
+      XReq.CLI.Help;
+      Set_Exit_Status (Failure);
+
+   when Invalid_Option =>
+      Free (Logger);
+      Put_Line (Standard_Error, "Invalid configuration " & Parameter);
       XReq.CLI.Help;
       Set_Exit_Status (Failure);
 

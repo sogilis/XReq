@@ -45,12 +45,12 @@ package XReq.Job is
       end record;
    Null_Job_Environment : constant Job_Environment := (others => <>);
 
-   procedure Make         (Env        : out    Job_Environment;
+   procedure Make         (Env        : in out Job_Environment;
                            Step_Dir   : in     String_Vector :=
                                                Empty_String_Vector;
                            Out_Dir    : in     String := "";
                            Language   : in     Language_Type := Lang_Ada);
-   procedure Make         (Env        : out    Job_Environment;
+   procedure Make         (Env        : in out Job_Environment;
                            Step_Dir   : in     String;
                            Out_Dir    : in     String := "";
                            Language   : in     Language_Type := Lang_Ada);

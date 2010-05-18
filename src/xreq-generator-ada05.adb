@@ -728,6 +728,7 @@ package body XReq.Generator.Ada05 is
    is
       use Generator_Vectors;
       use String_Vectors;
+      use Ada.Strings.Fixed;
       Filename : constant String := Out_Dir (Env) & "/" & Name & ".adb";
       Gpr_Name : constant String := Out_Dir (Env) & "/" & Name & ".gpr";
       With_B   : Buffer_Type;
@@ -823,6 +824,27 @@ package body XReq.Generator.Ada05 is
       Body_B.Put_Line ("end " & Prc_Name & ";");
 
       Gpr_B.Put_Line ("with ""xreqlib"";");
+      declare
+         procedure Put_With (Str : in String);
+         procedure Put_With (Str : in String) is
+         begin
+            if Str /= "" then
+               Gpr_B.Put_Line ("with " & Ada_String (Str) & ";");
+            end if;
+         end Put_With;
+         Withs : constant String := Get_Option (Env, "ada.gpr.with", "");
+         I, J  : Natural;
+      begin
+         I := Withs'First - 1;
+         J := Index (Withs, ",");
+         while J in Withs'Range loop
+            Put_With (Withs (I + 1 .. J - 1));
+            I := J;
+            J := Index (Withs, ",", I + 1);
+         end loop;
+         Put_With (Withs (I + 1 .. Withs'Last));
+      end;
+      Gpr_B.New_Line;
       Gpr_B.Put_Line ("project " & Prc_Name & " is");
       Gpr_B.Indent;
       Gpr_B.Put_Line ("for Languages   use (""Ada"");");
