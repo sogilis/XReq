@@ -125,6 +125,70 @@ package body XReq.Job is
 
    end Load;
 
+   ---------------------------------------
+   --  Job_Environment  --  Set_Option  --
+   ---------------------------------------
+
+   procedure Set_Option   (Env        : in out Job_Environment;
+                           Name       : in     String;
+                           Value      : in     String)
+   is
+      use Options_Pkg;
+   begin
+      Include (Env.Options,
+               To_Unbounded_String (Name),
+               To_Unbounded_String (Value));
+   end Set_Option;
+
+   ---------------------------------------
+   --  Job_Environment  --  Get_Option  --
+   ---------------------------------------
+
+   function  Get_Option   (Env        : in     Job_Environment;
+                           Name       : in     String) return String
+   is
+      use Options_Pkg;
+      I : Cursor;
+   begin
+      I := Find (Env.Options, To_Unbounded_String (Name));
+      if Has_Element (I) then
+         return To_String (Element (I));
+      else
+         raise Invalid_Option;
+      end if;
+   end Get_Option;
+
+   ---------------------------------------
+   --  Job_Environment  --  Get_Option  --
+   ---------------------------------------
+
+   function  Get_Option   (Env        : in     Job_Environment;
+                           Name       : in     String;
+                           Default    : in     String) return String
+   is
+      use Options_Pkg;
+      I : Cursor;
+   begin
+      I := Find (Env.Options, To_Unbounded_String (Name));
+      if Has_Element (I) then
+         return To_String (Element (I));
+      else
+         return Default;
+      end if;
+   end Get_Option;
+
+   ---------------------------------------
+   --  Job_Environment  --  Has_Option  --
+   ---------------------------------------
+
+   function  Has_Option   (Env        : in     Job_Environment;
+                           Name       : in     String) return Boolean
+   is
+      use Options_Pkg;
+   begin
+      return Has_Element (Find (Env.Options, To_Unbounded_String (Name)));
+   end Has_Option;
+
    -----------------------------------
    --  Job_Environment  --  UnLoad  --
    -----------------------------------

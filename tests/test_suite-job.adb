@@ -16,6 +16,7 @@ package body Test_Suite.Job is
       Ret.Add_Test (new Test_Fill_Missing);
       Ret.Add_Test (new Test_Job_Environment);
       Ret.Add_Test (new Test_Run);
+      Ret.Add_Test (new Test_Options);
    end Add_Tests;
 
    --  Describe  --------------------------------------------------------------
@@ -163,6 +164,47 @@ package body Test_Suite.Job is
 
       Cleanup (Job);
       UnLoad (Env);
+   end Run;
+
+   --  Test_Options  ----------------------------------------------------------
+
+   function  Name (T : in Test_Options) return String is
+      pragma Unreferenced (T);
+   begin
+      return ("AsaSpec.Job.Env_Options");
+   end Name;
+
+   procedure Run (T : in out Test_Options) is
+      Env  : Job_Environment;
+   begin
+
+      Set_Option (Env, "a", "b");
+      T.Assert (Get_Option (Env, "a") = "b",
+                "Wrong option a (1)");
+
+      Set_Option (Env, "a", "c");
+      T.Assert (Get_Option (Env, "a") = "c",
+                "Wrong option a (2)");
+      T.Assert (Get_Option (Env, "a", "x") = "c",
+                "Wrong option a (3)");
+
+      T.Assert (Has_Option (Env, "a"), "Should have option a");
+      T.Assert (not Has_Option (Env, "none"), "Should not have option none");
+
+      T.Assert (Get_Option (Env, "none", "a") = "a",
+                "Wrong default value Get_Option");
+      declare
+         procedure P;
+         procedure P is begin
+            T.Assert (Get_Option (Env, "none") = "",
+                      "Exception not raised");
+         end P;
+         procedure A is new Assert_Except (Test_Options, P);
+      begin
+         A (T, "Invalid_Option has not been raised in call to Get_Option",
+            Invalid_Option'Identity);
+      end;
+
    end Run;
 
 end Test_Suite.Job;
