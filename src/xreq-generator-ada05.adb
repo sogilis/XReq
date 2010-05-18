@@ -726,6 +726,8 @@ package body XReq.Generator.Ada05 is
                              Log  : in  Logger_Ptr;
                              Make : in Boolean := False)
    is
+      procedure Put_GPR_With (Str : in String);
+      procedure Put_GPR_Path (Str : in String);
       use Generator_Vectors;
       use String_Vectors;
       use Ada.Strings.Fixed;
@@ -737,6 +739,21 @@ package body XReq.Generator.Ada05 is
       I        : Generator_Vectors.Cursor;
       E        : Ada_Generator_Ptr;
       Prc_Name : constant String := To_Identifier (Name);
+
+      procedure Put_GPR_With (Str : in String) is
+      begin
+         if Str /= "" then
+            Gpr_B.Put_Line ("with " & Ada_String (Str) & ";");
+         end if;
+      end Put_GPR_With;
+
+      procedure Put_GPR_Path (Str : in String) is
+      begin
+         if Str /= "" then
+            Gpr_B.Put_Line (", " & Ada_String (Str));
+         end if;
+      end Put_GPR_Path;
+
    begin
       With_B.Put_Line ("--  File: " & Filename);
       With_B.Put_Line ("with Ada.Command_Line;");
@@ -824,26 +841,8 @@ package body XReq.Generator.Ada05 is
       Body_B.Put_Line ("end " & Prc_Name & ";");
 
       Gpr_B.Put_Line ("with ""xreqlib"";");
-      declare
-         procedure Put_With (Str : in String);
-         procedure Put_With (Str : in String) is
-         begin
-            if Str /= "" then
-               Gpr_B.Put_Line ("with " & Ada_String (Str) & ";");
-            end if;
-         end Put_With;
-         Withs : constant String := Get_Option (Env, "ada.gpr.with", "");
-         I, J  : Natural;
-      begin
-         I := Withs'First - 1;
-         J := Index (Withs, ",");
-         while J in Withs'Range loop
-            Put_With (Withs (I + 1 .. J - 1));
-            I := J;
-            J := Index (Withs, ",", I + 1);
-         end loop;
-         Put_With (Withs (I + 1 .. Withs'Last));
-      end;
+      Split_String_Walk (Get_Option (Env, "ada.gpr.with", ""), ",",
+                         Put_GPR_With'Access);
       Gpr_B.New_Line;
       Gpr_B.Put_Line ("project " & Prc_Name & " is");
       Gpr_B.Indent;
@@ -857,6 +856,8 @@ package body XReq.Generator.Ada05 is
                                         To_String (Element (Env.Step_Dir, I)))
                     & """");
       end loop;
+      Split_String_Walk (Get_Option (Env, "ada.gpr.srcdir", ""), ",",
+                         Put_GPR_Path'Access);
       Gpr_B.Put      (");");
       Gpr_B.New_Line;
       Gpr_B.Put_Line ("package Compiler is");

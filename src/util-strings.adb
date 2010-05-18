@@ -505,6 +505,27 @@ package body Util.Strings is
       end if;
    end Goto_Path;
 
+   -------------------------
+   --  Split_String_Walk  --
+   -------------------------
+
+   procedure Split_String_Walk
+                          (Str     : in String;
+                           Split   : in String;
+                           Walker  : in Split_String_Walker)
+   is
+      I, J  : Natural;
+   begin
+      I := Str'First;
+      J := Index (Str, ",");
+      while J in Str'Range loop
+         Walker (Str (I .. J - 1));
+         I := J + Split'Length;
+         J := Index (Str, ",", I);
+      end loop;
+      Walker (Str (I .. Str'Last));
+   end Split_String_Walk;
+
    --------------
    --  Buffer  --
    --------------

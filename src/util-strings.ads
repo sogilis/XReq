@@ -66,6 +66,13 @@ package Util.Strings is
    function Goto_Path     (Origin  : in String;
                            Target  : in String) return String;
 
+   type Split_String_Walker is access procedure (S : in String);
+
+   procedure Split_String_Walk
+                          (Str     : in String;
+                           Split   : in String;
+                           Walker  : in Split_String_Walker);
+
 
    --------------
    --  Buffer  --
