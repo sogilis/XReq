@@ -68,8 +68,12 @@ INCLUDEDIR = $(PREFIX)/include
 LIBDIR     = $(PREFIX)/lib
 GPRDIR     = $(PREFIX)/lib/gnat
 DATADIR    = $(PREFIX)/share
-GPSDATADIR = $(PREFIX_GPS)/share/gps
 DOCDIR     = $(DATADIR)/doc/XReq
+ifneq ($(PREFIX_GPS),)
+GPSDATADIR = $(PREFIX_GPS)/share/gps
+else
+GPSDATADIR =
+endif
 
 all: bin lib gps-plugin tests doc
 	@echo
@@ -672,10 +676,12 @@ install: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreq.so install-gps
 	@echo '------------------------------------------------------------------'
 
 install-gps: lib/gps/libxreqgps.so
+ifneq ($(GPSDATADIR),)
 	$(INSTALL) -m644 data/gpr-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	$(INSTALL) -m644 data/gpr-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	$(INSTALL) -m644 data/gpr-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 	$(INSTALL) -m755 lib/gps/libxreqgps.so          $(DESTDIR)$(LIBDIR)/libxreqgps.so
+endif
 
 uninstall: uninstall-gps
 	-$(RM) -rf $(DESTDIR)$(BINDIR)/xreq
@@ -689,9 +695,11 @@ uninstall: uninstall-gps
 
 uninstall-gps:
 	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreqgps.so
+ifneq ($(GPSDATADIR),)
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
+endif
 
 install-gps-local:
 	ln -sf "`pwd`"/data/gpr-plug-in/*.{xml,py} ~/.gps/plug-ins
