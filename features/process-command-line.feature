@@ -75,3 +75,15 @@ Feature: xreq commandline
       """
       Invalid switch
       """
+
+  Scenario: Specify a custom option
+    When I run xreq -ctoto=tata features/data/simplest.feature
+    Then it should pass
+
+  Scenario: Specify a custom option without value
+    When I run xreq -ctoto features/data/simplest.feature
+    Then it should fail
+    And the output should contain
+      """
+      Invalid configuration
+      """
