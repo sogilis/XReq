@@ -106,8 +106,11 @@ package body XReq.CLI is
       Put_Line ("");
       Put_Line ("    ada.gpr.with");
       Put_Line ("        These option specify an additional library to include in the GPR");
-      Put_Line ("        project file. The first form accept any number of libraries");
-      Put_Line ("        separated by commas ','.");
+      Put_Line ("        project file. Separate the libraries by commas ','.");
+      Put_Line ("");
+      Put_Line ("    ada.gpr.srcdir");
+      Put_Line ("        These option specify an additional source path in the GPR project.");
+      Put_Line ("        Separate the directories by commas ','.");
       Put_Line ("");
       Put_Line ("ENVIRONMENT VARIABLES");
       Put_Line ("");

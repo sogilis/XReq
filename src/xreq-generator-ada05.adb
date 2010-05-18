@@ -739,6 +739,7 @@ package body XReq.Generator.Ada05 is
       I        : Generator_Vectors.Cursor;
       E        : Ada_Generator_Ptr;
       Prc_Name : constant String := To_Identifier (Name);
+      Splitter : Split_String_Type;
 
       procedure Put_GPR_With (Str : in String) is
       begin
@@ -841,8 +842,12 @@ package body XReq.Generator.Ada05 is
       Body_B.Put_Line ("end " & Prc_Name & ";");
 
       Gpr_B.Put_Line ("with ""xreqlib"";");
-      Split_String_Walk (Get_Option (Env, "ada.gpr.with", ""), ",",
-                         Put_GPR_With'Access);
+      Split_String_Start (Splitter,
+                          Get_Option (Env, "ada.gpr.with", ""), ",");
+      while Split_String_Has_Next (Splitter) loop
+         Put_GPR_With (Split_String_Current (Splitter));
+         Split_String_Next (Splitter);
+      end loop;
       Gpr_B.New_Line;
       Gpr_B.Put_Line ("project " & Prc_Name & " is");
       Gpr_B.Indent;
@@ -856,8 +861,12 @@ package body XReq.Generator.Ada05 is
                                         To_String (Element (Env.Step_Dir, I)))
                     & """");
       end loop;
-      Split_String_Walk (Get_Option (Env, "ada.gpr.srcdir", ""), ",",
-                         Put_GPR_Path'Access);
+      Split_String_Start (Splitter,
+                          Get_Option (Env, "ada.gpr.srcdir", ""), ",");
+      while Split_String_Has_Next (Splitter) loop
+         Put_GPR_Path (Split_String_Current (Splitter));
+         Split_String_Next (Splitter);
+      end loop;
       Gpr_B.Put      (");");
       Gpr_B.New_Line;
       Gpr_B.Put_Line ("package Compiler is");

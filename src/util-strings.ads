@@ -73,6 +73,27 @@ package Util.Strings is
                            Split   : in String;
                            Walker  : in Split_String_Walker);
 
+   --  The following is quite ugly, but you know, subprogram must not be deeper
+   --  than access type
+
+   type Split_String_Type is
+      record
+         Str   : Unbounded_String;
+         Split : Unbounded_String;
+         I, J  : Natural;
+      end record;
+
+   procedure Split_String_Start (Splitter : out Split_String_Type;
+                                 Str      : in String;
+                                 Split    : in String);
+
+   procedure Split_String_Next  (Splitter : in out Split_String_Type);
+
+   function  Split_String_Current (Splitter : in Split_String_Type)
+                                            return String;
+
+   function  Split_String_Has_Next (Splitter : in Split_String_Type)
+                                            return Boolean;
 
    --------------
    --  Buffer  --

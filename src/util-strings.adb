@@ -526,6 +526,56 @@ package body Util.Strings is
       Walker (Str (I .. Str'Last));
    end Split_String_Walk;
 
+   --
+   --  Let's unroll this neat algorithm in something we don't like
+   --
+
+   procedure Split_String_Start (Splitter : out Split_String_Type;
+                                 Str      : in String;
+                                 Split    : in String) is
+   begin
+      Splitter := (Str   => To_Unbounded_String (Str),
+                   Split => To_Unbounded_String (Split),
+                   I     => Str'First,
+                   J     => Index (Str, ","));
+      if Splitter.J not in Str'Range then
+         Splitter.J := Str'Last + 1;
+      end if;
+   end Split_String_Start;
+
+   procedure Split_String_Next  (Splitter : in out Split_String_Type) is
+      Str   : constant String := To_String (Splitter.Str);
+      Split : constant String := To_String (Splitter.Split);
+   begin
+      Splitter.I := Splitter.J + Split'Length;
+      if Splitter.J not in Str'Range then
+         Splitter.J := Str'First - 1;
+      else
+         Splitter.J := Index (Str, ",", Splitter.I);
+         if Splitter.J not in Str'Range then
+            Splitter.J := Str'Last + 1;
+         end if;
+      end if;
+   end Split_String_Next;
+
+
+   function  Split_String_Current (Splitter : in Split_String_Type)
+                                            return String
+   is
+      Str   : constant String := To_String (Splitter.Str);
+   begin
+      return Str (Splitter.I .. Splitter.J - 1);
+   end Split_String_Current;
+
+
+   function  Split_String_Has_Next (Splitter : in Split_String_Type)
+                                            return Boolean
+   is
+      Str   : constant String := To_String (Splitter.Str);
+   begin
+      return Splitter.J in Str'First .. Str'Last + 1;
+   end Split_String_Has_Next;
+
    --------------
    --  Buffer  --
    --------------
