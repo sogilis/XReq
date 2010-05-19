@@ -110,6 +110,52 @@ package body XReqLib.Tables is
       return Element (T.Map, Key_Type'(X, Y));
    end Item;
 
+   ----------------------------
+   --  Recompute_Boundaries  --
+   ----------------------------
+
+   procedure Recompute_Boundaries (T    : in out Table) is
+      I : Cursor;
+      K : Key_Type;
+      Min, Max : Key_Type;
+   begin
+      if T.Is_Empty then
+         T := Table'(others => <>);
+      else
+         Min := (Integer'Last, Integer'Last);
+         Max := (Integer'First, Integer'First);
+         I := First (T);
+         while Has_Element (I) loop
+            K := Key (I);
+            if K.X < Min.X then Min.X := K.X; end if;
+            if K.Y < Min.Y then Min.Y := K.Y; end if;
+            if K.X > Max.X then Max.X := K.X; end if;
+            if K.Y > Max.Y then Max.Y := K.Y; end if;
+            Next (I);
+         end loop;
+         T.First_X := Min.X;
+         T.First_Y := Min.Y;
+         T.Last_X  := Max.X;
+         T.Last_Y  := Max.Y;
+      end if;
+   end Recompute_Boundaries;
+
+   --------------
+   --  Remove  --
+   --------------
+
+   procedure Remove  (T    : in out Table;
+                      X, Y : in     Integer;
+                      Recompute : in Boolean := True)
+   is
+      use Maps;
+   begin
+      Exclude (T.Map, Key_Type'(X, Y));
+      if Recompute then
+         T.Recompute_Boundaries;
+      end if;
+   end Remove;
+
    -----------
    -- Clear --
    -----------
@@ -133,7 +179,7 @@ package body XReqLib.Tables is
    is
       use Maps;
    begin
-      Insert (T.Map, Key_Type'(X, Y), Elem);
+      Include (T.Map, Key_Type'(X, Y), Elem);
       if X < T.First_X then
          T.First_X := X;
       end if;

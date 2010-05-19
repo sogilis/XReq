@@ -35,6 +35,8 @@ package XReqLib.Tables is
    function Item     (T    : in Table;
                       X, Y : in Integer) return Element_Type;
 
+   procedure Recompute_Boundaries
+                     (T    : in out Table);
    procedure Clear   (T    : in out Table);
    procedure Put     (T    : in out Table;
                       X, Y : in     Integer;
@@ -43,6 +45,9 @@ package XReqLib.Tables is
                       X, Y : in     Integer;
                       Elem : out    Element_Type;
                       Ok   : out    Boolean);
+   procedure Remove  (T    : in out Table;
+                      X, Y : in     Integer;
+                      Recompute : in Boolean := True);
    procedure First_X (T    : in out Table; X : in Integer);
    procedure First_Y (T    : in out Table; Y : in Integer);
    procedure Last_X  (T    : in out Table; X : in Integer);
