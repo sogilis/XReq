@@ -5,10 +5,15 @@ TEST_SUITES=test coverage
 CONFIG=dbg
 INSTALL_CONFIG=rel
 MODE=
-LIBTYPE=static
+LIBEXT=
+
 # dynamic makes gcov unhappy: hidden symbol `__gcov_merge_add' is referenced by
 # DSO (Dynamic Shared Object).
-LIBEXT=
+LIBTYPE=static
+
+# release doesn't work, undefined reference to 
+# `gnat__traceback__symbolic__symbolic_traceback__2'
+INSTALL_CONFIG=dbg
 
 ifeq ($(INSTALL_CONFIG),dbg)
 INSTALL_MODE=debug
@@ -647,18 +652,7 @@ check: gnatcheck coverage run-cucumber run-unit
 ##               ##
 ###################
 
-install: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreq.so install-gps
-	$(INSTALL) -D bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
-	$(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
-	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(CP) src/common/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(CP) src/lib/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
-	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
-	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
-	$(INSTALL) -m755 -D lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
-	$(INSTALL) -m644 -D src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
+install: install-bin install-lib install-gps
 	@echo '------------------------------------------------------------------'
 	@echo '--  XReq has now been installed.'
 	@echo '------------------------------------------------------------------'
@@ -674,6 +668,28 @@ install: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreq.so install-gps
 	@echo '--  your LD_LIBRARY_PATH to point to the path'
 	@echo '--  $(DESTDIR)$(LIBDIR)'
 	@echo '------------------------------------------------------------------'
+
+install-lib: lib/$(INSTALL_MODE)/libxreq.so lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
+	# Installing GPR project file in $(GPRDIR)
+	# $(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	sed -e 's|%ADAINCLUDEDIR%|$(INCLUDEDIR)/xreqlib|g' -e 's|%ADALIBDIR%|$(LIBDIR)/xreqlib|g' -e 's|%ADALIBKIND%|$(LIBTYPE)|g' data/xreqlib-template.gpr > $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	# Installing source files in $(INCLUDEDIR)/xreqlib
+	$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(CP) src/common/*.ad[bs]     $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(CP) src/lib/*.ad[bs]        $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
+	# Installing Ada library in $(LIBDIR)/xreqlib
+	$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
+	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
+	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
+	# Installing C library in $(LIBDIR) and C Header files in $(INCLUDEDIR)
+	$(INSTALL) -m755 -D lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
+	$(INSTALL) -m644 -D src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
+
+install-bin: bin/xreq.$(INSTALL_CONFIG)
+	$(INSTALL) -D bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
+
 
 install-gps: lib/gps/libxreqgps.so
 ifneq ($(GPSDATADIR),)
@@ -711,7 +727,7 @@ uninstall-gps-local:
 	-$(RM) ~/.gps/plug-ins/feature-lang.xml
 	-$(RM) ~/.local/lib/libxreqgps.so
 
-.PHONY: install install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
+.PHONY: install install-lib install-bin install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
 
 ################
 ##            ##

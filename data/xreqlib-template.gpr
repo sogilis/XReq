@@ -1,0 +1,13 @@
+--                         Copyright (C) 2010, Sogilis                       --
+
+library project XReqLib is
+
+   for Library_Name      use "xreqlib";
+   for Source_Dirs       use ("%ADAINCLUDEDIR%");
+   for Library_Dir       use "%ADALIBDIR%";
+   for Library_Kind      use "%ADALIBKIND%";
+   for Externally_Built  use "true";
+
+end XReqLib;
+
+--  kate: hl Ada
