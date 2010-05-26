@@ -8,6 +8,7 @@ Feature: Generate GPR Project file
 
   Background:
     Given xreq is in the PATH
+    And I am in the xreq directory
 
   @lang @lang-Ada
   Scenario: Option ada.gpr.with with one required project
