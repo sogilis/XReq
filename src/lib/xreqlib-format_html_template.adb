@@ -425,7 +425,9 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "      var timeout_id;" & ASCII.LF);
       Put (File, "      function refresh(){" & ASCII.LF);
       Put (File, "        if(!loaded) {" & ASCII.LF);
-      Put (File, "          location.reload(true);" & ASCII.LF);
+      Put (File, "          if (! document.readyState || document.readyState == ""complete"") {" & ASCII.LF);
+      Put (File, "            location.reload(true);" & ASCII.LF);
+      Put (File, "          }" & ASCII.LF);
       Put (File, "        } else {" & ASCII.LF);
       Put (File, "          clearTimeout(timeout_id);" & ASCII.LF);
       Put (File, "        }" & ASCII.LF);
@@ -520,12 +522,13 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "        document.getElementById(""progressbar"").className = status;" & ASCII.LF);
       Put (File, "        document.getElementById(""progressbar-1"").className = status;" & ASCII.LF);
       Put (File, "      }" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, "      window.onload = function() {" & ASCII.LF);
+      Put (File, "        refresh_periodic(2500);" & ASCII.LF);
+      Put (File, "      }" & ASCII.LF);
       Put (File, "    </script>" & ASCII.LF);
       Put (File, "  </head>" & ASCII.LF);
       Put (File, "  <body>" & ASCII.LF);
-      Put (File, "    <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
-      Put (File, "      refresh_periodic(2500);" & ASCII.LF);
-      Put (File, "    /*]]>*/</script>" & ASCII.LF);
       Put (File, "    <div id=""progressbar"">" & ASCII.LF);
       Put (File, "      <div id=""progressbar-1""></div>" & ASCII.LF);
       Put (File, "    </div>" & ASCII.LF);

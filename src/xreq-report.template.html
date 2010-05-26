@@ -416,7 +416,9 @@ p.position {
       var timeout_id;
       function refresh(){
         if(!loaded) {
-          location.reload(true);
+          if (! document.readyState || document.readyState == "complete") {
+            location.reload(true);
+          }
         } else {
           clearTimeout(timeout_id);
         }
@@ -511,12 +513,13 @@ p.position {
         document.getElementById("progressbar").className = status;
         document.getElementById("progressbar-1").className = status;
       }
+
+      window.onload = function() {
+        refresh_periodic(2500);
+      }
     </script>
   </head>
   <body>
-    <script type="text/javascript">/*<![CDATA[*/
-      refresh_periodic(2500);
-    /*]]>*/</script>
     <div id="progressbar">
       <div id="progressbar-1"></div>
     </div>
