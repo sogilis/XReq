@@ -67,7 +67,7 @@ package body XReq.Generator.C is
       use Ada.Directories;
       Basename    : Unbounded_String;
       Pkgname     : constant String :=
-                     "feature_" & Base_Name (Feature_File (Job));
+                    Job.Result.Filetype & "_" & Base_Name (Feature_File (Job));
    begin
       Gen.Feature := Job.Result;
       Get_Unique_String (

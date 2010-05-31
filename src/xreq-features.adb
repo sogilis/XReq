@@ -465,6 +465,7 @@ package body XReq.Features is
 
    begin
       K.Set_Type (File_Ext);
+      Self.Set_Filetype (File_Ext);
       Position := Position_Type'(
          File => Self.File_Name,
          Line => 1);

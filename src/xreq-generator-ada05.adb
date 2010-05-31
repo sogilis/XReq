@@ -69,7 +69,7 @@ package body XReq.Generator.Ada05 is
       use Ada.Characters.Handling;
       Basename    : Unbounded_String;
       Pkgname     : constant String :=
-                     "Feature_" & Base_Name (Feature_File (Job));
+                    Job.Result.Filetype & "_" & Base_Name (Feature_File (Job));
    begin
       Gen.Feature := Job.Result;
       Get_Unique_String (

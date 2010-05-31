@@ -9,9 +9,7 @@ Feature: Requirement Syntax
   Background:
     Given xreq is in the PATH
     And I am in the xreq directory
-
-  Scenario: Syntax
-    Given a file "features/data/tmp-outline.requirement":
+    And a file "features/data/tmp-outline.requirement":
       """
       Requirement: eating
 
@@ -34,6 +32,8 @@ Feature: Requirement Syntax
             |  20   |  5  |  15  |
 
       """
+
+  Scenario: Syntax
     When I run xreq -m -x suite features/data/tmp-outline.requirement
     Then it should pass
 
@@ -64,3 +64,17 @@ Feature: Requirement Syntax
       12 steps (12 passed)
 
       """
+
+  @lang @lang-Ada
+  Scenario: Ada File Names
+    When I run xreq -m features/data/tmp-outline.requirement
+    Then it should pass
+     And "features/data/tests/requirement_tmp_outline.adb" should exist
+     And "features/data/tests/requirement_tmp_outline.ads" should exist
+
+  @lang @lang-C
+  Scenario: Ada File Names
+    When I run xreq -m features/data/tmp-outline.requirement
+    Then it should pass
+     And "features/data/tests/requirement_tmp_outline.h" should exist
+     And "features/data/tests/requirement_tmp_outline.c" should exist

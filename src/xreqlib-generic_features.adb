@@ -82,6 +82,15 @@ package body XReqLib.Generic_Features is
       return F.Background;
    end Background;
 
+   ----------------------------------
+   --  Feature_Type  --  Filetype  --
+   ----------------------------------
+
+   function  Filetype    (F : in Feature_Type) return String is
+   begin
+      return To_String (F.Filetype);
+   end Filetype;
+
    -----------------------------------
    --  Feature_Type  --  To_String  --
    -----------------------------------
@@ -156,6 +165,16 @@ package body XReqLib.Generic_Features is
    begin
       F.Description := To_Unbounded_String (Desc);
    end Set_Description;
+
+   --------------------------------------
+   --  Feature_Type  --  Set_Filetype  --
+   --------------------------------------
+
+   procedure Set_Filetype       (F      : in out Feature_Type;
+                                 FType  : in     String) is
+   begin
+      F.Filetype := To_Unbounded_String (FType);
+   end Set_Filetype;
 
    --------------------------------------------
    --  Feature_Type  --  Append_Description  --

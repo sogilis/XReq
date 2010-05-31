@@ -44,6 +44,7 @@ package body XReq.Result_Features is
       Make (Result, Feature.Name);
       Result.Set_Position    (Feature.Position);
       Result.Set_Description (Feature.Description);
+      Result.Set_Filetype    (Feature.Filetype);
       Process_Scenario (R_Scen, Feature.Background,
                         Steps,
                         Log, Errors, Missing_Steps, Step_Matching);
@@ -72,8 +73,8 @@ package body XReq.Result_Features is
    ------------------------------------------
 
    function  To_Code        (Res      : in     Result_Feature_Type;
-                               Indent   : in     String := "")
-                                          return String
+                             Indent   : in     String := "")
+                                        return String
    is
       CRLF   : constant String := "" & ASCII.LF;
       Buffer : Unbounded_String;

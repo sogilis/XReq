@@ -55,6 +55,7 @@ package XReqLib.Generic_Features is
    function  Name        (F : in Feature_Type) return String;
    function  Position    (F : in Feature_Type) return Position_Type;
    function  Background  (F : in Feature_Type) return Scenario_Type;
+   function  Filetype    (F : in Feature_Type) return String;
    function  Description (F : in Feature_Type) return String;
 
    --  Properties: Write  -----------------------------------------------------
@@ -67,6 +68,8 @@ package XReqLib.Generic_Features is
                                  Bg     : in     Scenario_Type);
    procedure Set_Description    (F      : in out Feature_Type;
                                  Desc   : in     String);
+   procedure Set_Filetype       (F      : in out Feature_Type;
+                                 FType  : in     String);
    procedure Append_Description (F      : in out Feature_Type;
                                  Desc   : in     String);
 
@@ -94,6 +97,7 @@ private
       record
          Name        : Unbounded_String;
          Description : Unbounded_String;
+         Filetype    : Unbounded_String;
          Pos         : Position_Type;
          Background  : Scenario_Type;
          Scenarios   : Scenario_Container.Vector;
