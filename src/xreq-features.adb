@@ -18,12 +18,14 @@
 -------------------------------------------------------------------------------
 
 with Ada.Text_IO;
+with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Util.Strings;
 with XReqLib.String_Tables;
 with XReq.Args;
 with XReq.Steps;
+with XReq.Language;
 
 use Util.Strings;
 use XReq.Args;
@@ -68,7 +70,9 @@ package body XReq.Features is
       Self : constant access Feature_File_Type'Class := F'Access;
 
       use Ada.Text_IO;
+      use Ada.Directories;
       use String_Vectors;
+      use XReq.Language;
 
       procedure Log_Error (Error : in String);
       procedure Read_Line;
@@ -86,17 +90,8 @@ package body XReq.Features is
       procedure Read_Table    (Result   : out    String_Tables.Table);
 
       --  Keywords
-      K_Feature          : constant String := "Feature:";
-      K_Background       : constant String := "Background:";
-      K_Scenario         : constant String := "Scenario:";
-      K_Scenario_Outline : constant String := "Scenario Outline:";
-      K_Examples         : constant String := "Examples:";
-      K_Given            : constant String := "Given ";
-      K_When             : constant String := "When ";
-      K_Then             : constant String := "Then ";
-      K_And              : constant String := "And ";
-      K_StrDouble        : constant String := """""""";
-      K_StrSimple        : constant String := "'''";
+      File_Ext : constant String := Extension (To_String (Self.File_Name));
+      K : Language_Type;
 
       --  Context variables
       File          : File_Type;        --  Current opened file
@@ -164,7 +159,7 @@ package body XReq.Features is
       procedure Read_All is
       begin
          Read_Line;
-         if Detect_Keyword (K_Feature) then
+         if Detect_Keyword (K.Feature) then
             Read_Feature (F);
          end if;
       end Read_All;
@@ -211,16 +206,16 @@ package body XReq.Features is
          Feature.Set_Position (Position);
          while not End_Of_File loop
             Read_Line;
-            if Detect_Keyword (K_Background) then
+            if Detect_Keyword (K.Background) then
                Read_Scenario (Scenario);
                Feature.Set_Background (Scenario);
                Beginning := False;
-            elsif Detect_Keyword (K_Scenario) then
+            elsif Detect_Keyword (K.Scenario) then
                Current_Scenario := Null_Scenario;
                Read_Scenario (Current_Scenario);
                Self.Scenario_Append (Current_Scenario);
                Beginning := False;
-            elsif Detect_Keyword (K_Scenario_Outline) then
+            elsif Detect_Keyword (K.Scenario_Outline) then
                Current_Scenario := Null_Scenario;
                Read_Scenario (Current_Scenario, True);
                Self.Scenario_Append (Current_Scenario);
@@ -239,10 +234,10 @@ package body XReq.Features is
          end loop;
       end Read_Feature;
 
-      --  ++ SCENARIO      -> K_SCENARIO name NL
+      --  ++ SCENARIO      -> K.SCENARIO name NL
       --  ++                  { STANZA }
       --  ++                  [ SCENARIO_EX ]
-      --  ++ K_SCENARIO    -> "Background:"
+      --  ++ K.SCENARIO    -> "Background:"
       --  ++                | "Scenario:"
       --  ++                | "Scenario Outline:"
       --  ++ SCENARIO_EX   -> "Examples:" NL
@@ -266,9 +261,9 @@ package body XReq.Features is
             Read_Line;
             Detect := True;
 
-            if Detect_Keyword (K_Background)       or else
-               Detect_Keyword (K_Scenario)         or else
-               Detect_Keyword (K_Scenario_Outline) or else
+            if Detect_Keyword (K.Background)       or else
+               Detect_Keyword (K.Scenario)         or else
+               Detect_Keyword (K.Scenario_Outline) or else
                Detect_Keyword ("@")
             then
                Unread_Line := True;
@@ -276,20 +271,20 @@ package body XReq.Features is
                Detect      := False;
             elsif Detect_Keyword ("#") then
                null;
-            elsif Outline and then Detect_Keyword (K_Examples) then
+            elsif Outline and then Detect_Keyword (K.Examples) then
                Read_Line;
                if not End_Of_File then
                   Read_Table (Table);
                   Scenario.Set_Table (Table);
                end if;
                Detect := False;
-            elsif Detect_Keyword (K_Given) then
+            elsif Detect_Keyword (K.Given) then
                Current_Prefix := Step_Given;
-            elsif Detect_Keyword (K_When) then
+            elsif Detect_Keyword (K.When_K) then
                Current_Prefix := Step_When;
-            elsif Detect_Keyword (K_Then) then
+            elsif Detect_Keyword (K.Then_K) then
                Current_Prefix := Step_Then;
-            elsif Detect_Keyword (K_And) then
+            elsif Detect_Keyword (K.And_K) then
                if Current_Prefix = Step_Null then
                   if Log.Verbosity < 0 then
                      Log_Error    ("ERROR: And keyword should be following " &
@@ -322,9 +317,9 @@ package body XReq.Features is
          end loop;
       end Read_Scenario;
 
-      --  ++ STANZA        -> K_STANZA text NL
+      --  ++ STANZA        -> K.STANZA text NL
       --  ++                  { STANZA_PARAM }
-      --  ++ K_STANZA      -> "Given"
+      --  ++ K.STANZA      -> "Given"
       --  ++                | "When"
       --  ++                | "Then"
       --  ++                | "And"
@@ -343,23 +338,23 @@ package body XReq.Features is
 
             Read_Line;
 
-            if Detect_Keyword (K_Background)       or else
-               Detect_Keyword (K_Scenario)         or else
-               Detect_Keyword (K_Scenario_Outline) or else
-               Detect_Keyword (K_Examples)         or else
-               Detect_Keyword (K_Given)            or else
-               Detect_Keyword (K_When)             or else
-               Detect_Keyword (K_Then)             or else
-               Detect_Keyword (K_And)              or else
+            if Detect_Keyword (K.Background)       or else
+               Detect_Keyword (K.Scenario)         or else
+               Detect_Keyword (K.Scenario_Outline) or else
+               Detect_Keyword (K.Examples)         or else
+               Detect_Keyword (K.Given)            or else
+               Detect_Keyword (K.When_K)           or else
+               Detect_Keyword (K.Then_K)           or else
+               Detect_Keyword (K.And_K)            or else
                Detect_Keyword ("@")
             then
                Unread_Line := True;
                Continue    := False;
-            elsif Detect_Keyword (K_StrSimple) then
-               Read_String (Long_String, K_StrSimple);
+            elsif Detect_Keyword (K.StrSimple) then
+               Read_String (Long_String, K.StrSimple);
                Step.Arg_Append (Argument_Type'(Text, Long_String));
-            elsif Detect_Keyword (K_StrDouble) then
-               Read_String (Long_String, K_StrDouble);
+            elsif Detect_Keyword (K.StrDouble) then
+               Read_String (Long_String, K.StrDouble);
                Step.Arg_Append (Argument_Type'(Text, Long_String));
             elsif Detect_Keyword ("|") then
                Read_Table (Tble);
@@ -469,6 +464,7 @@ package body XReq.Features is
       end Read_Table;
 
    begin
+      K.Set_Type (File_Ext);
       Position := Position_Type'(
          File => Self.File_Name,
          Line => 1);
@@ -476,6 +472,10 @@ package body XReq.Features is
       Read_All;
       Close (File);
       Self.Parsed := True;
+   exception
+      when Unknown_Type =>
+         Log.Put_Line ("Unknown file format: " & File_Ext);
+         raise Parse_Error;
    end Parse;
 
    ----------------------------------------
