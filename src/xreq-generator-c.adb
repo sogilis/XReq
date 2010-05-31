@@ -188,7 +188,9 @@ package body XReq.Generator.C is
       --  Skip if failure
       S.C.Put_Line ("if (fail) {");
       S.C.Indent (2);
-      S.C.Put_Line ("XReq_Report_step_skip (report);");
+      if not Fake then
+         S.C.Put_Line ("XReq_Report_step_skip (report);");
+      end if;
       if Background then
          S.C.Put_Line ("if (!stop) {");
          S.C.Indent (2);
@@ -452,14 +454,11 @@ package body XReq.Generator.C is
             S.C.Put_Line ("**  Generated Scenario  **");
             S.C.Put_Line ("*************************/");
             S.C.Put_Line ("XReq_Format_Enter_Scenario (format);");
-            S.C.Put_Line (S.Fn_Backgnd &
-                           " (format, report, is_first, cond, &fail, 0);");
-            S.C.Put_Line ("stop = stop || (first && fail);");
-            S.C.Put_Line ("fail = stop;");
             if not First then
                S.C.Put_Line (S.Fn_Backgnd &
-                              " (format, report, is_first, cond, &fail, 1);");
+                              " (format, report, is_first, cond, &fail, 0);");
                S.C.Put_Line ("stop = stop || (first && fail);");
+               S.C.Put_Line ("fail = stop;");
             end if;
             S.C.Put_Line ("XReq_Format_Start_Scenario (format);");
             for I in Scenario.Outline_Step_First (J) ..
@@ -510,10 +509,19 @@ package body XReq.Generator.C is
          S.C.Put_Line ("first = 0;");
          S.C.UnIndent (2);
          S.C.Put_Line ("} else { /* count_mode */");
-         S.C.Put_Line ("   " & S.Fn_Backgnd &
+         S.C.Indent (2);
+         if Scenario.Outline then
+            for J in Scenario.Outline_First .. Scenario.Outline_Last loop
+               S.C.Put_Line (S.Fn_Backgnd &
                              " (format, report, is_first, cond, &fail, 1);");
-         S.C.Put_Line ("   XReq_Report_num_steps_inc (report, " &
-                           Trim (Steps_Count'Img, Left) & ");");
+            end loop;
+         else
+            S.C.Put_Line (S.Fn_Backgnd &
+                          " (format, report, is_first, cond, &fail, 1);");
+         end if;
+         S.C.Put_Line ("XReq_Report_num_steps_inc (report," &
+                        Steps_Count'Img & ");");
+         S.C.UnIndent (2);
          S.C.Put_Line ("}");
          S.C.UnIndent (2);
          S.C.Put_Line ("}");
