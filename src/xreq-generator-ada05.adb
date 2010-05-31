@@ -563,10 +563,21 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line ("First := False;");
          S.Adb.UnIndent;
          S.Adb.Put_Line ("else  --  Count_Mode");
-         S.Adb.Put_Line ("   " & S.Fn_Backgnd &
-                             " (Format, Report, First, Cond, Fail, True);");
-         S.Adb.Put_Line ("   Report.Num_Steps := Report.Num_Steps +" &
+         S.Adb.Indent;
+         if Scenario.Outline then
+            for J in Scenario.Outline_First .. Scenario.Outline_Last loop
+               S.Adb.Put_Line (S.Fn_Backgnd &
+                               " (Format, Report, First, Cond, Fail, True);");
+            end loop;
+            S.Adb.Put_Line ("Report.Num_Steps := Report.Num_Steps +" &
                                                  Steps_Count'Img & ";");
+         else
+            S.Adb.Put_Line (S.Fn_Backgnd &
+                            " (Format, Report, First, Cond, Fail, True);");
+            S.Adb.Put_Line ("Report.Num_Steps := Report.Num_Steps +" &
+                                                 Steps_Count'Img & ";");
+         end if;
+         S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
