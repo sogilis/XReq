@@ -204,8 +204,10 @@ package body XReq.Generator.Ada05 is
       --  Skip if failure
       S.Adb.Put_Line ("if Fail then");
       S.Adb.Indent;
-      S.Adb.Put_Line ("Report.Count_Steps_Skipped := " &
-                      "Report.Count_Steps_Skipped + 1;");
+      if not Fake then
+         S.Adb.Put_Line ("Report.Count_Steps_Skipped := " &
+                         "Report.Count_Steps_Skipped + 1;");
+      end if;
       if Background then
          S.Adb.Put_Line ("if not Stop then");
          S.Adb.Indent;
@@ -485,14 +487,11 @@ package body XReq.Generator.Ada05 is
             S.Adb.Put_Line ("--  Generated Scenario  --");
             S.Adb.Put_Line ("--------------------------");
             S.Adb.Put_Line ("Format.Enter_Scenario;");
-            S.Adb.Put_Line (S.Fn_Backgnd &
-                           " (Format, Report, First, Cond, Fail);");
-            S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
-            S.Adb.Put_Line ("Fail := Stop;");
             if not First then
                S.Adb.Put_Line (S.Fn_Backgnd &
                               " (Format, Report, First, Cond, Fail);");
                S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
+               S.Adb.Put_Line ("Fail := Stop;");
             end if;
             S.Adb.Put_Line ("Format.Start_Scenario;");
             S.Adb.Put_Line ("declare");
