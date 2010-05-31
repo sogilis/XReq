@@ -1,5 +1,7 @@
 #!/bin/bash
 
+prjdir="$(dirname "$0")/.."
+
 if [ $# = 0 ]; then
   echo "$0 [-f] TESTED_PKG [TEST_PKG]"
   exit 0
@@ -31,7 +33,7 @@ if ! $force && ( [ -e "$filename.adb" ] || [ -e "$filename.ads" ] ); then
 fi
 
 cat >"$filename.ads" <<EOF
---                         Copyright (C) 2010, Sogilis                       --
+$(cat "$prjdir/tools/header.ada.txt")
 
 with AUnit;
 with AUnit.Test_Suites;
@@ -53,7 +55,7 @@ EOF
 
 
 cat >"$filename.adb" <<EOF
---                         Copyright (C) 2010, Sogilis                       --
+$(cat "$prjdir/tools/header.ada.txt")
 
 with $tested_package;
 
