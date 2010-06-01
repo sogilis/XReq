@@ -256,7 +256,7 @@ package body XReq.Job is
       end if;
 
       F.Make (Feature_File (Job));
-      Job.Feature := Feature_Ptr (F);
+      Job.Feature := Generic_Feature_Ptr (F);
 
       F.Parse (Logger);
 
@@ -273,6 +273,7 @@ package body XReq.Job is
          Job.Result.Process_Feature (Job.Feature, Env.Steps, Logger,
                                      Missing_Steps, Step_Matching);
       end if;
+
    exception
       when Parse_Error =>
          Job.Result.Set_Fail;
@@ -284,7 +285,7 @@ package body XReq.Job is
 
    procedure Cleanup (Job : in out Job_Type) is
    begin
-      Free (Job.Feature);
+      Free (Feature_Ptr (Job.Feature));
    end Cleanup;
 
    ------------

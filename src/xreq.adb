@@ -17,8 +17,14 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-package XReq is
+package body XReq is
 
-   procedure Assert (Bool : in Boolean);
+   procedure Assert (Bool : in Boolean) is
+      Error : exception;
+   begin
+      if not Bool then
+         raise Error;
+      end if;
+   end Assert;
 
 end XReq;

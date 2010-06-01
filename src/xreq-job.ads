@@ -101,7 +101,7 @@ package XReq.Job is
    type Job_Type is
       record
          Feature_File : Unbounded_String;
-         Feature      : Feature_Ptr;
+         Feature      : Generic_Feature_Ptr;
          Result       : Result_Feature_Type;
       end record;
 

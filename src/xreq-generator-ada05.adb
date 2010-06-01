@@ -27,6 +27,7 @@ with XReqLib.String_Tables;
 with XReq.Step_Definitions;
 with XReq.Steps;
 with XReq.Args;
+with XReq.Language;
 
 use Ada.Directories;
 use GNAT.OS_Lib;
@@ -34,6 +35,7 @@ use Util.IO;
 use XReq.Step_Definitions;
 use XReq.Steps;
 use XReq.Args;
+use XReq.Language;
 
 package body XReq.Generator.Ada05 is
 
@@ -71,6 +73,7 @@ package body XReq.Generator.Ada05 is
       Pkgname     : constant String :=
                     Job.Result.Filetype & "_" & Base_Name (Feature_File (Job));
    begin
+      Assert (Job.Result.Language.Val /= null);
       Gen.Feature := Job.Result;
       Get_Unique_String (
          Gen.Pool, To_Identifier (Pkgname),      Gen.Id_Pkgname);
@@ -80,6 +83,7 @@ package body XReq.Generator.Ada05 is
                   To_Lower (To_String (Gen.Id_Pkgname))));
       Gen.Ads_File := Basename & ".ads";
       Gen.Adb_File := Basename & ".adb";
+      Assert (Gen.Feature.Language.Val /= null);
    end Make;
 
    ----------------------
@@ -646,10 +650,16 @@ package body XReq.Generator.Ada05 is
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
       use String_Vectors;
-      E   : Result_Scenario_Type;
-      Num : Positive := 1;
+      E           : Result_Scenario_Type;
+      Num         : Positive := 1;
       Total_Steps : Natural := 0;
+      Lang        : constant Language_Ptr := Gen.Feature.Language.Val;
    begin
+      Assert (Gen.Feature.Language.Val /= null);
+      Assert (Lang /= null);
+      if Lang = null then
+         raise Program_Error with "Lang = null";
+      end if;
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");
       Gen.Ads.Put_Line ("with XReqLib.Args;");
@@ -663,6 +673,26 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
       Gen.Ads.Indent;
       Gen.Adb.Indent;
+      Gen.Adb.New_Line;
+      Gen.Adb.Put_Line ("Str_Feature    : constant String := " &
+                                          Ada_String (Lang.Feature) & ";");
+      Gen.Adb.Put_Line ("Str_Background : constant String := " &
+                                          Ada_String (Lang.Background) & ";");
+      Gen.Adb.Put_Line ("Str_Scenario   : constant String := " &
+                                          Ada_String (Lang.Scenario) & ";");
+      Gen.Adb.Put_Line ("Str_Outline    : constant String := " &
+                                     Ada_String (Lang.Scenario_Outline) & ";");
+      Gen.Adb.Put_Line ("Str_Examples   : constant String := " &
+                                          Ada_String (Lang.Examples) & ";");
+      Gen.Adb.Put_Line ("Str_Given      : constant String := " &
+                                          Ada_String (Lang.Given) & ";");
+      Gen.Adb.Put_Line ("Str_When       : constant String := " &
+                                          Ada_String (Lang.When_K) & ";");
+      Gen.Adb.Put_Line ("Str_Then       : constant String := " &
+                                          Ada_String (Lang.Then_K) & ";");
+      Gen.Adb.Put_Line ("Str_And        : constant String := " &
+                                          Ada_String (Lang.And_K) & ";");
+      Gen.Adb.New_Line;
       Gen.Adb.Put_Line ("procedure Priv_Feature " &
                               "(Format : in out Format_Ptr);");
       Gen.Adb.New_Line;

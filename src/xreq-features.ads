@@ -22,19 +22,21 @@ with Util.IO;
 with XReqLib;
 with XReq.Scenarios;
 with XReqLib.Generic_Features;
+with XReq.Language;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReqLib;
 use XReq.Scenarios;
+use XReq.Language;
 
 package XReq.Features is
 
    Parse_Error : exception;
 
-   -------------------
-   -- Feature_Type  --
-   -------------------
+   --------------------
+   --  Feature_Type  --
+   --------------------
 
    package Features_Pkg is new XReqLib.Generic_Features
       (Scenario_Type, XReq.Scenarios.Equals);
@@ -49,11 +51,20 @@ package XReq.Features is
    Unparsed_Feature : exception renames Features_Pkg.Unparsed_Feature;
    Null_Feature     : constant Feature_Type := Features_Pkg.Null_Feature;
 
-   ------------------------
-   -- Feature_File_Type  --
-   ------------------------
+   ----------------------------
+   --  Generic_Feature_Type  --
+   ----------------------------
 
-   type Feature_File_Type is new Feature_Type with private;
+   type Generic_Feature_Type is new Feature_Type with private;
+   type Generic_Feature_Ptr  is access all Generic_Feature_Type'Class;
+
+   function  Language  (F : in Generic_Feature_Type) return Language_SPtr;
+
+   -------------------------
+   --  Feature_File_Type  --
+   -------------------------
+
+   type Feature_File_Type is new Generic_Feature_Type with private;
    type Feature_File_Ptr  is access all Feature_File_Type'Class;
 
    procedure Make      (F         : out    Feature_File_Type;
@@ -75,7 +86,12 @@ package XReq.Features is
 
 private  ----------------------------------------------------------------------
 
-   type Feature_File_Type is new Feature_Type with
+   type Generic_Feature_Type is new Feature_Type with
+      record
+         Lang : Language_SPtr;
+      end record;
+
+   type Feature_File_Type is new Generic_Feature_Type with
       record
          Parsed      : Boolean := False;
          File_Name   : Unbounded_String;

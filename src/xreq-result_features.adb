@@ -28,7 +28,7 @@ package body XReq.Result_Features is
    ------------------------------------------------
 
    procedure Process_Feature (Res     : out Result_Feature_Type;
-                              Feature : in  Feature_Ptr;
+                              Feature : in  Generic_Feature_Ptr;
                               Steps   : in  Step_Definitions_Type;
                               Log     : in  Logger_Ptr;
                               Missing_Steps : in out String_Set;
@@ -45,6 +45,7 @@ package body XReq.Result_Features is
       Result.Set_Position    (Feature.Position);
       Result.Set_Description (Feature.Description);
       Result.Set_Filetype    (Feature.Filetype);
+      Result.Lang :=          Feature.Language;
       Process_Scenario (R_Scen, Feature.Background,
                         Steps,
                         Log, Errors, Missing_Steps, Step_Matching);
@@ -65,6 +66,7 @@ package body XReq.Result_Features is
          Log.Put_Line ("XReq can create the procedures for you if you " &
                        "use --fill-steps");
       end if;
+      Assert (Result.Language.Val /= null);
       Res := Result;
    end Process_Feature;
 
@@ -113,5 +115,15 @@ package body XReq.Result_Features is
    begin
       F.Fail := Fail;
    end Set_Fail;
+
+   ----------------
+   --  Language  --
+   ----------------
+
+   function  Language (F    : in     Result_Feature_Type) return Language_SPtr
+   is
+   begin
+      return F.Lang;
+   end Language;
 
 end XReq.Result_Features;

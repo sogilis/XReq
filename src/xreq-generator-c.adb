@@ -26,10 +26,12 @@ with XReqLib.String_Tables;
 with XReq.Step_Definitions;
 with XReq.Steps;
 with XReq.Args;
+with XReq.Language;
 
 use XReq.Step_Definitions;
 use XReq.Steps;
 use XReq.Args;
+use XReq.Language;
 
 package body XReq.Generator.C is
 
@@ -599,9 +601,10 @@ package body XReq.Generator.C is
                         Log : in     Logger_Ptr)
    is
       use String_Vectors;
-      E   : Result_Scenario_Type;
-      Num : Positive := 1;
+      E           : Result_Scenario_Type;
+      Num         : Positive := 1;
       Total_Steps : Natural := 0;
+      Lang        : constant Language_Ptr := Gen.Feature.Language.Val;
    begin
       Gen.H.Put_Line ("#include <xreq.h>");
       Gen.H.New_Line;
@@ -609,6 +612,18 @@ package body XReq.Generator.C is
       Gen.H.Put_Line ("#define XREQ_FEATURE__" & Gen.Header_Name & "_H");
       Gen.H.New_Line;
       Gen.C.Put_Line ("#include """ & Gen.Header_Name & ".h""");
+      Gen.C.New_Line;
+      Gen.C.New_Line;
+      Gen.C.Put_Line ("#define STR_Feature    " & C_String (Lang.Feature));
+      Gen.C.Put_Line ("#define STR_Background " & C_String (Lang.Background));
+      Gen.C.Put_Line ("#define STR_Scenario   " & C_String (Lang.Scenario));
+      Gen.C.Put_Line ("#define STR_Outline    " &
+                                             C_String (Lang.Scenario_Outline));
+      Gen.C.Put_Line ("#define STR_Examples   " & C_String (Lang.Examples));
+      Gen.C.Put_Line ("#define STR_Given      " & C_String (Lang.Given));
+      Gen.C.Put_Line ("#define STR_When       " & C_String (Lang.When_K));
+      Gen.C.Put_Line ("#define STR_Then       " & C_String (Lang.Then_K));
+      Gen.C.Put_Line ("#define STR_And        " & C_String (Lang.And_K));
       Gen.C.New_Line;
       Gen.C.Put_Line ("static void __feature (XReq_Format *format)");
       Gen.C.Put_Line ("{");

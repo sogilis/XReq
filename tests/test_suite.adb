@@ -20,6 +20,7 @@
 with Ada.Text_IO;
 
 with Test_Suite.IO;
+with Test_Suite.Smart;
 with Test_Suite.Strings;
 with Test_Suite.Strings.Pool;
 
@@ -57,6 +58,7 @@ package body Test_Suite is
    begin
 
       Test_Suite.IO             .Add_Tests (Ret);
+      Test_Suite.Smart          .Add_Tests (Ret);
       Test_Suite.Strings        .Add_Tests (Ret);
       Test_Suite.Strings.Pool   .Add_Tests (Ret);
 

@@ -17,8 +17,45 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-package XReq is
+with Ada.Finalization;
 
-   procedure Assert (Bool : in Boolean);
+generic
 
-end XReq;
+   type T is private;
+   Null_Value : T;
+   with procedure Finalize (Val : in out T) is null;
+
+package Util.Smart is
+
+   type Ptr is new Ada.Finalization.Controlled with private;
+
+   function  Val      (P : in     Ptr) return T;
+   procedure Set      (P : in out Ptr; Val : in T);
+   procedure IncRef   (P : in out Ptr);
+   procedure DecRef   (P : in out Ptr);
+   procedure UnRef    (P : in out Ptr);
+   function  Ref      (P : in     Ptr) return Natural;
+   function  Is_Null  (P : in     Ptr) return Boolean;
+   function  Valid    (P : in     Ptr) return Boolean;
+   function  Is_Valid (P : in     Ptr) return Boolean renames Valid;
+
+   overriding procedure Initialize (P : in out Ptr);
+   overriding procedure Adjust     (P : in out Ptr);
+   overriding procedure Finalize   (P : in out Ptr);
+
+private
+
+   type Data_Type is
+      record
+         Value : T       := Null_Value;
+         Refs  : Integer := 0;
+      end record;
+
+   type Data_Ptr  is access all Data_Type;
+
+   type Ptr is new Ada.Finalization.Controlled with
+      record
+         Pointer : Data_Ptr := null;
+      end record;
+
+end Util.Smart;

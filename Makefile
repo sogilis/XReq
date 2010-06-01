@@ -482,7 +482,7 @@ run-xreq-c: bin/feature_tests _tests_requirements
 	@echo
 	XREQ_LANG=C $< -t '~@wip+~@bootstrap+~@lang,@lang-C'
 
-run-unit: tests bin
+run-unit: bin/unit_tests
 	@echo
 	@echo "######################"
 	@echo "##  Run unit tests  ##"

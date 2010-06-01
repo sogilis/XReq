@@ -17,10 +17,17 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Util.Smart;
+
 package XReq.Language is
 
    type Language_Type is tagged private;
    type Language_Ptr  is access all Language_Type'Class;
+
+   procedure Free (P : in out Language_Ptr);
+   package Smart_Pointer is new Util.Smart (Language_Ptr, null, Free);
+
+   subtype Language_SPtr is Smart_Pointer.Ptr;
 
    procedure Set_Type (L : in out Language_Type; Typ : in String);
    Unknown_Type : exception;
