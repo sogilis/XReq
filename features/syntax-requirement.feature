@@ -40,17 +40,17 @@ Feature: Requirement Syntax
     When I run the test suite "./suite" in features/data/tests
     Then it should pass with
       """
-      Feature: eating
+      Requirement: eating
 
         Background:
           Given this step works
 
-        Scenario:
+        Test Case:
           Given there are 5 cucumbers
           When I eat 3 cucumbers
           Then I should have 2 cucumbers
 
-        Scenario Outline: eating
+        Test Case Template: eating
           Given there are <start> cucumbers
           When I eat <eat> cucumbers
           Then I should have <left> cucumbers

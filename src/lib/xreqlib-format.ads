@@ -26,6 +26,7 @@ with XReqLib.Args;
 with XReqLib.Report;
 
 use  Ada.Exceptions;
+use  Ada.Strings.Unbounded;
 use  XReqLib.Args;
 use  XReqLib.Report;
 
@@ -87,6 +88,10 @@ package XReqLib.Format is
          Step_ID       : Natural := 0;     --  Step num. in scenario (outline)
          Num_Steps     : Natural := 0;     --  How many steps executed in total
          Exec_Steps    : Natural := 0;     --  Steps executed until now
+         Str_Feature   : Unbounded_String := To_Unbounded_String ("Feature:");
+         Str_Scenario  : Unbounded_String := To_Unbounded_String ("Scenario:");
+         Str_Outline   : Unbounded_String := To_Unbounded_String
+                                                         ("Scenario Outline:");
       end record;
    type Format_Ptr  is access all Format_Type'Class;
 
@@ -179,6 +184,16 @@ package XReqLib.Format is
                              Name       : in     String;
                              Filename   : in     String;
                              Num        : in     Positive);
+
+   ----------------------------------------------------------------------------
+
+   procedure S_Feature  (F : in out Format_Type; S : in String);
+   procedure S_Scenario (F : in out Format_Type; S : in String);
+   procedure S_Outline  (F : in out Format_Type; S : in String);
+
+   function  S_Feature  (F : in Format_Type) return String;
+   function  S_Scenario (F : in Format_Type) return String;
+   function  S_Outline  (F : in Format_Type) return String;
 
    ----------------------------------------------------------------------------
 

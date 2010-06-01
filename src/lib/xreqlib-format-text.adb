@@ -150,7 +150,7 @@ package body XReqLib.Format.Text is
       else
          Format.Output.New_Line;
       end if;
-      Format.Output.Put_Line ("Feature: " & Feature);
+      Format.Output.Put_Line (Format.S_Feature & " " & Feature);
       for I in Description'Range loop
          if Description (I) = ASCII.LF then
             if I < Description'Last then
@@ -210,7 +210,7 @@ package body XReqLib.Format.Text is
          Format.Output.Put_Line
             ("  " & ANSI_C & To_String (Tags (I)) & ANSI_X);
       end loop;
-      Format.Output.Put ("  Scenario Outline:");
+      Format.Output.Put ("  " & Format.S_Outline);
       if Scenario /= "" then
          Format.Output.Put (" " & Scenario);
       end if;
@@ -258,6 +258,7 @@ package body XReqLib.Format.Text is
    is
       pragma Unreferenced (Position);
       Indent : Integer := 2;
+      Scen : constant String := Format.S_Scenario;
    begin
       if Format.In_Outline then
          Indent := Indent + 2;
@@ -269,7 +270,7 @@ package body XReqLib.Format.Text is
                ((Indent * " ") & ANSI_C & To_String (Tags (I)) & ANSI_X);
          end loop;
       end if;
-      Format.Output.Put ((Indent * " ") & "Scenario");
+      Format.Output.Put ((Indent * " ") & Scen (Scen'First .. Scen'Last - 1));
       if Num > 0 then
          Format.Output.Put (Num'Img);
       end if;

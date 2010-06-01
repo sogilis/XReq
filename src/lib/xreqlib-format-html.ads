@@ -18,9 +18,6 @@
 -------------------------------------------------------------------------------
 
 with Ada.Containers.Vectors;
-with Ada.Strings.Unbounded;
-
-use Ada.Strings.Unbounded;
 
 package XReqLib.Format.HTML is
 

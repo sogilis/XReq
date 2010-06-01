@@ -18,12 +18,9 @@
 -------------------------------------------------------------------------------
 
 with Ada.Strings.Fixed;
-with Ada.Strings.Unbounded;
 with Ada.Strings.Maps.Constants;
 with XReqLib.Format.Text;
 with XReqLib.Format.HTML;
-
-use Ada.Strings.Unbounded;
 
 package body XReqLib.Format is
 
@@ -426,5 +423,19 @@ package body XReqLib.Format is
       --  Append (Buf, " (" & Trim (D'Img, Left) & "s)");
       return To_String (Buf);
    end Get_Duration;
+
+   ----------------------------------------------------------------------------
+
+   pragma Style_Checks (Off);
+
+   procedure S_Feature  (F : in out Format_Type; S : in String) is begin F.Str_Feature  := To_Unbounded_String (S); end S_Feature;
+   procedure S_Scenario (F : in out Format_Type; S : in String) is begin F.Str_Scenario := To_Unbounded_String (S); end S_Scenario;
+   procedure S_Outline  (F : in out Format_Type; S : in String) is begin F.Str_Outline  := To_Unbounded_String (S); end S_Outline;
+
+   function  S_Feature  (F : in Format_Type) return String is begin return To_String (F.Str_Feature);  end S_Feature;
+   function  S_Scenario (F : in Format_Type) return String is begin return To_String (F.Str_Scenario); end S_Scenario;
+   function  S_Outline  (F : in Format_Type) return String is begin return To_String (F.Str_Outline);  end S_Outline;
+
+   pragma Style_Checks (On);
 
 end XReqLib.Format;

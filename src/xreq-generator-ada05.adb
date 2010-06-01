@@ -729,6 +729,9 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("begin");
       Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Format.S_Feature  (Str_Feature);");
+      Gen.Adb.Put_Line ("Format.S_Scenario (Str_Scenario);");
+      Gen.Adb.Put_Line ("Format.S_Outline  (Str_Outline);");
       Gen.Adb.Put_Line ("if List_Mode then");
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.List_Feature (" &
