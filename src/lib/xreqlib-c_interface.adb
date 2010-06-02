@@ -297,6 +297,23 @@ package body XReqLib.C_Interface is
    end XReq_Format_Stop_Step;
 
 
+   procedure XReq_Formet_STR_Feature  (Format : in XReq_Format_Ptr;
+                                       S      : in XReq_Cstr) is
+   begin
+      Format.all.S_Feature (Value (S));
+   end XReq_Formet_STR_Feature;
+   procedure XReq_Formet_STR_Scenario (Format : in XReq_Format_Ptr;
+                                       S      : in XReq_Cstr) is
+   begin
+      Format.all.S_Scenario (Value (S));
+   end XReq_Formet_STR_Scenario;
+   procedure XReq_Formet_STR_Outline  (Format : in XReq_Format_Ptr;
+                                       S      : in XReq_Cstr) is
+   begin
+      Format.all.S_Outline  (Value (S));
+   end XReq_Formet_STR_Outline;
+
+
 
    function  XReq_Conditional_New               return XReq_Conditional_Ptr is
    begin

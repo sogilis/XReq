@@ -13,6 +13,7 @@ package XReqLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_id : in String;
          Param_position : in String;
+         Param_STR_Feature : in String;
          Param_name : in String;
          Param_description : in String);
 
@@ -33,6 +34,7 @@ package XReqLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_num : in String;
          Param_position : in String;
+         Param_STR_Outline : in String;
          Param_title : in String);
 
    procedure outline_examples_begin
@@ -51,6 +53,7 @@ package XReqLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_num : in String;
          Param_position : in String;
+         Param_STR_Scenario : in String;
          Param_title : in String);
 
    procedure scenario_tags_begin

@@ -138,6 +138,7 @@ package body XReqLib.Format.HTML is
       Tmpl.feature_begin (Format.Output,
          Param_id          => To_String (Format.Feature_ID),
          Param_position    => Position,
+         Param_STR_Feature => Format.S_Feature,
          Param_name        => HTML_Text (Feature),
          Param_description => HTML_Text (Description));
       Format.Skip_Scenarios := False;
@@ -290,10 +291,11 @@ package body XReqLib.Format.HTML is
    is
    begin
       Tmpl.outline_begin (Format.Output,
-         Param_feature_id => To_String (Format.Feature_ID),
-         Param_num        => To_String (Format.Scenario_ID),
-         Param_position   => Position,
-         Param_title      => HTML_Text (Scenario));
+         Param_feature_id  => To_String (Format.Feature_ID),
+         Param_num         => To_String (Format.Scenario_ID),
+         Param_position    => Position,
+         Param_STR_Outline => Format.S_Outline,
+         Param_title       => HTML_Text (Scenario));
       if Scenario /= "" then
          Format.Curr_Scenario.Name := To_Unbounded_String (Scenario);
       else
@@ -318,10 +320,11 @@ package body XReqLib.Format.HTML is
    is
    begin
       Tmpl.scenario_begin (Format.Output,
-         Param_feature_id => To_String (Format.Feature_ID),
-         Param_num        => To_String (Format.Scenario_ID),
-         Param_position   => Position,
-         Param_title      => HTML_Text (Scenario));
+         Param_feature_id   => To_String (Format.Feature_ID),
+         Param_num          => To_String (Format.Scenario_ID),
+         Param_position     => Position,
+         Param_STR_Scenario => Format.S_Scenario,
+         Param_title        => HTML_Text (Scenario));
       if Scenario /= "" then
          Format.Curr_Scenario.Name := To_Unbounded_String (Scenario);
       else

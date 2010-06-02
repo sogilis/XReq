@@ -657,6 +657,9 @@ package body XReq.Generator.C is
       Gen.C.Put_Line ("int stop  = 0;");
       Gen.C.Put_Line ("int first = 1;");
       Gen.C.New_Line;
+      Gen.C.Put_Line ("XReq_Formet_STR_Feature  (format, STR_Feature);");
+      Gen.C.Put_Line ("XReq_Formet_STR_Scenario (format, STR_Scenario);");
+      Gen.C.Put_Line ("XReq_Formet_STR_Outline  (format, STR_Outline);");
       Gen.C.Put_Line ("if (is_list_mode) {");
       Gen.C.Indent (2);
       Gen.C.Put_Line ("XReq_Format_List_Feature (format, " &

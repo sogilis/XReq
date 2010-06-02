@@ -542,6 +542,7 @@ package body XReqLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_id : in String;
          Param_position : in String;
+         Param_STR_Feature : in String;
          Param_name : in String;
          Param_description : in String) is
    begin
@@ -552,7 +553,9 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "        <p class=""position"">");
       Put (File, Param_position);
       Put (File, "</p>" & ASCII.LF);
-      Put (File, "        <h2 class=""title-feature"">Feature: ");
+      Put (File, "        <h2 class=""title-feature"">");
+      Put (File, Param_STR_Feature);
+      Put (File, " ");
       Put (File, Param_name);
       Put (File, "</h2>" & ASCII.LF);
       Put (File, "        <pre>");
@@ -608,6 +611,7 @@ package body XReqLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_num : in String;
          Param_position : in String;
+         Param_STR_Outline : in String;
          Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
@@ -619,7 +623,9 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "          <p class=""position"">");
       Put (File, Param_position);
       Put (File, "</p>" & ASCII.LF);
-      Put (File, "          <h3 class=""title-background"">Scenario Outline: ");
+      Put (File, "          <h3 class=""title-background"">");
+      Put (File, Param_STR_Outline);
+      Put (File, " ");
       Put (File, Param_title);
       Put (File, "</h3>" & ASCII.LF);
       Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
@@ -662,6 +668,7 @@ package body XReqLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_num : in String;
          Param_position : in String;
+         Param_STR_Scenario : in String;
          Param_title : in String) is
    begin
       Put (File, "      <div id=""feature-");
@@ -673,7 +680,9 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "          <p class=""position"">");
       Put (File, Param_position);
       Put (File, "</p>" & ASCII.LF);
-      Put (File, "          <h3 class=""title-scenario"">Scenario: ");
+      Put (File, "          <h3 class=""title-scenario"">");
+      Put (File, Param_STR_Scenario);
+      Put (File, " ");
       Put (File, Param_title);
       Put (File, "</h3>" & ASCII.LF);
       Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);

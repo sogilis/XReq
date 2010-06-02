@@ -82,6 +82,10 @@ void XReq_Format_Put_Step   (XReq_Format*, XReq_Kind, const XReq_Cstr, const XRe
 void XReq_Format_Put_Error  (XReq_Format*, XReq_Error*);
 void XReq_Format_Stop_Step  (XReq_Format*);
 
+void XReq_Formet_STR_Feature  (XReq_Format*, const XReq_Cstr);
+void XReq_Formet_STR_Scenario (XReq_Format*, const XReq_Cstr);
+void XReq_Formet_STR_Outline  (XReq_Format*, const XReq_Cstr);
+
 XReq_Conditional* XReq_Conditional_New  ();
 void      XReq_Conditional_Free         (XReq_Conditional*);
 XReq_Bool XReq_Conditional_Eval_Tags    (XReq_Conditional*, XReq_Tags);

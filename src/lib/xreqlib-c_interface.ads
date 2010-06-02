@@ -181,6 +181,16 @@ package XReqLib.C_Interface is
                                      Error  : in XReq_Error_Ptr);
    procedure XReq_Format_Stop_Step  (Format : in XReq_Format_Ptr);
    ---
+   ---  void XReq_Formet_STR_Feature  (XReq_Format*, const XReq_Cstr);
+   ---  void XReq_Formet_STR_Scenario (XReq_Format*, const XReq_Cstr);
+   ---  void XReq_Formet_STR_Outline  (XReq_Format*, const XReq_Cstr);
+   procedure XReq_Formet_STR_Feature  (Format : in XReq_Format_Ptr;
+                                      S      : in XReq_Cstr);
+   procedure XReq_Formet_STR_Scenario (Format : in XReq_Format_Ptr;
+                                      S      : in XReq_Cstr);
+   procedure XReq_Formet_STR_Outline  (Format : in XReq_Format_Ptr;
+                                      S      : in XReq_Cstr);
+   ---
    ---  XReq_Conditional* XReq_Conditional_New  ();
    ---  void      XReq_Conditional_Free         (XReq_Conditional*);
    ---  XReq_Bool XReq_Conditional_Eval_Tags    (XReq_Conditional*, XReq_Tags);
@@ -317,6 +327,9 @@ package XReqLib.C_Interface is
    pragma Export (C, XReq_Format_Put_Step,       "XReq_Format_Put_Step");
    pragma Export (C, XReq_Format_Put_Error,      "XReq_Format_Put_Error");
    pragma Export (C, XReq_Format_Stop_Step,      "XReq_Format_Stop_Step");
+   pragma Export (C, XReq_Formet_STR_Feature,    "XReq_Formet_STR_Feature");
+   pragma Export (C, XReq_Formet_STR_Scenario,   "XReq_Formet_STR_Scenario");
+   pragma Export (C, XReq_Formet_STR_Outline,    "XReq_Formet_STR_Outline");
    pragma Export (C, XReq_Conditional_New,       "XReq_Conditional_New");
    pragma Export (C, XReq_Conditional_Free,      "XReq_Conditional_Free");
    pragma Export (C, XReq_Conditional_Eval_Tags, "XReq_Conditional_Eval_Tags");
