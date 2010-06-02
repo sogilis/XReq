@@ -90,7 +90,7 @@ all: bin lib gps-plugin tests doc
 
 
 
-check-all: all gnatcheck run-unit run-cucumber run-xreq coverage
+check-all: all gnatcheck run-unit run-features coverage
 
 $(VERBOSE).SILENT:
 
@@ -482,6 +482,19 @@ run-xreq-c: bin/feature_tests _tests_requirements
 	@echo
 	XREQ_LANG=C $< -t '~@wip+~@bootstrap+~@lang,@lang-C'
 
+
+run-features:
+	$(MAKE) run-cucumber
+	$(MAKE) run-xreq
+
+run-features-c:
+	$(MAKE) run-cucumber-c
+	$(MAKE) run-xreq-c
+
+run-features-ada:
+	$(MAKE) run-cucumber-ada
+	$(MAKE) run-xreq-ada
+
 run-unit: bin/unit_tests
 	@echo
 	@echo "######################"
@@ -490,7 +503,7 @@ run-unit: bin/unit_tests
 	@echo
 	bin/unit_tests
 
-.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-xreq run-xreq-c run-xreq-ada run-unit
+.PHONY: run-cucumber rerun-cucumber run-cucumber-wip run-cucumber-c run-cucumber-ada _cucumber_clean_rerun run-xreq run-xreq-c run-xreq-ada run-unit run-features run-features-c run-features-ada
 
 ########################
 ##                    ##
@@ -757,9 +770,10 @@ help:
 	@echo "    check-tests:    Check tests passed"
 	@echo "Testing (interactive use):"
 	@echo "    run-unit:       Run all unit tests"
-	@echo "    run-xreq:       Run all cucumber tests with XReq"
-	@echo "    run-cucumber:   Run all cucumber tests"
+	@echo "    run-xreq:       Run all acceptance tests with XReq"
+	@echo "    run-cucumber:   Run all acceptance tests with Cucumber"
 	@echo "    rerun-cucumber: Run last failed cucumber tests"
+	@echo "    run-features:   Run all cucumber and XReq tests"
 	@echo "Other:"
 	@echo "    clean:          Clean project"
 	@echo "    install:        Install XReq"
