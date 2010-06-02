@@ -772,7 +772,7 @@ $(ARCHIVENAME).tar:
 
 $(ARCHIVENAME).tar.bz2: $(ARCHIVENAME).tar
 	@echo "BZIP2   $@"
-	bzip2 --best -c $< > $@
+	bzip2 --best $<
 
 .PHONY: archive
 
