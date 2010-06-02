@@ -7,6 +7,17 @@ INSTALL_CONFIG=rel
 MODE=
 LIBEXT=
 
+UNIXNAME=xreq
+TIMESTAMP=$(shell date +%Y%m%d%H%M%S)
+VERSION=$(TIMESTAMP)
+ifeq ($(VERSION),)
+ARCHIVENAME=$(UNIXNAME)
+else
+ARCHIVENAME=$(UNIXNAME)-$(VERSION)
+endif
+
+DOC_FILES=README.html src/README.html reports/index.html
+
 # dynamic makes gcov unhappy: hidden symbol `__gcov_merge_add' is referenced by
 # DSO (Dynamic Shared Object).
 LIBTYPE=static
@@ -207,7 +218,7 @@ bin/unit_tests: bin/unit_tests.dbg
 
 tests: bin/unit_tests bin/feature_tests
 
-doc: dir README.html src/README.html reports/index.html
+doc: dir $(DOC_FILES)
 	
 clean: cov-clean
 	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
@@ -742,6 +753,29 @@ uninstall-gps-local:
 
 .PHONY: install install-lib install-bin install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
 
+
+
+###################
+##               ##
+##    ARCHIVE    ##
+##               ##
+###################
+
+
+archive: $(ARCHIVENAME).tar.bz2
+	@echo "Created $+"
+
+# TODO: include $(DOC_FILES)
+$(ARCHIVENAME).tar:
+	@echo "GIT     ARCHIVE $@"
+	git archive --prefix=$(ARCHIVENAME)/ -o $@ HEAD
+
+$(ARCHIVENAME).tar.bz2: $(ARCHIVENAME).tar
+	@echo "BZIP2   $@"
+	bzip2 --best -c $< > $@
+
+.PHONY: archive
+
 ################
 ##            ##
 ##    HELP    ##
@@ -754,7 +788,7 @@ show-ignored-coverage:
 help:
 	@echo "make TARGET"
 	@echo
-	@echo "Targets:"
+	@echo "TARGETS:"
 	@echo
 	@echo "Building:"
 	@echo "    all:            Build everything     [bin gps-plugin tests doc]"
@@ -776,6 +810,7 @@ help:
 	@echo "    run-features:   Run all cucumber and XReq tests"
 	@echo "Other:"
 	@echo "    clean:          Clean project"
+	@echo "    archive:        Create a source archive   [$(ARCHIVENAME).tar.bz2]"
 	@echo "    install:        Install XReq"
 	@echo "    unnstall:       Uninstall XReq"
 	@echo "    install-gps-local:"
