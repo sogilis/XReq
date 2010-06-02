@@ -16,17 +16,18 @@
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>.    --
 --                                                                           --
 -------------------------------------------------------------------------------
---  The code source in this fime is taken entirely from GNAT.Traceback.Symbolic
 
+--  with GNAT.Traceback.Symbolic;
 
 package body XReqLib.Error_Handling is
 
 
    function Symbolic_Traceback (E : Exception_Occurrence) return String is
    begin
+      --  return GNAT.Traceback.Symbolic.Symbolic_Traceback (E);
       --  TODO: GNAT.Traceback.Symbolic creates an undefined reference to the
       --        the symbol: gnat__traceback__symbolic__symbolic_traceback__2
-      --        when acompiling a dynamic library
+      --        when compiling a dynamic library
       return Exception_Information (E);
    end Symbolic_Traceback;
 

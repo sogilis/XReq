@@ -17,13 +17,17 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with GNAT.Traceback.Symbolic;
+--  with GNAT.Traceback.Symbolic;
 
 package body XReqLib.Error_Handling is
 
    function Symbolic_Traceback (E : Exception_Occurrence) return String is
    begin
-      return GNAT.Traceback.Symbolic.Symbolic_Traceback (E);
+      --  return GNAT.Traceback.Symbolic.Symbolic_Traceback (E);
+      --  TODO: GNAT.Traceback.Symbolic creates an undefined reference to the
+      --        the symbol: gnat__traceback__symbolic__symbolic_traceback__2
+      --        at random
+      return Exception_Information (E);
    end Symbolic_Traceback;
 
 end XReqLib.Error_Handling;
