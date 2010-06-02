@@ -1,0 +1,13 @@
+* create the HISTORY
+
+20100602175016
+--------------
+(2010-06-02 17:50)
+
+* removed support for symbolic traceback as it causes errors everywhere
+
+20100602172515
+--------------
+(2010-06-02 17:23)
+
+* First release

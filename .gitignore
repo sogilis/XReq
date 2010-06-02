@@ -3,5 +3,6 @@
 *.ali
 *.gcno
 /README.html
+/HISTORY.html
 /tmp/
 /.cucumber-rerun*.txt

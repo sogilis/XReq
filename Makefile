@@ -16,7 +16,7 @@ else
 ARCHIVENAME=$(UNIXNAME)-$(VERSION)
 endif
 
-DOC_FILES=README.html src/README.html reports/index.html
+DOC_FILES=README.html HISTORY.html src/README.html reports/index.html
 
 # dynamic makes gcov unhappy: hidden symbol `__gcov_merge_add' is referenced by
 # DSO (Dynamic Shared Object).
