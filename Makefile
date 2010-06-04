@@ -568,17 +568,23 @@ reports/unit.txt reports/unit-debug.txt: bin/unit_tests
 		: >reports/unit.status; \
 	fi
 
-report-cucumber: reports/cucumber-ada.html reports/cucumber-c.html
-report-xreq: reports/xreq-ada.html reports/xreq-c.html
+report-cucumber-ada: reports/cucumber-ada.html
+report-cucumber-c: reports/cucumber-c.html
+report-xreq-ada: reports/xreq-ada.html
+report-xreq-c: reports/xreq-c.html
 
-report-c:   reports/cucumber-c.html reports/xreq-c.html  
-report-ada: reports/cucumber-ada.html reports/xreq-ada.html
+report-cucumber: report-cucumber-ada report-cucumber-c
+report-xreq: report-xreq-ada report-xreq-c
+
+report-c:   report-cucumber-c report-xreq-c
+report-ada: report-cucumber-ada report-xreq-ada
+
 
 report-unit: reports/unit.txt
 
 report-all: report-cucumber report-xreq report-unit
 
-.PHONY: reports/xreq-ada.html reports/xreq-c.html reports/cucumber-ada.html reports/cucumber-c.html report-unit report-all report-xreq report-cucumber report-c report-ada
+.PHONY: reports/xreq-ada.html reports/xreq-c.html reports/cucumber-ada.html reports/cucumber-c.html report-unit report-all report-xreq report-cucumber report-c report-ada report-cucumber-ada report-cucumber-c report-xreq-ada report-xreq-c
 
 
 
