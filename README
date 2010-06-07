@@ -121,6 +121,15 @@ used.
 Strange Things
 ==============
 
+### 2010-06-07: Cannot run coverage test twice for Cucumber-Ada ###
+
+The second time, I get a lot of Program_Error: adjust/finalize raised
+STORAGE_ERROR: stack overflow (or erroneous memory access)
+
+I don't know what to think of that. Solution: `git clean -fdx`
+
+I hate arcane and obscure things.
+
 ### 2010-05-20: Do not work in 64 bits mode (x86_64) ###
 
 Valgrind says:
@@ -186,7 +195,7 @@ It seems that the shared library does have undefined gcov symbols:
              U __gcov_merge_add
 
 As the gcov library is static, it should *probably* have been linked with
-`libxreq.so` directly.
+`libxreq.so` directly. A solution has been found and seems to work.
 
 ### 2010-04-28: Problem with XReqLib and symbolic traceback ###
 
