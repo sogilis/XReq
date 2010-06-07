@@ -193,7 +193,7 @@ package body XReq.Job is
       else
          return Default;
       end if;
-   end Get_Option;
+   end Get_Option;  --  GCOV_IGNORE
 
    ---------------------------------------
    --  Job_Environment  --  Has_Option  --

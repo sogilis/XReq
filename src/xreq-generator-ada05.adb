@@ -657,9 +657,6 @@ package body XReq.Generator.Ada05 is
    begin
       Assert (Gen.Feature.Language.Val /= null);
       Assert (Lang /= null);
-      if Lang = null then
-         raise Program_Error with "Lang = null";
-      end if;
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");
       Gen.Ads.Put_Line ("with XReqLib.Args;");

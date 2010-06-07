@@ -1,0 +1,5 @@
+* ada.gpr.srcdir
+* `xreq file.toto`:`Unknown file format: toto`
+* C step definitions: XREQ_GIVEN, XREQ_WHEN, XREQ_THEN
+* C Step definitions: error checking
+* XReq.Assert raise Error
