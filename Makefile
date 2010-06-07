@@ -299,17 +299,51 @@ cov_ignore_unit=1
 cov_ignore_cucumber_c=1
 endif
 
+
+ifneq ($(CONFIG),cov)
+cov cov-html cov-init cov-test-cucumber-ada cov-test-cucumber-c cov-test-unit cov-test-ignore cov-test-base cov-zero:
+	$(MAKE) CONFIG=cov $@
+else
+
+cov-zero:
+	$(_LCOV_ZERO)
+
+cov-requirement: bin/xreq.cov lib/coverage/libxreq.so bin/unit_tests.cov
+
+cov-cucumber-setup:
+	@echo "RM      bin/xreq"
+	-$(RM) bin/xreq
+	@echo "LINK    bin/xreq"
+	ln -s -f xreq.cov bin/xreq
+
 cov-init:
+	@echo
+	@echo "#######################################"
+	@echo "##  Initialize coverage environment  ##"
+	@echo "#######################################"
+	@echo
+	$(MAKE) cov-requirement
+	$(MAKE) cov-cucumber-setup
 	-$(RM) -rf coverage/lcov.info coverage/*.lcov.info coverage/*
 
 cov-test-base:
 ifeq ($(cov_ignore_base),)
+	@echo
+	@echo "###################################"
+	@echo "##  Generate base coverage data  ##"
+	@echo "###################################"
+	@echo
 	$(_LCOV_ZERO)
 	$(MAKE) coverage/01-base.lcov.info
 endif
 
 cov-test-ignore:
 ifeq ($(cov_ignore_ignore),)
+	@echo
+	@echo "##########################################"
+	@echo "##  Create ignored lines coverage data  ##"
+	@echo "##########################################"
+	@echo
 	@echo "COV     coverage/02-ignore.lcov.info"
 	lcov -q -c -i -d obj/coverage -t "Ignored_Lines" -o coverage/02-ignore.lcov.info.tmp
 	perl tools/gcov-ignore.pl coverage/02-ignore.lcov.info.tmp > coverage/02-ignore.lcov.info
@@ -318,20 +352,24 @@ endif
 
 cov-test-unit: bin/unit_tests.cov
 ifeq ($(cov_ignore_unit),)
+	@echo
+	@echo "######################"
+	@echo "##  Run unit tests  ##"
+	@echo "######################"
+	@echo
 	$(_LCOV_ZERO)
 	@echo "RUN     bin/unit_tests.cov"
 	-bin/unit_tests.cov -text -o reports/test.aunit.txt > reports/test-debug.aunit.txt 2>&1
 	$(MAKE) coverage/10-unit.lcov.info
 endif
 
-cov-cucumber-setup:
-	@echo "RM      bin/xreq"
-	-$(RM) bin/xreq
-	@echo "LINK    bin/xreq"
-	ln -s -f xreq.cov bin/xreq
-
 cov-test-cucumber-ada: _tests_requirements bin/xreq.cov
 ifeq ($(cov_ignore_cucumber_ada)$(cov_ignore_cucumber)$(cov_ignore_ada),)
+	@echo
+	@echo "############################"
+	@echo "##  Run Cucumber for Ada  ##"
+	@echo "############################"
+	@echo
 	$(_LCOV_ZERO)
 	@echo "MAKE    run-cucumber-ada"
 	@-mode=coverage GNAT_FLAGS="-ftest-coverage -fprofile-arcs -g" \
@@ -341,6 +379,11 @@ endif
 
 cov-test-cucumber-c: _tests_requirements bin/xreq.cov
 ifeq ($(cov_ignore_cucumber_c)$(cov_ignore_cucumber)$(cov_ignore_c),)
+	@echo
+	@echo "##########################"
+	@echo "##  Run Cucumber for C  ##"
+	@echo "##########################"
+	@echo
 	$(_LCOV_ZERO)
 	@echo "MAKE    run-cucumber-c"
 	@-mode=coverage LDFLAGS="-fprofile-arcs" CFLAGS="-ftest-coverage -fprofile-arcs -g" \
@@ -351,10 +394,15 @@ endif
 cov-cucumber-teardown:
 	@echo "RM      bin/xreq"
 	-$(RM) bin/xreq
-	@echo "MAKE    bin/xreq"
-	$(MAKE) bin/xreq
+	#@echo "MAKE    bin/xreq"
+	#$(MAKE) bin/xreq
 
 cov-html:
+	@echo
+	@echo "#####################################"
+	@echo "##  Generate HTML coverage report  ##"
+	@echo "#####################################"
+	@echo
 	$(_LCOV_ZERO)
 	@echo "LCOV    coverage/lcov.info"
 	lcov -q $(foreach lcov,$(wildcard coverage/*.lcov.info),-a $(lcov)) -o coverage/lcov.info
@@ -366,37 +414,64 @@ cov-html:
 	genhtml --show-details --no-function-coverage -o coverage coverage/lcov.info || \
 	genhtml --show-details -o coverage coverage/lcov.info
 
-cov: bin/xreq.cov lib/coverage/libxreq.so bin/unit_tests.cov
-ifneq ($(CONFIG),cov)
-	$(MAKE) CONFIG=cov $@
-else
+cov: cov-requirement
 	@echo "MAKE    cov-init"
 	$(MAKE) cov-init
-	@echo "MAKE    cov-test-base"
-	$(MAKE) cov-test-base
 	@echo "MAKE    cov-test-unit"
 	$(MAKE) cov-test-unit
 	@echo "MAKE    cov-test-ignore"
 	$(MAKE) cov-test-ignore
-	@echo "MAKE    cov-cucumber-setup"
-	$(MAKE) cov-cucumber-setup
 	@echo "MAKE    cov-test-cucumber-ada"
 	$(MAKE) cov-test-cucumber-ada
 	@echo "MAKE    cov-test-cucumber-c"
 	$(MAKE) cov-test-cucumber-c
-	@echo "MAKE    cov-cucumber-teardown"
-	$(MAKE) cov-cucumber-teardown
 	@echo "MAKE    cov-html"
 	$(MAKE) cov-html
-endif
+	@echo "MAKE    cov-cucumber-teardown"
+	$(MAKE) cov-cucumber-teardown
+
+endif # ifneq ($(CONFIG),cov)
 
 cov-clean:
 	-$(RM) coverage/*.lcov.info
 	-$(RM) coverage/*.gcov
 
+cov-help:
+	@echo "make CONFIG=cov TARGET"
+	@echo
+	@echo "TARGETS:"
+	@echo
+	@echo "Housekeeping:"
+	@echo "    cov-init        Initialize coverage environment"
+	@echo "    cov-html        Generate HTML report"
+	@echo "    cov-clean       Clean coverage files"
+	@echo "Tests:"
+	@echo "    cov-test-base   0% coverage test"
+	@echo "    cov-test-unit   Coverage for unit tests"
+	@echo "    cov-test-ignore Generate fake test results for ignored lines"
+	@echo "    cov-test-cucumber-ada   Coverage for Cucumber Ada tests"
+	@echo "    cov-test-cucumber-c     Coverage for Cucumber C tests"
+	@echo "Low level:"
+	@echo "    cov-zero                Zero counters for coverage"
+	@echo "    coverage/%.lcov.info    Generate lcov report from gcov counters"
+	@echo
+	@echo "VARIABLES:"
+	@echo
+	@echo "    cov_only_cucumber_c"
+	@echo "    cov_only_cucumber_ada"
+	@echo "    cov_ignore_base"
+	@echo "    cov_ignore_unit"
+	@echo "    cov_ignore_ignore"
+	@echo "    cov_ignore_cucumber"
+	@echo "    cov_ignore_cucumber_ada"
+	@echo "    cov_ignore_cucumber_c"
+	@echo "    cov_ignore_ada"
+	@echo "    cov_ignore_c"
+	@echo
+
 coverage: cov
 
-.PHONY: cov cov-clean coverage cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html cov-cucumber-setup cov-cucumber-teardown
+.PHONY: cov-zero cov-help cov cov-requirement cov-clean coverage cov-init cov-test-base cov-test-ignore cov-test-unit cov-test-cucumber-ada cov-html cov-cucumber-setup cov-cucumber-teardown
 
 #################
 ##             ##
@@ -805,6 +880,7 @@ help:
 	@echo "    doc:            Build documentation  [README.html]"
 	@echo "Checking:"
 	@echo "    coverage:       Run coverage tests   [coverage/]"
+	@echo "    cov-help:       Help on coverage"
 	@echo "    gnatcheck:      Run gnatcheck        [reports/gnatcheck*]"
 	@echo "    report-all:     Create HTML reports  [reports/*.html]"
 	@echo "    check-tests:    Check tests passed"

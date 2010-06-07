@@ -74,6 +74,17 @@ library project LibXReq is
       end case;
    end Binder;
 
+--  No liker is allowed in library projects. THIS IS A KILLER.
+--  Because of this, the dynamic library (shared object, or DSO) cannot be
+--  compiled with the gcov flags, and with gcov. As a consequence, the library 
+--  won't work !!! Sometimes, I really do HATE this gprbuild.
+--
+--  And it doesn't even make sense, libraries are liked like every other binary
+--  (except perhaps static libraries, but who use them anyway, except few Ada
+--  (programmers that haven't discovered what is a dynamic linker ... Anyway, I
+--  can accept static libraries being te default becauseof elaboration, BUT
+--  compiling dynamic libraries SHOULD be possible.
+
 --    package Linker is
 --       case Mode is
 --          when "debug" =>

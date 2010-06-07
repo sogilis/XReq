@@ -179,7 +179,14 @@ There are errors running tests:
     /usr/bin/ld: hidden symbol `__gcov_merge_add' in /usr/lib/gcc/i686-redhat-linux/4.4.3/libgcov.a(_gcov_merge_add.o) is referenced by DSO
     /usr/bin/ld: final link failed: Nonrepresentable section on output
 
-Unknown reason. No fix available yet.
+It seems that the shared library does have undefined gcov symbols:
+
+    $ nm -u lib/coverage/libxreq.so | grep gcov
+             U __gcov_init
+             U __gcov_merge_add
+
+As the gcov library is static, it should *probably* have been linked with
+`libxreq.so` directly.
 
 ### 2010-04-28: Problem with XReqLib and symbolic traceback ###
 
