@@ -51,6 +51,8 @@ library project LibXReq is
                               "XReqLib.Format",
                               "XReqLib.Format.HTML",
                               "XReqLib.Format.Text");
+   for Library_Options   use Config.Ada_Switches_Linker_Coverage;
+   --  Why isn't this in package Linker, this is really damn confusing !!!
 
    package Compiler is
       case Mode is

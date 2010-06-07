@@ -29,7 +29,7 @@ use Ada.Strings.Unbounded;
 use Interfaces.C;
 use Interfaces.C.Strings;
 
-package XReqLib.C_Interface is
+package XReqLib.C_Interface is  --  GCOV_IGNORE_BEGIN
 
    pragma Warnings (Off);
 

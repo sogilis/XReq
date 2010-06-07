@@ -439,6 +439,8 @@ cov-clean:
 cov-help:
 	@echo "make CONFIG=cov TARGET"
 	@echo
+	@echo "    It's best to clean the project before executing coverage."
+	@echo
 	@echo "TARGETS:"
 	@echo
 	@echo "Housekeeping:"

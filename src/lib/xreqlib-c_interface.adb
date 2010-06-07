@@ -26,7 +26,7 @@ with GNAT.OS_Lib;
 with XReqLib.CLI;
 
 
-package body XReqLib.C_Interface is
+package body XReqLib.C_Interface is  --  GCOV_IGNORE_BEGIN
 
    function Value (Tags : in XReq_Tags)   return XReqLib.Format.Tag_Array_Type;
    function Value (Bool : in XReq_Bool)   return Boolean;
