@@ -85,10 +85,10 @@ package Util.Strings is
 
    type Split_String_Walker is access procedure (S : in String);
 
-   procedure Split_String_Walk
-                          (Str     : in String;
-                           Split   : in String;
-                           Walker  : in Split_String_Walker);
+--    procedure Split_String_Walk
+--                           (Str     : in String;
+--                            Split   : in String;
+--                            Walker  : in Split_String_Walker);
 
    --  The following is quite ugly, but you know, subprogram must not be deeper
    --  than access type
