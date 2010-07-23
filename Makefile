@@ -779,7 +779,11 @@ install: install-bin install-lib install-gps
 install-lib: lib/$(INSTALL_MODE)/libxreq.so lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
 	# Installing GPR project file in $(GPRDIR)
 	# $(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
-	sed -e 's|%ADAINCLUDEDIR%|$(INCLUDEDIR)/xreqlib|g' -e 's|%ADALIBDIR%|$(LIBDIR)/xreqlib|g' -e 's|%ADALIBKIND%|$(LIBTYPE)|g' data/xreqlib-template.gpr > $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	$(INSTALL) -d $(DESTDIR)$(GPRDIR)
+	sed -e 's|%ADAINCLUDEDIR%|$(INCLUDEDIR)/xreqlib|g' \
+	    -e 's|%ADALIBDIR%|$(LIBDIR)/xreqlib|g' \
+	    -e 's|%ADALIBKIND%|$(LIBTYPE)|g' \
+	    data/xreqlib-template.gpr > $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	# Installing source files in $(INCLUDEDIR)/xreqlib
 	$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
