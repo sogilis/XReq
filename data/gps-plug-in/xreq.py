@@ -11,6 +11,8 @@ values.
 
 Project variables:
 
+  SUBDIRS:              Subdirectories to look for subprojects
+  SUBMAKEFILE:          Makefile name: Makefire.xreq
   FEATURE_DIR:          directory where the .feature files are
   STEP_DEFINITIONS:     directory where the step definitions are
   RESULT_DIR:           where to generate the test suite
@@ -40,6 +42,11 @@ Available commands for external use:
 
   def show_feature_browser():
     Show the feature browser and refresh its content.
+    
+TODO:
+
+ * the go to spec feature only search on the parent XReq project and not
+   child projects.
 """
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
@@ -49,6 +56,7 @@ import gtk, gobject
 import os
 import re
 import subprocess
+import shlex
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
@@ -64,11 +72,11 @@ def run_tests():
   browse_test_report()
 
 def browse_test_report():
-  vars = parse_makefile()
-  GPS.HTML.browse(vars['REPORT_FILE'])
+  prj = XReqProject()
+  GPS.HTML.browse(prj.html_report_path())
 
 def go_to_spec():
-  vars    = parse_makefile()
+  prj     = XReqProject()
   context = GPS.current_context()
   file    = context.file()
   line_no = context.location().line()
@@ -80,7 +88,7 @@ def go_to_spec():
   else:
     filename = GPS.dump(buffer.get_chars())
     delete   = True
-  args = ["xreq", "--partial", "--step-matching", "--step", vars['STEP_DEFINITIONS_DIR'], filename]
+  args = ["xreq", "--partial", "--step-matching", "--step", prj.steps_dir(), filename]
   p = subprocess.Popen(args, stdout=subprocess.PIPE)
   step_file = None
   step_line = None
@@ -109,7 +117,7 @@ def show_feature_browser():
   if win:
     win.raise_window();
   else:
-    GPS.MDI.get ("Project").raise_window()
+    #GPS.MDI.get ("Project").raise_window()
     view = FeatureBrowser ()
     GPS.MDI.add (view, "Features", "Features")
     win = GPS.MDI.get ('Features')
@@ -128,22 +136,25 @@ def makefile_path():
   return os.path.join(os.path.dirname(GPS.Project.root().file().name()), "Makefile.xreq")
 
 
-def create_makefile():
-  file = makefile_path()
+def create_makefile(file = makefile_path()):
   if not os.path.isfile(file):
     f = open(file, "w")
     f.write ("""
-############################
+#########################
 ##  XReq Project File  ##
-############################
+#########################
 
+# SUBDIRS:              Subdirectories to look for subprojects
+# SUBMAKEFILE:          Makefile name: Makefire.xreq
 # FEATURE_DIR:          directory where the .feature files are
-# STEP_DEFINITIONS:     directory where the step definitions are
+# STEP_DEFINITIONS_DIR: directory where the step definitions are
 # RESULT_DIR:           where to generate the test suite
 # TEST_SUITE:           name of the test suite
 # GENERATED_STEPS:      package name where to put generated steps
 # REPORT_FILE:          where the HTML reports should go
 
+SUBDIRS=
+SUBMAKEFILE=Makefile.xreq
 FEATURE_DIR=features
 STEP_DEFINITIONS_DIR=features/step_definitions
 RESULT_DIR=features/tests
@@ -151,28 +162,45 @@ TEST_SUITE=test_suite
 GENERATED_STEPS=Generated_Steps
 REPORT_FILE=features/tests/xreq-report.html
 
-all: $(RESULT_DIR)/$(TEST_SUITE)
+XREQFLAGS=
+GPRFLAGS=-m
+
+XREQ=xreq
+GPRBUILD=gprbuild
+
+FEATURE_FILES=$(shell find '$(FEATURE_DIR)' -name '*.feature')
+ifeq ($(FEATURE_FILES),)
+MAIN_TARGET=
+else
+MAIN_TARGET=$(RESULT_DIR)/$(TEST_SUITE)
+endif
+
+all: $(MAIN_TARGET)
+	for d in $(SUBDIRS); do $(MAKE) -C "$$d" -f "$(SUBMAKEFILE)" all || exit $?; done
 .PHONY: all
 
 $(RESULT_DIR)/$(TEST_SUITE): $(RESULT_DIR)/$(TEST_SUITE).gpr
-        gprbuild -m -P$<
+	$(GPRBUILD) -P$< $(GPRFLAGS)
 
-$(RESULT_DIR)/$(TEST_SUITE).gpr: $(FEATURE_DIR)/*.feature
-        xreq -x $(TEST_SUITE) $+
+$(RESULT_DIR)/$(TEST_SUITE).gpr: $(FEATURE_FILES)
+	$(XREQ) -x '$(TEST_SUITE)' -s '$(STEP_DEFINITIONS_DIR)' $(XREQFLAGS) $+
 
 clean:
-        -$(RM) $(RESULT_DIR)/$(TEST_SUITE).{gpr,adb}
-        -$(RM) $(RESULT_DIR)/feature_*.{ads,adb}
+	-$(RM) $(RESULT_DIR)/$(TEST_SUITE).{gpr,adb}
+	-$(RM) $(RESULT_DIR)/feature_*.{ads,adb}
+	-@for d in $(SUBDIRS); do $(MAKE) -C "$$d" -f "$(SUBMAKEFILE)" clean; done
 .PHONY: clean
 
     """)
     f.close()
   return file
 
-def parse_makefile():
-  file = create_makefile()
+def parse_makefile(filename = makefile_path()):
+  file = create_makefile(filename)
   #GPS.Console().write("Parse %s\n" % file)
   res = {
+    'SUBDIRS'             : "",
+    'SUBMAKEFILE'         : "Makefile.xreq",
     'FEATURE_DIR'         : "features",
     'STEP_DEFINITIONS_DIR': "features/steps",
     'RESULT_DIR'          : "features/tests",
@@ -189,6 +217,78 @@ def parse_makefile():
       #GPS.Console().write("%s=%s\n" % (var, val))
   f.close()
   return res
+
+class XReqProject:
+
+  def __init__(self, makefile = None):
+    if makefile == None:
+      makefile = makefile_path();
+    GPS.Console().write ("Open project %s\n" % makefile)
+    self._dirname  = os.path.dirname(makefile)
+    self._basename = os.path.basename(makefile)
+    self._name     = os.path.basename(self._dirname)
+    self._makefile = makefile;
+    self._vars     = parse_makefile(makefile)
+    self._subdirs  = shlex.split(self._vars['SUBDIRS'])
+    self._subprojects = {}
+    for d in self._subdirs:
+      dir  = os.path.join(self._dirname, d)
+      if os.path.isdir(dir):
+        path = os.path.join(dir, self._vars['SUBMAKEFILE'])
+        proj = XReqProject(path)
+        proj._name = d
+        self._subprojects[d] = proj
+  
+  def _makereletive(self, active, path):
+    if active:
+      return path;
+    else:
+      return os.path.join(self._dirname, path);
+  
+  def name(self):
+    return self._name;
+  
+  def dirname(self):
+    return self._dirname
+  
+  def basename(self):
+    return self._basename
+  
+  def makefile_path(self, relative=False):
+    return self._makefile
+   
+  def subprojects(self):
+    return self._subprojects
+  
+  def subdirs(self, relative=False):
+    if relative:
+      res = []
+      for d in self._subdirs:
+        res.append(os.path.join(self._dirname, d))
+      return res
+    else:
+      return self._subdirs
+  
+  def feature_dir(self, relative=False):
+    return self._makereletive(relative, self._vars['FEATURE_DIR'])
+  
+  def steps_dir(self, relative=False):
+    return self._makereletive(relative, self._vars['STEP_DEFINITIONS_DIR'])
+  
+  def result_dir(self, relative=False):
+    return self._makereletive(relative, self._vars['RESULT_DIR'])
+  
+  def test_suite_basename(self):
+    return self._vars['TEST_SUITE']
+  
+  def test_suite_path(self, relative=False):
+    return os.path.join(self.result_dir(relative), self.test_suite_basename());
+  
+  def generated_steps_package(self):
+    return self._vars['GENERATED_STEPS']
+  
+  def html_report_path(self, relative=False):
+    return self._makereletive(relative, self._vars['REPORT_FILE'])
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 ##                          Editor related functions                          ##
@@ -217,7 +317,7 @@ class Command_GprBuild (GPS.Process):
     matched = re.sub("^\n*", "", matched)
     matched = re.sub("\n+", "\n", matched)
     for line in matched.split("\n"):
-      line = "%s/%s" % (self.vars['RESULT_DIR'], line)
+      line = "%s/%s" % (self.prj.result_dir(), line)
       GPS.Locations.parse(line,
                           self.location_category,
                           regexp = "^(.*)\:([0-9]+)\:([0-9]+)\: +(.*)$",
@@ -227,9 +327,8 @@ class Command_GprBuild (GPS.Process):
                           msg_index = 4)
     GPS.Console().write(matched)
 
-  def __init__ (self, projectfile, vars = None):
-    if not vars: vars = parse_makefile()
-    self.vars = vars
+  def __init__ (self, projectfile, prj = XReqProject()):
+    self.prj = prj
     GPS.Console().write("\n\n")
     GPS.Locations.remove_category(self.location_category);
     GPS.Process.__init__ (self, 'gprbuild -m -vP0 -d """-P%s"""' % projectfile,
@@ -262,30 +361,28 @@ class Command_XReq(GPS.Process):
 
   def on_exit (self, status, output):
     GPS.Console().write(output)
-    if self.run_gprbuild and self.vars['TEST_SUITE']:
-      gprpath = "%s/%s.gpr" % (self.vars['RESULT_DIR'], self.vars['TEST_SUITE'])
-      Command_GprBuild(gprpath, self.vars)
+    if self.run_gprbuild and self.prj.test_suite_basename():
+      Command_GprBuild(self.prj.test_suite_path(), self.prj)
 
-  def __init__ (self, filename=None, run_gprbuild=True, vars=None, generate_steps=False):
-    if not vars: vars = parse_makefile()
+  def __init__ (self, filename=None, run_gprbuild=True, prj = XReqProject(), generate_steps=False):
+    self.prj = prj
     self.run_gprbuild = run_gprbuild
-    self.vars = vars
 
     GPS.Console().write("\n\n")
     GPS.Locations.remove_category(self.location_category);
 
     command="xreq --progress --keep-going --quiet";
-    if vars['TEST_SUITE'] and not filename:
-      command = command + ' --executable """%s"""' % vars['TEST_SUITE']
-    command = command + ' --step """%s""" ' % vars['STEP_DEFINITIONS_DIR']
-    command = command + ' --output """%s"""' % vars['RESULT_DIR']
+    if prj.test_suite_basename() and not filename:
+      command = command + ' --executable """%s"""' % prj.test_suite_basename()
+    command = command + ' --step """%s""" ' % prj.steps_dir()
+    command = command + ' --output """%s"""' % prj.result_dir()
     if generate_steps:
-      command = command + ' --fill-steps-in """%s"""' % vars['GENERATED_STEPS']
+      command = command + ' --fill-steps-in """%s"""' % prj.generated_steps_package()
     if filename:
       command = command + ' """%s"""' % filename
     else:
-      for f in os.listdir(vars['FEATURE_DIR']):
-        fullpath = os.path.join(vars['FEATURE_DIR'], f)
+      for f in os.listdir(prj.feature_dir()):
+        fullpath = os.path.join(prj.feature_dir(), f)
         if f.endswith(".feature") and os.path.isfile(fullpath):
           command = command + ' """%s"""' % fullpath
 
@@ -313,17 +410,15 @@ class Command_TestSuite(GPS.Process):
   def on_exit (self, status, output):
     GPS.Console().write(output)
 
-  def __init__ (self, vars=None):
-    if not vars: vars = parse_makefile()
-    self.vars = vars
-
-    self.test_suite = "%s/%s" % (self.vars['RESULT_DIR'], self.vars['TEST_SUITE'])
+  def __init__ (self, prj=XReqProject()):
+    self.prj = prj
+    self.test_suite = prj.test_suite_path()
 
     GPS.Console().write("\n\n")
 
     command = self.test_suite
     command = command + ' -d -f html'
-    command = command + ' -o """%s"""' % self.vars['REPORT_FILE']
+    command = command + ' -o """%s"""' % prj.html_report_path()
 
     GPS.Process.__init__ (self, command,
       show_command = True,
@@ -398,36 +493,61 @@ class FeatureBrowser(gtk.Table):
     self.attach(scroll, 0, 1, 1, 2)
 
   def populateModel(self):
-    vars = parse_makefile()
-    prjpath = makefile_path()
-    feature_dir = vars['FEATURE_DIR']
-    steps_dir = vars['STEP_DEFINITIONS_DIR']
-    result_dir = vars['RESULT_DIR']
+    prj = XReqProject();
     self.treeModel.clear()
-    img_d = gtk.icon_theme_get_default().load_icon("folder", gtk.ICON_SIZE_MENU, 0)
-    img_f = gtk.icon_theme_get_default().load_icon("document", gtk.ICON_SIZE_MENU, 0)
-    if os.path.isfile(prjpath):
-      self.treeModel.append(None, [img_f, os.path.basename(prjpath), prjpath])
-    if os.path.isfile(vars['REPORT_FILE']):
-      self.treeModel.append(None, [img_f, os.path.basename(vars['REPORT_FILE']), vars['REPORT_FILE']])
-    if os.path.isdir(feature_dir):
-      it = self.treeModel.append(None, [img_d, "Features", feature_dir]);
-      for f in os.listdir(feature_dir):
-        fullname = os.path.join(feature_dir, f)
-        if f.endswith (".feature") and os.path.isfile(fullname):
-          self.treeModel.append(it, [img_f, f, fullname])
-    if os.path.isdir(steps_dir):
-      it = self.treeModel.append(None, [img_d, "Step Definitions", steps_dir]);
-      for f in os.listdir(steps_dir):
-        fullname = os.path.join(steps_dir, f)
+    self.populateModelFromProject(XReqProject())
+  
+  def populateModelFromProject(self, prj, main_it = None):
+    img_x = gtk.icon_theme_get_default().load_icon(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU, 0)
+    img_d = gtk.icon_theme_get_default().load_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_MENU, 0)
+    img_f = gtk.icon_theme_get_default().load_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU, 0)
+    
+    # [FILE] Makefile.xreq
+    if os.path.isfile(prj.makefile_path()):
+      self.treeModel.append(main_it, [img_f, prj.basename(), prj.makefile_path()])
+    # [FILE] results.html
+    if os.path.isfile(prj.html_report_path()):
+      self.treeModel.append(main_it, [img_f, os.path.basename(prj.html_report_path()), prj.html_report_path()])
+    # [DIR]  Features
+    if os.path.isdir(prj.feature_dir()):
+      it = self.treeModel.append(main_it, [img_d, "Features", prj.feature_dir()]);
+      if 0 == self.populateFeatureFileRecursive(it, prj.feature_dir(), img_d, img_f):
+        self.treeModel.remove(it)
+    # [DIR]  Step Definitions
+    if os.path.isdir(prj.steps_dir()):
+      it = self.treeModel.append(main_it, [img_d, "Step Definitions", prj.steps_dir()]);
+      for f in os.listdir(prj.steps_dir()):
+        fullname = os.path.join(prj.steps_dir(), f)
         if (f.endswith (".adb") or f.endswith (".ads")) and os.path.isfile(fullname):
           self.treeModel.append(it, [img_f, f, fullname])
-    if os.path.isdir(result_dir):
-      it = self.treeModel.append(None, [img_d, "Generated Files", result_dir]);
-      for f in os.listdir(result_dir):
-        fullname = os.path.join(result_dir, f)
+    # [DIR]  Generated Files
+    if os.path.isdir(prj.result_dir()):
+      it = self.treeModel.append(main_it, [img_d, "Generated Files", prj.result_dir()]);
+      for f in os.listdir(prj.result_dir()):
+        fullname = os.path.join(prj.result_dir(), f)
         if (f.endswith (".adb") or f.endswith (".ads") or f.endswith (".gpr")) and os.path.isfile(fullname):
           self.treeModel.append(it, [img_f, f, fullname])
+    # [PRJ]  Subprojects
+    subprojects = prj.subprojects()
+    for p in subprojects:
+      prj_it = self.treeModel.append(main_it, [img_x, subprojects[p].name(), subprojects[p].basename()])
+      self.populateModelFromProject(subprojects[p], prj_it)
+
+  def populateFeatureFileRecursive(self, it, dir, img_d, img_f):
+    nfile = 0
+    for f in os.listdir(dir):
+      fullname = os.path.join(dir, f)
+      if f.endswith (".feature") and os.path.isfile(fullname):
+        self.treeModel.append(it, [img_f, f, fullname])
+        nfile = nfile + 1
+      elif os.path.isdir(fullname):
+        i = self.treeModel.append(it, [img_d, f, fullname]);
+        n = self.populateFeatureFileRecursive(i, fullname, img_d, img_f)
+        if n == 0:
+          self.treeModel.remove(i)
+        else:
+          nfile = nfile + n
+    return nfile
 
   def refresh(self):
     self.populateModel()
