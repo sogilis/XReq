@@ -59,74 +59,80 @@ import subprocess
 import shlex
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                                XReq Project                                ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
-def compile(filename = None):
-  Command_XReq(filename)
+class XReqProject:
 
-def generate_steps(filename = None):
-  Command_XReq(filename, run_gprbuild = False, generate_steps = True)
-
-def run_tests():
-  compile()
-  Command_TestSuite()
-  browse_test_report()
-
-def browse_test_report():
-  prj = XReqProject()
-  GPS.HTML.browse(prj.html_report_path())
-
-def go_to_spec():
-  prj     = XReqProject()
-  context = GPS.current_context()
-  file    = context.file()
-  line_no = context.location().line()
-  buffer  = GPS.EditorBuffer.get(file)
-  #GPS.Console().write ("%s line %d\n" % (file.name(), line_no))
-  if not buffer.is_modified():
-    filename = file.name()
-    delete   = False
-  else:
-    filename = GPS.dump(buffer.get_chars())
-    delete   = True
-  args = ["xreq", "--partial", "--step-matching", "--step", prj.steps_dir(), filename]
-  p = subprocess.Popen(args, stdout=subprocess.PIPE)
-  step_file = None
-  step_line = None
-  for line in p.stdout.readlines():
-    m = re.match('^Step Matching: "(.*):([0-9]+)" matches "(.*):([0-9]+)" procedure (.*)$', line)
-    if m:
-      l = int(m.group(2))
-      if l > line_no:
-        break
-      else:
-        #GPS.Console().write ("line %d match %s (%s:%d)\n" % (
-        #  int(m.group(2)), m.group(5), m.group(3), int(m.group(4))));
-        step_file = m.group(3)
-        step_line = int(m.group(4))
-  p.stdout.close()
-  if delete:
-    os.remove(filename)
-  if step_file:
-    open_file(step_file, step_line)
-
-def edit_makefile():
-  open_file(create_makefile())
-
-def show_feature_browser():
-  win = GPS.MDI.get ('Features')
-  if win:
-    win.raise_window();
-  else:
-    #GPS.MDI.get ("Project").raise_window()
-    view = FeatureBrowser ()
-    GPS.MDI.add (view, "Features", "Features")
-    win = GPS.MDI.get ('Features')
-    #win.float(True)
-    #GPS.MDI.get ("Project").raise_window()
-    #win.float(False)
-    win.raise_window()
-    win.split (False)
-
+  def __init__(self, makefile = None):
+    if makefile == None:
+      makefile = makefile_path();
+    GPS.Console().write ("Open project %s\n" % makefile)
+    self._dirname  = os.path.dirname(makefile)
+    self._basename = os.path.basename(makefile)
+    self._name     = os.path.basename(self._dirname)
+    self._makefile = makefile;
+    self._vars     = parse_makefile(makefile)
+    self._subdirs  = shlex.split(self._vars['SUBDIRS'])
+    self._subprojects = {}
+    for d in self._subdirs:
+      dir  = os.path.join(self._dirname, d)
+      if os.path.isdir(dir):
+        path = os.path.join(dir, self._vars['SUBMAKEFILE'])
+        proj = XReqProject(path)
+        proj._name = d
+        self._subprojects[d] = proj
+  
+  def _makereletive(self, active, path):
+    if active:
+      return path;
+    else:
+      return os.path.join(self._dirname, path);
+  
+  def name(self):
+    return self._name;
+  
+  def dirname(self):
+    return self._dirname
+  
+  def basename(self):
+    return self._basename
+  
+  def makefile_path(self, relative=False):
+    return self._makefile
+   
+  def subprojects(self):
+    return self._subprojects
+  
+  def subdirs(self, relative=False):
+    if relative:
+      res = []
+      for d in self._subdirs:
+        res.append(os.path.join(self._dirname, d))
+      return res
+    else:
+      return self._subdirs
+  
+  def feature_dir(self, relative=False):
+    return self._makereletive(relative, self._vars['FEATURE_DIR'])
+  
+  def steps_dir(self, relative=False):
+    return self._makereletive(relative, self._vars['STEP_DEFINITIONS_DIR'])
+  
+  def result_dir(self, relative=False):
+    return self._makereletive(relative, self._vars['RESULT_DIR'])
+  
+  def test_suite_basename(self):
+    return self._vars['TEST_SUITE']
+  
+  def test_suite_path(self, relative=False):
+    return os.path.join(self.result_dir(relative), self.test_suite_basename());
+  
+  def generated_steps_package(self):
+    return self._vars['GENERATED_STEPS']
+  
+  def html_report_path(self, relative=False):
+    return self._makereletive(relative, self._vars['REPORT_FILE'])
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 ##                         Makefile related functions                         ##
@@ -218,77 +224,74 @@ def parse_makefile(filename = makefile_path()):
   f.close()
   return res
 
-class XReqProject:
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
+##                                Main actions                                ##
+##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
-  def __init__(self, makefile = None):
-    if makefile == None:
-      makefile = makefile_path();
-    GPS.Console().write ("Open project %s\n" % makefile)
-    self._dirname  = os.path.dirname(makefile)
-    self._basename = os.path.basename(makefile)
-    self._name     = os.path.basename(self._dirname)
-    self._makefile = makefile;
-    self._vars     = parse_makefile(makefile)
-    self._subdirs  = shlex.split(self._vars['SUBDIRS'])
-    self._subprojects = {}
-    for d in self._subdirs:
-      dir  = os.path.join(self._dirname, d)
-      if os.path.isdir(dir):
-        path = os.path.join(dir, self._vars['SUBMAKEFILE'])
-        proj = XReqProject(path)
-        proj._name = d
-        self._subprojects[d] = proj
-  
-  def _makereletive(self, active, path):
-    if active:
-      return path;
-    else:
-      return os.path.join(self._dirname, path);
-  
-  def name(self):
-    return self._name;
-  
-  def dirname(self):
-    return self._dirname
-  
-  def basename(self):
-    return self._basename
-  
-  def makefile_path(self, relative=False):
-    return self._makefile
-   
-  def subprojects(self):
-    return self._subprojects
-  
-  def subdirs(self, relative=False):
-    if relative:
-      res = []
-      for d in self._subdirs:
-        res.append(os.path.join(self._dirname, d))
-      return res
-    else:
-      return self._subdirs
-  
-  def feature_dir(self, relative=False):
-    return self._makereletive(relative, self._vars['FEATURE_DIR'])
-  
-  def steps_dir(self, relative=False):
-    return self._makereletive(relative, self._vars['STEP_DEFINITIONS_DIR'])
-  
-  def result_dir(self, relative=False):
-    return self._makereletive(relative, self._vars['RESULT_DIR'])
-  
-  def test_suite_basename(self):
-    return self._vars['TEST_SUITE']
-  
-  def test_suite_path(self, relative=False):
-    return os.path.join(self.result_dir(relative), self.test_suite_basename());
-  
-  def generated_steps_package(self):
-    return self._vars['GENERATED_STEPS']
-  
-  def html_report_path(self, relative=False):
-    return self._makereletive(relative, self._vars['REPORT_FILE'])
+def compile(filename = None, prj = XReqProject()):
+  Command_XReq(filename, prj = prj)
+
+def generate_steps(filename = None, prj = XReqProject()):
+  Command_XReq(filename, run_gprbuild = False, generate_steps = True, prj = prj)
+
+def run_tests(prj = XReqProject()):
+  compile(prj = prj)
+  Command_TestSuite(prj = prj)
+  browse_test_report(prj = prj)
+
+def browse_test_report(prj = XReqProject()):
+  GPS.HTML.browse(prj.html_report_path())
+
+def go_to_spec(prj = XReqProject()):
+  context = GPS.current_context()
+  file    = context.file()
+  line_no = context.location().line()
+  buffer  = GPS.EditorBuffer.get(file)
+  #GPS.Console().write ("%s line %d\n" % (file.name(), line_no))
+  if not buffer.is_modified():
+    filename = file.name()
+    delete   = False
+  else:
+    filename = GPS.dump(buffer.get_chars())
+    delete   = True
+  args = ["xreq", "--partial", "--step-matching", "--step", prj.steps_dir(), filename]
+  p = subprocess.Popen(args, stdout=subprocess.PIPE)
+  step_file = None
+  step_line = None
+  for line in p.stdout.readlines():
+    m = re.match('^Step Matching: "(.*):([0-9]+)" matches "(.*):([0-9]+)" procedure (.*)$', line)
+    if m:
+      l = int(m.group(2))
+      if l > line_no:
+        break
+      else:
+        #GPS.Console().write ("line %d match %s (%s:%d)\n" % (
+        #  int(m.group(2)), m.group(5), m.group(3), int(m.group(4))));
+        step_file = m.group(3)
+        step_line = int(m.group(4))
+  p.stdout.close()
+  if delete:
+    os.remove(filename)
+  if step_file:
+    open_file(step_file, step_line)
+
+def edit_makefile():
+  open_file(create_makefile())
+
+def show_feature_browser():
+  win = GPS.MDI.get ('Features')
+  if win:
+    win.raise_window();
+  else:
+    #GPS.MDI.get ("Project").raise_window()
+    view = FeatureBrowser ()
+    GPS.MDI.add (view, "Features", "Features")
+    win = GPS.MDI.get ('Features')
+    #win.float(True)
+    #GPS.MDI.get ("Project").raise_window()
+    #win.float(False)
+    win.raise_window()
+    win.split (False)
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 ##                          Editor related functions                          ##
@@ -342,7 +345,7 @@ class Command_GprBuild (GPS.Process):
 
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
-##                               Launch xreq                               ##
+##                                Launch  xreq                                ##
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 
 class Command_XReq(GPS.Process):
@@ -381,10 +384,14 @@ class Command_XReq(GPS.Process):
     if filename:
       command = command + ' """%s"""' % filename
     else:
-      for f in os.listdir(prj.feature_dir()):
-        fullpath = os.path.join(prj.feature_dir(), f)
-        if f.endswith(".feature") and os.path.isfile(fullpath):
-          command = command + ' """%s"""' % fullpath
+      dirs = [prj.feature_dir()]
+      for d in dirs:
+        for f in os.listdir(d):
+          fullpath = os.path.join(prj.feature_dir(), f)
+          if f.endswith(".feature") and os.path.isfile(fullpath):
+            command = command + ' """%s"""' % fullpath
+          elif os.path.isdir(fullpath):
+            dirs.append(fullpath)
 
     GPS.Process.__init__ (self, command,
       show_command = True,
@@ -434,6 +441,10 @@ class Command_TestSuite(GPS.Process):
 
 class FeatureBrowser(gtk.Table):
   def __init__(self):
+    self.img_x = gtk.icon_theme_get_default().load_icon(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU, 0)
+    self.img_d = gtk.icon_theme_get_default().load_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_MENU, 0)
+    self.img_f = gtk.icon_theme_get_default().load_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU, 0)
+
     gtk.Table.__init__(self, rows=2, columns=1);
     self.toolBar = gtk.Toolbar()
 
@@ -455,27 +466,27 @@ class FeatureBrowser(gtk.Table):
     btn.set_icon_name(gtk.STOCK_EXECUTE)
     btn.set_label("Compile")
     btn.set_tooltip_text("Compile features")
-    btn.connect ('clicked', lambda x: compile())
+    btn.connect ('clicked', lambda x: compile(prj = self.activated_project))
     self.toolBar.insert(btn, 3)
 
     btn = gtk.ToolButton()
     btn.set_icon_name(gtk.STOCK_CONVERT)
     btn.set_label("Generate Steps")
     btn.set_tooltip_text("Generate missing step definitions")
-    btn.connect ('clicked', lambda x: (generate_steps(), compile()))
+    btn.connect ('clicked', lambda x: (generate_steps(prj = self.activated_project), compile(prj = self.activated_project)))
     self.toolBar.insert(btn, 4)
 
     btn = gtk.ToolButton()
     btn.set_icon_name(gtk.STOCK_MEDIA_PLAY)
     btn.set_label("Test")
     btn.set_tooltip_text("Start test suite")
-    btn.connect ('clicked', lambda x: run_tests())
+    btn.connect ('clicked', lambda x: run_tests(prj = self.activated_project))
     self.toolBar.insert(btn, 5)
 
     self.attach(self.toolBar, 0, 1, 0, 1, yoptions=0)
-    self.treeModel = gtk.TreeStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING, gobject.TYPE_STRING)
-    self.populateModel();
+    self.treeModel = gtk.TreeStore(gtk.gdk.Pixbuf, gobject.TYPE_STRING, gobject.TYPE_PYOBJECT)
     self.treeView = gtk.TreeView(self.treeModel);
+    self.populateModel();
     col = gtk.TreeViewColumn()
     self.treeView.append_column(col);
     cell = gtk.CellRendererPixbuf()
@@ -484,6 +495,7 @@ class FeatureBrowser(gtk.Table):
     cell = gtk.CellRendererText()
     col.pack_start(cell, True)
     col.add_attribute(cell, 'text', 1)
+    col.set_cell_data_func(cell, self.filter_prj_column)
     self.treeView.set_search_column(1)
     self.treeView.set_headers_visible(False)
     self.treeView.connect("row-activated", self.feature_activated)
@@ -492,16 +504,29 @@ class FeatureBrowser(gtk.Table):
     scroll.add(self.treeView)
     self.attach(scroll, 0, 1, 1, 2)
 
+  def filter_prj_column(self, column, cell, model, it):
+    if model.get_value(it, 2) == self.activated_project:
+      cell.set_property("weight", 700);
+    else:
+      cell.set_property("weight", 400);
+
   def populateModel(self):
     prj = XReqProject();
+    self.root_project = prj
+    self.activated_project = prj
     self.treeModel.clear()
-    self.populateModelFromProject(XReqProject())
+    it = self.populateModelFromProject(XReqProject())
+    path = self.treeModel.get_path(it)
+    self.activated_row = gtk.TreeRowReference(self.treeModel, path)
+    self.treeView.expand_all()
   
   def populateModelFromProject(self, prj, main_it = None):
-    img_x = gtk.icon_theme_get_default().load_icon(gtk.STOCK_EXECUTE, gtk.ICON_SIZE_MENU, 0)
-    img_d = gtk.icon_theme_get_default().load_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_MENU, 0)
-    img_f = gtk.icon_theme_get_default().load_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU, 0)
+    img_x = self.img_x
+    img_d = self.img_d
+    img_f = self.img_f
     
+    # [PRJ]  Project
+    main_it = self.treeModel.append(main_it, [img_x, prj.name(), prj])
     # [FILE] Makefile.xreq
     if os.path.isfile(prj.makefile_path()):
       self.treeModel.append(main_it, [img_f, prj.basename(), prj.makefile_path()])
@@ -530,8 +555,9 @@ class FeatureBrowser(gtk.Table):
     # [PRJ]  Subprojects
     subprojects = prj.subprojects()
     for p in subprojects:
-      prj_it = self.treeModel.append(main_it, [img_x, subprojects[p].name(), subprojects[p].basename()])
-      self.populateModelFromProject(subprojects[p], prj_it)
+      self.populateModelFromProject(subprojects[p], main_it)
+
+    return main_it
 
   def populateFeatureFileRecursive(self, it, dir, img_d, img_f):
     nfile = 0
@@ -554,11 +580,23 @@ class FeatureBrowser(gtk.Table):
 
   def feature_activated(self, tree, path, view_col, *user):
     model = tree.get_model()
-    path = model.get_value(model.get_iter(path), 2)
-    if path.endswith(".html"):
-      GPS.HTML.browse(path)
+    it = model.get_iter(path)
+    col2 = model.get_value(it, 2)
+    if isinstance(col2, XReqProject):
+      # get data
+      model2 = self.activated_row.get_model()
+      path2 = self.activated_row.get_path()
+      it2 = model2.get_iter(path)
+      # update activated project
+      self.activated_row = gtk.TreeRowReference(model, path)
+      self.activated_project = col2
+      # Notify row changed
+      model.row_changed(path, it)
+      model2.row_changed(path2, it2)
+    elif col2.endswith(".html"):
+      GPS.HTML.browse(col2)
     else:
-      open_file(path)
+      open_file(col2)
 
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
