@@ -185,7 +185,7 @@ MAIN_TARGET=$(RESULT_DIR)/$(TEST_SUITE)
 endif
 
 all: $(MAIN_TARGET)
-	for d in $(SUBDIRS); do $(MAKE) -C "$$d" -f "$(SUBMAKEFILE)" all || exit $?; done
+	for d in $(SUBDIRS); do $(MAKE) -C "$$d" -f "$(SUBMAKEFILE)" all || exit $$?; done
 .PHONY: all
 
 $(RESULT_DIR)/$(TEST_SUITE): $(RESULT_DIR)/$(TEST_SUITE).gpr
