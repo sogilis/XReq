@@ -133,6 +133,9 @@ class XReqProject:
   
   def html_report_path(self, relative=False):
     return self._makereletive(relative, self._vars['REPORT_FILE'])
+    
+  def xreq_flags(self):
+    return shlex.split(self._vars['XREQFLAGS'])
 
 ##@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@##
 ##                         Makefile related functions                         ##
@@ -187,6 +190,7 @@ all: $(MAIN_TARGET)
 
 $(RESULT_DIR)/$(TEST_SUITE): $(RESULT_DIR)/$(TEST_SUITE).gpr
 	$(GPRBUILD) -P$< $(GPRFLAGS)
+.PHONY: $(RESULT_DIR)/$(TEST_SUITE)
 
 $(RESULT_DIR)/$(TEST_SUITE).gpr: $(FEATURE_FILES)
 	$(XREQ) -x '$(TEST_SUITE)' -s '$(STEP_DEFINITIONS_DIR)' $(XREQFLAGS) $+
@@ -212,7 +216,8 @@ def parse_makefile(filename = makefile_path()):
     'RESULT_DIR'          : "features/tests",
     'TEST_SUITE'          : "",
     'GENERATED_STEPS'     : "Generated_Steps",
-    'REPORT_FILE'         : "features/tests/xreq-report.html"}
+    'REPORT_FILE'         : "features/tests/xreq-report.html",
+    'XREQFLAGS'           : "",}
   f = open (file, "r")
   for line in f.readlines():
     var, eq, val = line.partition("=")
@@ -381,6 +386,9 @@ class Command_XReq(GPS.Process):
     command = command + ' --output """%s"""' % prj.result_dir()
     if generate_steps:
       command = command + ' --fill-steps-in """%s"""' % prj.generated_steps_package()
+    flags = prj.xreq_flags()
+    if len(flags):
+      command = command + ' """%s"""' % ('""" """'.join(flags))
     if filename:
       command = command + ' """%s"""' % filename
     else:
