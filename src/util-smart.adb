@@ -22,12 +22,11 @@ with Ada.Unchecked_Deallocation;
 
 package body Util.Smart is
 
-   procedure Log (S : in String);
-   procedure Log (S : in String) is
-   begin
-      null;
+   procedure Log (S : in String) is null;
+--    procedure Log (S : in String) is
+--    begin
 --       Util.IO.Std_Logger.Put_Line (S);
-   end Log;
+--    end Log;
 
 
 
@@ -37,24 +36,30 @@ package body Util.Smart is
       return P.Pointer.all.Value;
    end Val;
 
-   procedure Set (P : in out Ptr; Val : in T) is
+   procedure Set (P : in out Ptr; Val : in Ptr) is
    begin
-      if P.Pointer = null then
-         Log ("Set: Initialize Smart Dointer Data (ref: 1)");
-         P.Pointer := new Data_Type'(Value => Val,
-                                     Refs  => 1);
-      else
-         Log ("Set");
-         P.Pointer.all.Value := Val;
+      if P.Pointer /= Val.Pointer then
+         P.UnRef;
+         P.Pointer := Val.Pointer;
+         P.IncRef;
       end if;
    end Set;
+
+   procedure Make (P : in out Ptr; Val : in T) is
+   begin
+      if P.Pointer /= null then
+         P.UnRef;
+      end if;
+      P.Pointer := new Data_Type'(Value => Val, Refs  => 1);
+      Initialize (P.Pointer.all.Value);
+   end Make;
 
    procedure IncRef (P : in out Ptr) is
    begin
       if P.Pointer = null then
          Log ("IncRef: Initialize Smart Dointer Data (ref: 1)");
-         P.Pointer := new Data_Type'(Value => Null_Value,
-                                     Refs  => 1);
+         P.Pointer := new Data_Type'(Refs  => 1, others => <>);
+         Initialize (P.Pointer.all.Value);
       else
          P.Pointer.all.Refs := P.Pointer.all.Refs + 1;
          Log ("IncRef (ref:" & P.Pointer.all.Refs'Img & ")");
@@ -77,9 +82,11 @@ package body Util.Smart is
 
    procedure UnRef   (P : in out Ptr) is
    begin
-      P.DecRef;
       Log ("UnRef");
-      P.Pointer := null;
+      if P.Pointer /= null then
+         P.DecRef;
+         P.Pointer := null;
+      end if;
    end UnRef;
 
    function  Ref    (P : in     Ptr) return Natural is
@@ -98,7 +105,7 @@ package body Util.Smart is
 
    function  Valid   (P : in     Ptr) return Boolean is
    begin
-      return not P.Is_Null;
+      return P.Pointer /= null;
    end Valid;
 
    procedure Initialize (P : in out Ptr) renames IncRef;

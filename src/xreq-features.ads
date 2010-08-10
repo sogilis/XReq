@@ -58,7 +58,7 @@ package XReq.Features is
    type Generic_Feature_Type is new Feature_Type with private;
    type Generic_Feature_Ptr  is access all Generic_Feature_Type'Class;
 
-   function  Language  (F : in Generic_Feature_Type) return Language_SPtr;
+   function  Language  (F : in Generic_Feature_Type) return Language_Type;
 
    -------------------------
    --  Feature_File_Type  --
@@ -88,7 +88,7 @@ private  ----------------------------------------------------------------------
 
    type Generic_Feature_Type is new Feature_Type with
       record
-         Lang : Language_SPtr;
+         Lang : Language_Handle;
       end record;
 
    type Feature_File_Type is new Generic_Feature_Type with
