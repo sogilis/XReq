@@ -17,37 +17,33 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Reffy;
-with Reffy.Handles;
+with Ada.Unchecked_Deallocation;
 
-package XReq.Language is
+package body Reffy is
 
-   type Language_Type is new Reffy.Limited_Counted_Type with private;
+   --  Counted_Type  ----------------------------------------------------------
 
-   procedure Set_Type (L : in out Language_Type; Typ : in String);
-   Unknown_Type : exception;
+   function  Ref       (C :        Counted_Type) return Natural is
+   begin
+      return C.Ref;
+   end Ref;
 
-   function Feature          (L : in Language_Type) return String;
-   function Background       (L : in Language_Type) return String;
-   function Scenario         (L : in Language_Type) return String;
-   function Scenario_Outline (L : in Language_Type) return String;
-   function Examples         (L : in Language_Type) return String;
-   function Given            (L : in Language_Type) return String;
-   function When_K           (L : in Language_Type) return String;
-   function Then_K           (L : in Language_Type) return String;
-   function And_K            (L : in Language_Type) return String;
-   function StrSimple        (L : in Language_Type) return String;
-   function StrDouble        (L : in Language_Type) return String;
+   procedure RefChange (C : in out Counted_Type; Inc : Integer) is
+   begin
+      Ref := Ref + Inc;
+   end;
 
-   package Handles is new Reffy.Handles (Language_Type);
-   subtype Language_Handle is Handles.Handle;
+   --  Limited_Counted_Type  --------------------------------------------------
 
-private
+   function  Ref       (C :        Limited_Counted_Type) return Natural is
+   begin
+      return C.Ref;
+   end Ref;
 
-   type Type_Type is (Feature, Requirement);
-   type Language_Type is
-      new Reffy.Limited_Counted_Type with record
-         Typ : Type_Type := Feature;
-      end record;
+   procedure RefChange (C : in out Limited_Counted_Type; Inc : Integer) is
+   begin
+      Ref := Ref + Inc;
+   end;
 
-end XReq.Language;
+end Reffy;
+

@@ -21,13 +21,6 @@ with Ada.Unchecked_Deallocation;
 
 package body XReq.Language is
 
-   procedure Free (P : in out Language_Ptr) is
-      procedure Dealloc is new Ada.Unchecked_Deallocation
-         (Language_Type'Class, Language_Ptr);
-   begin
-      Dealloc (P);
-   end Free;
-
    procedure Set_Type (L : in out Language_Type; Typ : in String) is
    begin
       if Typ = "feature" then
