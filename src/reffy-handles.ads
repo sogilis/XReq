@@ -19,11 +19,11 @@
 
 generic
 
-   type Object_Type (<>) is abstract new Counted with private;
+   type Object_Type (<>) is new Counted with private;
+   type Object_Ptr is access Object_Type;
 
 package Reffy.Handles is
 
-   type Object_Ptr is access all Object_Type'Class;
    type Handle is new Ada.Finalization.Controlled with private;
 
    procedure UnRef    (H : in out Handle);
@@ -36,7 +36,7 @@ package Reffy.Handles is
    procedure IncRef (H : in out Handle);
    procedure DecRef (H : in out Handle);
 
-   procedure Initialize (Object : in out Handle);
+   procedure Initialize (Object : in out Handle) is null;
    procedure Adjust     (Object : in out Handle);
    procedure Finalize   (Object : in out Handle);
 

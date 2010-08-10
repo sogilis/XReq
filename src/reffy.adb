@@ -17,7 +17,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Unchecked_Deallocation;
 
 package body Reffy is
 
@@ -30,8 +29,8 @@ package body Reffy is
 
    procedure RefChange (C : in out Counted_Type; Inc : Integer) is
    begin
-      Ref := Ref + Inc;
-   end;
+      C.Ref := C.Ref + Inc;
+   end RefChange;
 
    --  Limited_Counted_Type  --------------------------------------------------
 
@@ -42,8 +41,8 @@ package body Reffy is
 
    procedure RefChange (C : in out Limited_Counted_Type; Inc : Integer) is
    begin
-      Ref := Ref + Inc;
-   end;
+      C.Ref := C.Ref + Inc;
+   end RefChange;
 
 end Reffy;
 

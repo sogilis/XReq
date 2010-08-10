@@ -22,13 +22,13 @@ with Util.IO;
 with XReqLib;
 with XReq.Scenarios;
 with XReqLib.Generic_Features;
-with XReq.Language;
+with XReq.Language.Handles;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReqLib;
 use XReq.Scenarios;
-use XReq.Language;
+use XReq.Language.Handles;
 
 package XReq.Features is
 
@@ -58,7 +58,7 @@ package XReq.Features is
    type Generic_Feature_Type is new Feature_Type with private;
    type Generic_Feature_Ptr  is access all Generic_Feature_Type'Class;
 
-   function  Language  (F : in Generic_Feature_Type) return Language_Type;
+   function  Language  (F : in Generic_Feature_Type) return Language_Handle;
 
    -------------------------
    --  Feature_File_Type  --
