@@ -39,7 +39,12 @@ package body Reffy.Handles is
    end DecRef;
 
    procedure Adjust     (Object : in out Handle) renames IncRef;
-   procedure Finalize   (Object : in out Handle) renames DecRef;
+   procedure Finalize   (Object : in out Handle) is
+   begin
+      if Object.Pointer /= null then
+         Object.DecRef;
+      end if;
+   end Finalize;
 
    procedure UnRef  (H : in out Handle) is
    begin
