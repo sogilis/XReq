@@ -17,8 +17,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Unchecked_Deallocation;
-
 package body XReq.Language is
 
    procedure Set_Type (L : in out Language_Type; Typ : in String) is
