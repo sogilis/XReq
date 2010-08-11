@@ -96,6 +96,7 @@ package XReq.Step_Definitions is
 
    subtype Step_Definitions_Type is     --  GCOV_IGNORE
       Step_Definition_Vectors.Vector;   --  GCOV_IGNORE
+   type Step_Definitions_Ptr is access all Step_Definitions_Type;
 
    function  Load      (Directory  : in     String;
                         Language   : in     Language_Type)

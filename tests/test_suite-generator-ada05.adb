@@ -22,12 +22,14 @@ with Ada.Directories;
 with Util.IO;
 with XReq.Job;
 with XReq.Generator;
+with XReq.Environment;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
 use Util.IO;
 use XReq.Job;
 use XReq.Generator;
+use XReq.Environment;
 
 package body Test_Suite.Generator.Ada05 is
 

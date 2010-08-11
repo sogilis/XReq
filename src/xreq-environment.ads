@@ -47,16 +47,8 @@ package XReq.Environment is
    Invalid_Environment : exception;
    Invalid_Option      : exception;
 
-   type Job_Environment is
-      record
-         Step_Dir  : String_Vector;
-         Out_Dir   : Unbounded_String;
-         Steps     : Step_Definitions_Type;
-         Loaded    : Boolean := False;
-         Language  : Language_Type := Lang_Ada;
-         Options   : Options_Pkg.Map;
-      end record;
-   Null_Job_Environment : constant Job_Environment := (others => <>);
+   type Job_Environment is tagged private;
+   type Job_Environment_Ptr is access all Job_Environment'Class;
 
    procedure Make         (Env        : in out Job_Environment;
                            Step_Dir   : in     String_Vector :=
@@ -68,6 +60,8 @@ package XReq.Environment is
                            Out_Dir    : in     String := "";
                            Language   : in     Language_Type := Lang_Ada);
    function  First_Step_Dir (Env      : in     Job_Environment) return String;
+   function  Step_Dir     (Env        : in     Job_Environment)
+                                        return String_Vector;
    function  Out_Dir      (Env        : in     Job_Environment) return String;
    procedure Fill_Missing (Env        : in out Job_Environment;
                            Feature    : in     String);
@@ -84,8 +78,32 @@ package XReq.Environment is
                            Default    : in     String) return String;
    function  Has_Option   (Env        : in     Job_Environment;
                            Name       : in     String) return Boolean;
+   function  Language     (Env        : in     Job_Environment)
+                                        return Language_Type;
+   function  Loaded       (Env        : in     Job_Environment)
+                                        return Boolean;
+   function  Steps        (Env        : in     Job_Environment)
+                                        return Step_Definitions_Type;
+   procedure Steps        (Env        : in out Job_Environment;
+                           Steps      : out    Step_Definitions_Ptr);
    --  IMPORTANT: don't forget to call UnLoad
    procedure UnLoad       (Env      : in out Job_Environment);
+
+   Null_Job_Environment : constant Job_Environment;
+
+private
+
+   type Job_Environment is tagged
+      record
+         Step_Dir  : String_Vector;
+         Out_Dir   : Unbounded_String;
+         Steps     : aliased Step_Definitions_Type;
+         Loaded    : Boolean := False;
+         Language  : Language_Type := Lang_Ada;
+         Options   : Options_Pkg.Map;
+      end record;
+
+   Null_Job_Environment : constant Job_Environment := (others => <>);
 
 end XReq.Environment;
 

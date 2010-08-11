@@ -18,9 +18,11 @@
 -------------------------------------------------------------------------------
 
 with XReq.Job;
+with XReq.Environment;
 with Util.IO;
 
 use XReq.Job;
+use XReq.Environment;
 use Util.IO;
 
 package body Test_Suite.Job is

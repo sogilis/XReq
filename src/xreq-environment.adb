@@ -58,9 +58,9 @@ package body XReq.Environment is
       Make (Env, V, Out_Dir, Language);
    end Make;
 
-   -------------------------------------
-   --  Job_Environment  --  Step_Dir  --
-   -------------------------------------
+   -------------------------------------------
+   --  Job_Environment  --  First_Step_Dir  --
+   -------------------------------------------
 
    function  First_Step_Dir (Env : in Job_Environment) return String is
       use String_Vectors;
@@ -72,6 +72,16 @@ package body XReq.Environment is
          raise Constraint_Error with "No step dir";
       end if;
    end First_Step_Dir;
+
+   -------------------------------------
+   --  Job_Environment  --  Step_Dir  --
+   -------------------------------------
+
+   function  Step_Dir     (Env        : in     Job_Environment)
+                                        return String_Vector is
+   begin
+      return Env.Step_Dir;
+   end Step_Dir;
 
    ------------------------------------
    --  Job_Environment  --  Out_Dir  --
@@ -202,6 +212,47 @@ package body XReq.Environment is
    begin
       return Has_Element (Find (Env.Options, To_Unbounded_String (Name)));
    end Has_Option;
+
+   ----------------
+   --  Language  --
+   ----------------
+
+   function  Language     (Env        : in     Job_Environment)
+                                        return Language_Type is
+   begin
+      return Env.Language;
+   end Language;
+
+   --------------
+   --  Loade  --
+   --------------
+
+   function  Loaded       (Env        : in     Job_Environment)
+                                        return Boolean is
+   begin
+      return Env.Loaded;
+   end Loaded;
+
+   -------------
+   --  Steps  --
+   -------------
+
+   function  Steps        (Env        : in     Job_Environment)
+                                        return Step_Definitions_Type is
+   begin
+      return Env.Steps;
+   end Steps;
+
+   -------------
+   --  Steps  --
+   -------------
+
+   procedure Steps        (Env        : in out Job_Environment;
+                           Steps      : out  Step_Definitions_Ptr) is
+   begin
+      --  Tempoary measure until we can return a Handle
+      Steps := Env.Steps'Unchecked_Access;
+   end Steps;
 
    -----------------------------------
    --  Job_Environment  --  UnLoad  --
