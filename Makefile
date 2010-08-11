@@ -813,7 +813,7 @@ install-bin: bin/xreq.$(INSTALL_CONFIG)
 
 install-gps: lib/gps/libxreqgps.so
 ifneq ($(GPSDATADIR),)
-	$(INSTALL) -m644 data/gps-plug-ingps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
+	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 	$(INSTALL) -m755 lib/gps/libxreqgps.so          $(DESTDIR)$(LIBDIR)/libxreqgps.so
