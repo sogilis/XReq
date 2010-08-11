@@ -26,7 +26,6 @@ with Util.Strings;
 with XReqLib.String_Tables;
 with XReq.Args;
 with XReq.Steps;
-with XReq.Language;
 
 use Util.Strings;
 use XReq.Args;
@@ -38,7 +37,7 @@ package body XReq.Features is
    --  Generic_Feature_Type  --  Language  --
    ------------------------------------------
 
-   function  Language  (F : in  Generic_Feature_Type) return Language_Handle is
+   function  Language  (F : in  Generic_Feature_Type) return Language_SPtr is
    begin
       return F.Lang;
    end Language;
@@ -100,7 +99,7 @@ package body XReq.Features is
 
       --  Keywords
       File_Ext : constant String := Extension (To_String (Self.File_Name));
-      K : XReq.Language.Language_Type;
+      K : Language_Type;
 
       --  Context variables
       File          : File_Type;        --  Current opened file
@@ -478,7 +477,7 @@ package body XReq.Features is
    begin
       K.Set_Type (File_Ext);
       Self.Set_Filetype (File_Ext);
-      Self.Lang.Set (new XReq.Language.Language_Type'(K));
+      Self.Lang.Make (K);
       Position := Position_Type'(
          File => Self.File_Name,
          Line => 1);
@@ -487,7 +486,7 @@ package body XReq.Features is
       Close (File);
       Self.Parsed := True;
    exception
-      when XReq.Language.Unknown_Type =>
+      when Unknown_Type =>
          Log.Put_Line ("Unknown file format: " & File_Ext);
          raise Parse_Error;
       when E : others =>

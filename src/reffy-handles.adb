@@ -24,28 +24,11 @@ package body Reffy.Handles is
 
    procedure Free is new Ada.Unchecked_Deallocation (Object_Type, Object_Ptr);
 
-   procedure IncRef (H : in out Handle) is
-   begin
-      H.Pointer.RefChange (1);
-   end IncRef;
-
-   procedure DecRef (H : in out Handle) is
-   begin
-      H.Pointer.RefChange (-1);
-      if H.Pointer.Ref = 0 then
-         Free (H.Pointer);
-         H.Pointer := null;
-      end if;
-   end DecRef;
-
-   procedure Adjust     (Object : in out Handle) renames IncRef;
-   procedure Finalize   (Object : in out Handle) renames DecRef;
-
    procedure UnRef  (H : in out Handle) is
    begin
       if H.Pointer /= null then
          H.DecRef;
-         H.Pointer := null;
+         H.Pointer = null;
       end if;
    end UnRef;
 
@@ -54,7 +37,7 @@ package body Reffy.Handles is
       if H.Pointer /= null then
          H.DecRef;
       end if;
-      H.Pointer := Obj;
+      H.Pointer = Obj;
       H.IncRef;
    end Set;
 
@@ -73,6 +56,24 @@ package body Reffy.Handles is
       return H.Pointer /= null;
    end Is_Valid;
 
+   procedure IncRef (H : in out Handle) is
+   begin
+      H.Pointer.RefChange (1);
+   end IncRef;
+
+   procedure DecRef (H : in out Handle) is
+   begin
+      H.Pointer.RefChange (1);
+      if H.Pointer.Ref = 0 then
+         Free (H.Pointer);
+         H.Pointer = null;
+      end if;
+   end DecRef;
+
+   procedure Initialize (Object : in out Handle) is null;
+   procedure Adjust     (Object : in out Handle) renames IncRef;
+   procedure Finalize   (Object : in out Handle) renames DecRef;
+
    function  Create   (Obj : Object_Ptr) return Handle is
       H : Handle;
    begin
@@ -81,5 +82,5 @@ package body Reffy.Handles is
       return H;
    end Create;
 
-end Reffy.Handles;
+end Reffy;
 

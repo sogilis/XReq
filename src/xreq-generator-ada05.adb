@@ -73,6 +73,7 @@ package body XReq.Generator.Ada05 is
       Pkgname     : constant String :=
                     Job.Result.Filetype & "_" & Base_Name (Feature_File (Job));
    begin
+      Assert (Job.Result.Language.Val /= null);
       Gen.Feature := Job.Result;
       Get_Unique_String (
          Gen.Pool, To_Identifier (Pkgname),      Gen.Id_Pkgname);
@@ -82,6 +83,7 @@ package body XReq.Generator.Ada05 is
                   To_Lower (To_String (Gen.Id_Pkgname))));
       Gen.Ads_File := Basename & ".ads";
       Gen.Adb_File := Basename & ".adb";
+      Assert (Gen.Feature.Language.Val /= null);
    end Make;
 
    ----------------------
@@ -651,8 +653,9 @@ package body XReq.Generator.Ada05 is
       E           : Result_Scenario_Type;
       Num         : Positive := 1;
       Total_Steps : Natural := 0;
-      Lang        : constant Language_Ptr := Gen.Feature.Language.Ref;
+      Lang        : constant Language_Ptr := Gen.Feature.Language.Val;
    begin
+      Assert (Gen.Feature.Language.Val /= null);
       Assert (Lang /= null);
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");

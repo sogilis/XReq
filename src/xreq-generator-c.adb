@@ -604,7 +604,7 @@ package body XReq.Generator.C is
       E           : Result_Scenario_Type;
       Num         : Positive := 1;
       Total_Steps : Natural := 0;
-      Lang        : constant Language_Ptr := Gen.Feature.Language.Ref;
+      Lang        : constant Language_Ptr := Gen.Feature.Language.Val;
    begin
       Gen.H.Put_Line ("#include <xreq.h>");
       Gen.H.New_Line;

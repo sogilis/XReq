@@ -66,7 +66,7 @@ package body XReq.Result_Features is
          Log.Put_Line ("XReq can create the procedures for you if you " &
                        "use --fill-steps");
       end if;
-      Assert (Result.Language.Valid);
+      Assert (Result.Language.Val /= null);
       Res := Result;
    end Process_Feature;
 
@@ -120,8 +120,7 @@ package body XReq.Result_Features is
    --  Language  --
    ----------------
 
-   function  Language (F    : in     Result_Feature_Type)
-                              return Language_Handle
+   function  Language (F    : in     Result_Feature_Type) return Language_SPtr
    is
    begin
       return F.Lang;

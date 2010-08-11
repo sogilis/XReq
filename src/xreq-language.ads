@@ -18,11 +18,11 @@
 -------------------------------------------------------------------------------
 
 with Reffy;
+with Reffy.Handles;
 
 package XReq.Language is
 
-   type Language_Type is new Reffy.Counted_Type with private;
-   type Language_Ptr is access all Language_Type;
+   type Language_Type is new Reffy.Limited_Counted_Type with private;
 
    procedure Set_Type (L : in out Language_Type; Typ : in String);
    Unknown_Type : exception;
@@ -39,11 +39,14 @@ package XReq.Language is
    function StrSimple        (L : in Language_Type) return String;
    function StrDouble        (L : in Language_Type) return String;
 
+   package Handles is new Reffy.Handles (Language_Type);
+   subtype Language_Handle is Handles.Handle;
+
 private
 
    type Type_Type is (Feature, Requirement);
    type Language_Type is
-      new Reffy.Counted_Type with record
+      new Reffy.Limited_Counted_Type with record
          Typ : Type_Type := Feature;
       end record;
 
