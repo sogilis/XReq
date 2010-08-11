@@ -478,7 +478,7 @@ package body XReq.Features is
    begin
       K.Set_Type (File_Ext);
       Self.Set_Filetype (File_Ext);
-      Self.Lang.Set (new XReq.Language.Language_Type'(K));
+      Self.Lang.Set_New (K);
       Position := Position_Type'(
          File => Self.File_Name,
          Line => 1);

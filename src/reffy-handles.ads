@@ -29,6 +29,7 @@ package Reffy.Handles is
    type Handle is new Ada.Finalization.Controlled with private;
 
    procedure UnRef    (H : in out Handle);
+   procedure Set_New  (H : in out Handle; Obj : Object_Type);
    procedure Set      (H : in out Handle; Obj : Object_Ptr);
    function  Ref      (H : Handle) return Object_Ptr;
    function  Is_Null  (H : Handle) return Boolean;

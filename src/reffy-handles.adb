@@ -94,6 +94,11 @@ package body Reffy.Handles is
       end if;
    end UnRef;
 
+   procedure Set_New (H : in out Handle; Obj : Object_Type) is
+   begin
+      H.Set (new Object_Type'(Obj));
+   end Set_New;
+
    procedure Set (H : in out Handle; Obj : Object_Ptr) is
    begin
       Log (H, "Set " & Ptr (Obj));
