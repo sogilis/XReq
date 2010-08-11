@@ -21,6 +21,7 @@ with Ada.Text_IO;
 with Ada.Directories;
 with Ada.Strings;
 with Ada.Strings.Fixed;
+with Ada.Exceptions;
 with Util.Strings;
 with XReqLib.String_Tables;
 with XReq.Args;
@@ -486,6 +487,10 @@ package body XReq.Features is
       when Unknown_Type =>
          Log.Put_Line ("Unknown file format: " & File_Ext);
          raise Parse_Error;
+      when E : others =>
+         Log_Error ("XReq internal error (" &
+                    Ada.Exceptions.Exception_Message (E) & ")");
+         Ada.Exceptions.Reraise_Occurrence (E);
    end Parse;
 
    ----------------------------------------
