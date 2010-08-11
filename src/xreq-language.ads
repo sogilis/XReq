@@ -17,12 +17,17 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Reffy;
-with Reffy.Handles;
+with Util.Smart;
 
 package XReq.Language is
 
-   type Language_Type is new Reffy.Limited_Counted_Type with private;
+   type Language_Type is tagged private;
+   type Language_Ptr  is access all Language_Type'Class;
+
+   procedure Free (P : in out Language_Ptr);
+   package Smart_Pointer is new Util.Smart (Language_Ptr, null, Free);
+
+   subtype Language_SPtr is Smart_Pointer.Ptr;
 
    procedure Set_Type (L : in out Language_Type; Typ : in String);
    Unknown_Type : exception;
@@ -39,14 +44,12 @@ package XReq.Language is
    function StrSimple        (L : in Language_Type) return String;
    function StrDouble        (L : in Language_Type) return String;
 
-   package Handles is new Reffy.Handles (Language_Type);
-   subtype Language_Handle is Handles.Handle;
-
 private
 
    type Type_Type is (Feature, Requirement);
-   type Language_Type is
-      new Reffy.Limited_Counted_Type with record
+
+   type Language_Type is tagged
+      record
          Typ : Type_Type := Feature;
       end record;
 

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 prjdir="$(dirname "$0")/.."
-testdir="$(dirname "$0")"
 
 if [ $# = 0 ]; then
   echo "$0 [-f] TESTED_PKG [TEST_PKG]"
@@ -19,7 +18,8 @@ tested_package="$1"
 test_package="$2"
 
 if [ -z "$test_package" ]; then
-  test_package="$tested_package.Test_Suite"
+  test_package="$(sed -r "s/^XReqLib/Test_Suite.Lib/" <<<"$tested_package" | \
+                  sed -r "s/^(XReq|Util)/Test_Suite/")"
   echo "Test package: $test_package"
 fi
 
@@ -32,19 +32,18 @@ if ! $force && ( [ -e "$filename.adb" ] || [ -e "$filename.ads" ] ); then
   exit 1
 fi
 
-cat >"$testdir/$filename.ads" <<EOF
+cat >"$filename.ads" <<EOF
 $(cat "$prjdir/tools/header.ada.txt")
 
 with AUnit;
 with AUnit.Test_Suites;
-with Test_Suite;
 
 package $test_package is
 
    procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite);
 
    --  Test type
-   type Test_1 is new Test_Suite.Test_Case_Type with null record;
+   type Test_1 is new Test_Case_Type with null record;
 
    --  Operation on Test_1
    function  Name (T : in     Test_1) return String;
@@ -55,7 +54,7 @@ end $test_package;
 EOF
 
 
-cat >"$testdir/$filename.adb" <<EOF
+cat >"$filename.adb" <<EOF
 $(cat "$prjdir/tools/header.ada.txt")
 
 with $tested_package;

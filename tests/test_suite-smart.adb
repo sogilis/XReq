@@ -36,7 +36,7 @@ package body Test_Suite.Smart is
 
    procedure Run (T : in out Test_1) is
 
-      package Int is new Util.Smart (Integer);
+      package Int is new Util.Smart (Integer, 0);
 
       P1, P2 : Int.Ptr;
 
@@ -66,26 +66,21 @@ package body Test_Suite.Smart is
       T.Assert (P2.Val = 0,     "(13)");
       T.Assert (not P2.Is_Null, "(14)");
 
-      P1.Make (8);
+      P1.Set (8);
 
       T.Assert (P1.Val = 8,     "(15)");
-      T.Assert (P2.Val = 0,     "(16)");
+      T.Assert (P2.Val = 8,     "(16)");
 
-      P2.Set (P1);
+      P2.Set (9);
 
-      T.Assert (P1.Val = 8,     "(17)");
-      T.Assert (P2.Val = 8,     "(18)");
-
-      P2.Make (9);
-
-      T.Assert (P1.Val = 8,     "(19)");
-      T.Assert (P2.Val = 9,     "(20)");
+      T.Assert (P1.Val = 9,     "(17)");
+      T.Assert (P2.Val = 9,     "(18)");
 
       P1.UnRef;
 
-      T.Assert (P1.Is_Null,     "(21)");
-      T.Assert (P1.Ref = 0,     "(22)");
-      T.Assert (P2.Ref = 1,     "(23)");
+      T.Assert (P1.Is_Null,     "(19)");
+      T.Assert (P1.Ref = 0,     "(20)");
+      T.Assert (P2.Ref = 1,     "(21)");
 
    end Run;
 

@@ -66,7 +66,7 @@ package XReq.Result_Features is
    --  Properties  ------------------------------------------------------------
 
    function  Fail     (F    : in     Result_Feature_Type) return Boolean;
-   function  Language (F    : in     Result_Feature_Type) return Language_Type;
+   function  Language (F    : in     Result_Feature_Type) return Language_SPtr;
 
    procedure Set_Fail (F    : in out Result_Feature_Type;
                        Fail : in     Boolean := True);
@@ -78,7 +78,7 @@ private
    type Result_Feature_Type is new Features_Package.Feature_Type with
       record
          Fail : Boolean       := False;
-         Lang : Language_Type;
+         Lang : Language_SPtr;
       end record;
 
 end XReq.Result_Features;

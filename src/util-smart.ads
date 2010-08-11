@@ -22,61 +22,32 @@ with Ada.Finalization;
 generic
 
    type T is private;
-   with procedure Initialize (Val : in out T) is null;
-   with procedure Finalize   (Val : in out T) is null;
+   Null_Value : T;
+   with procedure Finalize (Val : in out T) is null;
 
 package Util.Smart is
-
-   --  Ptr is a smart pointer. It points to a data element initialized by the
-   --  new operator. This data element contains the limited type T and a
-   --  reference count.
-   --
-   --  When initialized, the smart pointer automatically creates this data type
-   --  with default values. You can change the associated datatype with the
-   --  procedure Set which will take another pointer and will reference the
-   --  same data type.
-   --
-   --  Make creates a new data type and associates it with the smart pointer.
-   --  The data type takes the value given.
-   --
-   --  Val retrieves the data type found in the data type pointed by the smart
-   --  pointer. It raises a Constraint_Error if the smart pointer is null.
-   --
-   --  UnRef makes the smart pointer null.
-   --
-   --  Is_Null test that the smart pointer is null. Valid and Is_Valid test
-   --  that the smart pointer is not null.
-   --
 
    type Ptr is new Ada.Finalization.Controlled with private;
 
    function  Val      (P : in     Ptr) return T;
-   procedure Set      (P : in out Ptr; Val : in Ptr);
-   procedure Make     (P : in out Ptr; Val : in T);
+   procedure Set      (P : in out Ptr; Val : in T);
+   procedure IncRef   (P : in out Ptr);
+   procedure DecRef   (P : in out Ptr);
    procedure UnRef    (P : in out Ptr);
+   function  Ref      (P : in     Ptr) return Natural;
    function  Is_Null  (P : in     Ptr) return Boolean;
    function  Valid    (P : in     Ptr) return Boolean;
    function  Is_Valid (P : in     Ptr) return Boolean renames Valid;
-
-   --------------------
-   --  Guru Section  --
-   --------------------
-   --  IncRef and DecRef manually increases and decreases the reference count.
-   --  Ref return the reference count. These shouldn't be used in normal usage.
 
    overriding procedure Initialize (P : in out Ptr);
    overriding procedure Adjust     (P : in out Ptr);
    overriding procedure Finalize   (P : in out Ptr);
 
-   procedure IncRef   (P : in out Ptr);
-   procedure DecRef   (P : in out Ptr);
-   function  Ref      (P : in     Ptr) return Natural;
-
 private
 
    type Data_Type is
       record
-         Value : T;
+         Value : T       := Null_Value;
          Refs  : Integer := 0;
       end record;
 
