@@ -29,6 +29,7 @@ with XReq;
 with XReq.CLI;
 with XReq.Lang;
 with XReq.Job;
+with XReq.Environment;
 with XReq.Generator;
 
 use Ada.Text_IO;
@@ -42,6 +43,7 @@ use XReqLib;
 use XReq;
 use XReq.Lang;
 use XReq.Job;
+use XReq.Environment;
 use XReq.Generator;
 
 procedure Main is
@@ -187,7 +189,7 @@ begin
                Next (J);
             end loop;
             New_Line;
-            XReq.Job.Make (Env,
+            XReq.Environment.Make (Env,
                Step_Dir => Step_Dir,
                Out_Dir  => To_String (Out_Dir),
                Language => Language);
@@ -220,7 +222,7 @@ begin
       --  Get Parameter  --
       ---------------------
 
-      XReq.Job.Make (Env,
+      XReq.Environment.Make (Env,
          Step_Dir => Step_Dir,
          Out_Dir  => To_String (Out_Dir),
          Language => Language);

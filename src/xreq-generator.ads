@@ -21,9 +21,11 @@ with Ada.Unchecked_Deallocation;
 with Ada.Containers.Vectors;
 with Util.IO;
 with XReq.Job;
+with XReq.Environment;
 
 use Util.IO;
 use XReq.Job;
+use XReq.Environment;
 
 package XReq.Generator is
 
