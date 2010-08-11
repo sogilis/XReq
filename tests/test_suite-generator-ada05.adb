@@ -22,14 +22,14 @@ with Ada.Directories;
 with Util.IO;
 with XReq.Job;
 with XReq.Generator;
-with XReq.Environment;
+with XReq.Environment.Handles;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
 use Util.IO;
 use XReq.Job;
 use XReq.Generator;
-use XReq.Environment;
+use XReq.Environment.Handles;
 
 package body Test_Suite.Generator.Ada05 is
 
@@ -49,7 +49,7 @@ package body Test_Suite.Generator.Ada05 is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      Env     : Job_Environment;
+      Env     : Environment_Handle := Create;
       Job     : Job_Type;
       Gen     : Generator_Ptr;
       Output  : Unbounded_String;
@@ -83,7 +83,6 @@ package body Test_Suite.Generator.Ada05 is
               ASCII.LF & To_String (Output));
 
       Cleanup (Job);
-      UnLoad (Env);
 
    end Run;
 

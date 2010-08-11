@@ -24,6 +24,7 @@ with Util.IO;
 with XReq.Lang;
 with XReq.Step_Definitions;
 with XReqLib;
+with Reffy;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -47,7 +48,7 @@ package XReq.Environment is
    Invalid_Environment : exception;
    Invalid_Option      : exception;
 
-   type Job_Environment is tagged private;
+   type Job_Environment is new Reffy.Counted_Type with private;
    type Job_Environment_Ptr is access all Job_Environment'Class;
 
    procedure Make         (Env        : in out Job_Environment;
@@ -86,14 +87,17 @@ package XReq.Environment is
                                         return Step_Definitions_Type;
    procedure Steps        (Env        : in out Job_Environment;
                            Steps      : out    Step_Definitions_Ptr);
-   --  IMPORTANT: don't forget to call UnLoad
-   procedure UnLoad       (Env      : in out Job_Environment);
+
+   overriding
+   procedure Finalize     (Env        : in out Job_Environment);
+
+   --  procedure Free (X : in out Job_Environment_Ptr);
 
    Null_Job_Environment : constant Job_Environment;
 
 private
 
-   type Job_Environment is tagged
+   type Job_Environment is new Reffy.Counted_Type with
       record
          Step_Dir  : String_Vector;
          Out_Dir   : Unbounded_String;
@@ -103,7 +107,8 @@ private
          Options   : Options_Pkg.Map;
       end record;
 
-   Null_Job_Environment : constant Job_Environment := (others => <>);
+   Null_Job_Environment : constant Job_Environment :=
+      (Reffy.Counted_Type with others => <>);
 
 end XReq.Environment;
 

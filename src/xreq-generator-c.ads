@@ -36,7 +36,7 @@ package XReq.Generator.C is
 
    procedure Make      (Gen : out    C_Generator_Type;
                         Job : in     Job_Type;
-                        Env : in     Job_Environment);
+                        Env : in     Environment_Handle);
 
    procedure Generate  (Gen : in out C_Generator_Type;
                         Log : in     Logger_Ptr);
@@ -45,7 +45,7 @@ package XReq.Generator.C is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment;
+                             Env  : in Environment_Handle;
                              Log  : in Logger_Ptr;
                              Make : in Boolean := False);
 

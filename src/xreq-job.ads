@@ -22,13 +22,14 @@ with Util.IO;
 with XReq.Features;
 with XReq.Result;
 with XReq.Environment;
+with XReq.Environment.Handles;
 with XReqLib;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReq.Features;
 use XReq.Result;
-use XReq.Environment;
+use XReq.Environment.Handles;
 use XReqLib;
 
 package XReq.Job is
@@ -52,7 +53,7 @@ package XReq.Job is
    procedure Make     (Job           : out    Job_Type;
                        Feature_File  : in     String);
    procedure Run      (Job           : in out Job_Type;
-                       Env           : in out Job_Environment;
+                       Env           : in out Environment_Handle;
                        Logger        : in     Logger_Ptr;
                        Add_Steps_Pkg : in     String  := "";
                        Step_Matching : in     Boolean := False);
@@ -60,13 +61,13 @@ package XReq.Job is
    procedure Cleanup  (Job           : in out Job_Type);
 
 
-   procedure Init (Env          : out    Job_Environment;
+   procedure Init (Env          : out    Environment_Handle;
                    Job          : out    Job_Type;
                    Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
                    Step_Dir     : in     String_Vector :=
                                          Empty_String_Vector;
                    Out_Dir      : in     String := "");
-   --  IMPORTANT: run UnLoad in Env
+
 
 end XReq.Job;

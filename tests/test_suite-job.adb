@@ -19,10 +19,11 @@
 
 with XReq.Job;
 with XReq.Environment;
+with XReq.Environment.Handles;
 with Util.IO;
 
 use XReq.Job;
-use XReq.Environment;
+use XReq.Environment.Handles;
 use Util.IO;
 
 package body Test_Suite.Job is
@@ -47,13 +48,13 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_First_Step_Dir) is
-      Env  : Job_Environment;
+      Env  : Environment_Handle;
    begin
 
       declare
          procedure P;
          procedure P is begin
-            T.Assert (First_Step_Dir (Env) = "", "not OK");
+            T.Assert (Env.Ref.First_Step_Dir = "", "not OK");
          end P;
          procedure A is new Assert_Except (Test_First_Step_Dir, P);
       begin
@@ -73,12 +74,12 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Fill_Missing) is
-      Env  : Job_Environment;
+      Env  : Environment_Handle;
    begin
-      Fill_Missing (Env, "A/B/spec.feature");
-      T.Assert (First_Step_Dir (Env) = "A/B/step_definitions",
+      Env.Ref.Fill_Missing ("A/B/spec.feature");
+      T.Assert (Env.Ref.First_Step_Dir = "A/B/step_definitions",
                 "Incorrect step dir");
-      T.Assert (Out_Dir  (Env) = "A/B/tests", "Incorrect out dir");
+      T.Assert (Env.Ref.Out_Dir = "A/B/tests", "Incorrect out dir");
    end Run;
 
    --  Job_Environment  -------------------------------------------------------
@@ -90,58 +91,56 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Job_Environment) is
-      Env  : Job_Environment;
+      Env  : Environment_Handle;
    begin
 
-      T.Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
 
-      Make (Env, "steps", "out");
+      Env.Ref.Make ("steps", "out");
 
-      T.Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
 
-      T.Assert (First_Step_Dir (Env) = "steps", "Invalid step dir");
-      T.Assert (Out_Dir  (Env) = "out", "Invalid out dir");
+      T.Assert (Env.Ref.First_Step_Dir = "steps", "Invalid step dir");
+      T.Assert (Env.Ref.Out_Dir = "out", "Invalid out dir");
 
-      Make (Env, "tests/features/step_definitions");
+      Env.Ref.Make ("tests/features/step_definitions");
 
-      T.Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
 
       declare
          procedure P;
          procedure P is begin
-            Load (Env, Std_Logger);
+            Env.Ref.Load (Std_Logger);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
          A (T, "Invalid_Environment has not been raised in call to Load (1)",
-            Invalid_Environment'Identity);
+            XReq.Environment.Invalid_Environment'Identity);
       end;
 
-      T.Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
 
-      Make (Env, Out_Dir => "tests/features/tests");
+      Env.Ref.Make (Out_Dir => "tests/features/tests");
 
-      T.Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
 
       declare
          procedure P;
          procedure P is begin
-            Load (Env, Std_Logger);
+            Env.Ref.Load (Std_Logger);
          end P;
          procedure A is new Assert_Except (Test_Job_Environment, P);
       begin
          A (T, "Invalid_Environment has not been raised in call to Load (2)",
-            Invalid_Environment'Identity);
+            XReq.Environment.Invalid_Environment'Identity);
       end;
 
-      T.Assert (not Env.Loaded, "Env should NOT be loaded");
+      T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
 
-      Make (Env, "tests/features/step_definitions", "tests/features/tests");
-      Load (Env, Std_Logger);
+      Env.Ref.Make ("tests/features/step_definitions", "tests/features/tests");
+      Env.Ref.Load (Std_Logger);
 
-      T.Assert (Env.Loaded, "Env should be loaded");
-
-      UnLoad (Env);
+      T.Assert (Env.Ref.Loaded, "Env should be loaded");
 
    end Run;
 
@@ -154,11 +153,11 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Run) is
-      Env  : Job_Environment;
+      Env  : Environment_Handle;
       Job  : Job_Type;
    begin
       Make (Job, "tests/features/simplest.feature");
-      Fill_Missing (Env, Feature_File (Job));
+      Env.Ref.Fill_Missing (Feature_File (Job));
 
       declare
          procedure P;
@@ -168,21 +167,20 @@ package body Test_Suite.Job is
          procedure A is new Assert_Except (Test_Run, P);
       begin
          A (T, "Invalid_Environment has not been raised in call to Run",
-            Invalid_Environment'Identity);
+            XReq.Environment.Invalid_Environment'Identity);
       end;
 
-      Load (Env, Std_Logger);
+      Env.Ref.Load (Std_Logger);
 
-      T.Assert (First_Step_Dir (Env) = "tests/features/step_definitions",
+      T.Assert (Env.Ref.First_Step_Dir = "tests/features/step_definitions",
               "incorrect step dir");
 
-      T.Assert (Out_Dir (Env) = "tests/features/tests",
+      T.Assert (Env.Ref.Out_Dir = "tests/features/tests",
               "incorrect out dir");
 
       Run (Job, Env, Std_Logger);
 
       Cleanup (Job);
-      UnLoad (Env);
    end Run;
 
    --  Test_Options  ----------------------------------------------------------
@@ -194,34 +192,35 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Options) is
-      Env  : Job_Environment;
+      Env  : Environment_Handle;
    begin
 
-      Set_Option (Env, "a", "b");
-      T.Assert (Get_Option (Env, "a") = "b",
+      Env.Ref.Set_Option ("a", "b");
+      T.Assert (Env.Ref.Get_Option ("a") = "b",
                 "Wrong option a (1)");
 
-      Set_Option (Env, "a", "c");
-      T.Assert (Get_Option (Env, "a") = "c",
+      Env.Ref.Set_Option ("a", "c");
+      T.Assert (Env.Ref.Get_Option ("a") = "c",
                 "Wrong option a (2)");
-      T.Assert (Get_Option (Env, "a", "x") = "c",
+      T.Assert (Env.Ref.Get_Option ("a", "x") = "c",
                 "Wrong option a (3)");
 
-      T.Assert (Has_Option (Env, "a"), "Should have option a");
-      T.Assert (not Has_Option (Env, "none"), "Should not have option none");
+      T.Assert (Env.Ref.Has_Option ("a"), "Should have option a");
+      T.Assert (not Env.Ref.Has_Option ("none"),
+                "Should not have option none");
 
-      T.Assert (Get_Option (Env, "none", "a") = "a",
+      T.Assert (Env.Ref.Get_Option ("none", "a") = "a",
                 "Wrong default value Get_Option");
       declare
          procedure P;
          procedure P is begin
-            T.Assert (Get_Option (Env, "none") = "",
+            T.Assert (Env.Ref.Get_Option ("none") = "",
                       "Exception not raised");
          end P;
          procedure A is new Assert_Except (Test_Options, P);
       begin
          A (T, "Invalid_Option has not been raised in call to Get_Option",
-            Invalid_Option'Identity);
+            XReq.Environment.Invalid_Option'Identity);
       end;
 
    end Run;

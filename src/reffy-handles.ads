@@ -17,12 +17,14 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+
 generic
 
    type Object_Type (<>) is new Counted with private;
-   type Object_Ptr is access Object_Type;
+   type Object_Ptr is access all Object_Type'Class;
 
 package Reffy.Handles is
+
 
    Traces : constant Boolean := False;
 
@@ -32,6 +34,7 @@ package Reffy.Handles is
    procedure Set_New  (H : in out Handle; Obj : Object_Type);
    procedure Set      (H : in out Handle; Obj : Object_Ptr);
    function  Ref      (H : Handle) return Object_Ptr;
+   function  R        (H : Handle) return Object_Ptr renames Ref;
    function  Is_Null  (H : Handle) return Boolean;
    function  Is_Valid (H : Handle) return Boolean;
    function  Valid    (H : Handle) return Boolean renames Is_Valid;

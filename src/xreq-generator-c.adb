@@ -26,12 +26,12 @@ with XReqLib.String_Tables;
 with XReq.Step_Definitions;
 with XReq.Steps;
 with XReq.Args;
-with XReq.Language;
+with XReq.Language.Handles;
 
 use XReq.Step_Definitions;
 use XReq.Steps;
 use XReq.Args;
-use XReq.Language;
+use XReq.Language.Handles;
 
 package body XReq.Generator.C is
 
@@ -63,7 +63,7 @@ package body XReq.Generator.C is
 
    procedure Make      (Gen : out    C_Generator_Type;
                         Job : in     Job_Type;
-                        Env : in     Job_Environment)
+                        Env : in     Environment_Handle)
    is
       use Ada.Characters.Handling;
       use Ada.Directories;
@@ -76,7 +76,7 @@ package body XReq.Generator.C is
          Gen.Pool, To_Identifier (Pkgname),      Gen.Header_Name);
       Get_Unique_String (
          Gen.Pool, To_Identifier ("background"), Gen.Fn_Backgnd);
-      Basename := To_Unbounded_String (Compose (Out_Dir (Env),
+      Basename := To_Unbounded_String (Compose (Env.Ref.Out_Dir,
                   To_Lower (To_String (Gen.Header_Name))));
       Gen.H_File := Basename & ".h";
       Gen.C_File := Basename & ".c";
@@ -604,7 +604,7 @@ package body XReq.Generator.C is
       E           : Result_Scenario_Type;
       Num         : Positive := 1;
       Total_Steps : Natural := 0;
-      Lang        : constant Language_Ptr := Gen.Feature.Language.Ref;
+      Lang        : constant Language_Handle := Gen.Feature.Language;
    begin
       Gen.H.Put_Line ("#include <xreq.h>");
       Gen.H.New_Line;
@@ -614,16 +614,17 @@ package body XReq.Generator.C is
       Gen.C.Put_Line ("#include """ & Gen.Header_Name & ".h""");
       Gen.C.New_Line;
       Gen.C.New_Line;
-      Gen.C.Put_Line ("#define STR_Feature    " & C_String (Lang.Feature));
-      Gen.C.Put_Line ("#define STR_Background " & C_String (Lang.Background));
-      Gen.C.Put_Line ("#define STR_Scenario   " & C_String (Lang.Scenario));
+      Gen.C.Put_Line ("#define STR_Feature    " & C_String (Lang.R.Feature));
+      Gen.C.Put_Line ("#define STR_Background " &
+                                                 C_String (Lang.R.Background));
+      Gen.C.Put_Line ("#define STR_Scenario   " & C_String (Lang.R.Scenario));
       Gen.C.Put_Line ("#define STR_Outline    " &
-                                             C_String (Lang.Scenario_Outline));
-      Gen.C.Put_Line ("#define STR_Examples   " & C_String (Lang.Examples));
-      Gen.C.Put_Line ("#define STR_Given      " & C_String (Lang.Given));
-      Gen.C.Put_Line ("#define STR_When       " & C_String (Lang.When_K));
-      Gen.C.Put_Line ("#define STR_Then       " & C_String (Lang.Then_K));
-      Gen.C.Put_Line ("#define STR_And        " & C_String (Lang.And_K));
+                                           C_String (Lang.R.Scenario_Outline));
+      Gen.C.Put_Line ("#define STR_Examples   " & C_String (Lang.R.Examples));
+      Gen.C.Put_Line ("#define STR_Given      " & C_String (Lang.R.Given));
+      Gen.C.Put_Line ("#define STR_When       " & C_String (Lang.R.When_K));
+      Gen.C.Put_Line ("#define STR_Then       " & C_String (Lang.R.Then_K));
+      Gen.C.Put_Line ("#define STR_And        " & C_String (Lang.R.And_K));
       Gen.C.New_Line;
       Gen.C.Put_Line ("static void __feature (XReq_Format *format)");
       Gen.C.Put_Line ("{");
@@ -720,7 +721,7 @@ package body XReq.Generator.C is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment;
+                             Env  : in Environment_Handle;
                              Log  : in Logger_Ptr;
                              Make : in Boolean := False)
    is
@@ -729,8 +730,8 @@ package body XReq.Generator.C is
       use Generator_Vectors;
       use String_Vectors;
       use String_Sets;
-      Filename : constant String := Out_Dir (Env) & "/" & Name & ".c";
-      Mak_Name : constant String := Out_Dir (Env) & "/" & Name & ".Makefile";
+      Filename : constant String := Env.Ref.Out_Dir & "/" & Name & ".c";
+      Mak_Name : constant String := Env.Ref.Out_Dir & "/" & Name & ".Makefile";
       With_B   : Buffer_Type;
       Body_B   : Buffer_Type;
       Mak_B    : Buffer_Type;
@@ -817,11 +818,11 @@ package body XReq.Generator.C is
       while Has_Element (I) loop
          E := C_Generator_Ptr (Element (I));
          Include (Sources, To_Unbounded_String
-           (Goto_Path (Out_Dir (Env), To_String (E.C_File))));
+           (Goto_Path (Env.Ref.Out_Dir, To_String (E.C_File))));
          J := First (E.C_Steps);
          while Has_Element (J) loop
             Include (Sources, To_Unbounded_String
-              (Goto_Path (Out_Dir (Env), To_String (Element (J)))));
+              (Goto_Path (Env.Ref.Out_Dir, To_String (Element (J)))));
             Next (J);
          end loop;
          Next (I);
@@ -839,10 +840,12 @@ package body XReq.Generator.C is
       Mak_B.Put_Line ("OBJECTS_" & Name & " = $(SOURCES_" & Name & ":.c=.o)");
       Mak_B.New_Line;
       Mak_B.Put_Line ("CFLAGS += \");
-      for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
+      for I in First_Index (Env.Ref.Step_Dir) .. Last_Index (Env.Ref.Step_Dir)
+      loop
          Mak_B.Put ("  -I" &
-            Goto_Path (Out_Dir (Env), To_String (Element (Env.Step_Dir, I))));
-         if I < Last_Index (Env.Step_Dir) then
+                    Goto_Path (Env.Ref.Out_Dir,
+                               To_String (Element (Env.Ref.Step_Dir, I))));
+         if I < Last_Index (Env.Ref.Step_Dir) then
             Mak_B.Put (" \");
          end if;
          Mak_B.New_Line;
@@ -878,7 +881,7 @@ package body XReq.Generator.C is
          --  is newer than the .o file for less than a second.
          declare
             Arg1    : aliased String := "-C";
-            Arg2    : aliased String := Out_Dir (Env);
+            Arg2    : aliased String := Env.Ref.Out_Dir;
             Arg3    : aliased String := "-f";
             Arg4    : aliased String := Name & ".Makefile";
             Arg5    : aliased String := "-B";
@@ -890,7 +893,7 @@ package body XReq.Generator.C is
             Success : Boolean;
             Code    : Integer;
          begin
-            Log.Put_Line ("Build: make -C " & Out_Dir (Env) &
+            Log.Put_Line ("Build: make -C " & Env.Ref.Out_Dir &
                                      " -f " & Name & ".Makefile -B");
             Spawn ("make", Args, Buffer, Success, Code);
             Log.Put_Line (Buffer);

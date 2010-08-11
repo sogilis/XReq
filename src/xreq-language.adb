@@ -17,6 +17,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+--  with Ada.Unchecked_Deallocation;
+
 package body XReq.Language is
 
    procedure Set_Type (L : in out Language_Type; Typ : in String) is
@@ -101,5 +103,12 @@ package body XReq.Language is
    begin
       return "'''";
    end StrDouble;
+
+   --  procedure Free (X : in out Language_Ptr) is
+   --     procedure Dealloc is new Ada.Unchecked_Deallocation
+   --       (Language_Type, Language_Ptr);
+   --  begin
+   --     Dealloc (X);
+   --  end Free;
 
 end XReq.Language;

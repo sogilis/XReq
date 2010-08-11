@@ -52,7 +52,7 @@ package body XReq.Job is
    -------------------------
 
    procedure Run (Job           : in out Job_Type;
-                  Env           : in out Job_Environment;
+                  Env           : in out Environment_Handle;
                   Logger        : in     Logger_Ptr;
                   Add_Steps_Pkg : in     String  := "";
                   Step_Matching : in     Boolean := False)
@@ -62,8 +62,8 @@ package body XReq.Job is
       Missing_Steps : String_Set;
       S : Step_Definitions_Ptr;
    begin
-      if not Env.Loaded then
-         raise Invalid_Environment with "Must call Load (Env) first";
+      if not Env.Ref.Loaded then
+         raise Environment.Invalid_Environment with "Must call Env.Load first";
       end if;
 
       F.Make (Feature_File (Job));
@@ -73,16 +73,16 @@ package body XReq.Job is
 
       --  No Parse_Error
       Logger.Put_Line ("Compile: " & To_String (Job.Feature_File));
-      Job.Result.Process_Feature (Job.Feature, Env.Steps, Logger,
+      Job.Result.Process_Feature (Job.Feature, Env.Ref.Steps, Logger,
                                   Missing_Steps, Step_Matching);
 
       if Add_Steps_Pkg /= "" and not Is_Empty (Missing_Steps) then
-         Env.Steps (S);
+         Env.Ref.Steps (S);
          Add_Steps (S.all, Missing_Steps, Add_Steps_Pkg,
-                      First_Step_Dir (Env), Env.Language, Logger);
+                      Env.Ref.First_Step_Dir, Env.Ref.Language, Logger);
          Clear (Missing_Steps);
          Job.Result.Set_Fail (False);
-         Job.Result.Process_Feature (Job.Feature, Env.Steps, Logger,
+         Job.Result.Process_Feature (Job.Feature, Env.Ref.Steps, Logger,
                                      Missing_Steps, Step_Matching);
       end if;
 
@@ -104,7 +104,7 @@ package body XReq.Job is
    --  Init  --
    ------------
 
-   procedure Init (Env          : out    Job_Environment;
+   procedure Init (Env          : out    Environment_Handle;
                    Job          : out    Job_Type;
                    Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
@@ -112,13 +112,13 @@ package body XReq.Job is
                                          Empty_String_Vector;
                    Out_Dir      : in     String := "")
    is
-      E : Job_Environment;
+      E : constant Environment_Handle := Create;
       J : Job_Type;
    begin
       Make (J, Feature_File);
-      Make (E, Step_Dir, Out_Dir);
-      Fill_Missing (E, Feature_File);
-      Load (E, Logger);
+      E.Ref.Make (Step_Dir, Out_Dir);
+      E.Ref.Fill_Missing (Feature_File);
+      E.Ref.Load (Logger);
       Env := E;
       Job := J;
    end Init;

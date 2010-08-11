@@ -26,13 +26,13 @@ use XReq.Lang;
 package body XReq.Generator is
 
    procedure Generate (Job : in  Job_Type;
-                       Env : in  Job_Environment;
+                       Env : in  Environment_Handle;
                        Log : in  Logger_Ptr;
                        Gen : out Generator_Ptr)
    is
       G : Generator_Ptr;
    begin
-      case Env.Language is
+      case Env.Ref.Language is
          when Lang_Ada =>
             G := new Ada05.Ada_Generator_Type;
          when Lang_C =>
@@ -44,7 +44,7 @@ package body XReq.Generator is
    end Generate;
 
    procedure Generate  (Job : in  Job_Type;
-                        Env : in  Job_Environment;
+                        Env : in  Environment_Handle;
                         Log : in  Logger_Ptr)
    is
       Gen : Generator_Ptr;
@@ -55,12 +55,12 @@ package body XReq.Generator is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment;
-                             Log  : in  Logger_Ptr;
+                             Env  : in Environment_Handle;
+                             Log  : in Logger_Ptr;
                              Make : in Boolean := False)
    is
    begin
-      case Env.Language is
+      case Env.Ref.Language is
          when Lang_Ada =>
             Ada05.Generate_Suite (Gens, Name, Env, Log, Make);
          when Lang_C =>

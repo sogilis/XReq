@@ -19,6 +19,7 @@
 
 with Ada.Directories;
 with Ada.Containers;
+--  with Ada.Unchecked_Deallocation;
 
 use Ada.Directories;
 
@@ -34,7 +35,7 @@ package body XReq.Environment is
                            Out_Dir  : in     String := "";
                            Language : in     Language_Type := Lang_Ada) is
    begin
-      Env := (
+      Env := (Reffy.Counted_Type with
          Step_Dir => Step_Dir,
          Out_Dir  => To_Unbounded_String (Out_Dir),
          Language => Language,
@@ -254,15 +255,26 @@ package body XReq.Environment is
       Steps := Env.Steps'Unchecked_Access;
    end Steps;
 
-   -----------------------------------
-   --  Job_Environment  --  UnLoad  --
-   -----------------------------------
+   -------------------------------------
+   --  Job_Environment  --  Finalize  --
+   -------------------------------------
 
-   procedure UnLoad (Env : in out Job_Environment) is
+   procedure Finalize (Env : in out Job_Environment) is
    begin
       Free (Env.Steps);
       Env := Null_Job_Environment;
-   end UnLoad;
+   end Finalize;
+
+   ------------
+   --  Free  --
+   ------------
+
+   --  procedure Free (X : in out Job_Environment_Ptr) is
+   --     procedure Dealloc is new Ada.Unchecked_Deallocation
+   --       (Job_Environment, Job_Environment_Ptr);
+   --  begin
+   --     Dealloc (X);
+   --  end Free;
 
 end XReq.Environment;
 

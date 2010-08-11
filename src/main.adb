@@ -30,6 +30,7 @@ with XReq.CLI;
 with XReq.Lang;
 with XReq.Job;
 with XReq.Environment;
+with XReq.Environment.Handles;
 with XReq.Generator;
 
 use Ada.Text_IO;
@@ -43,7 +44,7 @@ use XReqLib;
 use XReq;
 use XReq.Lang;
 use XReq.Job;
-use XReq.Environment;
+use XReq.Environment.Handles;
 use XReq.Generator;
 
 procedure Main is
@@ -53,7 +54,7 @@ procedure Main is
 
    Logger     : Logger_Ptr := Logger_Ptr (New_Standard_Logger);
    Logger2    : Logger_Ptr := Logger;
-   Env        : Job_Environment;
+   Env        : Environment_Handle := Create;
    Job        : Job_Type;
    Quit       : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
@@ -159,11 +160,10 @@ begin
             Idx_Eq  : constant Natural := Index (Op_Full, "=");
          begin
             if Idx_Eq in Op_Full'Range then
-               Set_Option (Env,
-                           Op_Full (Op_Full'First .. Idx_Eq - 1),
-                           Op_Full (Idx_Eq + 1    .. Op_Full'Last));
+               Env.Ref.Set_Option (Op_Full (Op_Full'First .. Idx_Eq - 1),
+                                   Op_Full (Idx_Eq + 1    .. Op_Full'Last));
             else
-               raise Invalid_Option;
+               raise XReq.Environment.Invalid_Option;
             end if;
          end;
 
@@ -189,12 +189,11 @@ begin
                Next (J);
             end loop;
             New_Line;
-            XReq.Environment.Make (Env,
+            Env.Ref.Make (
                Step_Dir => Step_Dir,
                Out_Dir  => To_String (Out_Dir),
                Language => Language);
-            Load (Env, Logger,
-               Fill_Steps => True);
+            Env.Ref.Load (Logger, Fill_Steps => True);
          else
             Put_Line (Standard_Error, "Missing feature filename");
             XReq.CLI.Help;
@@ -222,7 +221,7 @@ begin
       --  Get Parameter  --
       ---------------------
 
-      XReq.Environment.Make (Env,
+      Env.Ref.Make (
          Step_Dir => Step_Dir,
          Out_Dir  => To_String (Out_Dir),
          Language => Language);
@@ -230,8 +229,8 @@ begin
       XReq.Job.Make (Job,
          Feature_File => To_String (Arg));
 
-      Fill_Missing (Env, Feature_File (Job));
-      Load (Env, Logger, Fill_Steps);
+      Env.Ref.Fill_Missing (Feature_File (Job));
+      Env.Ref.Load (Logger, Fill_Steps);
 
       ------------------------
       --  Compile Features  --
@@ -309,8 +308,6 @@ begin
    --  Free memory  --
    -------------------
 
-   UnLoad (Env);
-
    declare
       I : Generator_Vectors.Cursor := First (Generators);
       E : Generator_Ptr;
@@ -347,7 +344,7 @@ exception
       XReq.CLI.Help;
       Set_Exit_Status (Failure);
 
-   when Invalid_Option =>
+   when XReq.Environment.Invalid_Option =>
       Free (Logger);
       Put_Line (Standard_Error, "Invalid configuration " & Parameter);
       XReq.CLI.Help;

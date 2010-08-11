@@ -25,8 +25,12 @@ with Ada.Unchecked_Deallocation;
 
 package body Reffy.Handles is
 
+   procedure Free is
+      new Ada.Unchecked_Deallocation (Object_Type'Class, Object_Ptr);
+
    procedure Log (H : Handle; Msg : String);
    function  Ptr (Obj : Object_Ptr) return String;
+
 
    procedure Log (H : Handle; Msg : String) is
       use Ada.Text_IO;
@@ -45,7 +49,7 @@ package body Reffy.Handles is
       end if;
    end Ptr;
 
-   procedure Free is new Ada.Unchecked_Deallocation (Object_Type, Object_Ptr);
+   ----------------------------------------------------------------------------
 
    procedure IncRef (H : in out Handle) is
    begin

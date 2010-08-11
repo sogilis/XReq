@@ -21,11 +21,11 @@ with Ada.Unchecked_Deallocation;
 with Ada.Containers.Vectors;
 with Util.IO;
 with XReq.Job;
-with XReq.Environment;
+with XReq.Environment.Handles;
 
 use Util.IO;
 use XReq.Job;
-use XReq.Environment;
+use XReq.Environment.Handles;
 
 package XReq.Generator is
 
@@ -33,17 +33,17 @@ package XReq.Generator is
    type Generator_Ptr is access all Generator_Type'Class;
 
    procedure Generate  (Job : in  Job_Type;
-                        Env : in  Job_Environment;
+                        Env : in  Environment_Handle;
                         Log : in  Logger_Ptr);
 
    procedure Generate  (Job : in  Job_Type;
-                        Env : in  Job_Environment;
+                        Env : in  Environment_Handle;
                         Log : in  Logger_Ptr;
                         Gen : out Generator_Ptr);
 
    procedure Make      (Gen : out Generator_Type;
                         Job : in  Job_Type;
-                        Env : in  Job_Environment) is abstract;
+                        Env : in  Environment_Handle) is abstract;
 
    function  Full_Name (Gen : in  Generator_Type) return String is abstract;
 
@@ -60,8 +60,8 @@ package XReq.Generator is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment;
-                             Log  : in  Logger_Ptr;
+                             Env  : in Environment_Handle;
+                             Log  : in Logger_Ptr;
                              Make : in Boolean := False);
 
 end XReq.Generator;

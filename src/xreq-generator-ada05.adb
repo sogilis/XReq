@@ -27,7 +27,7 @@ with XReqLib.String_Tables;
 with XReq.Step_Definitions;
 with XReq.Steps;
 with XReq.Args;
-with XReq.Language;
+with XReq.Language.Handles;
 
 use Ada.Directories;
 use GNAT.OS_Lib;
@@ -35,7 +35,7 @@ use Util.IO;
 use XReq.Step_Definitions;
 use XReq.Steps;
 use XReq.Args;
-use XReq.Language;
+use XReq.Language.Handles;
 
 package body XReq.Generator.Ada05 is
 
@@ -66,7 +66,7 @@ package body XReq.Generator.Ada05 is
 
    procedure Make     (Gen : out    Ada_Generator_Type;
                        Job : in     Job_Type;
-                       Env : in     Job_Environment)
+                       Env : in     Environment_Handle)
    is
       use Ada.Characters.Handling;
       Basename    : Unbounded_String;
@@ -78,7 +78,7 @@ package body XReq.Generator.Ada05 is
          Gen.Pool, To_Identifier (Pkgname),      Gen.Id_Pkgname);
       Get_Unique_String (
          Gen.Pool, To_Identifier ("Background"), Gen.Fn_Backgnd);
-      Basename := To_Unbounded_String (Compose (Out_Dir (Env),
+      Basename := To_Unbounded_String (Compose (Env.Ref.Out_Dir,
                   To_Lower (To_String (Gen.Id_Pkgname))));
       Gen.Ads_File := Basename & ".ads";
       Gen.Adb_File := Basename & ".adb";
@@ -651,9 +651,8 @@ package body XReq.Generator.Ada05 is
       E           : Result_Scenario_Type;
       Num         : Positive := 1;
       Total_Steps : Natural := 0;
-      Lang        : constant Language_Ptr := Gen.Feature.Language.Ref;
+      Lang        : constant Language_Handle := Gen.Feature.Language;
    begin
-      Assert (Lang /= null);
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");
       Gen.Ads.Put_Line ("with XReqLib.Args;");
@@ -669,23 +668,23 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.Indent;
       Gen.Adb.New_Line;
       Gen.Adb.Put_Line ("Str_Feature    : constant String := " &
-                                          Ada_String (Lang.Feature) & ";");
+                                          Ada_String (Lang.R.Feature) & ";");
       Gen.Adb.Put_Line ("Str_Background : constant String := " &
-                                          Ada_String (Lang.Background) & ";");
+                                         Ada_String (Lang.R.Background) & ";");
       Gen.Adb.Put_Line ("Str_Scenario   : constant String := " &
-                                          Ada_String (Lang.Scenario) & ";");
+                                          Ada_String (Lang.R.Scenario) & ";");
       Gen.Adb.Put_Line ("Str_Outline    : constant String := " &
-                                     Ada_String (Lang.Scenario_Outline) & ";");
+                                   Ada_String (Lang.R.Scenario_Outline) & ";");
       Gen.Adb.Put_Line ("Str_Examples   : constant String := " &
-                                          Ada_String (Lang.Examples) & ";");
+                                          Ada_String (Lang.R.Examples) & ";");
       Gen.Adb.Put_Line ("Str_Given      : constant String := " &
-                                          Ada_String (Lang.Given) & ";");
+                                          Ada_String (Lang.R.Given) & ";");
       Gen.Adb.Put_Line ("Str_When       : constant String := " &
-                                          Ada_String (Lang.When_K) & ";");
+                                          Ada_String (Lang.R.When_K) & ";");
       Gen.Adb.Put_Line ("Str_Then       : constant String := " &
-                                          Ada_String (Lang.Then_K) & ";");
+                                          Ada_String (Lang.R.Then_K) & ";");
       Gen.Adb.Put_Line ("Str_And        : constant String := " &
-                                          Ada_String (Lang.And_K) & ";");
+                                          Ada_String (Lang.R.And_K) & ";");
       Gen.Adb.New_Line;
       Gen.Adb.Put_Line ("procedure Priv_Feature " &
                               "(Format : in out Format_Ptr);");
@@ -774,8 +773,8 @@ package body XReq.Generator.Ada05 is
 
    procedure Generate_Suite (Gens : in Generator_Vectors.Vector;
                              Name : in String;
-                             Env  : in Job_Environment;
-                             Log  : in  Logger_Ptr;
+                             Env  : in Environment_Handle;
+                             Log  : in Logger_Ptr;
                              Make : in Boolean := False)
    is
       procedure Put_GPR_With (Str : in String);
@@ -783,8 +782,8 @@ package body XReq.Generator.Ada05 is
       use Generator_Vectors;
       use String_Vectors;
       use Ada.Strings.Fixed;
-      Filename : constant String := Out_Dir (Env) & "/" & Name & ".adb";
-      Gpr_Name : constant String := Out_Dir (Env) & "/" & Name & ".gpr";
+      Filename : constant String := Env.Ref.Out_Dir & "/" & Name & ".adb";
+      Gpr_Name : constant String := Env.Ref.Out_Dir & "/" & Name & ".gpr";
       With_B   : Buffer_Type;
       Body_B   : Buffer_Type;
       Gpr_B    : Buffer_Type;
@@ -895,7 +894,7 @@ package body XReq.Generator.Ada05 is
 
       Gpr_B.Put_Line ("with ""xreqlib"";");
       Split_String_Start (Splitter,
-                          Get_Option (Env, "ada.gpr.with", ""), ",");
+                          Env.Ref.Get_Option ("ada.gpr.with", ""), ",");
       while Split_String_Has_Next (Splitter) loop
          Put_GPR_With (Split_String_Current (Splitter));
          Split_String_Next (Splitter);
@@ -908,13 +907,15 @@ package body XReq.Generator.Ada05 is
       Gpr_B.Put_Indent;
       Gpr_B.Put      ("for Source_Dirs use ("".""");
 
-      for I in First_Index (Env.Step_Dir) .. Last_Index (Env.Step_Dir) loop
-         Gpr_B.Put (", """ & Goto_Path (Out_Dir (Env),
-                                        To_String (Element (Env.Step_Dir, I)))
+      for I in First_Index (Env.Ref.Step_Dir) .. Last_Index (Env.Ref.Step_Dir)
+      loop
+         Gpr_B.Put (", """ &
+                    Goto_Path (Env.Ref.Out_Dir,
+                               To_String (Element (Env.Ref.Step_Dir, I)))
                     & """");
       end loop;
       Split_String_Start (Splitter,
-                          Get_Option (Env, "ada.gpr.srcdir", ""), ",");
+                          Env.Ref.Get_Option ("ada.gpr.srcdir", ""), ",");
       while Split_String_Has_Next (Splitter) loop
          Put_GPR_Path (Split_String_Current (Splitter));
          Split_String_Next (Splitter);
@@ -946,7 +947,7 @@ package body XReq.Generator.Ada05 is
          Generated : Boolean;
       begin
          Start_Search (Results,
-                       Directory => Out_Dir (Env),
+                       Directory => Env.Ref.Out_Dir,
                        Pattern   => "*.ad[bs]",
                        Filter    => (Ordinary_File => True, others => False));
          while More_Entries (Results) loop
@@ -964,7 +965,8 @@ package body XReq.Generator.Ada05 is
             if not Generated then
                declare
                   File     : constant String :=
-                             Compose (Out_Dir (Env), Simple_Name (Dir_Entry));
+                             Compose (Env.Ref.Out_Dir,
+                                      Simple_Name (Dir_Entry));
                   File_O   : constant String :=
                              File (File'First .. File'Last - 3) & "o";
                   File_ALI : constant String :=
