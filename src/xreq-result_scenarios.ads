@@ -60,7 +60,7 @@ package XReq.Result_Scenarios is
                                                return String;
    procedure Process_Scenario (Res           : out    Result_Scenario_Type;
                                Scenario      : in     Scenario_Type;
-                               Steps         : in     Step_Definitions_Type;
+                               Steps         : in     Step_File_List_Type;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;
                                Missing_Steps : in out String_Set;

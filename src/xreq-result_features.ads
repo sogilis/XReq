@@ -58,7 +58,7 @@ package XReq.Result_Features is
                                               return String;
    procedure Process_Feature (Res           : out    Result_Feature_Type;
                               Feature       : in     Generic_Feature_Ptr;
-                              Steps         : in     Step_Definitions_Type;
+                              Steps         : in     Step_File_List_Type;
                               Log           : in     Logger_Ptr;
                               Missing_Steps : in out String_Set;
                               Step_Matching : in     Boolean := False);

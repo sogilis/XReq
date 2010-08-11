@@ -83,7 +83,7 @@ package body XReq.Result_Steps is
 
    procedure Process_Step     (Res           : out    Result_Step_Type;
                                Stanza        : in     Step_Type;
-                               Steps         : in     Step_Definitions_Type;
+                               Steps         : in     Step_File_List_Type;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;
                                Step_Matching : in     Boolean;

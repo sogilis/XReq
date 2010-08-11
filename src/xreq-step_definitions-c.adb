@@ -17,7 +17,7 @@ package body XReq.Step_definitions.C is
    --  Parse_Directory  --
    -----------------------
 
-   procedure Parse_Directory (Steps      : in out Step_Definitions_Type;
+   procedure Parse_Directory (Steps      : in out Step_File_List_Type;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False)

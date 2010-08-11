@@ -67,7 +67,7 @@ package body XReq.Step_Definitions.Ada05 is
    --  Parse_Directory  --
    -----------------------
 
-   procedure Parse_Directory (Steps      : in out Step_Definitions_Type;
+   procedure Parse_Directory (Steps      : in out Step_File_List_Type;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False)
@@ -549,7 +549,7 @@ package body XReq.Step_Definitions.Ada05 is
    --  Add_Steps  --
    -----------------
 
-   procedure Add_Steps       (Steps      : in out Step_Definitions_Type;
+   procedure Add_Steps       (Steps      : in out Step_File_List_Type;
                               New_Steps  : in     String_Set;
                               Step_Pkg   : in     String;
                               Directory  : in     String;

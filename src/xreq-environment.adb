@@ -239,7 +239,7 @@ package body XReq.Environment is
    -------------
 
    function  Steps        (Env        : in     Job_Environment)
-                                        return Step_Definitions_Type is
+                                        return Step_File_List_Type is
    begin
       return Env.Steps;
    end Steps;
@@ -249,7 +249,7 @@ package body XReq.Environment is
    -------------
 
    procedure Steps        (Env        : in out Job_Environment;
-                           Steps      : out  Step_Definitions_Ptr) is
+                           Steps      : out  Step_File_List_Ptr) is
    begin
       --  Tempoary measure until we can return a Handle
       Steps := Env.Steps'Unchecked_Access;

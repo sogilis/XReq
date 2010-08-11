@@ -84,9 +84,9 @@ package XReq.Environment is
    function  Loaded       (Env        : in     Job_Environment)
                                         return Boolean;
    function  Steps        (Env        : in     Job_Environment)
-                                        return Step_Definitions_Type;
+                                        return Step_File_List_Type;
    procedure Steps        (Env        : in out Job_Environment;
-                           Steps      : out    Step_Definitions_Ptr);
+                           Steps      : out    Step_File_List_Ptr);
 
    overriding
    procedure Finalize     (Env        : in out Job_Environment);
@@ -101,7 +101,7 @@ private
       record
          Step_Dir  : String_Vector;
          Out_Dir   : Unbounded_String;
-         Steps     : aliased Step_Definitions_Type;
+         Steps     : aliased Step_File_List_Type;
          Loaded    : Boolean := False;
          Language  : Language_Type := Lang_Ada;
          Options   : Options_Pkg.Map;

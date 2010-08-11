@@ -118,7 +118,7 @@ package body Test_Suite.Result is
 
       Result        : Result_Scenario_Type;
       Scenario      : Scenario_Type;
-      Steps         : Step_Definitions_Type
+      Steps         : Step_File_List_Type
                     := Load ("tests/features/step_definitions", Lang_Ada);
       Ideal_Result  : Result_Steps.Vector;
       A, B          : Result_Step_Type;
@@ -196,7 +196,7 @@ package body Test_Suite.Result is
       Expected : Result_Feature_Type;
       Result   : Result_Feature_Type;
       Feature  : Feature_File_Ptr;
-      Steps    : Step_Definitions_Type;
+      Steps    : Step_File_List_Type;
       Exp_Str  : constant String :=
                "Feature Sample"                     & CRLF &
                "   Background "                     & CRLF &
@@ -327,7 +327,7 @@ package body Test_Suite.Result is
       use XReqLib.String_Tables;
       Scenario  : Scenario_Type := Null_Scenario_Outline;
       Result    : Result_Scenario_Type;
-      Steps     : Step_Definitions_Type
+      Steps     : Step_File_List_Type
                 := Load ("tests/features/step_definitions", Lang_Ada);
       Errors    : Boolean;
       I         : Natural;

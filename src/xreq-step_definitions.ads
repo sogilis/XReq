@@ -36,6 +36,8 @@ use XReq.Steps;
 
 package XReq.Step_Definitions is
 
+   --  Result values for the step matching algorithm  -------------------------
+
    Ambiguous_Match : exception;
 
    type Match_Location is  --  GCOV_IGNORE
@@ -55,15 +57,12 @@ package XReq.Step_Definitions is
          Position  : Position_Type;
       end record;
 
-   ----------------------
+   -------------------------------  abstract type  ----------------------------
    --  Step_File_Type  --
    ----------------------
 
    type Step_File_Type is abstract tagged private;
    type Step_File_Ptr  is access all Step_File_Type'Class;
-
-   package Step_Definition_Vectors is
-      new Ada.Containers.Vectors (Natural, Step_File_Ptr, "=");
 
    Unparsed_Step : exception;
 
@@ -90,48 +89,51 @@ package XReq.Step_Definitions is
    procedure Free      (S : in out Step_File_Ptr);
 
 
-   ------------------
-   --  Steps_Type  --
-   ------------------
+   ----------------------------------------------------------------------------
+   --  Step_Definition_Files_Type  --
+   ----------------------------------
 
-   subtype Step_Definitions_Type is     --  GCOV_IGNORE
+   package Step_Definition_Vectors is
+      new Ada.Containers.Vectors (Natural, Step_File_Ptr, "=");
+
+   subtype Step_File_List_Type is     --  GCOV_IGNORE
       Step_Definition_Vectors.Vector;   --  GCOV_IGNORE
-   type Step_Definitions_Ptr is access all Step_Definitions_Type;
+   type Step_File_List_Ptr is access all Step_File_List_Type;
 
    function  Load      (Directory  : in     String;
                         Language   : in     Language_Type)
-                                     return Step_Definitions_Type;
+                                     return Step_File_List_Type;
    --  IMPORTANT: deallocate Steps_Type
 
-   procedure Load      (Steps      : in out Step_Definitions_Type;
+   procedure Load      (Steps      : in out Step_File_List_Type;
                         Logger     : in     Logger_Ptr;
                         Directory  : in     String;
                         Language   : in     Language_Type;
                         Fill_Steps : in     Boolean := False);
    --  IMPORTANT: deallocate Steps_Type
 
-   procedure Add_Steps (Steps      : in out Step_Definitions_Type;
+   procedure Add_Steps (Steps      : in out Step_File_List_Type;
                         New_Steps  : in     String_Set;
                         Step_Pkg   : in     String;
                         Directory  : in     String;
                         Language   : in     Language_Type;
                         Logger     : in     Logger_Ptr);
 
-   function  Contains  (Steps      : in  Step_Definitions_Type;
+   function  Contains  (Steps      : in  Step_File_List_Type;
                         Stanza     : in  Step_Type) return Boolean;
-   function  Find      (Steps      : in  Step_Definitions_Type;
+   function  Find      (Steps      : in  Step_File_List_Type;
                         Stanza     : in  Step_Type) return String;
-   function  Find      (Steps      : in  Step_Definitions_Type;
+   function  Find      (Steps      : in  Step_File_List_Type;
                         Stanza     : in  Step_Type) return Step_Match_Type;
-   procedure Find      (Steps      : in  Step_Definitions_Type;
+   procedure Find      (Steps      : in  Step_File_List_Type;
                         Stanza     : in  Step_Type;
                         Proc       : out Unbounded_String;
                         Matches    : out Match_Vectors.Vector;
                         Found      : out Boolean);
 
-   procedure Free      (Steps      : in out Step_Definitions_Type);
+   procedure Free      (Steps      : in out Step_File_List_Type);
 
-private
+private  ----------------------------------------------------------------------
 
    type Pattern_Matcher_Ptr is                  --  GCOV_IGNORE
       access all GNAT.Regpat.Pattern_Matcher;   --  GCOV_IGNORE

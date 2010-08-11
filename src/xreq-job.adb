@@ -60,7 +60,7 @@ package body XReq.Job is
       use String_Sets;
       F : constant Feature_File_Ptr := new Feature_File_Type;
       Missing_Steps : String_Set;
-      S : Step_Definitions_Ptr;
+      S : Step_File_List_Ptr;
    begin
       if not Env.Ref.Loaded then
          raise Environment.Invalid_Environment with "Must call Env.Load first";

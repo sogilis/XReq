@@ -203,7 +203,7 @@ package body XReq.Step_Definitions is
    --  Load  --
    ------------
 
-   procedure Load (Steps      : in out Step_Definitions_Type;
+   procedure Load (Steps      : in out Step_File_List_Type;
                    Logger     : in     Logger_Ptr;
                    Directory  : in     String;
                    Language   : in     Language_Type;
@@ -223,8 +223,8 @@ package body XReq.Step_Definitions is
 
    function  Load (Directory : in     String;
                    Language  : in     Language_Type)
-                               return Step_Definitions_Type is
-      Result : Step_Definitions_Type;
+                               return Step_File_List_Type is
+      Result : Step_File_List_Type;
    begin
       Load (Result, Null_Logger, Directory, Language);
       return Result;
@@ -234,7 +234,7 @@ package body XReq.Step_Definitions is
    --  Add_Steps  --
    -----------------
 
-   procedure Add_Steps (Steps      : in out Step_Definitions_Type;
+   procedure Add_Steps (Steps      : in out Step_File_List_Type;
                         New_Steps  : in     String_Set;
                         Step_Pkg   : in     String;
                         Directory  : in     String;
@@ -255,7 +255,7 @@ package body XReq.Step_Definitions is
    --  Contains  --
    ----------------
 
-   function  Contains  (Steps     : in Step_Definitions_Type;
+   function  Contains  (Steps     : in Step_File_List_Type;
                         Stanza    : in Step_Type) return Boolean
    is
    begin
@@ -266,7 +266,7 @@ package body XReq.Step_Definitions is
    --  Find  --
    ------------
 
-   function  Find      (Steps     : in Step_Definitions_Type;
+   function  Find      (Steps     : in Step_File_List_Type;
                         Stanza    : in Step_Type) return String
    is
       Proc    : Unbounded_String;
@@ -285,7 +285,7 @@ package body XReq.Step_Definitions is
    --  Find  --
    ------------
 
-   function  Find      (Steps     : in Step_Definitions_Type;
+   function  Find      (Steps     : in Step_File_List_Type;
                         Stanza    : in Step_Type) return Step_Match_Type
    is
       use Step_Definition_Vectors;
@@ -313,7 +313,7 @@ package body XReq.Step_Definitions is
    --  Find  --
    ------------
 
-   procedure Find      (Steps     : in  Step_Definitions_Type;
+   procedure Find      (Steps     : in  Step_File_List_Type;
                         Stanza    : in  Step_Type;
                         Proc      : out Unbounded_String;
                         Matches   : out Match_Vectors.Vector;
@@ -332,7 +332,7 @@ package body XReq.Step_Definitions is
    --  Free  --
    ------------
 
-   procedure Free (Steps : in out Step_Definitions_Type) is
+   procedure Free (Steps : in out Step_File_List_Type) is
       use Step_Definition_Vectors;
       I : Step_Definition_Vectors.Cursor := First (Steps);
       E : Step_File_Ptr;
