@@ -400,7 +400,10 @@ package body XReq.Features is
             if Detect_Keyword (Sep) and then
                Trimed_Suffix (Line_S, Idx_Data) = ""
             then
-               Head (Res, Length (Res) - 1);
+               --  Trim last new line character
+               if Length (Res) > 0 then
+                  Head (Res, Length (Res) - 1);
+               end if;
                Continue := False;
 
             else
