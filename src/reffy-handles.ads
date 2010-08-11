@@ -24,8 +24,6 @@ generic
 
 package Reffy.Handles is
 
-   Traces : constant Boolean := False;
-
    type Handle is new Ada.Finalization.Controlled with private;
 
    procedure UnRef    (H : in out Handle);
@@ -38,7 +36,7 @@ package Reffy.Handles is
    procedure IncRef (H : in out Handle);
    procedure DecRef (H : in out Handle);
 
-   procedure Initialize (Object : in out Handle);
+   procedure Initialize (Object : in out Handle) is null;
    procedure Adjust     (Object : in out Handle);
    procedure Finalize   (Object : in out Handle);
 

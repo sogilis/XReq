@@ -18,68 +18,29 @@
 -------------------------------------------------------------------------------
 
 
-with System;
-with System.Address_Image;
-with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
 
 package body Reffy.Handles is
-
-   procedure Log (H : Handle; Msg : String);
-   function  Ptr (Obj : Object_Ptr) return String;
-
-   procedure Log (H : Handle; Msg : String) is
-      use Ada.Text_IO;
-   begin
-      if not Traces then return; end if;
-      Put_Line ("[Reffy.Handles] " & System.Address_Image (H'Address) &
-                " -> " & Ptr (H.Pointer) & " " & Msg);
-   end Log;
-
-   function  Ptr (Obj : Object_Ptr) return String is
-   begin
-      if Obj = null then
-         return System.Address_Image (System.Null_Address);
-      else
-         return System.Address_Image (Obj.all'Address);
-      end if;
-   end Ptr;
 
    procedure Free is new Ada.Unchecked_Deallocation (Object_Type, Object_Ptr);
 
    procedure IncRef (H : in out Handle) is
    begin
-      Log (H, "IncRef");
       H.Pointer.RefChange (1);
    end IncRef;
 
    procedure DecRef (H : in out Handle) is
    begin
-      Log (H, "DecRef");
       H.Pointer.RefChange (-1);
       if H.Pointer.Ref = 0 then
-         Log (H, "Free (DecRef)");
          Free (H.Pointer);
          H.Pointer := null;
       end if;
    end DecRef;
 
-   procedure Initialize (Object : in out Handle) is
-   begin
-      Log (Object, "Initialize");
-   end Initialize;
-
-   procedure Adjust     (Object : in out Handle) is
-   begin
-      Log (Object, "Adjust");
-      if Object.Pointer /= null then
-         Object.IncRef;
-      end if;
-   end Adjust;
-
+   procedure Adjust     (Object : in out Handle) renames IncRef;
    procedure Finalize   (Object : in out Handle) is
    begin
-      Log (Object, "Finalize");
       if Object.Pointer /= null then
          Object.DecRef;
       end if;
@@ -87,7 +48,6 @@ package body Reffy.Handles is
 
    procedure UnRef  (H : in out Handle) is
    begin
-      Log (H, "UnRef");
       if H.Pointer /= null then
          H.DecRef;
          H.Pointer := null;
@@ -96,7 +56,6 @@ package body Reffy.Handles is
 
    procedure Set (H : in out Handle; Obj : Object_Ptr) is
    begin
-      Log (H, "Set " & Ptr (Obj));
       if H.Pointer /= null then
          H.DecRef;
       end if;
@@ -124,7 +83,6 @@ package body Reffy.Handles is
    begin
       H.Pointer := Obj;
       H.IncRef;
-      Log (H, "Create");
       return H;
    end Create;
 
