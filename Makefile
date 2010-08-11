@@ -174,6 +174,7 @@ bin/xreq.dbg: lib/debug/libxreqlib.$(LIBEXT)
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=debug
 
+
 bin/xreq: bin/xreq.$(CONFIG)
 	@echo "LINK    $@"
 	-rm -f bin/xreq
@@ -185,6 +186,10 @@ lib/gps/libxreqgps.so: dir
 	#$(MAKE) -C src/gps libgprcustom.so && mv src/gps/libgprcustom.so $@
 
 gps-plugin: lib/gps/libxreqgps.so
+
+bin/unit_tests: bin/unit_tests.dbg
+	@echo "LINK    $@"
+	ln -s -f unit_tests.dbg $@
 
 bin/unit_tests.dbg: dir
 	@echo "GNAT    BUILD   $@"
@@ -212,9 +217,13 @@ bin/feature_tests.cov: bin/xreq features/*.feature
 	bin/xreq $(XREQ_FLAGS) -m -x feature_tests -o features/tests/cov features/*.feature
 	$(CP) features/tests/cov/feature_tests $@
 
-bin/unit_tests: bin/unit_tests.dbg
-	@echo "LINK    $@"
-	ln -s -f unit_tests.dbg $@
+### gprbuild targets are phony ###
+.PHONY: lib/debug/libxreq.so lib/release/libxreq.so lib/coverage/libxreq.so
+.PHONY: lib/debug/libxreqlib.so lib/release/libxreqlib.so lib/coverage/libxreqlib.so
+.PHONY: lib/debug/libxreqlib.a lib/release/libxreqlib.a lib/coverage/libxreqlib.a
+.PHONY: bin/xreq.cov bin/xreq.rel bin/xreq.dbg
+.PHONY: bin/unit_tests.dbg bin/unit_tests.cov
+.PHONY: bin/feature_tests.dbg bin/feature_tests.cov
 
 tests: bin/unit_tests bin/feature_tests
 
