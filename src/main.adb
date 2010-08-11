@@ -54,7 +54,6 @@ procedure Main is
    Env        : Job_Environment;
    Job        : Job_Type;
    Quit       : Boolean := False;
-   Finished   : Boolean := False;
    Options    : constant String := "help h -help k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
               "-fill-steps -progress -partial -step-matching m -make " &
@@ -308,8 +307,6 @@ begin
    --  Free memory  --
    -------------------
 
-   Finished := True;
-
    UnLoad (Env);
 
    declare
@@ -361,13 +358,5 @@ exception
                 Exception_Message (Error));
       Set_Exit_Status (Failure);
    --  GCOV_IGNORE_END
-
-   when Error : others =>
-      if Finished then
-         Put_Line (Standard_Error, "XReq error while cleaning up");
-      else
-         Put_Line (Standard_Error, "(!!!) XReq Internal Error (!!!)");
-      end if;
-      Reraise_Occurrence (Error);
 
 end Main;
