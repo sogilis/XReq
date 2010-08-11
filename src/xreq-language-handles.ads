@@ -17,19 +17,14 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AUnit;
-with AUnit.Test_Suites;
+with Reffy.Handles;
 
-package Test_Suite.Smart is
+package XReq.Language.Handles is
 
-   procedure Add_Tests (Ret : in AUnit.Test_Suites.Access_Test_Suite);
+   package Handles_Pkg is new Reffy.Handles (Language_Type, Language_Ptr);
 
-   --  Test type
-   type Test_1 is new Test_Case_Type with null record;
+   subtype Language_Handle is Handles_Pkg.Handle;
 
-   --  Operation on Test_1
-   function  Name (T : in     Test_1) return String;
-   procedure Run  (T : in out Test_1);
+   function Create return Language_Handle;
 
-end Test_Suite.Smart;
-
+end XReq.Language.Handles;

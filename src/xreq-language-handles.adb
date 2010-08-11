@@ -17,34 +17,13 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Reffy;
+package body XReq.Language.Handles is
 
-package XReq.Language is
+   use Handles_Pkg;
 
-   type Language_Type is new Reffy.Counted_Type with private;
-   type Language_Ptr is access all Language_Type;
+   function Create return Language_Handle is
+   begin
+      return Create (new Language_Type);
+   end Create;
 
-   procedure Set_Type (L : in out Language_Type; Typ : in String);
-   Unknown_Type : exception;
-
-   function Feature          (L : in Language_Type) return String;
-   function Background       (L : in Language_Type) return String;
-   function Scenario         (L : in Language_Type) return String;
-   function Scenario_Outline (L : in Language_Type) return String;
-   function Examples         (L : in Language_Type) return String;
-   function Given            (L : in Language_Type) return String;
-   function When_K           (L : in Language_Type) return String;
-   function Then_K           (L : in Language_Type) return String;
-   function And_K            (L : in Language_Type) return String;
-   function StrSimple        (L : in Language_Type) return String;
-   function StrDouble        (L : in Language_Type) return String;
-
-private
-
-   type Type_Type is (Feature, Requirement);
-   type Language_Type is
-      new Reffy.Counted_Type with record
-         Typ : Type_Type := Feature;
-      end record;
-
-end XReq.Language;
+end XReq.Language.Handles;

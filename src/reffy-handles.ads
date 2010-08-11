@@ -17,34 +17,39 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Reffy;
+generic
 
-package XReq.Language is
+   type Object_Type (<>) is new Counted with private;
+   type Object_Ptr is access Object_Type;
 
-   type Language_Type is new Reffy.Counted_Type with private;
-   type Language_Ptr is access all Language_Type;
+package Reffy.Handles is
 
-   procedure Set_Type (L : in out Language_Type; Typ : in String);
-   Unknown_Type : exception;
+   Traces : constant Boolean := False;
 
-   function Feature          (L : in Language_Type) return String;
-   function Background       (L : in Language_Type) return String;
-   function Scenario         (L : in Language_Type) return String;
-   function Scenario_Outline (L : in Language_Type) return String;
-   function Examples         (L : in Language_Type) return String;
-   function Given            (L : in Language_Type) return String;
-   function When_K           (L : in Language_Type) return String;
-   function Then_K           (L : in Language_Type) return String;
-   function And_K            (L : in Language_Type) return String;
-   function StrSimple        (L : in Language_Type) return String;
-   function StrDouble        (L : in Language_Type) return String;
+   type Handle is new Ada.Finalization.Controlled with private;
+
+   procedure UnRef    (H : in out Handle);
+   procedure Set      (H : in out Handle; Obj : Object_Ptr);
+   function  Ref      (H : Handle) return Object_Ptr;
+   function  Is_Null  (H : Handle) return Boolean;
+   function  Is_Valid (H : Handle) return Boolean;
+   function  Valid    (H : Handle) return Boolean renames Is_Valid;
+
+   procedure IncRef (H : in out Handle);
+   procedure DecRef (H : in out Handle);
+
+   procedure Initialize (Object : in out Handle);
+   procedure Adjust     (Object : in out Handle);
+   procedure Finalize   (Object : in out Handle);
+
+   function  Create   (Obj : Object_Ptr) return Handle;
 
 private
 
-   type Type_Type is (Feature, Requirement);
-   type Language_Type is
-      new Reffy.Counted_Type with record
-         Typ : Type_Type := Feature;
+   type Handle is new Ada.Finalization.Controlled with
+      record
+         Pointer : Object_Ptr := null;
       end record;
 
-end XReq.Language;
+end Reffy.Handles;
+

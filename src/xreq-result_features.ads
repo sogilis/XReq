@@ -24,7 +24,7 @@ with Util.Strings;
 with XReq.Result_Scenarios;
 with XReq.Features;
 with XReq.Step_Definitions;
-with XReq.Language;
+with XReq.Language.Handles;
 
 use XReqLib;
 use Util.IO;
@@ -32,7 +32,7 @@ use Util.Strings;
 use XReq.Result_Scenarios;
 use XReq.Features;
 use XReq.Step_Definitions;
-use XReq.Language;
+use XReq.Language.Handles;
 
 
 package XReq.Result_Features is
@@ -66,7 +66,8 @@ package XReq.Result_Features is
    --  Properties  ------------------------------------------------------------
 
    function  Fail     (F    : in     Result_Feature_Type) return Boolean;
-   function  Language (F    : in     Result_Feature_Type) return Language_SPtr;
+   function  Language (F    : in     Result_Feature_Type)
+                              return Language_Handle;
 
    procedure Set_Fail (F    : in out Result_Feature_Type;
                        Fail : in     Boolean := True);
@@ -78,7 +79,7 @@ private
    type Result_Feature_Type is new Features_Package.Feature_Type with
       record
          Fail : Boolean       := False;
-         Lang : Language_SPtr;
+         Lang : Language_Handle;
       end record;
 
 end XReq.Result_Features;

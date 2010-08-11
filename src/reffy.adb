@@ -17,45 +17,32 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Finalization;
 
-generic
+package body Reffy is
 
-   type T is private;
-   Null_Value : T;
-   with procedure Finalize (Val : in out T) is null;
+   --  Counted_Type  ----------------------------------------------------------
 
-package Util.Smart is
+   function  Ref       (C :        Counted_Type) return Natural is
+   begin
+      return C.Ref;
+   end Ref;
 
-   type Ptr is new Ada.Finalization.Controlled with private;
+   procedure RefChange (C : in out Counted_Type; Inc : Integer) is
+   begin
+      C.Ref := C.Ref + Inc;
+   end RefChange;
 
-   function  Val      (P : in     Ptr) return T;
-   procedure Set      (P : in out Ptr; Val : in T);
-   procedure IncRef   (P : in out Ptr);
-   procedure DecRef   (P : in out Ptr);
-   procedure UnRef    (P : in out Ptr);
-   function  Ref      (P : in     Ptr) return Natural;
-   function  Is_Null  (P : in     Ptr) return Boolean;
-   function  Valid    (P : in     Ptr) return Boolean;
-   function  Is_Valid (P : in     Ptr) return Boolean renames Valid;
+   --  Limited_Counted_Type  --------------------------------------------------
 
-   overriding procedure Initialize (P : in out Ptr);
-   overriding procedure Adjust     (P : in out Ptr);
-   overriding procedure Finalize   (P : in out Ptr);
+   function  Ref       (C :        Limited_Counted_Type) return Natural is
+   begin
+      return C.Ref;
+   end Ref;
 
-private
+   procedure RefChange (C : in out Limited_Counted_Type; Inc : Integer) is
+   begin
+      C.Ref := C.Ref + Inc;
+   end RefChange;
 
-   type Data_Type is
-      record
-         Value : T       := Null_Value;
-         Refs  : Integer := 0;
-      end record;
+end Reffy;
 
-   type Data_Ptr  is access all Data_Type;
-
-   type Ptr is new Ada.Finalization.Controlled with
-      record
-         Pointer : Data_Ptr := null;
-      end record;
-
-end Util.Smart;
