@@ -28,8 +28,6 @@ package Reffy.Handles is
 
    package Parent_Pkg is new Reffy.Abstract_Handles (Object_Type, Object_Ptr);
 
-   Traces : constant Boolean := False;
-
    type Handle is new Parent_Pkg.Handle with null record;
 
    procedure Set_New  (H : in out Handle; Obj : Object_Type);

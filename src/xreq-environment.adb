@@ -40,6 +40,7 @@ package body XReq.Environment is
          Out_Dir  => To_Unbounded_String (Out_Dir),
          Language => Language,
          Options  => Env.Options,
+         Steps    => Create,
          others   => <>);
    end Make;
 

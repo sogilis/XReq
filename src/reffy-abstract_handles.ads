@@ -25,8 +25,7 @@ generic
 
 package Reffy.Abstract_Handles is
 
-
-   Traces : constant Boolean := False;
+   Traces : Boolean := False;
 
    type Handle is new Ada.Finalization.Controlled with private;
 

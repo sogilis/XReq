@@ -17,8 +17,31 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Strings.Unbounded;
+with System.Address_Image;
+with GNAT.Traceback;
+with Ada.Text_IO;
 
 package body Reffy is
+
+   procedure Log (C : Counted_Type; Msg : String);
+   procedure Log (C : Limited_Counted_Type; Msg : String);
+
+   procedure Log (C : Counted_Type; Msg : String) is
+      use Ada.Text_IO;
+   begin
+      if not Traces then return; end if;
+      Put_Line ("[Reffy] " & System.Address_Image (C'Address) & C.Ref'Img &
+                " " & Msg);
+   end Log;
+
+   procedure Log (C : Limited_Counted_Type; Msg : String) is
+      use Ada.Text_IO;
+   begin
+      if not Traces then return; end if;
+      Put ("[Reffy] " & System.Address_Image (C'Address) & C.Ref'Img & " " &
+           Msg);
+   end Log;
 
    --  Counted_Type  ----------------------------------------------------------
 
@@ -29,7 +52,9 @@ package body Reffy is
 
    procedure RefChange (C : in out Counted_Type; Inc : Integer) is
    begin
+      Log (C, "RefChange " & Inc'Img);
       C.Ref := C.Ref + Inc;
+      Log (C, "");
    end RefChange;
 
    --  Limited_Counted_Type  --------------------------------------------------
@@ -41,8 +66,27 @@ package body Reffy is
 
    procedure RefChange (C : in out Limited_Counted_Type; Inc : Integer) is
    begin
+      Log (C, "RefChange " & Inc'Img);
       C.Ref := C.Ref + Inc;
+      Log (C, "");
    end RefChange;
+
+   ----------------------------------------------------------------------------
+
+   function Get_Stack_Trace return String is
+      use GNAT.Traceback;
+      use Ada.Strings.Unbounded;
+      Trace  : Tracebacks_Array (1 .. 1_000);
+      Length : Natural;
+      Buffer : Unbounded_String;
+   begin
+      Call_Chain (Trace, Length);
+      for I in Trace'First .. Length loop
+         if I /= Trace'First then Append (Buffer, " "); end if;
+         Append (Buffer, "0x" & System.Address_Image (Trace (I)));
+      end loop;
+      return To_String (Buffer);
+   end Get_Stack_Trace;
 
 end Reffy;
 

@@ -22,23 +22,16 @@ with System;
 with System.Address_Image;
 with Ada.Text_IO;
 with Ada.Unchecked_Deallocation;
+with Ada.Exceptions;
 
 package body Reffy.Abstract_Handles is
 
-   procedure Free is
-      new Ada.Unchecked_Deallocation (Object_Type'Class, Object_Ptr);
 
    procedure Log (H : Handle; Msg : String);
    function  Ptr (Obj : Object_Ptr) return String;
+   procedure Free is
+      new Ada.Unchecked_Deallocation (Object_Type'Class, Object_Ptr);
 
-
-   procedure Log (H : Handle; Msg : String) is
-      use Ada.Text_IO;
-   begin
-      if not Traces then return; end if;
-      Put_Line ("[Reffy.Handles] " & System.Address_Image (H'Address) &
-                " -> " & Ptr (H.Pointer) & " " & Msg);
-   end Log;
 
    function  Ptr (Obj : Object_Ptr) return String is
    begin
@@ -49,15 +42,35 @@ package body Reffy.Abstract_Handles is
       end if;
    end Ptr;
 
+   procedure Log (H : Handle; Msg : String) is
+      use Ada.Text_IO;
+   begin
+      if not Traces then return; end if;
+      Put ("[Reffy.Handles] " & System.Address_Image (H'Address) &
+           " -> " & Ptr (H.Pointer));
+      if H.Pointer /= null then
+         Put (H.Pointer.Ref'Img);
+      end if;
+      Put_Line (" " & Msg);
+   end Log;
+
    ----------------------------------------------------------------------------
 
    procedure IncRef (H : in out Handle) is
+      use Ada.Exceptions;
+      use Ada.Text_IO;
    begin
       Log (H, "IncRef");
       H.Pointer.RefChange (1);
+   exception
+      when E : others =>
+         Put_Line ("Reffy: Error while IncRef");
+         Put_Line (Exception_Information (E));
    end IncRef;
 
    procedure DecRef (H : in out Handle) is
+      use Ada.Exceptions;
+      use Ada.Text_IO;
    begin
       Log (H, "DecRef");
       H.Pointer.RefChange (-1);
@@ -66,6 +79,10 @@ package body Reffy.Abstract_Handles is
          Free (H.Pointer);
          H.Pointer := null;
       end if;
+   exception
+      when E : others =>
+         Put_Line ("Reffy: Error while DecRef");
+         Put_Line (Exception_Information (E));
    end DecRef;
 
    procedure Initialize (Object : in out Handle) is
@@ -110,6 +127,9 @@ package body Reffy.Abstract_Handles is
 
    function  Ref (H : Handle) return Object_Ptr is
    begin
+      if H.Pointer = null then
+         Log (H, "Ref (WARNING: NULL POINTER) " & Get_Stack_Trace);
+      end if;
       return H.Pointer;
    end Ref;
 

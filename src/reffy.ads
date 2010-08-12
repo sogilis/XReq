@@ -21,6 +21,8 @@ with Ada.Finalization;
 
 package Reffy is
 
+   Traces : Boolean := False;
+
    --  Counted (interface)  ---------------------------------------------------
 
    type Counted is limited interface;
@@ -61,6 +63,8 @@ private
       with record
          Ref : Natural := 0;
       end record;
+
+   function Get_Stack_Trace return String;
 
 end Reffy;
 
