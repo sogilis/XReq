@@ -244,25 +244,5 @@ package body XReq.Environment is
       return Env.Steps;
    end Steps;
 
-   -------------------------------------
-   --  Job_Environment  --  Finalize  --
-   -------------------------------------
-
-   procedure Finalize (Env : in out Job_Environment) is
-   begin
-      Env := Null_Job_Environment;
-   end Finalize;
-
-   ------------
-   --  Free  --
-   ------------
-
-   --  procedure Free (X : in out Job_Environment_Ptr) is
-   --     procedure Dealloc is new Ada.Unchecked_Deallocation
-   --       (Job_Environment, Job_Environment_Ptr);
-   --  begin
-   --     Dealloc (X);
-   --  end Free;
-
 end XReq.Environment;
 

@@ -86,11 +86,6 @@ package XReq.Environment is
    function  Steps        (Env        : in     Job_Environment)
                                         return Step_File_List_Handle;
 
-   overriding
-   procedure Finalize     (Env        : in out Job_Environment);
-
-   --  procedure Free (X : in out Job_Environment_Ptr);
-
    Null_Job_Environment : constant Job_Environment;
 
 private
