@@ -53,13 +53,13 @@ private
 
    type Counted_Type is new Ada.Finalization.Controlled and Counted with
       record
-         Ref : Natural;
+         Ref : Natural := 0;
       end record;
 
    type Limited_Counted_Type is
       new Ada.Finalization.Limited_Controlled and Counted
       with record
-         Ref : Natural;
+         Ref : Natural := 0;
       end record;
 
 end Reffy;
