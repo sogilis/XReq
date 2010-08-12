@@ -23,7 +23,7 @@ with Util.IO;
 with XReq;
 with XReq.Steps;
 with XReq.Step_Definitions;
-with XReq.Step_Definitions.Handles;
+with XReq.Step_Definition_List.Handles;
 with XReq.Step_Definitions.Ada05;
 
 use Ada.Strings.Unbounded;
@@ -31,7 +31,7 @@ use Ada.Directories;
 use Util.IO;
 use XReq;
 use XReq.Steps;
-use XReq.Step_Definitions.Handles;
+use XReq.Step_Definition_List.Handles;
 use XReq.Step_Definitions.Ada05;
 
 package body Test_Suite.Step_Definitions.Ada05 is
@@ -133,9 +133,7 @@ package body Test_Suite.Step_Definitions.Ada05 is
       I         : Natural;
    begin
 
-      Parse_Directory
-        (XReq.Step_Definitions.Step_File_List_Type (Steps.Ref.all),
-         Std_Logger, Directory);
+      Parse_Directory (Steps, Std_Logger, Directory);
 
       T.Assert (Steps.R.Count >= 1,
               "Detected " & Steps.R.Count'Img & " steps instead of >= 1");

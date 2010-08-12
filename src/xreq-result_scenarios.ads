@@ -24,14 +24,14 @@ with Util.IO;
 with Util.Strings;
 with XReq.Result_Steps;
 with XReq.Scenarios;
-with XReq.Step_Definitions.Handles;
+with XReq.Step_Definition_List.Handles;
 
 use XReqLib;
 use Util.IO;
 use Util.Strings;
 use XReq.Result_Steps;
 use XReq.Scenarios;
-use XReq.Step_Definitions.Handles;
+use XReq.Step_Definition_List.Handles;
 
 package XReq.Result_Scenarios is
 

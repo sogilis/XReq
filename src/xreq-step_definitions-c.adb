@@ -22,12 +22,14 @@ with Ada.Text_IO;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with GNAT.Regpat;
+with Util.Strings;
 
 use Ada.Directories;
 use Ada.Text_IO;
 use Ada.Strings;
 use Ada.Strings.Fixed;
 use GNAT.Regpat;
+use Util.Strings;
 
 package body XReq.Step_definitions.C is
 
@@ -35,12 +37,11 @@ package body XReq.Step_definitions.C is
    --  Parse_Directory  --
    -----------------------
 
-   procedure Parse_Directory (Steps      : in out Step_File_List_Type;
+   procedure Parse_Directory (Steps      : in out Step_File_List_Handle;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False)
    is
-      use Step_Definition_Vectors;
       Search  : Search_Type;
       Element : Directory_Entry_Type;
       Step    : C_Step_File_Ptr;
@@ -52,7 +53,7 @@ package body XReq.Step_definitions.C is
          Step := new C_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Steps.Append (Step_File_Ptr (Step));
+         Steps.R.Append (Step_File_Ptr (Step));
       end loop;
       End_Search (Search);
    end Parse_Directory;

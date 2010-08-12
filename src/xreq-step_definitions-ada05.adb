@@ -23,7 +23,6 @@ with Ada.Directories;
 with Ada.Text_IO;
 with GNAT.Regpat;
 with Util.IO;
-with Util.Strings;
 with XReq;
 
 use Ada.Strings.Unbounded;
@@ -31,7 +30,6 @@ use Ada.Directories;
 use Ada.Text_IO;
 use GNAT.Regpat;
 use Util.IO;
-use Util.Strings;
 use XReq;
 
 package body XReq.Step_Definitions.Ada05 is
@@ -67,12 +65,11 @@ package body XReq.Step_Definitions.Ada05 is
    --  Parse_Directory  --
    -----------------------
 
-   procedure Parse_Directory (Steps      : in out Step_File_List_Type;
+   procedure Parse_Directory (Steps      : in out Step_File_List_Handle;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False)
    is
-      use Step_Definition_Vectors;
       Search  : Search_Type;
       Element : Directory_Entry_Type;
       Step    : Ada_Step_File_Ptr;
@@ -84,7 +81,7 @@ package body XReq.Step_Definitions.Ada05 is
          Step := new Ada_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Steps.Append (Step_File_Ptr (Step));
+         Steps.R.Append (Step_File_Ptr (Step));
       end loop;
       End_Search (Search);
    end Parse_Directory;
@@ -549,13 +546,12 @@ package body XReq.Step_Definitions.Ada05 is
    --  Add_Steps  --
    -----------------
 
-   procedure Add_Steps       (Steps      : in out Step_File_List_Type;
+   procedure Add_Steps       (Steps      : in out Step_File_List_Handle;
                               New_Steps  : in     String_Set;
                               Step_Pkg   : in     String;
                               Directory  : in     String;
                               Logger     : in     Logger_Ptr)
    is
-      use Step_Definition_Vectors;
       use String_Sets;
       use String_Vectors;
 
@@ -573,9 +569,9 @@ package body XReq.Step_Definitions.Ada05 is
       Tags       : String_Vector;
    begin
 
-      I := Steps.First;
-      while I <= Steps.Last and S = null loop
-         S := Ada_Step_File_Ptr (Steps.Element (I));
+      I := Steps.R.First;
+      while I <= Steps.R.Last and S = null loop
+         S := Ada_Step_File_Ptr (Steps.R.Element (I));
          if S /= null and then S.File_Name /= File_Name_Ads then
             --  This line is difficult to cover for certain as it depends on
             --  the order the step packages are read. If the step package we
@@ -596,7 +592,7 @@ package body XReq.Step_Definitions.Ada05 is
             S.Parse (Logger);
             --  GCOV_IGNORE_END
          end if;
-         Append  (Steps, Step_File_Ptr (S));
+         Steps.R.Append  (Step_File_Ptr (S));
          Logger.Put_Line ("Create step definition package : " & Step_Pkg);
       else
          Logger.Put_Line ("Update step definition package : " & Step_Pkg);

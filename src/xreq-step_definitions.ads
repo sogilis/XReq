@@ -22,17 +22,12 @@ with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with GNAT.Regpat;
 with Util.IO;
-with Util.Strings;
 with XReqLib;
-with XReq.Lang;
 with XReq.Steps;
-with Reffy;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
-use Util.Strings;
 use XReqLib;
-use XReq.Lang;
 use XReq.Steps;
 
 package XReq.Step_Definitions is
@@ -90,63 +85,9 @@ package XReq.Step_Definitions is
    procedure Free      (S : in out Step_File_Ptr);
 
 
-   ----------------------------------------------------------------------------
-   --  Step_File_List_Type  --
-   ---------------------------
 
-   type Step_File_List_Type is new Reffy.Counted_Type with private;
-   type Step_File_List_Ptr is access all Step_File_List_Type'Class;
-
-   procedure Load      (Steps     : in out Step_File_List_Type;
-                        Directory : in     String;
-                        Language  : in     Language_Type);
-   --  IMPORTANT: deallocate Steps_Type
-
-   procedure Load      (Steps      : in out Step_File_List_Type;
-                        Logger     : in     Logger_Ptr;
-                        Directory  : in     String;
-                        Language   : in     Language_Type;
-                        Fill_Steps : in     Boolean := False);
-   --  IMPORTANT: deallocate Steps_Type
-
-   procedure Add_Steps (Steps      : in out Step_File_List_Type;
-                        New_Steps  : in     String_Set;
-                        Step_Pkg   : in     String;
-                        Directory  : in     String;
-                        Language   : in     Language_Type;
-                        Logger     : in     Logger_Ptr);
-
-   procedure Append    (Steps      : in out Step_File_List_Type;
-                        File       : in     Step_File_Ptr);
-   function  First     (Steps      : in  Step_File_List_Type) return Natural;
-   function  Last      (Steps      : in  Step_File_List_Type) return Integer;
-   function  Count     (Steps      : in  Step_File_List_Type) return Natural;
-   function  Element   (Steps      : in  Step_File_List_Type;
-                        Idx        : in  Natural) return Step_File_Ptr;
-
-   function  Contains  (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type) return Boolean;
-   function  Find      (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type) return String;
-   function  Find      (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type) return Step_Match_Type;
-   procedure Find      (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type;
-                        Proc       : out Unbounded_String;
-                        Matches    : out Match_Vectors.Vector;
-                        Found      : out Boolean);
-
-   procedure Finalize (Steps      : in out Step_File_List_Type);
 
 private  ----------------------------------------------------------------------
-
-   package Step_Definition_Vectors is
-      new Ada.Containers.Vectors (Natural, Step_File_Ptr, "=");
-
-   type Step_File_List_Type is new Reffy.Counted_Type with
-      record
-         List : Step_Definition_Vectors.Vector;
-      end record;
 
    type Pattern_Matcher_Ptr is                  --  GCOV_IGNORE
       access all GNAT.Regpat.Pattern_Matcher;   --  GCOV_IGNORE

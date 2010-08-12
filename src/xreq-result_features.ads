@@ -23,7 +23,7 @@ with Util.IO;
 with Util.Strings;
 with XReq.Result_Scenarios;
 with XReq.Features;
-with XReq.Step_Definitions.Handles;
+with XReq.Step_Definition_List.Handles;
 with XReq.Language.Handles;
 
 use XReqLib;
@@ -31,7 +31,7 @@ use Util.IO;
 use Util.Strings;
 use XReq.Result_Scenarios;
 use XReq.Features;
-use XReq.Step_Definitions.Handles;
+use XReq.Step_Definition_List.Handles;
 use XReq.Language.Handles;
 
 

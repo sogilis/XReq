@@ -17,13 +17,19 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-package body XReq.Step_Definitions.Handles is
+with Reffy.Handles;
 
-   use Handles_Pkg;
+package XReq.Step_Definition_List.Handles is
 
-   function Create return Step_File_List_Handle is
-   begin
-      return Create (new Step_File_List_Type);
-   end Create;
+   package Handles_Pkg is
+      new Reffy.Handles (Step_File_List_Type, Step_File_List_Ptr);
 
-end XReq.Step_Definitions.Handles;
+   subtype Step_File_List_Handle is Handles_Pkg.Handle;
+
+   function Create return Step_File_List_Handle;
+
+   subtype Step_Match_Type is XReq.Step_Definitions.Step_Match_Type;
+   package Step_Match_Vectors renames XReq.Step_Definitions.Match_Vectors;
+   subtype Step_Match_Location is XReq.Step_Definitions.Match_Location;
+
+end XReq.Step_Definition_List.Handles;

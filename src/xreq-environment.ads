@@ -22,14 +22,14 @@ with Ada.Strings.Unbounded.Hash;
 with Ada.Containers.Hashed_Maps;
 with Util.IO;
 with XReq.Lang;
-with XReq.Step_Definitions.Handles;
+with XReq.Step_Definition_List.Handles;
 with XReqLib;
 with Reffy;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReq.Lang;
-use XReq.Step_Definitions.Handles;
+use XReq.Step_Definition_List.Handles;
 use XReqLib;
 
 package XReq.Environment is
