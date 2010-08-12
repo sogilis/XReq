@@ -110,7 +110,6 @@ package body XReq.Step_definitions.C is
       Current_Step  : Step_Definition_Type;
       Procedure_S   : Unbounded_String;
    begin
-      Finalize (S.Steps);
       Position.File := S.File_Name;
       Open (File, In_File, To_String (S.File_Name));
       while not End_Of_File (File) loop
@@ -145,9 +144,9 @@ package body XReq.Step_definitions.C is
             if Idx /= 0  and Idx2 /= 0 then
                Pattern := To_Unbounded_String
                  (Decode_Python (Slice (Line_S, Idx + 2, Idx2 - 1)));
-               Current_Step := Step_Definition_Type'(
+               Current_Step := Step_Definition_Type'
+                 (Ada.Finalization.Controlled with
                   Prefix    => Prefix,
-                  --  TODO: free memory
                   Pattern_R => new Pattern_Matcher'(
                                Compile (To_String (Pattern))),
                   Pattern_S => Pattern,
@@ -166,9 +165,9 @@ package body XReq.Step_definitions.C is
             Idx := Index_Non_Blank (Line_S, Idx_Next);
             if Idx /= 0 then
                Pattern := Unbounded_Slice (Line_S, Idx, Length (Line_S));
-               Current_Step := Step_Definition_Type'(
+               Current_Step := Step_Definition_Type'
+                 (Ada.Finalization.Controlled with
                   Prefix    => Prefix,
-                  --  TODO: free memory
                   Pattern_R => new Pattern_Matcher'(
                                Compile (To_String (Pattern))),
                   Pattern_S => Pattern,

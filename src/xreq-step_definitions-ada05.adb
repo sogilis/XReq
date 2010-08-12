@@ -170,7 +170,6 @@ package body XReq.Step_Definitions.Ada05 is
          "adb";
       Position      : Position_Type;
    begin
-      Finalize (Steps);
       Position.File := To_Unbounded_String (File_Name);
       Open (File, In_File, Steps_Ads_File);
       while not End_Of_File (File) loop
@@ -228,9 +227,9 @@ package body XReq.Step_Definitions.Ada05 is
                --            Natural'Image (Idx_Next) & ": " &
                --            "Warning: expecting procedure for previous step");
                --  end if;
-               Current_Step := Step_Definition_Type'(
+               Current_Step := Step_Definition_Type'
+                 (Ada.Finalization.Controlled with
                   Prefix    => Prefix,
-                  --  TODO: free memory
                   Pattern_R => new Pattern_Matcher'(
                                Compile (To_String (Pattern))),
                   Pattern_S => Pattern,

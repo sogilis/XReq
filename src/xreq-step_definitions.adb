@@ -18,6 +18,7 @@
 -------------------------------------------------------------------------------
 
 with GNAT.Regpat;
+with Ada.Unchecked_Deallocation;
 
 use GNAT.Regpat;
 
@@ -150,44 +151,6 @@ package body XReq.Step_Definitions is
       return Result;
    end Find;
 
-   ----------------
-   --  Finalize  --
-   ----------------
-
-   procedure Finalize  (S       : in out Step_File_Type) is
-   begin
-      Finalize (S.Steps);
-   end Finalize;
-
-   ----------------
-   --  Finalize  --
-   ----------------
-
-   procedure Finalize (Steps : in out Step_Container.Vector) is
-      use Step_Container;
-      I : Step_Container.Cursor := First (Steps);
-      E : Step_Definition_Type;
-   begin
-      while Has_Element (I) loop
-         E := Element (I);
-         Free (E.Pattern_R);
-         Next (I);
-      end loop;
-      Clear (Steps);
-   end Finalize;
-
-   ------------
-   --  Free  --
-   ------------
-
-   procedure Free      (S : in out Step_File_Ptr) is
-      procedure Dealloc is new Ada.Unchecked_Deallocation
-         (Step_File_Type'Class, Step_File_Ptr);
-   begin
-      Dealloc (S);
-   end Free;
-
-
    -----------------
    --  File_Name  --
    -----------------
@@ -196,5 +159,36 @@ package body XReq.Step_Definitions is
    begin
       return To_String (S.File_Name);
    end File_Name;
+
+   ----------------
+   --  Finalize  --
+   ----------------
+
+   procedure Finalize  (S       : in out Step_File_Type) is
+      use Step_Container;
+   begin
+      Clear (S.Steps);
+   end Finalize;
+
+   ----------------------------------------------------------------------------
+
+   procedure Initialize (Object : in out Step_Definition_Type) is
+   begin
+      null;
+   end Initialize;
+
+   procedure Adjust     (Object : in out Step_Definition_Type) is
+   begin
+      if Object.Pattern_R /= null then
+         Object.Pattern_R := new Pattern_Matcher'(Object.Pattern_R.all);
+      end if;
+   end Adjust;
+
+   procedure Finalize   (Object : in out Step_Definition_Type) is
+      procedure Free is new Ada.Unchecked_Deallocation
+        (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
+   begin
+      Free (Object.Pattern_R);
+   end Finalize;
 
 end XReq.Step_Definitions;

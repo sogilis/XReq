@@ -17,7 +17,6 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Unchecked_Deallocation;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with GNAT.Regpat;
@@ -83,20 +82,13 @@ package XReq.Step_Definitions is
                         Found   : out Boolean);
    procedure Finalize  (S       : in out Step_File_Type);
 
-   procedure Free      (S : in out Step_File_Ptr);
-
-
-
 
 private  ----------------------------------------------------------------------
 
    type Pattern_Matcher_Ptr is                  --  GCOV_IGNORE
       access all GNAT.Regpat.Pattern_Matcher;   --  GCOV_IGNORE
 
-   procedure Free is new Ada.Unchecked_Deallocation
-      (GNAT.Regpat.Pattern_Matcher, Pattern_Matcher_Ptr);
-
-   type Step_Definition_Type is
+   type Step_Definition_Type is new Ada.Finalization.Controlled with
       record
          Prefix    : Step_Kind;
          Pattern_R : Pattern_Matcher_Ptr;
@@ -105,10 +97,12 @@ private  ----------------------------------------------------------------------
          Position  : Position_Type;
       end record;
 
+   procedure Initialize (Object : in out Step_Definition_Type);
+   procedure Adjust     (Object : in out Step_Definition_Type);
+   procedure Finalize   (Object : in out Step_Definition_Type);
+
    package Step_Container is new
       Ada.Containers.Vectors (Natural, Step_Definition_Type);
-
-   procedure Finalize (Steps : in out Step_Container.Vector);
 
    type Step_File_Type is abstract new Reffy.Counted_Type with
       record
