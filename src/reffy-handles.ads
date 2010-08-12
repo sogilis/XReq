@@ -17,6 +17,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Reffy.Abstract_Handles;
 
 generic
 
@@ -25,35 +26,13 @@ generic
 
 package Reffy.Handles is
 
+   package Parent_Pkg is new Reffy.Abstract_Handles (Object_Type, Object_Ptr);
 
    Traces : constant Boolean := False;
 
-   type Handle is new Ada.Finalization.Controlled with private;
+   type Handle is new Parent_Pkg.Handle with null record;
 
-   procedure UnRef    (H : in out Handle);
    procedure Set_New  (H : in out Handle; Obj : Object_Type);
-   procedure Set      (H : in out Handle; Obj : Object_Ptr);
-   function  Ref      (H : Handle) return Object_Ptr;
-   function  R        (H : Handle) return Object_Ptr renames Ref;
-   function  Is_Null  (H : Handle) return Boolean;
-   function  Is_Valid (H : Handle) return Boolean;
-   function  Valid    (H : Handle) return Boolean renames Is_Valid;
-
-   procedure IncRef (H : in out Handle);
-   procedure DecRef (H : in out Handle);
-
-   procedure Initialize (Object : in out Handle);
-   procedure Adjust     (Object : in out Handle);
-   procedure Finalize   (Object : in out Handle);
-
-   function  Create   (Obj : Object_Ptr) return Handle;
-
-private
-
-   type Handle is new Ada.Finalization.Controlled with
-      record
-         Pointer : Object_Ptr := null;
-      end record;
 
 end Reffy.Handles;
 
