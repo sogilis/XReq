@@ -1,3 +1,21 @@
+-------------------------------------------------------------------------------
+--  XReq  --  Behaviour Driven Developpement tool for compiled languages     --
+--  Copyright (c) 2010, SOGILIS <http://sogilis.com>                         --
+--                                                                           --
+--  This program is free software: you can redistribute it and/or modify     --
+--  it under the terms of the GNU Affero General Public License as           --
+--  published by the Free Software Foundation, either version 3 of the       --
+--  License, or (at your option) any later version.                          --
+--                                                                           --
+--  This program is distributed in the hope that it will be useful,          --
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of           --
+--  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            --
+--  GNU Affero General Public License for more details.                      --
+--                                                                           --
+--  You should have received a copy of the GNU Affero General Public License --
+--  along with this program.  If not, see <http://www.gnu.org/licenses/>.    --
+--                                                                           --
+-------------------------------------------------------------------------------
 
 with Ada.Directories;
 with Ada.Text_IO;
@@ -34,7 +52,7 @@ package body XReq.Step_definitions.C is
          Step := new C_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Step_Definition_Vectors.Append (Steps, Step_File_Ptr (Step));
+         Steps.Append (Step_File_Ptr (Step));
       end loop;
       End_Search (Search);
    end Parse_Directory;

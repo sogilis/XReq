@@ -17,31 +17,19 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-package XReq.Step_Definitions.C is
+with Reffy.Handles;
 
-   --  Called in XReq.Steps.Load
-   procedure Parse_Directory (Steps      : in out Step_File_List_Type;
-                              Logger     : in     Logger_Ptr;
-                              Directory  : in     String;
-                              Fill_Steps : in     Boolean := False);
-   --  IMPORTANT: deallocate Steps_Type
+package XReq.Step_Definitions.Handles is
 
+   package Handles_Pkg is
+      new Reffy.Handles (Step_File_List_Type, Step_File_List_Ptr);
 
-   type C_Step_File_Type is new Step_File_Type with private;
-   type C_Step_File_Ptr  is access all C_Step_File_Type'Class;
+   subtype Step_File_List_Handle is Handles_Pkg.Handle;
 
-   procedure Make (S          : out C_Step_File_Type;
-                   File_Name  : in  String;
-                   Fill_Steps : in  Boolean := False);
+   function Create return Step_File_List_Handle;
 
-   overriding procedure Parse     (S          : in out C_Step_File_Type;
-                                   Logger     : in     Logger_Ptr);
+   subtype Step_Match_Type is XReq.Step_Definitions.Step_Match_Type;
+   package Step_Match_Vectors renames XReq.Step_Definitions.Match_Vectors;
+   subtype Step_Match_Location is XReq.Step_Definitions.Match_Location;
 
-private
-
-   type C_Step_File_Type is new Step_File_Type with
-      record
-         Fill_Steps : Boolean := False;
-      end record;
-
-end XReq.Step_Definitions.C;
+end XReq.Step_Definitions.Handles;

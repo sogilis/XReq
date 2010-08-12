@@ -18,21 +18,20 @@
 -------------------------------------------------------------------------------
 
 with Ada.Strings.Unbounded;
-with Ada.Containers;
 with Ada.Directories;
 with Util.IO;
 with XReq;
 with XReq.Steps;
 with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 with XReq.Step_Definitions.Ada05;
 
 use Ada.Strings.Unbounded;
-use Ada.Containers;
 use Ada.Directories;
 use Util.IO;
 use XReq;
 use XReq.Steps;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 use XReq.Step_Definitions.Ada05;
 
 package body Test_Suite.Step_Definitions.Ada05 is
@@ -78,11 +77,11 @@ package body Test_Suite.Step_Definitions.Ada05 is
          procedure A is new Assert_Except (Test_Sample1, P);
       begin
          A (T, "Unparsed_Step has not been raised in call to Contains",
-               Unparsed_Step'Identity);
+               XReq.Step_Definitions.Unparsed_Step'Identity);
       end;
 
       declare
-         Match_V : Match_Vectors.Vector;
+         Match_V : Step_Match_Vectors.Vector;
          Proc_N  : Unbounded_String;
          Found   : Boolean;
          procedure P;
@@ -93,7 +92,7 @@ package body Test_Suite.Step_Definitions.Ada05 is
          procedure A is new Assert_Except (Test_Sample1, P);
       begin
          A (T, "Unparsed_Step has not been raised in call to Find",
-            Unparsed_Step'Identity);
+            XReq.Step_Definitions.Unparsed_Step'Identity);
       end;
 
       Parse (Step, Std_Logger);
@@ -127,27 +126,27 @@ package body Test_Suite.Step_Definitions.Ada05 is
    end Name;
 
    procedure Run (T : in out Test_Parse_Dir) is
-      use Step_Definition_Vectors;
-
       Directory : constant String := "tests/features/step_definitions";
-      Steps     : Step_Definition_Vectors.Vector;
-      Step      : Step_File_Ptr;
+      Steps     : Step_File_List_Handle;
+      Step      : Ada_Step_File_Ptr;
       Found     : Boolean := False;
-      I         : Integer := 0;
+      I         : Natural;
    begin
 
-      Parse_Directory (Steps, Std_Logger, Directory);
+      Parse_Directory
+        (XReq.Step_Definitions.Step_File_List_Type (Steps.Ref.all),
+         Std_Logger, Directory);
 
-      T.Assert (Length (Steps) >= 1,
-              "Detected " & Length (Steps)'Img &
-              " steps instead of >= 1");
+      T.Assert (Steps.R.Count >= 1,
+              "Detected " & Steps.R.Count'Img & " steps instead of >= 1");
 
-      while I < Integer (Length (Steps)) and not Found loop
-         Step  := Element (Steps, I);
+      I := Steps.R.First;
+      while I < Steps.R.Last and not Found loop
+         Step  := Ada_Step_File_Ptr (Steps.R.Element (I));
          Found := Simple_Name (File_Name (Step.all)) = "sample1.ads";
          Std_Logger.Put_Line ("Found step: " & File_Name (Step.all) & " (" &
                               Simple_Name (File_Name (Step.all)) & ")");
-         I     := I + 1;
+         I := I + 1;
       end loop;
 
       T.Assert (Found,
@@ -157,8 +156,6 @@ package body Test_Suite.Step_Definitions.Ada05 is
 
       T.Assert (Contains (Step.all, Stanza_Given ("this step works")),
               "The step definition should contain `Given this step works'");
-
-      Free (Steps);
 
    end Run;
 

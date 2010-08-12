@@ -23,7 +23,7 @@ with Util.IO;
 with Util.Strings;
 with XReq.Result_Scenarios;
 with XReq.Features;
-with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 with XReq.Language.Handles;
 
 use XReqLib;
@@ -31,7 +31,7 @@ use Util.IO;
 use Util.Strings;
 use XReq.Result_Scenarios;
 use XReq.Features;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 use XReq.Language.Handles;
 
 
@@ -58,7 +58,7 @@ package XReq.Result_Features is
                                               return String;
    procedure Process_Feature (Res           : out    Result_Feature_Type;
                               Feature       : in     Generic_Feature_Ptr;
-                              Steps         : in     Step_File_List_Type;
+                              Steps         : in     Step_File_List_Handle;
                               Log           : in     Logger_Ptr;
                               Missing_Steps : in out String_Set;
                               Step_Matching : in     Boolean := False);

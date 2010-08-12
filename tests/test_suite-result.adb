@@ -25,7 +25,7 @@ with Util.Strings;
 with XReqLib.String_Tables;
 with XReq.Lang;
 with XReq.Features;
-with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 with XReq.Scenarios;
 with XReq.Steps;
 with XReq.Result_Steps;
@@ -37,7 +37,7 @@ use Util.IO;
 use Util.Strings;
 use XReq.Lang;
 use XReq.Features;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 use XReq.Scenarios;
 use XReq.Steps;
 use XReq.Result_Steps;
@@ -118,13 +118,13 @@ package body Test_Suite.Result is
 
       Result        : Result_Scenario_Type;
       Scenario      : Scenario_Type;
-      Steps         : Step_File_List_Type
-                    := Load ("tests/features/step_definitions", Lang_Ada);
+      Steps         : Step_File_List_Handle;
       Ideal_Result  : Result_Steps.Vector;
       A, B          : Result_Step_Type;
       Errors        : Boolean;
       Missing_Steps : String_Set;
    begin
+      Steps.Ref.Load ("tests/features/step_definitions", Lang_Ada);
 
       Scenario.Make ("Scenario");
       Step_Append (Scenario, Stanza_Given ("this step works"));
@@ -137,10 +137,10 @@ package body Test_Suite.Result is
 
       Append (Ideal_Result, New_Result_Step
               (Stanza_Given ("this step works"),
-               Find (Steps, Stanza_Given ("this step works"))));
+               Steps.Ref.all.Find (Stanza_Given ("this step works"))));
       Append (Ideal_Result, New_Result_Step
               (Stanza_When ("this step works too"),
-               Find (Steps, Stanza_When  ("this step works too"))));
+               Steps.Ref.all.Find (Stanza_When  ("this step works too"))));
 
       T.Assert (Result.Step_Count = 2,
               "Wrong length of result, " & Result.Step_Count'Img &
@@ -177,8 +177,6 @@ package body Test_Suite.Result is
 
       T.Assert (Eq (Result, Ideal_Result),
               "Wrong scenario result (2)");
-
-      Free (Steps);
    end Run;
 
    --  Test_Result_Feature_Type  ----------------------------------------------
@@ -196,7 +194,7 @@ package body Test_Suite.Result is
       Expected : Result_Feature_Type;
       Result   : Result_Feature_Type;
       Feature  : Feature_File_Ptr;
-      Steps    : Step_File_List_Type;
+      Steps    : Step_File_List_Handle;
       Exp_Str  : constant String :=
                "Feature Sample"                     & CRLF &
                "   Background "                     & CRLF &
@@ -214,7 +212,7 @@ package body Test_Suite.Result is
       Missing_Steps : String_Set;
    begin
 
-      Steps   := Load   ("tests/features/step_definitions", Lang_Ada);
+      Steps.R.Load   ("tests/features/step_definitions", Lang_Ada);
       Feature := new Feature_File_Type'(Create
             ("tests/features/sample.feature"));
 
@@ -263,7 +261,6 @@ package body Test_Suite.Result is
               "Got:      <<<" & Result.To_Code & ">>>" & CRLF &
               "Expected: <<<" & Exp_Str & ">>>");
 
-      Free (Steps);
    end Run;
 
    --  Test_To_String  --------------------------------------------------
@@ -276,7 +273,7 @@ package body Test_Suite.Result is
    end Name;
 
    procedure Run (T : in out Test_To_String) is
-      use Match_Vectors;
+      use Step_Match_Vectors;
       CRLF     : constant String := "" & ASCII.LF;
       Expected : constant String :=
                "Feature simplest feature"           & CRLF &
@@ -291,7 +288,7 @@ package body Test_Suite.Result is
                "End Feature simplest feature"       & CRLF;
       R_Scen   : Result_Scenario_Type;
       Feature  : Result_Feature_Type;
-      Matches  : Match_Vectors.Vector;
+      Matches  : Step_Match_Vectors.Vector;
    begin
 
       Append (Matches, (1, 15));
@@ -327,8 +324,7 @@ package body Test_Suite.Result is
       use XReqLib.String_Tables;
       Scenario  : Scenario_Type := Null_Scenario_Outline;
       Result    : Result_Scenario_Type;
-      Steps     : Step_File_List_Type
-                := Load ("tests/features/step_definitions", Lang_Ada);
+      Steps     : Step_File_List_Handle;
       Errors    : Boolean;
       I         : Natural;
       Table     : Table_Type;
@@ -341,6 +337,7 @@ package body Test_Suite.Result is
                    Found & """ for " & Description);
       end Equals;
    begin
+      Steps.R.Load ("tests/features/step_definitions", Lang_Ada);
 
       Step_Append (Scenario, Stanza_Given ("A is <A> and B is <B>"));
       Step_Append (Scenario, Stanza_When  ("A is '<A>' and B is '<B>'"));
@@ -415,7 +412,6 @@ package body Test_Suite.Result is
               "C is z",
               "3rd step of 3rd scenario");
 
-      Free (Steps);
 
    end Run;
 

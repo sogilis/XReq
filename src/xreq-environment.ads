@@ -22,14 +22,14 @@ with Ada.Strings.Unbounded.Hash;
 with Ada.Containers.Hashed_Maps;
 with Util.IO;
 with XReq.Lang;
-with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 with XReqLib;
 with Reffy;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReq.Lang;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 use XReqLib;
 
 package XReq.Environment is
@@ -84,9 +84,7 @@ package XReq.Environment is
    function  Loaded       (Env        : in     Job_Environment)
                                         return Boolean;
    function  Steps        (Env        : in     Job_Environment)
-                                        return Step_File_List_Type;
-   procedure Steps        (Env        : in out Job_Environment;
-                           Steps      : out    Step_File_List_Ptr);
+                                        return Step_File_List_Handle;
 
    overriding
    procedure Finalize     (Env        : in out Job_Environment);
@@ -101,7 +99,7 @@ private
       record
          Step_Dir  : String_Vector;
          Out_Dir   : Unbounded_String;
-         Steps     : aliased Step_File_List_Type;
+         Steps     : Step_File_List_Handle;
          Loaded    : Boolean := False;
          Language  : Language_Type := Lang_Ada;
          Options   : Options_Pkg.Map;

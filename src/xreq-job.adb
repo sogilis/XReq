@@ -19,11 +19,9 @@
 
 with Util.Strings;
 with XReq.Result_Features;
-with XReq.Step_Definitions;
 
 use Util.Strings;
 use XReq.Result_Features;
-use XReq.Step_Definitions;
 
 package body XReq.Job is
 
@@ -60,7 +58,6 @@ package body XReq.Job is
       use String_Sets;
       F : constant Feature_File_Ptr := new Feature_File_Type;
       Missing_Steps : String_Set;
-      S : Step_File_List_Ptr;
    begin
       if not Env.Ref.Loaded then
          raise Environment.Invalid_Environment with "Must call Env.Load first";
@@ -77,8 +74,7 @@ package body XReq.Job is
                                   Missing_Steps, Step_Matching);
 
       if Add_Steps_Pkg /= "" and not Is_Empty (Missing_Steps) then
-         Env.Ref.Steps (S);
-         Add_Steps (S.all, Missing_Steps, Add_Steps_Pkg,
+         Env.Ref.Steps.Ref.Add_Steps (Missing_Steps, Add_Steps_Pkg,
                       Env.Ref.First_Step_Dir, Env.Ref.Language, Logger);
          Clear (Missing_Steps);
          Job.Result.Set_Fail (False);

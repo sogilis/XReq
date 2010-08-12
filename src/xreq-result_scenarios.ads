@@ -24,14 +24,14 @@ with Util.IO;
 with Util.Strings;
 with XReq.Result_Steps;
 with XReq.Scenarios;
-with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 
 use XReqLib;
 use Util.IO;
 use Util.Strings;
 use XReq.Result_Steps;
 use XReq.Scenarios;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 
 package XReq.Result_Scenarios is
 
@@ -60,7 +60,7 @@ package XReq.Result_Scenarios is
                                                return String;
    procedure Process_Scenario (Res           : out    Result_Scenario_Type;
                                Scenario      : in     Scenario_Type;
-                               Steps         : in     Step_File_List_Type;
+                               Steps         : in     Step_File_List_Handle;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;
                                Missing_Steps : in out String_Set;

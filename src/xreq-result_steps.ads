@@ -20,12 +20,12 @@
 with Util.IO;
 with Util.Strings;
 with XReq.Steps;
-with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 
 use Util.IO;
 use Util.Strings;
 use XReq.Steps;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 
 package XReq.Result_Steps is
 
@@ -56,7 +56,7 @@ package XReq.Result_Steps is
 
    procedure Process_Step  (Res           : out    Result_Step_Type;
                             Stanza        : in     Step_Type;
-                            Steps         : in     Step_File_List_Type;
+                            Steps         : in     Step_File_List_Handle;
                             Log           : in     Logger_Ptr;
                             Errors        : out    Boolean;
                             Step_Matching : in     Boolean;
@@ -76,7 +76,7 @@ package XReq.Result_Steps is
    function Match_Last    (S : in Result_Step_Type) return Integer;
    function Match_Count   (S : in Result_Step_Type) return Natural;
    function Match_Element (S : in Result_Step_Type;
-                           I : in Natural)          return Match_Location;
+                           I : in Natural)          return Step_Match_Location;
 
    ----------------------------------------------------------------------------
 

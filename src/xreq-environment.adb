@@ -142,7 +142,7 @@ package body XReq.Environment is
             Step : constant String := To_String (Element (Env.Step_Dir, I));
          begin
             Create_Path (Step);
-            Load (Env.Steps, Logger, Step, Env.Language, Fill_Steps);
+            Env.Steps.Ref.Load (Logger, Step, Env.Language, Fill_Steps);
          end;
       end loop;
 
@@ -239,20 +239,9 @@ package body XReq.Environment is
    -------------
 
    function  Steps        (Env        : in     Job_Environment)
-                                        return Step_File_List_Type is
+                                        return Step_File_List_Handle is
    begin
       return Env.Steps;
-   end Steps;
-
-   -------------
-   --  Steps  --
-   -------------
-
-   procedure Steps        (Env        : in out Job_Environment;
-                           Steps      : out  Step_File_List_Ptr) is
-   begin
-      --  Tempoary measure until we can return a Handle
-      Steps := Env.Steps'Unchecked_Access;
    end Steps;
 
    -------------------------------------
@@ -261,7 +250,6 @@ package body XReq.Environment is
 
    procedure Finalize (Env : in out Job_Environment) is
    begin
-      Free (Env.Steps);
       Env := Null_Job_Environment;
    end Finalize;
 

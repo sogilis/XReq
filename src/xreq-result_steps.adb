@@ -18,6 +18,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Strings.Unbounded;
+with XReq.Step_Definitions;
 with XReqLib;
 
 use Ada.Strings.Unbounded;
@@ -63,7 +64,7 @@ package body XReq.Result_Steps is
                        Indent : in String := "") return String
    is
       Buffer : Unbounded_String;
-      E : Match_Location;
+      E : Step_Match_Location;
    begin
       Append (Buffer, Indent & Procedure_Name (S) & " (");
       for I in S.Match_First .. S.Match_Last loop
@@ -83,7 +84,7 @@ package body XReq.Result_Steps is
 
    procedure Process_Step     (Res           : out    Result_Step_Type;
                                Stanza        : in     Step_Type;
-                               Steps         : in     Step_File_List_Type;
+                               Steps         : in     Step_File_List_Handle;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;
                                Step_Matching : in     Boolean;
@@ -95,9 +96,9 @@ package body XReq.Result_Steps is
    begin
       Errors := False;
       begin
-         Match := Find (Steps, Stanza);
+         Match := Steps.Ref.all.Find (Stanza);
       exception
-         when Ambiguous_Match =>
+         when XReq.Step_Definitions.Ambiguous_Match =>
             if Log.Verbosity < 0 then
                Log.Put_Line (-1, To_String (Stanza.Position) & ": ERROR: " &
                              "Ambiguous match for: " & Stanza.To_String);
@@ -185,7 +186,7 @@ package body XReq.Result_Steps is
    ----------------------------------
 
    function Match_Count   (S : in Result_Step_Type) return Natural is
-      use Match_Vectors;
+      use Step_Match_Vectors;
    begin
       return Integer (Length (S.Match.Matches));
    end Match_Count;
@@ -195,9 +196,9 @@ package body XReq.Result_Steps is
    ------------------------------------
 
    function Match_Element (S : in Result_Step_Type;
-                           I : in Natural)          return Match_Location
+                           I : in Natural)          return Step_Match_Location
    is
-      use Match_Vectors;
+      use Step_Match_Vectors;
    begin
       return Element (S.Match.Matches, I);
    end Match_Element;

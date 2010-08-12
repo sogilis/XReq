@@ -21,14 +21,14 @@ with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Util.IO;
 with XReq.Lang;
-with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 with XReq.Steps;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Util.IO;
 use XReq.Lang;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 use XReq.Steps;
 
 package body Test_Suite.Step_Definitions is
@@ -49,37 +49,38 @@ package body Test_Suite.Step_Definitions is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      use Match_Vectors;
-      Steps   : Step_File_List_Type;
+      use Step_Match_Vectors;
+      Steps   : Step_File_List_Handle;
       Dir     : constant String := "tests/features/step_definitions";
-      Match_V : Match_Vectors.Vector;
+      Match_V : Step_Match_Vectors.Vector;
       Proc_N  : Unbounded_String;
       StanzaS : constant String := "I match ""abc""";
       Stanza  : constant Step_Type := Stanza_When (StanzaS);
       Found   : Boolean;
-      Loc     : Match_Location;
+      Loc     : Step_Match_Location;
    begin
 
-      Load (Steps, Std_Logger, Dir, Lang_Ada);
+      Steps.R.Load (Std_Logger, Dir, Lang_Ada);
 
-      T.Assert (Contains (Steps, Stanza_Given ("this step works")),
+      T.Assert (Steps.Ref.all.Contains (Stanza_Given ("this step works")),
               Dir & " should contains `Given this step works'");
 
-      T.Assert (Contains (Steps, Stanza_When ("this step works too")),
+      T.Assert (Steps.Ref.all.Contains (Stanza_When ("this step works too")),
               Dir & " should contains `When this step works too'");
 
-      T.Assert (Find (Steps, Stanza_When ("this step works too")) =
+      T.Assert (Steps.Ref.all.Find (Stanza_When ("this step works too")) =
               "Sample1.This_Step_Works_Too",
               "`When this step works too' and link " &
               "to procedure Sample1.This_Step_Works_Too");
 
-      T.Assert (not Contains (Steps, Stanza_Then ("this step doesn't works")),
+      T.Assert (not Steps.R.Contains (Stanza_Then ("this step doesn't works")),
               Dir & " should not contains `Then this step doesn't works'");
 
-      Find (Steps, Stanza_When ("I match nothing"), Proc_N, Match_V, Found);
+      Steps.Ref.all.Find (Stanza_When ("I match nothing"),
+                          Proc_N, Match_V, Found);
       T.Assert (not Found, "Found");
 
-      Find (Steps, Stanza, Proc_N, Match_V, Found);
+      Steps.Ref.all.Find (Stanza, Proc_N, Match_V, Found);
 
       T.Assert (Found, "Not found");
       T.Assert (To_String (Proc_N) = "Sample2.When_I_Match",
@@ -103,8 +104,6 @@ package body Test_Suite.Step_Definitions is
       T.Assert (Loc.Last = 12,
               "Find: match 1 should end at 12" &
               " instead of" & Loc.Last'Img);
-
-      Free (Steps);
 
    end Run;
 

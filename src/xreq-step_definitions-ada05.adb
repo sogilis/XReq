@@ -84,7 +84,7 @@ package body XReq.Step_Definitions.Ada05 is
          Step := new Ada_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Step_Definition_Vectors.Append (Steps, Step_File_Ptr (Step));
+         Steps.Append (Step_File_Ptr (Step));
       end loop;
       End_Search (Search);
    end Parse_Directory;
@@ -563,7 +563,7 @@ package body XReq.Step_Definitions.Ada05 is
       File_Name_Ads : constant String  := Compose (Directory, Pkg_Id & ".ads");
       File_Name_Adb : constant String  := Compose (Directory, Pkg_Id & ".adb");
 
-      I : Step_Definition_Vectors.Cursor;
+      I : Natural;
       J : String_Sets.Cursor;
       S : Ada_Step_File_Ptr := null;
 
@@ -573,16 +573,16 @@ package body XReq.Step_Definitions.Ada05 is
       Tags       : String_Vector;
    begin
 
-      I := First (Steps);
-      while Has_Element (I) and S = null loop
-         S := Ada_Step_File_Ptr (Element (I));
+      I := Steps.First;
+      while I <= Steps.Last and S = null loop
+         S := Ada_Step_File_Ptr (Steps.Element (I));
          if S /= null and then S.File_Name /= File_Name_Ads then
             --  This line is difficult to cover for certain as it depends on
             --  the order the step packages are read. If the step package we
             --  are modifying is the first, then this line is never executed.
             S := null;  --  GCOV_IGNORE
          end if;
-         Next (I);
+         I := I + 1;
       end loop;
 
       if S = null then
@@ -597,7 +597,6 @@ package body XReq.Step_Definitions.Ada05 is
             --  GCOV_IGNORE_END
          end if;
          Append  (Steps, Step_File_Ptr (S));
-         I := Last (Steps);
          Logger.Put_Line ("Create step definition package : " & Step_Pkg);
       else
          Logger.Put_Line ("Update step definition package : " & Step_Pkg);

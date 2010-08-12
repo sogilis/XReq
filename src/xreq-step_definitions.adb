@@ -221,13 +221,15 @@ package body XReq.Step_Definitions is
       end case;
    end Load;
 
-   function  Load (Directory : in     String;
-                   Language  : in     Language_Type)
-                               return Step_File_List_Type is
-      Result : Step_File_List_Type;
+   ------------
+   --  Load  --
+   ------------
+
+   procedure Load (Steps     : in out Step_File_List_Type;
+                   Directory : in     String;
+                   Language  : in     Language_Type) is
    begin
-      Load (Result, Null_Logger, Directory, Language);
-      return Result;
+      Steps.Load (Null_Logger, Directory, Language);
    end Load;
 
    -----------------
@@ -250,6 +252,53 @@ package body XReq.Step_Definitions is
             raise Not_Yet_Implemented;  --  GCOV_IGNORE
       end case;
    end Add_Steps;
+
+   --------------
+   --  Append  --
+   --------------
+
+   procedure Append    (Steps      : in out Step_File_List_Type;
+                        File       : in     Step_File_Ptr) is
+   begin
+      Step_Definition_Vectors.Append (Steps.List, File);
+   end Append;
+
+   -------------
+   --  First  --
+   -------------
+
+   function  First     (Steps      : in  Step_File_List_Type) return Natural is
+   begin
+      return Step_Definition_Vectors.First_Index (Steps.List);
+   end First;
+
+   ------------
+   --  Last  --
+   ------------
+
+   function  Last      (Steps      : in  Step_File_List_Type) return Integer is
+   begin
+      return Step_Definition_Vectors.Last_Index (Steps.List);
+   end Last;
+
+   -------------
+   --  Count  --
+   -------------
+
+   function  Count     (Steps      : in  Step_File_List_Type) return Natural is
+   begin
+      return Steps.Last - Steps.First + 1;
+   end Count;
+
+   ---------------
+   --  Element  --
+   ---------------
+
+   function  Element   (Steps      : in  Step_File_List_Type;
+                        Idx        : in  Natural) return Step_File_Ptr is
+   begin
+      return Step_Definition_Vectors.Element (Steps.List, Idx);
+   end Element;
 
    ----------------
    --  Contains  --
@@ -290,7 +339,7 @@ package body XReq.Step_Definitions is
    is
       use Step_Definition_Vectors;
       Result : Step_Match_Type;
-      I      : Step_Definition_Vectors.Cursor := First (Steps);
+      I      : Step_Definition_Vectors.Cursor := First (Steps.List);
       Step   : Step_File_Ptr;
       Res2   : Step_Match_Type;
    begin
@@ -328,13 +377,13 @@ package body XReq.Step_Definitions is
       end if;
    end Find;
 
-   ------------
-   --  Free  --
-   ------------
+   ----------------
+   --  Finalize  --
+   ----------------
 
-   procedure Free (Steps : in out Step_File_List_Type) is
+   procedure Finalize (Steps : in out Step_File_List_Type) is
       use Step_Definition_Vectors;
-      I : Step_Definition_Vectors.Cursor := First (Steps);
+      I : Step_Definition_Vectors.Cursor := First (Steps.List);
       E : Step_File_Ptr;
    begin
       while Has_Element (I) loop
@@ -343,8 +392,8 @@ package body XReq.Step_Definitions is
          Free (E);
          Next (I);
       end loop;
-      Clear (Steps);
-   end Free;
+      Clear (Steps.List);
+   end Finalize;
 
 
 end XReq.Step_Definitions;
