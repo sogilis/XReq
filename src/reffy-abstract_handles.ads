@@ -17,15 +17,42 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Reffy.Handles;
 
-package XReq.Step_Definition_List.Handles is
+generic
 
-   package Handles_Pkg is
-      new Reffy.Handles (Step_File_List_Type, Step_File_List_Ptr);
+   type Object_Type (<>) is abstract new Counted with private;
+   type Object_Ptr is access all Object_Type'Class;
 
-   subtype Step_File_List_Handle is Handles_Pkg.Handle;
+package Reffy.Abstract_Handles is
 
-   function Create return Step_File_List_Handle;
 
-end XReq.Step_Definition_List.Handles;
+   Traces : constant Boolean := False;
+
+   type Handle is new Ada.Finalization.Controlled with private;
+
+   procedure UnRef    (H : in out Handle);
+   procedure Set      (H : in out Handle; Obj : Object_Ptr);
+   function  Ref      (H : Handle) return Object_Ptr;
+   function  R        (H : Handle) return Object_Ptr renames Ref;
+   function  Is_Null  (H : Handle) return Boolean;
+   function  Is_Valid (H : Handle) return Boolean;
+   function  Valid    (H : Handle) return Boolean renames Is_Valid;
+
+   procedure IncRef (H : in out Handle);
+   procedure DecRef (H : in out Handle);
+
+   procedure Initialize (Object : in out Handle);
+   procedure Adjust     (Object : in out Handle);
+   procedure Finalize   (Object : in out Handle);
+
+   function  Create   (Obj : Object_Ptr) return Handle;
+
+private
+
+   type Handle is new Ada.Finalization.Controlled with
+      record
+         Pointer : Object_Ptr := null;
+      end record;
+
+end Reffy.Abstract_Handles;
+

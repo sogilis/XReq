@@ -24,6 +24,7 @@ with Util.Strings;
 with XReq.Lang;
 with XReq.Steps;
 with XReq.Step_Definitions;
+with XReq.Step_Definitions.Handles;
 with Reffy;
 
 use Ada.Strings.Unbounded;
@@ -31,7 +32,7 @@ use Util.IO;
 use Util.Strings;
 use XReq.Lang;
 use XReq.Steps;
-use XReq.Step_Definitions;
+use XReq.Step_Definitions.Handles;
 
 package XReq.Step_Definition_List is
 
@@ -62,12 +63,12 @@ package XReq.Step_Definition_List is
                         Logger     : in     Logger_Ptr);
 
    procedure Append    (Steps      : in out Step_File_List_Type;
-                        File       : in     Step_File_Ptr);
+                        File       : in     Step_File_Handle);
    function  First     (Steps      : in  Step_File_List_Type) return Natural;
    function  Last      (Steps      : in  Step_File_List_Type) return Integer;
    function  Count     (Steps      : in  Step_File_List_Type) return Natural;
    function  Element   (Steps      : in  Step_File_List_Type;
-                        Idx        : in  Natural) return Step_File_Ptr;
+                        Idx        : in  Natural) return Step_File_Handle;
 
    function  Contains  (Steps      : in  Step_File_List_Type;
                         Stanza     : in  Step_Type) return Boolean;
@@ -78,16 +79,16 @@ package XReq.Step_Definition_List is
    procedure Find      (Steps      : in  Step_File_List_Type;
                         Stanza     : in  Step_Type;
                         Proc       : out Unbounded_String;
-                        Matches    : out Match_Vectors.Vector;
+                        Matches    : out Step_Match_Vectors.Vector;
                         Found      : out Boolean);
 
    procedure Finalize  (Steps      : in out Step_File_List_Type);
 
 private
 
-
    package Step_Definition_Vectors is
-      new Ada.Containers.Vectors (Natural, Step_File_Ptr, "=");
+      new Ada.Containers.Vectors (Natural, Step_File_Handle,
+                                  Step_Definitions.Handles.Handles_Pkg."=");
 
    type Step_File_List_Type is new Reffy.Counted_Type with
       record

@@ -21,11 +21,13 @@ with Util.IO;
 with Util.Strings;
 with XReq.Steps;
 with XReq.Step_Definition_List.Handles;
+with XReq.Step_Definitions.Handles;
 
 use Util.IO;
 use Util.Strings;
 use XReq.Steps;
 use XReq.Step_Definition_List.Handles;
+use XReq.Step_Definitions.Handles;
 
 package XReq.Result_Steps is
 

@@ -24,6 +24,7 @@ with XReq;
 with XReq.Steps;
 with XReq.Step_Definitions;
 with XReq.Step_Definition_List.Handles;
+with XReq.Step_Definitions.Handles;
 with XReq.Step_Definitions.Ada05;
 
 use Ada.Strings.Unbounded;
@@ -32,6 +33,7 @@ use Util.IO;
 use XReq;
 use XReq.Steps;
 use XReq.Step_Definition_List.Handles;
+use XReq.Step_Definitions.Handles;
 use XReq.Step_Definitions.Ada05;
 
 package body Test_Suite.Step_Definitions.Ada05 is
@@ -140,7 +142,7 @@ package body Test_Suite.Step_Definitions.Ada05 is
 
       I := Steps.R.First;
       while I < Steps.R.Last and not Found loop
-         Step  := Ada_Step_File_Ptr (Steps.R.Element (I));
+         Step  := Ada_Step_File_Ptr (Steps.R.Element (I).R);
          Found := Simple_Name (File_Name (Step.all)) = "sample1.ads";
          Std_Logger.Put_Line ("Found step: " & File_Name (Step.all) & " (" &
                               Simple_Name (File_Name (Step.all)) & ")");

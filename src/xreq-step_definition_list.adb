@@ -90,7 +90,7 @@ package body XReq.Step_Definition_List is
    --------------
 
    procedure Append    (Steps      : in out Step_File_List_Type;
-                        File       : in     Step_File_Ptr) is
+                        File       : in     Step_File_Handle) is
    begin
       Step_Definition_Vectors.Append (Steps.List, File);
    end Append;
@@ -127,7 +127,7 @@ package body XReq.Step_Definition_List is
    ---------------
 
    function  Element   (Steps      : in  Step_File_List_Type;
-                        Idx        : in  Natural) return Step_File_Ptr is
+                        Idx        : in  Natural) return Step_File_Handle is
    begin
       return Step_Definition_Vectors.Element (Steps.List, Idx);
    end Element;
@@ -151,7 +151,7 @@ package body XReq.Step_Definition_List is
                         Stanza    : in Step_Type) return String
    is
       Proc    : Unbounded_String;
-      Matches : Match_Vectors.Vector;
+      Matches : Step_Match_Vectors.Vector;
       Found   : Boolean;
    begin
       Find (Steps, Stanza, Proc, Matches, Found);
@@ -172,15 +172,15 @@ package body XReq.Step_Definition_List is
       use Step_Definition_Vectors;
       Result : Step_Match_Type;
       I      : Step_Definition_Vectors.Cursor := First (Steps.List);
-      Step   : Step_File_Ptr;
+      Step   : Step_File_Handle;
       Res2   : Step_Match_Type;
    begin
       while Has_Element (I) loop
          Step := Element (I);
-         Res2 := Find (Step.all, Stanza);
+         Res2 := Step.R.all.Find (Stanza);
          if Res2.Match then
             if Result.Match then
-               raise Ambiguous_Match;
+               raise Step_Definitions.Ambiguous_Match;
             else
                Result := Res2;
             end if;
@@ -197,7 +197,7 @@ package body XReq.Step_Definition_List is
    procedure Find      (Steps     : in  Step_File_List_Type;
                         Stanza    : in  Step_Type;
                         Proc      : out Unbounded_String;
-                        Matches   : out Match_Vectors.Vector;
+                        Matches   : out Step_Match_Vectors.Vector;
                         Found     : out Boolean)
    is
       Res : constant Step_Match_Type := Find (Steps, Stanza);
@@ -215,15 +215,7 @@ package body XReq.Step_Definition_List is
 
    procedure Finalize (Steps : in out Step_File_List_Type) is
       use Step_Definition_Vectors;
-      I : Step_Definition_Vectors.Cursor := First (Steps.List);
-      E : Step_File_Ptr;
    begin
-      while Has_Element (I) loop
-         E := Element (I);
-         E.Finalize;
-         Free (E);
-         Next (I);
-      end loop;
       Clear (Steps.List);
    end Finalize;
 

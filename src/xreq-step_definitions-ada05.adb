@@ -23,14 +23,14 @@ with Ada.Directories;
 with Ada.Text_IO;
 with GNAT.Regpat;
 with Util.IO;
-with XReq;
+with XReq.Step_Definitions.Handles;
 
 use Ada.Strings.Unbounded;
 use Ada.Directories;
 use Ada.Text_IO;
 use GNAT.Regpat;
 use Util.IO;
-use XReq;
+use XReq.Step_Definitions.Handles;
 
 package body XReq.Step_Definitions.Ada05 is
 
@@ -73,6 +73,7 @@ package body XReq.Step_Definitions.Ada05 is
       Search  : Search_Type;
       Element : Directory_Entry_Type;
       Step    : Ada_Step_File_Ptr;
+      Step_H  : Step_File_Handle;
    begin
       Start_Search (Search, Directory, "*.ads",
                     (Ordinary_File => True, others => False));
@@ -81,7 +82,8 @@ package body XReq.Step_Definitions.Ada05 is
          Step := new Ada_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Steps.R.Append (Step_File_Ptr (Step));
+         Step_H.Set (Step_File_Ptr (Step));
+         Steps.R.Append (Step_H);
       end loop;
       End_Search (Search);
    end Parse_Directory;
@@ -94,7 +96,8 @@ package body XReq.Step_Definitions.Ada05 is
                    File_Name  : in  String;
                    Fill_Steps : in  Boolean := False) is
    begin
-      S := (File_Name  => To_Unbounded_String (File_Name),
+      S := (Reffy.Counted_Type with
+            File_Name  => To_Unbounded_String (File_Name),
             Parsed     => False,
             Fill_Steps => Fill_Steps,
             others     => <>);
@@ -559,9 +562,10 @@ package body XReq.Step_Definitions.Ada05 is
       File_Name_Ads : constant String  := Compose (Directory, Pkg_Id & ".ads");
       File_Name_Adb : constant String  := Compose (Directory, Pkg_Id & ".adb");
 
-      I : Natural;
-      J : String_Sets.Cursor;
-      S : Ada_Step_File_Ptr := null;
+      I  : Natural;
+      J  : String_Sets.Cursor;
+      SH : Step_File_Handle;
+      S  : Ada_Step_File_Ptr := null;
 
       Tag        : Unbounded_String;
       Prc_Name   : Unbounded_String;
@@ -571,18 +575,21 @@ package body XReq.Step_Definitions.Ada05 is
 
       I := Steps.R.First;
       while I <= Steps.R.Last and S = null loop
-         S := Ada_Step_File_Ptr (Steps.R.Element (I));
+         SH := Steps.R.Element (I);
+         S := Ada_Step_File_Ptr (SH.Ref);
          if S /= null and then S.File_Name /= File_Name_Ads then
             --  This line is difficult to cover for certain as it depends on
             --  the order the step packages are read. If the step package we
             --  are modifying is the first, then this line is never executed.
             S := null;  --  GCOV_IGNORE
+            SH.UnRef;
          end if;
          I := I + 1;
       end loop;
 
       if S = null then
          S := new Ada_Step_File_Type;
+         SH.Set (Step_File_Ptr (S));
          S.Make  (File_Name_Ads, Fill_Steps => False);
          if Exists (File_Name_Ads) then
             --  GCOV_IGNORE_BEGIN
@@ -592,7 +599,7 @@ package body XReq.Step_Definitions.Ada05 is
             S.Parse (Logger);
             --  GCOV_IGNORE_END
          end if;
-         Steps.R.Append  (Step_File_Ptr (S));
+         Steps.R.Append  (SH);
          Logger.Put_Line ("Create step definition package : " & Step_Pkg);
       else
          Logger.Put_Line ("Update step definition package : " & Step_Pkg);

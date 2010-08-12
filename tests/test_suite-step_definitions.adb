@@ -21,6 +21,7 @@ with Ada.Strings.Unbounded;
 with Ada.Containers;
 with Util.IO;
 with XReq.Lang;
+with XReq.Step_Definitions.Handles;
 with XReq.Step_Definition_List.Handles;
 with XReq.Steps;
 
@@ -28,6 +29,7 @@ use Ada.Strings.Unbounded;
 use Ada.Containers;
 use Util.IO;
 use XReq.Lang;
+use XReq.Step_Definitions.Handles;
 use XReq.Step_Definition_List.Handles;
 use XReq.Steps;
 

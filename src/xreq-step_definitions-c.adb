@@ -23,6 +23,7 @@ with Ada.Strings;
 with Ada.Strings.Fixed;
 with GNAT.Regpat;
 with Util.Strings;
+with XReq.Step_Definitions.Handles;
 
 use Ada.Directories;
 use Ada.Text_IO;
@@ -30,6 +31,7 @@ use Ada.Strings;
 use Ada.Strings.Fixed;
 use GNAT.Regpat;
 use Util.Strings;
+use XReq.Step_Definitions.Handles;
 
 package body XReq.Step_definitions.C is
 
@@ -45,6 +47,7 @@ package body XReq.Step_definitions.C is
       Search  : Search_Type;
       Element : Directory_Entry_Type;
       Step    : C_Step_File_Ptr;
+      Step_H  : Step_File_Handle;
    begin
       Start_Search (Search, Directory, "*.h",
                     (Ordinary_File => True, others => False));
@@ -53,7 +56,8 @@ package body XReq.Step_definitions.C is
          Step := new C_Step_File_Type;
          Step.Make  (Compose (Directory, Simple_Name (Element)), Fill_Steps);
          Step.Parse (Logger);
-         Steps.R.Append (Step_File_Ptr (Step));
+         Step_H.Set (Step_File_Ptr (Step));
+         Steps.R.Append (Step_H);
       end loop;
       End_Search (Search);
    end Parse_Directory;
@@ -66,7 +70,8 @@ package body XReq.Step_definitions.C is
                    File_Name  : in  String;
                    Fill_Steps : in  Boolean := False) is
    begin
-      S := (File_Name  => To_Unbounded_String (File_Name),
+      S := (Reffy.Counted_Type with
+            File_Name  => To_Unbounded_String (File_Name),
             Parsed     => False,
             Fill_Steps => Fill_Steps,
             others     => <>);

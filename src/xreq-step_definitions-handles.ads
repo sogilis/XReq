@@ -17,15 +17,17 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Reffy.Handles;
+with Reffy.Abstract_Handles;
 
-package XReq.Step_Definition_List.Handles is
+package XReq.Step_Definitions.Handles is
 
    package Handles_Pkg is
-      new Reffy.Handles (Step_File_List_Type, Step_File_List_Ptr);
+      new Reffy.Abstract_Handles (Step_File_Type, Step_File_Ptr);
 
-   subtype Step_File_List_Handle is Handles_Pkg.Handle;
+   subtype Step_File_Handle is Handles_Pkg.Handle;
 
-   function Create return Step_File_List_Handle;
+   subtype Step_Match_Type is XReq.Step_Definitions.Step_Match_Type;
+   package Step_Match_Vectors renames XReq.Step_Definitions.Match_Vectors;
+   subtype Step_Match_Location is XReq.Step_Definitions.Match_Location;
 
-end XReq.Step_Definition_List.Handles;
+end XReq.Step_Definitions.Handles;

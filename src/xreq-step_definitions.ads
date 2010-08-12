@@ -24,6 +24,7 @@ with GNAT.Regpat;
 with Util.IO;
 with XReqLib;
 with XReq.Steps;
+with Reffy;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -57,7 +58,7 @@ package XReq.Step_Definitions is
    --  Step_File_Type  --
    ----------------------
 
-   type Step_File_Type is abstract tagged private;
+   type Step_File_Type is abstract new Reffy.Counted_Type with private;
    type Step_File_Ptr  is access all Step_File_Type'Class;
 
    Unparsed_Step : exception;
@@ -109,7 +110,7 @@ private  ----------------------------------------------------------------------
 
    procedure Finalize (Steps : in out Step_Container.Vector);
 
-   type Step_File_Type is abstract tagged
+   type Step_File_Type is abstract new Reffy.Counted_Type with
       record
          Parsed     : Boolean := False;
          File_Name  : Unbounded_String;
