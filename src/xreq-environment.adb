@@ -35,7 +35,7 @@ package body XReq.Environment is
                            Out_Dir  : in     String := "";
                            Language : in     Language_Type := Lang_Ada) is
    begin
-      Env := (Reffy.Counted_Type with
+      Env := (Reffy.Counted_Type (Env) with
          Step_Dir => Step_Dir,
          Out_Dir  => To_Unbounded_String (Out_Dir),
          Language => Language,

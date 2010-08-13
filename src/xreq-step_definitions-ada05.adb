@@ -96,7 +96,7 @@ package body XReq.Step_Definitions.Ada05 is
                    File_Name  : in  String;
                    Fill_Steps : in  Boolean := False) is
    begin
-      S := (Reffy.Counted_Type with
+      S := (Reffy.Counted_Type (S) with
             File_Name  => To_Unbounded_String (File_Name),
             Parsed     => False,
             Fill_Steps => Fill_Steps,
