@@ -147,8 +147,8 @@ package body Reffy.Abstract_Handles is
       H : Handle;
    begin
       H.Pointer := Obj;
-      H.IncRef;
       Log (H, "Create");
+      H.IncRef;
       return H;
    end Create;
 
