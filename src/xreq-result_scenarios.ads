@@ -22,14 +22,14 @@ with XReqLib;
 with XReqLib.Generic_Scenarios;
 with Util.IO;
 with Util.Strings;
-with XReq.Result_Steps;
+with XReq.Steps.Result;
 with XReq.Scenarios;
 with XReq.Step_Definition_List.Handles;
 
 use XReqLib;
 use Util.IO;
 use Util.Strings;
-use XReq.Result_Steps;
+use XReq.Steps.Result;
 use XReq.Scenarios;
 use XReq.Step_Definition_List.Handles;
 
@@ -43,7 +43,7 @@ package XReq.Result_Scenarios is
    --  with their parameters.
 
    package Scenarios_Package is new XReqLib.Generic_Scenarios
-      (Result_Step_Type, XReq.Result_Steps.Equals);
+      (Result_Step_Type, XReq.Steps.Result.Equals);
 
    type Result_Scenario_Type is new
      Scenarios_Package.Scenario_Type with private;
@@ -87,7 +87,7 @@ package XReq.Result_Scenarios is
 private
 
    package Result_Steps is new Ada.Containers.Vectors
-      (Natural, Result_Step_Type, XReq.Result_Steps.Equals);
+      (Natural, Result_Step_Type, XReq.Steps.Result.Equals);
 
    package Result_Steps_Vectors2 is
       new Ada.Containers.Vectors

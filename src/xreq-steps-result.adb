@@ -17,14 +17,9 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
 with XReq.Step_Definitions;
-with XReqLib;
 
-use Ada.Strings.Unbounded;
-use XReqLib;
-
-package body XReq.Result_Steps is
+package body XReq.Steps.Result is
 
 
    ----------------------------------
@@ -65,12 +60,13 @@ package body XReq.Result_Steps is
    is
       Buffer : Unbounded_String;
       E : Step_Match_Location;
+      Stanza : constant String := S.Stanza;
    begin
       Append (Buffer, Indent & Procedure_Name (S) & " (");
       for I in S.Match_First .. S.Match_Last loop
          E := S.Match_Element (I);
          Append (Buffer, String'("(" &
-                 Ada_String (S.Stanza (E.First .. E.Last)) &
+                 Ada_String (Stanza (E.First .. E.Last)) &
                  E.First'Img &
                  E.Last'Img & ")"));
       end loop;
@@ -203,4 +199,4 @@ package body XReq.Result_Steps is
       return Element (S.Match.Matches, I);
    end Match_Element;
 
-end XReq.Result_Steps;
+end XReq.Steps.Result;

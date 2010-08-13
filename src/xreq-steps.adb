@@ -31,10 +31,10 @@ package body XReq.Steps is
                        Position : in  Position_Type) is
    begin
       Step := Step_Type'(Reffy.Counted_Type (Step) with
-                         Prefix => Kind,
-                         Stanza => To_Unbounded_String (Stanza),
-                         Pos    => Position,
-                         others => <>);
+                         Prefix   => Kind,
+                         M_Stanza => To_Unbounded_String (Stanza),
+                         Pos      => Position,
+                         others   => <>);
    end Make;
 
    ----------------------------------
@@ -54,7 +54,7 @@ package body XReq.Steps is
             when Step_Then  => Append (Buffer, "Then ");
          end case;
       end if;
-      Append (Buffer, S.Stanza);
+      Append (Buffer, S.M_Stanza);
       return To_String (Buffer);
    end To_String;
 
@@ -65,7 +65,7 @@ package body XReq.Steps is
    function To_Regexp (S : in Step_Type) return String is
       use Ada.Strings.Fixed;
       Buffer    : Unbounded_String;
-      Stanza    : constant String := To_String (S.Stanza);
+      Stanza    : constant String := To_String (S.M_Stanza);
       I         : Natural := Stanza'First;
       N         : Natural;
    begin
@@ -143,7 +143,7 @@ package body XReq.Steps is
 
    function Stanza    (S : in Step_Type) return String is
    begin
-      return To_String (S.Stanza);
+      return To_String (S.M_Stanza);
    end Stanza;
 
    -----------------------------
@@ -171,7 +171,7 @@ package body XReq.Steps is
    procedure Set_Stanza   (S      : in out Step_Type;
                            Stanza : in     String) is
    begin
-      S.Stanza := To_Unbounded_String (Stanza);
+      S.M_Stanza := To_Unbounded_String (Stanza);
    end Set_Stanza;
 
    ---------------------------------

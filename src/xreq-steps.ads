@@ -88,10 +88,10 @@ private
 
    type Step_Type is new Reffy.Counted_Type with
       record
-         Prefix : Step_Kind;
-         Stanza : Unbounded_String;
-         Args   : Argument_Vectors.Vector;
-         Pos    : Position_Type;
+         Prefix   : Step_Kind;
+         M_Stanza : Unbounded_String;
+         Args     : Argument_Vectors.Vector;
+         Pos      : Position_Type;
       end record;
 
    Null_Step : constant Step_Type := (Reffy.Counted_Type with others => <>);

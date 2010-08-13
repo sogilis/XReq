@@ -30,7 +30,7 @@ with XReq.Step_Definition_List.Handles;
 with XReq.Scenarios;
 with XReq.Steps;
 with XReq.Steps.Handles;
-with XReq.Result_Steps;
+with XReq.Steps.Result;
 with XReq.Result_Scenarios;
 with XReq.Result_Features;
 
@@ -44,7 +44,7 @@ use XReq.Step_Definition_List.Handles;
 use XReq.Scenarios;
 use XReq.Steps;
 use XReq.Steps.Handles;
-use XReq.Result_Steps;
+use XReq.Steps.Result;
 use XReq.Result_Scenarios;
 use XReq.Result_Features;
 
@@ -110,7 +110,7 @@ package body Test_Suite.Result is
             return False;
          end if;
          for I in S.Step_First .. S.Step_Last loop
-            if not XReq.Result_Steps.Equals
+            if not XReq.Steps.Result.Equals
                      (S.Step_Element (I), Element (V, I))
             then
                Std_Logger.Put_Line ("Fail at index" & I'Img);
