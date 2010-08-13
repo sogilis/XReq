@@ -22,13 +22,13 @@ with Ada.Containers.Vectors;
 with GNAT.Regpat;
 with Util.IO;
 with XReqLib;
-with XReq.Steps;
+with XReq.Steps.Handles;
 with Reffy;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReqLib;
-use XReq.Steps;
+use XReq.Steps.Handles;
 
 package XReq.Step_Definitions is
 
@@ -68,15 +68,15 @@ package XReq.Step_Definitions is
                         Logger  : in     Logger_Ptr) is abstract;
 
    function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type) return Boolean;
+                        Stanza  : in  Step_Handle) return Boolean;
 
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type) return String;
+                        Stanza  : in  Step_Handle) return String;
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type)
+                        Stanza  : in  Step_Handle)
                         return Step_Match_Type;
    procedure Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type;
+                        Stanza  : in  Step_Handle;
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean);

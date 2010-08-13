@@ -21,9 +21,9 @@ with Ada.Strings.Fixed;
 
 package body XReq.Steps is
 
-   -------------------------------
-   --  Step_Type  --  New_Step  --
-   -------------------------------
+   ---------------------------
+   --  Step_Type  --  Make  --
+   ---------------------------
 
    procedure Make     (Step     : in out Step_Type;
                        Kind     : in  Step_Kind;
@@ -35,6 +35,20 @@ package body XReq.Steps is
                          M_Stanza => To_Unbounded_String (Stanza),
                          Pos      => Position,
                          others   => <>);
+   end Make;
+
+   ---------------------------
+   --  Step_Type  --  Make  --
+   ---------------------------
+
+   procedure Make         (Step     : in out Step_Type;
+                           Other    : in     Step_Type) is
+   begin
+      Step := (Reffy.Counted_Type (Step) with
+               Prefix   => Other.Prefix,
+               M_Stanza => Other.M_Stanza,
+               Pos      => Other.Position,
+               Args     => Other.Args);
    end Make;
 
    ----------------------------------

@@ -26,20 +26,22 @@ package body XReq.Steps.Result is
    --  Result_Step_Type  --  Make  --
    ----------------------------------
 
-   procedure Make           (Self           : out Result_Step_Type;
-                             Step           : in  Step_Type;
+   procedure Make           (Self           : in out Result_Step_Type;
+                             Step           : in  Step_Handle;
                              Match          : in  Step_Match_Type
                                             := Step_Match_Type'(others => <>))
    is
    begin
-      Self := Result_Step_Type'(Step with Match => Match);
+      Step_Type'Class (Self).Make (Step.Ref.all);
+      Self := Result_Step_Type'(Step_Type (Self) with
+                                Match => Match);
    end Make;
 
    ---------------------------------------------
    --  Result_Step_Type  --  New_Result_Step  --
    ---------------------------------------------
 
-   function  New_Result_Step (Step           : in  Step_Type;
+   function  New_Result_Step (Step           : in  Step_Handle;
                               Match          : in  Step_Match_Type
                                              := Step_Match_Type'(others => <>))
                                              return Result_Step_Type
@@ -78,8 +80,8 @@ package body XReq.Steps.Result is
    --  Result_Step_Type  --  Process_Step  --
    ------------------------------------------
 
-   procedure Process_Step     (Res           : out    Result_Step_Type;
-                               Stanza        : in     Step_Type;
+   procedure Process_Step     (Res           : in out Result_Step_Type;
+                               Stanza        : in     Step_Handle;
                                Steps         : in     Step_File_List_Handle;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;
@@ -96,34 +98,34 @@ package body XReq.Steps.Result is
       exception
          when XReq.Step_Definitions.Ambiguous_Match =>
             if Log.Verbosity < 0 then
-               Log.Put_Line (-1, To_String (Stanza.Position) & ": ERROR: " &
-                             "Ambiguous match for: " & Stanza.To_String);
+               Log.Put_Line (-1, To_String (Stanza.R.Position) & ": ERROR: " &
+                             "Ambiguous match for: " & Stanza.R.To_String);
             else
                Log.Put_Line ("ERROR: Ambiguous match in " &
-                             To_String (Stanza.Position) & " for:");
-               Log.Put_Line ("  " & Stanza.To_String);
+                             To_String (Stanza.R.Position) & " for:");
+               Log.Put_Line ("  " & Stanza.R.To_String);
             end if;
             Errors := True;
       end;
       if not Match.Match then
-         RegExp := To_Unbounded_String (Stanza.To_Regexp);
+         RegExp := To_Unbounded_String (Stanza.R.To_Regexp);
          Include (Missing_Steps, RegExp);
          if Log.Verbosity < 0 then
-            Log.Put_Line (-1, To_String (Stanza.Position) & ": ERROR: " &
-                          "Missing step definition for: " & Stanza.To_String);
+            Log.Put_Line (-1, To_String (Stanza.R.Position) & ": ERROR: " &
+                         "Missing step definition for: " & Stanza.R.To_String);
          else
             Log.Put_Line (String'("ERROR: Missing step definition in " &
-                          To_String (Stanza.Position) & " for:"));
-            Log.Put_Line ("  " & Stanza.To_String);
+                          To_String (Stanza.R.Position) & " for:"));
+            Log.Put_Line ("  " & Stanza.R.To_String);
             Log.Put_Line ("You can implement this step by adding on your " &
                           "step definition file:");
-            Log.Put_Line ("  --  " & Stanza.To_Regexp);
+            Log.Put_Line ("  --  " & Stanza.R.To_Regexp);
             Log.Put_Line ("  --  @todo");
             Log.New_Line;
          end if;
          Errors := True;
       elsif Step_Matching then
-         Log.Put_Line ("Step Matching: """ & To_String (Stanza.Position) &
+         Log.Put_Line ("Step Matching: """ & To_String (Stanza.R.Position) &
                        """ matches """ & To_String (Match.Position) &
                        """ procedure " & To_String (Match.Proc_Name));
       end if;

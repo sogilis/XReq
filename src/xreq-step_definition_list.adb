@@ -137,7 +137,7 @@ package body XReq.Step_Definition_List is
    ----------------
 
    function  Contains  (Steps     : in Step_File_List_Type;
-                        Stanza    : in Step_Type) return Boolean
+                        Stanza    : in Step_Handle) return Boolean
    is
    begin
       return Find (Steps, Stanza) /= "";
@@ -148,7 +148,7 @@ package body XReq.Step_Definition_List is
    ------------
 
    function  Find      (Steps     : in Step_File_List_Type;
-                        Stanza    : in Step_Type) return String
+                        Stanza    : in Step_Handle) return String
    is
       Proc    : Unbounded_String;
       Matches : Step_Match_Vectors.Vector;
@@ -167,7 +167,7 @@ package body XReq.Step_Definition_List is
    ------------
 
    function  Find      (Steps     : in Step_File_List_Type;
-                        Stanza    : in Step_Type) return Step_Match_Type
+                        Stanza    : in Step_Handle) return Step_Match_Type
    is
       use Step_Definition_Vectors;
       Result : Step_Match_Type;
@@ -195,7 +195,7 @@ package body XReq.Step_Definition_List is
    ------------
 
    procedure Find      (Steps     : in  Step_File_List_Type;
-                        Stanza    : in  Step_Type;
+                        Stanza    : in  Step_Handle;
                         Proc      : out Unbounded_String;
                         Matches   : out Step_Match_Vectors.Vector;
                         Found     : out Boolean)

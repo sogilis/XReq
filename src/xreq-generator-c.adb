@@ -24,12 +24,12 @@ with Ada.Strings.Fixed;
 with GNAT.OS_Lib;
 with XReqLib.String_Tables;
 with XReq.Step_Definitions;
-with XReq.Steps;
+with XReq.Steps.Result.Handles;
 with XReq.Args;
 with XReq.Language.Handles;
 
 use XReq.Step_Definitions;
-use XReq.Steps;
+use XReq.Steps.Result.Handles;
 use XReq.Args;
 use XReq.Language.Handles;
 
@@ -41,7 +41,7 @@ package body XReq.Generator.C is
                                 T          : in     String_Tables.Table);
    procedure Generate_Step     (S          : in out C_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
-                                Step       : in     Result_Step_Type;
+                                Step       : in     Result_Step_Handle;
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
@@ -113,7 +113,7 @@ package body XReq.Generator.C is
 
    procedure Generate_Step     (S          : in out C_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
-                                Step       : in     Result_Step_Type;
+                                Step       : in     Result_Step_Handle;
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
@@ -124,13 +124,13 @@ package body XReq.Generator.C is
       use Ada.Strings.Fixed;
       use String_Sets;
       use Match_Vectors;
-      Procname : constant String := Step.Procedure_Name;
-      H_File   : constant String := Step.File_Name;
+      Procname : constant String := Step.R.Procedure_Name;
+      H_File   : constant String := Step.R.File_Name;
       E        : Match_Location;
       E2       : Argument_Type;
    begin
       S.C.Put_Line ("/*");
-      S.C.Put_Line (" * " & Num'Img & ". " & Step_Type (Step).To_String);
+      S.C.Put_Line (" * " & Num'Img & ". " & Step.R.To_String);
       S.C.Put_Line (" */");
       S.C.Put_Line ("num_step =" & Num'Img & ";");
       S.C.Put_Line ("XReq_Format_Start_Step (format);");
@@ -148,14 +148,15 @@ package body XReq.Generator.C is
       S.C.Indent (2);
       S.C.Put_Indent;
       S.C.Put      ("#define prefix ");
-      case Step.Kind is
+      case Step.R.Kind is
          when Step_Given => S.C.Put ("XReq_Kind_Given");
          when Step_When  => S.C.Put ("XReq_Kind_When");
          when Step_Then  => S.C.Put ("XReq_Kind_Then");
       end case;
       S.C.New_Line;
-      S.C.Put_Line ("#define stanza " & C_String (Step.Stanza));
-      S.C.Put_Line ("#define pos    " & C_String (To_String (Step.Position)));
+      S.C.Put_Line ("#define stanza " & C_String (Step.R.Stanza));
+      S.C.Put_Line ("#define pos    " & C_String
+        (To_String (Step.R.Position)));
       S.C.Put_Line ("XReq_Args  *args = XReq_Args_New ();");
       S.C.Put_Line ("XReq_Table *tble = XReq_Table_New();");
       S.C.Put_Line ("XReq_Error *err  = XReq_Error_New();");
@@ -168,13 +169,13 @@ package body XReq.Generator.C is
       --  Fill in Args  --
       -------------------------------------------------------------------------
       S.C.Put_Line ("XReq_Args_Make      (args, stanza);");
-      for I in Step.Match_First .. Step.Match_Last loop
-         E := Step.Match_Element (I);
+      for I in Step.R.Match_First .. Step.R.Match_Last loop
+         E := Step.R.Match_Element (I);
          S.C.Put_Line ("XReq_Args_Add_Match (args," & E.First'Img & "," &
                                      E.Last'Img & ");");
       end loop;
-      for I2 in Step.Arg_First .. Step.Arg_Last loop
-         E2 := Step.Arg_Element (I2);
+      for I2 in Step.R.Arg_First .. Step.R.Arg_Last loop
+         E2 := Step.R.Arg_Element (I2);
          case E2.Typ is
             when Text =>
                S.C.Put_Line ("XReq_Args_Add_Text  (args, " &

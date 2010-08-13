@@ -19,14 +19,20 @@
 
 with Reffy.Handles;
 
-package XReq.Environment.Handles is
+package XReq.Steps.Result.Handles is
 
    package Handles_Pkg is new Reffy.Handles
-     (Job_Environment, Job_Environment_Ptr);
+     (Result_Step_Type, Result_Step_Ptr);
 
    use type Handles_Pkg.Handle;
-   subtype Environment_Handle is Handles_Pkg.Handle;
+   subtype Result_Step_Handle is Handles_Pkg.Handle;
 
-   function Create return Environment_Handle;
+   function Create return Result_Step_Handle;
 
-end XReq.Environment.Handles;
+   function Create (Step  : Step_Handle;
+                    Match : Step_Match_Type := (others => <>))
+                    return Result_Step_Handle;
+
+end XReq.Steps.Result.Handles;
+
+

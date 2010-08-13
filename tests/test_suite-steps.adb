@@ -43,23 +43,23 @@ package body Test_Suite.Steps is
    end Name;
 
    procedure Run (T : in out Test_1) is
-      S1, S2 : Step_Type;
+      S1, S2 : Step_Handle;
    begin
 
-      T.Assert (Stanza_Given ("A").To_String = "Given A",
+      T.Assert (Stanza_Given ("A").R.To_String = "Given A",
               "Wrong stanza Given A");
 
-      T.Assert (Stanza_When  ("B").To_String = "When B",
+      T.Assert (Stanza_When  ("B").R.To_String = "When B",
               "Wrong stanza When B");
 
-      T.Assert (Stanza_Then  ("C").To_String = "Then C",
+      T.Assert (Stanza_Then  ("C").R.To_String = "Then C",
               "Wrong stanza Then C");
 
       declare
          Expect : constant String :=
             "@given ^Something ""([^""]*)"" dumb \(""\)$";
          Found  : constant String :=
-            Stanza_Given ("Something ""here"" dumb ("")").To_Regexp;
+            Stanza_Given ("Something ""here"" dumb ("")").R.To_Regexp;
       begin
          T.Assert (Expect = Found, "To_Regexp not OK." & ASCII.LF &
                   "Expected: " & Expect & ASCII.LF &
@@ -69,11 +69,11 @@ package body Test_Suite.Steps is
       S1 := Stanza_Given ("A");
       S2 := Stanza_Given ("A");
 
-      S1.Set_Position (Position ("toto", 5));
-      T.Assert (S1.Position = Position ("toto", 5), "Wrong position");
+      S1.R.Set_Position (Position ("toto", 5));
+      T.Assert (S1.R.Position = Position ("toto", 5), "Wrong position");
 
-      S2.Set_Position (Position ("toto", 5));
-      T.Assert (Equals (S1, S2), "Wrong Equals");
+      S2.R.Set_Position (Position ("toto", 5));
+      T.Assert (S1.R.all = S2.R.all, "Wrong Equals");
 
    end Run;
 

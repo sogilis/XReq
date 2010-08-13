@@ -23,6 +23,7 @@ package XReq.Language.Handles is
 
    package Handles_Pkg is new Reffy.Handles (Language_Type, Language_Ptr);
 
+   use type Handles_Pkg.Handle;
    subtype Language_Handle is Handles_Pkg.Handle;
 
    function Create return Language_Handle;

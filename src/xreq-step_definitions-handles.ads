@@ -24,6 +24,7 @@ package XReq.Step_Definitions.Handles is
    package Handles_Pkg is
       new Reffy.Abstract_Handles (Step_File_Type, Step_File_Ptr);
 
+   use type Handles_Pkg.Handle;
    subtype Step_File_Handle is Handles_Pkg.Handle;
 
    subtype Step_Match_Type is XReq.Step_Definitions.Step_Match_Type;

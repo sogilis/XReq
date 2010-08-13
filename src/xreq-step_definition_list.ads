@@ -22,7 +22,7 @@ with Ada.Containers.Vectors;
 with Util.IO;
 with Util.Strings;
 with XReq.Lang;
-with XReq.Steps;
+with XReq.Steps.Handles;
 with XReq.Step_Definitions;
 with XReq.Step_Definitions.Handles;
 with Reffy;
@@ -31,7 +31,7 @@ use Ada.Strings.Unbounded;
 use Util.IO;
 use Util.Strings;
 use XReq.Lang;
-use XReq.Steps;
+use XReq.Steps.Handles;
 use XReq.Step_Definitions.Handles;
 
 package XReq.Step_Definition_List is
@@ -71,13 +71,13 @@ package XReq.Step_Definition_List is
                         Idx        : in  Natural) return Step_File_Handle;
 
    function  Contains  (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type) return Boolean;
+                        Stanza     : in  Step_Handle) return Boolean;
    function  Find      (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type) return String;
+                        Stanza     : in  Step_Handle) return String;
    function  Find      (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type) return Step_Match_Type;
+                        Stanza     : in  Step_Handle) return Step_Match_Type;
    procedure Find      (Steps      : in  Step_File_List_Type;
-                        Stanza     : in  Step_Type;
+                        Stanza     : in  Step_Handle;
                         Proc       : out Unbounded_String;
                         Matches    : out Step_Match_Vectors.Vector;
                         Found      : out Boolean);

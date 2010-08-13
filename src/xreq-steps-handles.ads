@@ -24,17 +24,20 @@ package XReq.Steps.Handles is
    package Handles_Pkg is new Reffy.Handles
      (Step_Type, Step_Ptr);
 
+   use type Handles_Pkg.Handle;
    subtype Step_Handle is Handles_Pkg.Handle;
+
+   function Create return Step_Handle;
 
    function  Stanza_Given (S    : in String;
                            File : in String := "";
-                           Line : in Natural := 0) return Step_Type;
+                           Line : in Natural := 0) return Step_Handle;
    function  Stanza_When  (S    : in String;
                            File : in String := "";
-                           Line : in Natural := 0) return Step_Type;
+                           Line : in Natural := 0) return Step_Handle;
    function  Stanza_Then  (S    : in String;
                            File : in String := "";
-                           Line : in Natural := 0) return Step_Type;
+                           Line : in Natural := 0) return Step_Handle;
 
 end XReq.Steps.Handles;
 

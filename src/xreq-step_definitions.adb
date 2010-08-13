@@ -38,7 +38,7 @@ package body XReq.Step_Definitions is
    ----------------
 
    function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type) return Boolean
+                        Stanza  : in  Step_Handle) return Boolean
    is
       This : constant access constant Step_File_Type'Class := S'Access;
    begin
@@ -50,7 +50,7 @@ package body XReq.Step_Definitions is
    ------------
 
    function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type) return String
+                        Stanza  : in  Step_Handle) return String
    is
       This    : constant access constant Step_File_Type'Class := S'Access;
       Proc    : Unbounded_String;
@@ -70,7 +70,7 @@ package body XReq.Step_Definitions is
    ------------
 
    procedure Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Type;
+                        Stanza  : in  Step_Handle;
                         Proc    : out Unbounded_String;
                         Matches : out Match_Vectors.Vector;
                         Found   : out Boolean)
@@ -88,7 +88,7 @@ package body XReq.Step_Definitions is
    ------------
 
    function  Find      (S       : in     Step_File_Type;
-                        Stanza  : in     Step_Type)
+                        Stanza  : in     Step_Handle)
                                   return Step_Match_Type
    is
       use Match_Vectors;
@@ -105,14 +105,14 @@ package body XReq.Step_Definitions is
       --  Look for the phrase
       for i in S.Steps.First_Index .. S.Steps.Last_Index loop
          Step  := S.Steps.Element (i);
-         if Step.Prefix = Stanza.Kind then
+         if Step.Prefix = Stanza.R.Kind then
             declare
                Matched  : Match_Array (0 .. Paren_Count (Step.Pattern_R.all));
             begin
 --                Put_Line ("XReq.Steps.Ada.Find: Match """ &
 --                          Stanza.To_String & """ against |" &
 --                          To_String (Step.Pattern_S) & "|");
-               Match (Step.Pattern_R.all, Stanza.Stanza, Matched);
+               Match (Step.Pattern_R.all, Stanza.R.Stanza, Matched);
                if Matched (0) /= No_Match then
                   if Result.Match then
                      raise Ambiguous_Match;

@@ -24,6 +24,7 @@ package XReq.Step_Definition_List.Handles is
    package Handles_Pkg is
       new Reffy.Handles (Step_File_List_Type, Step_File_List_Ptr);
 
+   use type Handles_Pkg.Handle;
    subtype Step_File_List_Handle is Handles_Pkg.Handle;
 
    function Create return Step_File_List_Handle;

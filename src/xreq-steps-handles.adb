@@ -22,16 +22,23 @@ package body XReq.Steps.Handles is
 
    use Handles_Pkg;
 
+   function Create return Step_Handle is
+   begin
+      return Create (new Step_Type);
+   end Create;
+
    -----------------------------------
    --  Step_Type  --  Stanza_Given  --
    -----------------------------------
 
    function Stanza_Given (S    : in String;
                           File : in String := "";
-                          Line : in Natural := 0) return Step_Type is
+                          Line : in Natural := 0) return Step_Handle is
+      Step : Step_Type;
    begin
-      return Step : Step_Type do
-         Step.Make (Step_Given, S, Position (File, Line));
+      Step.Make (Step_Given, S, Position (File, Line));
+      return S : Step_Handle do
+         S.Set_New (Step);
       end return;
    end Stanza_Given;
 
@@ -41,10 +48,12 @@ package body XReq.Steps.Handles is
 
    function Stanza_When  (S    : in String;
                           File : in String := "";
-                          Line : in Natural := 0) return Step_Type is
+                          Line : in Natural := 0) return Step_Handle is
+      Step : Step_Type;
    begin
-      return Step : Step_Type do
-         Step.Make (Step_When, S, Position (File, Line));
+      Step.Make (Step_When, S, Position (File, Line));
+      return S : Step_Handle do
+         S.Set_New (Step);
       end return;
    end Stanza_When;
 
@@ -54,10 +63,12 @@ package body XReq.Steps.Handles is
 
    function Stanza_Then  (S    : in String;
                           File : in String := "";
-                          Line : in Natural := 0) return Step_Type is
+                          Line : in Natural := 0) return Step_Handle is
+      Step : Step_Type;
    begin
-      return Step : Step_Type do
-         Step.Make (Step_Then, S, Position (File, Line));
+      Step.Make (Step_Then, S, Position (File, Line));
+      return S : Step_Handle do
+         S.Set_New (Step);
       end return;
    end Stanza_Then;
 

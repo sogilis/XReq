@@ -59,7 +59,7 @@ package body Test_Suite.Features is
       Feature  : Feature_File_Type := Null_Feature_File;
       File     : constant String := "tests/features/simplest.feature";
       Scenario : Scenario_Type;
-      Stanza   : Step_Type;
+      Stanza   : Step_Handle;
 
       CRLF : constant String := "" & ASCII.LF;
       Canonical_Feature_Text : constant String :=
@@ -140,10 +140,10 @@ package body Test_Suite.Features is
 
       Stanza := Feature.Background.Step_Element (0);
 
-      T.Assert (Stanza.Kind = Step_Given,
+      T.Assert (Stanza.R.Kind = Step_Given,
               "The first step of the background is not a Given");
 
-      T.Assert (Stanza.Stanza = "this step works",
+      T.Assert (Stanza.R.Stanza = "this step works",
               "Text of the first given of background incorrect");
 
       T.Assert (Feature.Scenario_Count /= 0,
@@ -162,10 +162,10 @@ package body Test_Suite.Features is
 
       Stanza := Scenario.Step_Element (0);
 
-      T.Assert (Stanza.Kind = Step_Given,
+      T.Assert (Stanza.R.Kind = Step_Given,
               "The first step of the scenario is not a Given");
 
-      T.Assert (Stanza.Stanza = "this step works",
+      T.Assert (Stanza.R.Stanza = "this step works",
               "Text of the first given of scenario incorrect");
 
       T.Assert (Feature.To_String = Canonical_Feature_Text,

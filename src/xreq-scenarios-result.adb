@@ -19,11 +19,12 @@
 
 with Ada.Strings.Unbounded;
 with XReq.Steps;
+with XReq.Steps.Result;
 
 use Ada.Strings.Unbounded;
 use XReq.Steps;
 
-package body XReq.Result_Scenarios is
+package body XReq.Scenarios.Result is
    --------------------------------------
    --  Result_Scenario_Type  --  Make  --
    --------------------------------------
@@ -52,12 +53,17 @@ package body XReq.Result_Scenarios is
                                Missing_Steps : in out String_Set;
                                Step_Matching : in Boolean := False)
    is
+      package Step_Vectors is new Ada.Containers.Vectors
+        (Natural, Step_Handle, "=");
       use Result_Steps;
+      use Step_Vectors;
       use Result_Steps_Vectors2;
-      J         : Result_Steps.Cursor;
-      Res_St    : Result_Step_Type;
-      Steps_tmp : Result_Steps.Vector;
-      Err       : Boolean;
+      K          : Step_Vectors.Cursor;
+      Res_St     : Result_Step_Handle;
+      St         : Step_Handle;
+      Steps_tmp  : Result_Steps.Vector;
+      Steps_tmp2 : Step_Vectors.Vector;
+      Err        : Boolean;
    begin
       Res.Make (Scenario);
       Clear (Res.Scenarios);
@@ -66,11 +72,12 @@ package body XReq.Result_Scenarios is
       --  Process all steps
       --
       for I in Scenario.Step_First .. Scenario.Step_Last loop
+         Res_St := Create;
          if Scenario.Outline then
             Err := False;
-            Res_St.Make (Scenario.Step_Element (I));
+            Res_St.R.Make (Scenario.Step_Element (I));
          else
-            Res_St.Process_Step (Scenario.Step_Element (I),
+            Res_St.R.Process_Step (Scenario.Step_Element (I),
                                  Steps,
                                  Log, Err, Step_Matching, Missing_Steps);
          end if;
@@ -79,6 +86,7 @@ package body XReq.Result_Scenarios is
          else
             Res.Step_Append (Res_St);
          end if;
+         Res_St.UnRef;
       end loop;
       --
       --  For scenario outlines, create scenarios
@@ -86,47 +94,55 @@ package body XReq.Result_Scenarios is
       if Scenario.Outline then
          for Y in Scenario.Table.First_Y + 1 .. Scenario.Table.Last_Y loop
             --
-            --  For each row,
+            --  For each row in the examples table,
             --  take each cell and replace <Label> with the actual item in each
             --  steps
             --
             Clear (Steps_tmp);
+            --  First, populate the step vector with a copy of the unmodified
+            --  steps
             for I in Scenario.Step_First .. Scenario.Step_Last loop
-               Res_St.Make (Scenario.Step_Element (I));
-               Append (Steps_tmp, Res_St);
+               St := Create;
+               St.Set_New (Step_Type (Scenario.Step_Element (I).Ref.all));
+               Append (Steps_tmp2, St);
+               St.UnRef;
             end loop;
+            --  Then, for each column, replace the <label>
             for X in Scenario.Table.First_X .. Scenario.Table.Last_X loop
                declare
                   Item  : constant String := Scenario.Table.Item (X, Y, "");
                   Label : constant String := "<" & Scenario.Table.Item
                                    (X, Scenario.Table.First_Y, "") & ">";
                begin
-                  J := First (Steps_tmp);
-                  while Has_Element (J) loop
-                     Res_St := Element (J);
-                     --  Log.Put_Line ("Replace: " & Res_St.To_String);
-                     Res_St.Set_Stanza (Replace (Res_St.Stanza, Label, Item));
-                     --  Log.Put_Line ("With   : " & Res_St.To_String);
-                     Replace_Element (Steps_tmp, J, Res_St);
-                     Next (J);
+                  K := First (Steps_tmp2);
+                  while Has_Element (K) loop
+                     St := Element (K);
+                     --  Log.Put_Line ("Replace: " & St.R.To_String);
+                     St.R.Set_Stanza
+                       (Replace (St.R.Stanza, Label, Item));
+                     --  Log.Put_Line ("With   : " & St.R.To_String);
+                     --  Not necessary anymore for we use pointers
+                     --  Replace_Element (Steps_tmp, J, St);
+                     Next (K);
                   end loop;
                end;
             end loop;
             --
             --  Now that we have the scenario for the row, process their steps
             --
-            J := First (Steps_tmp);
-            while Has_Element (J) loop
-               Res_St := Element (J);
+            K := First (Steps_tmp2);
+            while Has_Element (K) loop
+               St := Element (K);
                --  Log.Put_Line ("I get  : " & Res_St.To_String);
-               Process_Step (Res_St, Step_Type (Res_St),
-                             Steps,
-                             Log, Err, Step_Matching, Missing_Steps);
+               Res_St := Create;
+               Res_St.R.Process_Step
+                 (St, Steps,
+                  Log, Err, Step_Matching, Missing_Steps);
                if Err then
                   Errors := True;
                end if;
-               Replace_Element (Steps_tmp, J, Res_St);
-               Next (J);
+               Append (Steps_tmp, Res_St);
+               Next (K);
             end loop;
             --  Log.Put_Line ("--------");
             --
@@ -151,10 +167,15 @@ package body XReq.Result_Scenarios is
    begin
       for I in Res.Step_First .. Res.Step_Last loop
          Append (Buffer,
-                 Indent & Res.Step_Element (I).To_Code & CRLF);
+                 String'(Indent & Res.Step_Element (I).R.To_Code & CRLF));
       end loop;
       return To_String (Buffer);
    end To_Code;
+
+
+
+
+   --  Collection: Outlines  --------------------------------------------------
 
    ---------------------
    --  Outline_First  --
@@ -230,7 +251,7 @@ package body XReq.Result_Scenarios is
    function  Outline_Step_Element (S       : in Result_Scenario_Type;
                                    Outline : in Natural;
                                    Step    : in Natural)
-                                   return Result_Step_Type
+                                   return Result_Step_Handle
    is
       use Result_Steps;
       use Result_Steps_Vectors2;
@@ -240,4 +261,39 @@ package body XReq.Result_Scenarios is
       return Element (V, Step);
    end Outline_Step_Element;
 
-end XReq.Result_Scenarios;
+
+
+   --  Inherited Collection: Steps  -------------------------------------------
+
+   -------------------
+   --  Step_Append  --
+   -------------------
+
+   procedure Step_Append  (Scenario : in out Result_Scenario_Type;
+                           Stanza   : in     Result_Step_Handle) is
+      Super : Scenario_Type'Class := Scenario;
+      S : Step_Handle;
+   begin
+      S.Set (Step_Ptr (Stanza.Ref));
+      Super.Step_Append (S);
+   end Step_Append;
+
+   --------------------
+   --  Step_Element  --
+   --------------------
+
+   function  Step_Element (Scenario : in     Result_Scenario_Type;
+                                  Index    : in     Natural)
+                                             return Result_Step_Handle
+   is
+      Super : constant Scenario_Type'Class := Scenario;
+      S1 : constant Step_Handle := Super.Step_Element (Index);
+   begin
+      return S2 : Result_Step_Handle do
+         S2.Set (Steps.Result.Result_Step_Ptr (S1.Ref));
+      end return;
+   end Step_Element;
+
+
+
+end XReq.Scenarios.Result;

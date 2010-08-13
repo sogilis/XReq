@@ -18,22 +18,19 @@
 -------------------------------------------------------------------------------
 
 with Ada.Containers.Vectors;
-with XReqLib;
-with XReqLib.Generic_Scenarios;
 with Util.IO;
 with Util.Strings;
-with XReq.Steps.Result;
+with XReq.Steps.Result.Handles;
 with XReq.Scenarios;
 with XReq.Step_Definition_List.Handles;
 
-use XReqLib;
 use Util.IO;
 use Util.Strings;
-use XReq.Steps.Result;
+use XReq.Steps.Result.Handles;
 use XReq.Scenarios;
 use XReq.Step_Definition_List.Handles;
 
-package XReq.Result_Scenarios is
+package XReq.Scenarios.Result is
 
    ----------------------------
    --  Result_Scenario_Type  --
@@ -42,11 +39,8 @@ package XReq.Result_Scenarios is
    --  Contain a list of procedure names matching the step definitions along
    --  with their parameters.
 
-   package Scenarios_Package is new XReqLib.Generic_Scenarios
-      (Result_Step_Type, XReq.Steps.Result.Equals);
-
    type Result_Scenario_Type is new
-     Scenarios_Package.Scenario_Type with private;
+     XReq.Scenarios.Scenario_Type with private;
 
    --  Creation  --------------------------------------------------------------
 
@@ -80,22 +74,29 @@ package XReq.Result_Scenarios is
    function  Outline_Step_Element (S       : in Result_Scenario_Type;
                                    Outline : in Natural;
                                    Step    : in Natural)
-                                   return Result_Step_Type;
+                                   return Result_Step_Handle;
 
+   --  Inherited Collection: Steps  -------------------------------------------
+
+   procedure Step_Append  (Scenario : in out Result_Scenario_Type;
+                           Stanza   : in     Result_Step_Handle);
+   function  Step_Element (Scenario : in     Result_Scenario_Type;
+                           Index    : in     Natural)
+                                      return Result_Step_Handle;
    ----------------------------------------------------------------------------
 
 private
 
    package Result_Steps is new Ada.Containers.Vectors
-      (Natural, Result_Step_Type, XReq.Steps.Result.Equals);
+      (Natural, Result_Step_Handle, "=");
 
    package Result_Steps_Vectors2 is
       new Ada.Containers.Vectors
          (Natural, Result_Steps.Vector, Result_Steps."=");
 
-   type Result_Scenario_Type is new Scenarios_Package.Scenario_Type with
+   type Result_Scenario_Type is new XReq.Scenarios.Scenario_Type with
       record
          Scenarios : Result_Steps_Vectors2.Vector;
       end record;
 
-end XReq.Result_Scenarios;
+end XReq.Scenarios.Result;

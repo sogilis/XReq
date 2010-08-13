@@ -43,6 +43,9 @@ package XReq.Steps is
                            Stanza   : in  String;
                            Position : in  Position_Type);
 
+   procedure Make         (Step     : in out Step_Type;
+                           Other    : in     Step_Type);
+
    --  Processing  ------------------------------------------------------------
 
    function  To_String    (S : in Step_Type;

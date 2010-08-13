@@ -25,7 +25,7 @@ with GNAT.OS_Lib;
 with Util.IO;
 with XReqLib.String_Tables;
 with XReq.Step_Definitions;
-with XReq.Steps;
+with XReq.Steps.Result.Handles;
 with XReq.Args;
 with XReq.Language.Handles;
 
@@ -33,7 +33,7 @@ use Ada.Directories;
 use GNAT.OS_Lib;
 use Util.IO;
 use XReq.Step_Definitions;
-use XReq.Steps;
+use XReq.Steps.Result.Handles;
 use XReq.Args;
 use XReq.Language.Handles;
 
@@ -45,7 +45,7 @@ package body XReq.Generator.Ada05 is
                                 T          : in     String_Tables.Table);
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
-                                Step       : in     Result_Step_Type;
+                                Step       : in     Result_Step_Handle;
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
@@ -115,7 +115,7 @@ package body XReq.Generator.Ada05 is
 
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
                                 Scenario   : in     Result_Scenario_Type;
-                                Step       : in     Result_Step_Type;
+                                Step       : in     Result_Step_Handle;
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
@@ -126,14 +126,14 @@ package body XReq.Generator.Ada05 is
       use Ada.Strings.Fixed;
       use String_Sets;
       use Match_Vectors;
-      Procname : constant String := Step.Procedure_Name;
+      Procname : constant String := Step.R.Procedure_Name;
       Pkgname  : Unbounded_String;
       Copy     : Boolean := False;
       E        : Match_Location;
       E2       : Argument_Type;
    begin
       S.Adb.Put_Line ("--");
-      S.Adb.Put_Line ("-- " & Num'Img & ". " & Step_Type (Step).To_String);
+      S.Adb.Put_Line ("-- " & Num'Img & ". " & Step.R.To_String);
       S.Adb.Put_Line ("--");
       S.Adb.Put_Line ("Num_Step :=" & Num'Img & ";");
       S.Adb.Put_Line ("Format.Start_Step;");
@@ -152,16 +152,16 @@ package body XReq.Generator.Ada05 is
       S.Adb.Put_Line ("Args   : Arg_Type;");
       S.Adb.Put_Indent;
       S.Adb.Put      ("Prefix : constant Step_Kind := ");
-      case Step.Kind is
+      case Step.R.Kind is
          when Step_Given => S.Adb.Put ("Step_Given;");
          when Step_When  => S.Adb.Put ("Step_When;");
          when Step_Then  => S.Adb.Put ("Step_Then;");
       end case;
       S.Adb.New_Line;
       S.Adb.Put_Line ("Stanza : constant String    := " &
-                      Ada_String (Step.Stanza) & ";");
+                      Ada_String (Step.R.Stanza) & ";");
       S.Adb.Put_Line ("Pos    : constant String    := " &
-                      Ada_String (To_String (Step.Position)) & ";");
+                      Ada_String (To_String (Step.R.Position)) & ";");
       S.Adb.UnIndent;
 
       -------------------------------------------------------------------------
@@ -175,14 +175,14 @@ package body XReq.Generator.Ada05 is
       --  Fill in Args  --
       -------------------------------------------------------------------------
       S.Adb.Put_Line ("Make (Args, " &
-                      Ada_String (Step.Stanza) & ");");
-      for I in Step.Match_First .. Step.Match_Last loop
-         E := Step.Match_Element (I);
+                      Ada_String (Step.R.Stanza) & ");");
+      for I in Step.R.Match_First .. Step.R.Match_Last loop
+         E := Step.R.Match_Element (I);
          S.Adb.Put_Line ("Add_Match (Args," & E.First'Img & "," &
                                      E.Last'Img & ");");
       end loop;
-      for I2 in Step.Arg_First .. Step.Arg_Last loop
-         E2 := Step.Arg_Element (I2);
+      for I2 in Step.R.Arg_First .. Step.R.Arg_Last loop
+         E2 := Step.R.Arg_Element (I2);
          case E2.Typ is
             when Text =>
                S.Adb.Put_Line ("Add_Text  (Args, " &

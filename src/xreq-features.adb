@@ -25,12 +25,12 @@ with Ada.Exceptions;
 with Util.Strings;
 with XReqLib.String_Tables;
 with XReq.Args;
-with XReq.Steps;
+with XReq.Steps.Handles;
 with XReq.Language;
 
 use Util.Strings;
 use XReq.Args;
-use XReq.Steps;
+use XReq.Steps.Handles;
 
 package body XReq.Features is
 
@@ -93,7 +93,7 @@ package body XReq.Features is
       procedure Read_Feature  (Feature  : in out Feature_File_Type);
       procedure Read_Scenario (Scenario : out    Scenario_Type;
                                Outline  : in     Boolean := False);
-      procedure Read_Step     (Step     : in out Step_Type);
+      procedure Read_Step     (Step     : in out Step_Handle);
       procedure Read_String   (Result   : out    Unbounded_String;
                                Sep      : in     String);
       procedure Read_Table    (Result   : out    String_Tables.Table);
@@ -253,7 +253,7 @@ package body XReq.Features is
       --  ++                  TABLE
       procedure Read_Scenario (Scenario : out Scenario_Type;
                                Outline  : in  Boolean := False) is
-         Current_Stanza : Step_Type;
+         Current_Stanza : Step_Handle;
          Current_Prefix : Step_All_Kind := Step_Null;
          Detect         : Boolean;
          Continue       : Boolean := True;
@@ -314,8 +314,9 @@ package body XReq.Features is
             end if;
 
             if Detect then
+               Current_Stanza := Create;
                if Current_Prefix /= Step_Null then
-                  Current_Stanza.Set_Kind (Current_Prefix);
+                  Current_Stanza.R.Set_Kind (Current_Prefix);
                end if;
                Read_Step (Current_Stanza);
                if Current_Prefix /= Step_Null then
@@ -334,14 +335,14 @@ package body XReq.Features is
       --  ++                | "And"
       --  ++ STANZA_PARAM  -> STRING
       --  ++                  TABLE
-      procedure Read_Step (Step : in out Step_Type) is
+      procedure Read_Step (Step : in out Step_Handle) is
          Continue    : Boolean := True;
          Long_String : Unbounded_String;
          Tble        : String_Tables.Table;
       begin
-         Step.Make (Step.Kind,
-                    To_String (Trimed_Suffix (Line_S, Idx_Data)),
-                    Position);
+         Step.R.Make (Step.R.Kind,
+                      To_String (Trimed_Suffix (Line_S, Idx_Data)),
+                      Position);
 --          Log_Error ("Begin read step");
          while Continue and not End_Of_File loop
 
@@ -361,13 +362,13 @@ package body XReq.Features is
                Continue    := False;
             elsif Detect_Keyword (K.StrSimple) then
                Read_String (Long_String, K.StrSimple);
-               Step.Arg_Append (Argument_Type'(Text, Long_String));
+               Step.R.Arg_Append (Argument_Type'(Text, Long_String));
             elsif Detect_Keyword (K.StrDouble) then
                Read_String (Long_String, K.StrDouble);
-               Step.Arg_Append (Argument_Type'(Text, Long_String));
+               Step.R.Arg_Append (Argument_Type'(Text, Long_String));
             elsif Detect_Keyword ("|") then
                Read_Table (Tble);
-               Step.Arg_Append (Argument_Type'(Table, Tble));
+               Step.R.Arg_Append (Argument_Type'(Table, Tble));
             elsif Detect_Keyword ("#") then
                null;
             elsif Idx_Data > 0 then

@@ -21,11 +21,13 @@ with Util.IO;
 with Util.Strings;
 with XReq.Step_Definition_List.Handles;
 with XReq.Step_Definitions.Handles;
+with XReq.Steps.Handles;
 
 use Util.IO;
 use Util.Strings;
 use XReq.Step_Definition_List.Handles;
 use XReq.Step_Definitions.Handles;
+use XReq.Steps.Handles;
 
 package XReq.Steps.Result is
 
@@ -36,16 +38,17 @@ package XReq.Steps.Result is
    --  A procedure name of a step definition and its arguments
 
    type Result_Step_Type is new Step_Type with private;  --  GCOV_IGNORE
+   type Result_Step_Ptr is access all Result_Step_Type'Class;
 
    --  Creation  --------------------------------------------------------------
 
-   function  New_Result_Step (Step           : in  Step_Type;
+   function  New_Result_Step (Step           : in  Step_Handle;
                               Match          : in  Step_Match_Type
                                              := Step_Match_Type'(others => <>))
                              return Result_Step_Type;
 
-   procedure Make           (Self           : out Result_Step_Type;
-                             Step           : in  Step_Type;
+   procedure Make           (Self           : in out Result_Step_Type;
+                             Step           : in  Step_Handle;
                              Match          : in  Step_Match_Type
                                             := Step_Match_Type'(others => <>));
 
@@ -54,8 +57,8 @@ package XReq.Steps.Result is
    function  To_Code       (S             : in     Result_Step_Type;
                             Indent        : in     String := "") return String;
 
-   procedure Process_Step  (Res           : out    Result_Step_Type;
-                            Stanza        : in     Step_Type;
+   procedure Process_Step  (Res           : in out Result_Step_Type;
+                            Stanza        : in     Step_Handle;
                             Steps         : in     Step_File_List_Handle;
                             Log           : in     Logger_Ptr;
                             Errors        : out    Boolean;
