@@ -31,10 +31,16 @@ package body XReq.Steps.Result is
                              Match          : in  Step_Match_Type
                                             := Step_Match_Type'(others => <>))
    is
+      --  Super : Step_Type'Class := Self;
+      Other : constant Step_Type := Step_Type (Step.Ref.all);
    begin
-      Step_Type'Class (Self).Make (Step.Ref.all);
+      --  TODO: find a better way
+      Self.Prefix   := Other.Prefix;
+      Self.M_Stanza := Other.M_Stanza;
+      Self.Pos      := Other.Position;
+      Self.Args     := Other.Args;
       Self := Result_Step_Type'(Step_Type (Self) with
-                                Match => Match);
+         Match => Match);
    end Make;
 
    ---------------------------------------------
