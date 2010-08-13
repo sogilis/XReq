@@ -24,6 +24,7 @@ with XReq.Lang;
 with XReq.Step_Definitions.Handles;
 with XReq.Step_Definition_List.Handles;
 with XReq.Steps;
+with XReq.Steps.Handles;
 
 use Ada.Strings.Unbounded;
 use Ada.Containers;
@@ -32,6 +33,7 @@ use XReq.Lang;
 use XReq.Step_Definitions.Handles;
 use XReq.Step_Definition_List.Handles;
 use XReq.Steps;
+use XReq.Steps.Handles;
 
 package body Test_Suite.Step_Definitions is
 

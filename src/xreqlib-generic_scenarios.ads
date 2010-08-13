@@ -21,15 +21,14 @@ with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with XReqLib.String_Tables;
 with XReqLib.Interface_Scenarios;
-with XReqLib.Interface_Steps;
+with XReq.Steps;
 
 use Ada.Strings.Unbounded;
 use XReqLib.Interface_Scenarios;
-use XReqLib.Interface_Steps;
 
 generic
 
-   type Step_Type is new Step_Interface with private;
+   type Step_Type is new XReq.Steps.Step_Type with private;
    with function "=" (Left, Right : in Step_Type) return Boolean;
 
 package XReqLib.Generic_Scenarios is

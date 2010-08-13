@@ -20,6 +20,7 @@
 with XReq;
 with XReqLib;
 with XReq.Steps;
+with XReq.Steps.Handles;
 with XReq.Scenarios;
 with XReq.Features;
 with Util.IO;
@@ -28,6 +29,7 @@ with Util.Strings;
 use XReq;
 use XReqLib;
 use XReq.Steps;
+use XReq.Steps.Handles;
 use XReq.Scenarios;
 use XReq.Features;
 use Util.IO;

@@ -19,9 +19,11 @@
 
 with XReqLib;
 with XReq.Steps;
+with XReq.Steps.Handles;
 
 use XReqLib;
 use XReq.Steps;
+use XReq.Steps.Handles;
 
 package body Test_Suite.Steps is
 
