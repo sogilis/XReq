@@ -18,8 +18,10 @@
 -------------------------------------------------------------------------------
 
 with Util.Strings;
+with XReq.Features.Files;
 
 use Util.Strings;
+use XReq.Features.Files;
 
 package body XReq.Job is
 

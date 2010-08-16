@@ -17,15 +17,46 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-package body XReq.Features is
+with Ada.Strings.Unbounded;
+with Util.IO;
 
-   ------------------------------------------
-   --  Generic_Feature_Type  --  Language  --
-   ------------------------------------------
+use Ada.Strings.Unbounded;
+use Util.IO;
 
-   function  Language  (F : in  Generic_Feature_Type) return Language_Handle is
-   begin
-      return F.Lang;
-   end Language;
+package XReq.Features.Files is
 
-end XReq.Features;
+   -------------------------
+   --  Feature_File_Type  --
+   -------------------------
+
+   type Feature_File_Type is new Generic_Feature_Type with private;
+   type Feature_File_Ptr  is access all Feature_File_Type'Class;
+
+   procedure Make      (F         : out    Feature_File_Type;
+                        File_Name : in     String);
+   function  Create    (File_Name : in     String) return Feature_File_Type;
+   function  File_Name (F         : in     Feature_File_Type) return String;
+   procedure Parse     (F         : in out Feature_File_Type;
+                        Log       : in     Logger_Ptr);
+
+   overriding
+   function  Parsed    (F         : in     Feature_File_Type) return Boolean;
+   overriding
+   function  To_String (F         : in     Feature_File_Type) return String;
+
+
+   Null_Feature_File : constant Feature_File_Type;
+
+private  ----------------------------------------------------------------------
+
+   type Feature_File_Type is new Generic_Feature_Type with
+      record
+         Parsed      : Boolean := False;
+         File_Name   : Unbounded_String;
+      end record;
+
+   Null_Feature_File : constant Feature_File_Type :=
+      Feature_File_Type'(Null_Feature with others => <>);
+
+end XReq.Features.Files;
+

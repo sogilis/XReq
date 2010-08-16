@@ -19,11 +19,13 @@
 
 with XReqLib.Generic_Features;
 with Util.Strings;
+with Util.IO;
 with XReq.Scenarios.Result;
 with XReq.Features;
 with XReq.Step_Definition_List.Handles;
 
 use Util.Strings;
+use Util.IO;
 use XReq.Scenarios.Result;
 use XReq.Features;
 use XReq.Step_Definition_List.Handles;
