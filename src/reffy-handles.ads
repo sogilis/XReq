@@ -31,6 +31,7 @@ package Reffy.Handles is
    type Handle is new Parent_Pkg.Handle with null record;
 
    procedure Set_New  (H : in out Handle; Obj : Object_Type);
+--   procedure Set_New  (H : in out Handle);
 
 end Reffy.Handles;
 

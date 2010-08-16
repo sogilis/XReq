@@ -82,8 +82,6 @@ package body Test_Suite.Generator.Ada05 is
       T.Assert (Result = 0, "gnatmake returned with error" & Result'Img &
               ASCII.LF & To_String (Output));
 
-      Cleanup (Job);
-
    end Run;
 
 end Test_Suite.Generator.Ada05;

@@ -17,18 +17,21 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with XReqLib.Generic_Features;
 with Util.Strings;
 with Util.IO;
 with XReq.Scenarios.Result;
 with XReq.Features;
+with XReq.Features.Handles;
 with XReq.Step_Definition_List.Handles;
+with XReq.Scenarios.Result.Handles;
 
 use Util.Strings;
 use Util.IO;
 use XReq.Scenarios.Result;
 use XReq.Features;
+use XReq.Features.Handles;
 use XReq.Step_Definition_List.Handles;
+use XReq.Scenarios.Result.Handles;
 
 
 package XReq.Features.Result is
@@ -42,18 +45,16 @@ package XReq.Features.Result is
    --  procedures of the step definitions to call in correct order and their
    --  parameters.
 
-   package Features_Package is new XReqLib.Generic_Features
-      (Result_Scenario_Type, "=");
-
-   type Result_Feature_Type is new Features_Package.Feature_Type with private;
+   type Result_Feature_Type is new Feature_Type with private;
+   type Result_Feature_Ptr is access all Result_Feature_Type'Class;
 
    --  Processing  ------------------------------------------------------------
 
    function  To_Code         (Res           : in     Result_Feature_Type;
                               Indent        : in     String := "")
                                               return String;
-   procedure Process_Feature (Res           : out    Result_Feature_Type;
-                              Feature       : in     Feature_Ptr;
+   procedure Process_Feature (Res           : in out Result_Feature_Type;
+                              Feature       : in     Feature_Handle;
                               Steps         : in     Step_File_List_Handle;
                               Log           : in     Logger_Ptr;
                               Missing_Steps : in out String_Set;
@@ -61,24 +62,28 @@ package XReq.Features.Result is
 
    --  Properties  ------------------------------------------------------------
 
-   function  Fail     (F    : in     Result_Feature_Type) return Boolean;
+   function  Fail           (F    : in     Result_Feature_Type) return Boolean;
+   function  Background     (F    : in     Result_Feature_Type)
+                                    return Result_Scenario_Handle;
 
-   procedure Set_Fail (F    : in out Result_Feature_Type;
-                       Fail : in     Boolean := True);
+   procedure Set_Fail       (F    : in out Result_Feature_Type;
+                             Fail : in     Boolean := True);
+   procedure Set_Background (F    : in out Result_Feature_Type;
+                             Bg   : in     Result_Scenario_Handle);
 
    --  Inbherited Collection: Scenario  ---------------------------------------
 
---   function  Scenario_Element   (F : in     Feature_Type;
---                                 I : in     Natural)
---                                     return Result_Scenario_Type;
---   procedure Scenario_Append    (F : in out Feature_Type;
---                                 S : in     Result_Scenario_Type);
+   function  Scenario_Element   (F : in     Result_Feature_Type;
+                                 I : in     Natural)
+                                     return Result_Scenario_Handle;
+   procedure Scenario_Append    (F : in out Result_Feature_Type;
+                                 S : in     Result_Scenario_Handle);
 
    ----------------------------------------------------------------------------
 
 private
 
-   type Result_Feature_Type is new Features_Package.Feature_Type with
+   type Result_Feature_Type is new Feature_Type with
       record
          Fail : Boolean       := False;
       end record;

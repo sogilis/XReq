@@ -17,25 +17,14 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AUnit;
-with AUnit.Test_Suites;
 
+package body XReq.Scenarios.Result.Handles is
 
-package Test_Suite.Features is
+   use Handles_Pkg;
 
-   procedure Add_Tests (
-      Ret : in AUnit.Test_Suites.Access_Test_Suite);
+   function Create return Result_Scenario_Handle is
+   begin
+      return Create (new Result_Scenario_Type);
+   end Create;
 
-   --  Test type
-   type Test_1 is new Test_Case_Type with null record;
-   type Test_2 is new Test_Case_Type with null record;
-
-   --  Operation on Test_1
-   function  Name (T : in     Test_1) return String;
-   procedure Run  (T : in out Test_1);
-
-   --  Operation on Test_2
-   function  Name (T : in     Test_2) return String;
-   procedure Run  (T : in out Test_2);
-
-end Test_Suite.Features;
+end XReq.Scenarios.Result.Handles;

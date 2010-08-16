@@ -82,7 +82,7 @@ package body XReq.Features.Files is
       procedure Read_All;
       procedure Read_Keywords;
       procedure Read_Feature  (Feature  : in out Feature_File_Type);
-      procedure Read_Scenario (Scenario : out    Scenario_Type;
+      procedure Read_Scenario (Scenario : out    Scenario_Handle;
                                Outline  : in     Boolean := False);
       procedure Read_Step     (Step     : in out Step_Handle);
       procedure Read_String   (Result   : out    Unbounded_String;
@@ -196,11 +196,10 @@ package body XReq.Features.Files is
       --  ++                   description NL
       --  ++                   { SCENARIO }
       procedure Read_Feature (Feature : in out Feature_File_Type) is
-         Current_Scenario : Scenario_Type;
          Beginning        : Boolean := True;
          Had_Description  : Boolean := False;
          Data             : Unbounded_String;
-         Scenario         : Scenario_Type;
+         Scenario         : Scenario_Handle;
       begin
          Feature.Set_Name (To_String (Trimed_Suffix (Line_S, Idx_Data)));
          Feature.Set_Position (Position);
@@ -211,14 +210,12 @@ package body XReq.Features.Files is
                Feature.Set_Background (Scenario);
                Beginning := False;
             elsif Detect_Keyword (K.Scenario) then
-               Current_Scenario := Null_Scenario;
-               Read_Scenario (Current_Scenario);
-               Self.Scenario_Append (Current_Scenario);
+               Read_Scenario (Scenario);
+               Self.Scenario_Append (Scenario);
                Beginning := False;
             elsif Detect_Keyword (K.Scenario_Outline) then
-               Current_Scenario := Null_Scenario;
-               Read_Scenario (Current_Scenario, True);
-               Self.Scenario_Append (Current_Scenario);
+               Read_Scenario (Scenario, True);
+               Self.Scenario_Append (Scenario);
                Beginning := False;
             elsif Detect_Keyword ("#") then
                null;
@@ -242,7 +239,7 @@ package body XReq.Features.Files is
       --  ++                | "Scenario Outline:"
       --  ++ SCENARIO_EX   -> "Examples:" NL
       --  ++                  TABLE
-      procedure Read_Scenario (Scenario : out Scenario_Type;
+      procedure Read_Scenario (Scenario : out Scenario_Handle;
                                Outline  : in  Boolean := False) is
          Current_Stanza : Step_Handle;
          Current_Prefix : Step_All_Kind := Step_Null;
@@ -250,7 +247,8 @@ package body XReq.Features.Files is
          Continue       : Boolean := True;
          Table          : String_Tables.Table;
       begin
-         Scenario.Make
+         Scenario := Create;
+         Scenario.Ref.Make
            (Name     => To_String (Trimed_Suffix (Line_S, Idx_Data)),
             Position => Position,
             Outline  => Outline,
@@ -275,7 +273,7 @@ package body XReq.Features.Files is
                Read_Line;
                if not End_Of_File then
                   Read_Table (Table);
-                  Scenario.Set_Table (Table);
+                  Scenario.R.Set_Table (Table);
                end if;
                Detect := False;
             elsif Detect_Keyword (K.Given) then
@@ -311,11 +309,12 @@ package body XReq.Features.Files is
                end if;
                Read_Step (Current_Stanza);
                if Current_Prefix /= Step_Null then
-                  Scenario.Step_Append (Current_Stanza);
+                  Scenario.R.Step_Append (Current_Stanza);
                end if;
             end if;
 
          end loop;
+         pragma Assert (Scenario.Valid);
       end Read_Scenario;
 
       --  ++ STANZA        -> K.STANZA text NL

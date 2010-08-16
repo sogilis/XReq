@@ -30,14 +30,14 @@ package body XReq.Scenarios.Result is
    --------------------------------------
 
    procedure Make             (Res           : out    Result_Scenario_Type;
-                               Scenario      : in     Scenario_Type) is
+                               Scenario      : in     Scenario_Handle) is
    begin
-      Res.Make (Scenario.Name,
-                Scenario.Position,
-                Scenario.Outline,
-                Scenario.Tag_Vector);
-      if Scenario.Outline then
-         Res.Set_Table (Scenario.Table);
+      Res.Make (Scenario.R.Name,
+                Scenario.R.Position,
+                Scenario.R.Outline,
+                Scenario.R.Tag_Vector);
+      if Scenario.R.Outline then
+         Res.Set_Table (Scenario.R.Table);
       end if;
    end Make;
 
@@ -45,8 +45,8 @@ package body XReq.Scenarios.Result is
    --  Result_Scenario_Type  --  Process_Scenario  --
    --------------------------------------------------
 
-   procedure Process_Scenario (Res      : out Result_Scenario_Type;
-                               Scenario : in  Scenario_Type;
+   procedure Process_Scenario (Res      : in out Result_Scenario_Type;
+                               Scenario : in  Scenario_Handle;
                                Steps    : in  Step_File_List_Handle;
                                Log      : in  Logger_Ptr;
                                Errors   : out Boolean;
@@ -71,15 +71,15 @@ package body XReq.Scenarios.Result is
       --
       --  Process all steps
       --
-      for I in Scenario.Step_First .. Scenario.Step_Last loop
+      for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
          Res_St := Create;
-         if Scenario.Outline then
+         if Scenario.R.Outline then
             Err := False;
-            Res_St.R.Make (Scenario.Step_Element (I));
+            Res_St.R.Make (Scenario.R.Step_Element (I));
          else
-            Res_St.R.Process_Step (Scenario.Step_Element (I),
-                                 Steps,
-                                 Log, Err, Step_Matching, Missing_Steps);
+            Res_St.R.Process_Step
+              (Scenario.R.Step_Element (I), Steps,
+               Log, Err, Step_Matching, Missing_Steps);
          end if;
          if Err then
             Errors := True;
@@ -91,8 +91,8 @@ package body XReq.Scenarios.Result is
       --
       --  For scenario outlines, create scenarios
       --
-      if Scenario.Outline then
-         for Y in Scenario.Table.First_Y + 1 .. Scenario.Table.Last_Y loop
+      if Scenario.R.Outline then
+         for Y in Scenario.R.Table.First_Y + 1 .. Scenario.R.Table.Last_Y loop
             --
             --  For each row in the examples table,
             --  take each cell and replace <Label> with the actual item in each
@@ -101,18 +101,18 @@ package body XReq.Scenarios.Result is
             Clear (Steps_tmp);
             --  First, populate the step vector with a copy of the unmodified
             --  steps
-            for I in Scenario.Step_First .. Scenario.Step_Last loop
+            for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
                St := Create;
-               St.Set_New (Step_Type (Scenario.Step_Element (I).Ref.all));
+               St.Set_New (Step_Type (Scenario.R.Step_Element (I).Ref.all));
                Append (Steps_tmp2, St);
                St.UnRef;
             end loop;
             --  Then, for each column, replace the <label>
-            for X in Scenario.Table.First_X .. Scenario.Table.Last_X loop
+            for X in Scenario.R.Table.First_X .. Scenario.R.Table.Last_X loop
                declare
-                  Item  : constant String := Scenario.Table.Item (X, Y, "");
-                  Label : constant String := "<" & Scenario.Table.Item
-                                   (X, Scenario.Table.First_Y, "") & ">";
+                  Item  : constant String := Scenario.R.Table.Item (X, Y, "");
+                  Label : constant String := "<" & Scenario.R.Table.Item
+                                   (X, Scenario.R.Table.First_Y, "") & ">";
                begin
                   K := First (Steps_tmp2);
                   while Has_Element (K) loop

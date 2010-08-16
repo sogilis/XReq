@@ -17,25 +17,18 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AUnit;
-with AUnit.Test_Suites;
 
+package body XReq.Features.Result.Handles is
 
-package Test_Suite.Features is
+   use Handles_Pkg;
 
-   procedure Add_Tests (
-      Ret : in AUnit.Test_Suites.Access_Test_Suite);
+   function Create return Result_Feature_Handle is
+   begin
+      return Create (new Result_Feature_Type);
+   end Create;
 
-   --  Test type
-   type Test_1 is new Test_Case_Type with null record;
-   type Test_2 is new Test_Case_Type with null record;
+--  begin
 
-   --  Operation on Test_1
-   function  Name (T : in     Test_1) return String;
-   procedure Run  (T : in out Test_1);
+--     Handles_Pkg.Parent_Pkg.Traces := True;
 
-   --  Operation on Test_2
-   function  Name (T : in     Test_2) return String;
-   procedure Run  (T : in out Test_2);
-
-end Test_Suite.Features;
+end XReq.Features.Result.Handles;

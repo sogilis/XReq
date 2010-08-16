@@ -18,13 +18,14 @@
 -------------------------------------------------------------------------------
 
 with XReqLib;
-with XReq.Scenarios;
+with Reffy;
+with XReq.Scenarios.Handles;
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with XReq.Language.Handles;
 
 use XReqLib;
-use XReq.Scenarios;
+use XReq.Scenarios.Handles;
 use Ada.Strings.Unbounded;
 use XReq.Language.Handles;
 
@@ -36,7 +37,7 @@ package XReq.Features is
    -- Feature_Type  --
    -------------------
 
-   type Feature_Type is tagged private;
+   type Feature_Type is new Reffy.Counted_Type with private;
    type Feature_Ptr  is access all Feature_Type'Class;
 
    procedure Free            (F      : in out Feature_Ptr);
@@ -55,7 +56,7 @@ package XReq.Features is
    function  Parsed      (F : in Feature_Type) return Boolean;
    function  Name        (F : in Feature_Type) return String;
    function  Position    (F : in Feature_Type) return Position_Type;
-   function  Background  (F : in Feature_Type) return Scenario_Type;
+   function  Background  (F : in Feature_Type) return Scenario_Handle;
    function  Filetype    (F : in Feature_Type) return String;
    function  Description (F : in Feature_Type) return String;
    function  Language    (F : in Feature_Type) return Language_Handle;
@@ -67,7 +68,7 @@ package XReq.Features is
    procedure Set_Position       (F      : in out Feature_Type;
                                  Pos    : in     Position_Type);
    procedure Set_Background     (F      : in out Feature_Type;
-                                 Bg     : in     Scenario_Type);
+                                 Bg     : in     Scenario_Handle);
    procedure Set_Description    (F      : in out Feature_Type;
                                  Desc   : in     String);
    procedure Set_Filetype       (F      : in out Feature_Type;
@@ -81,9 +82,9 @@ package XReq.Features is
    function  Scenario_Last      (F : in Feature_Type) return Integer;
    function  Scenario_Count     (F : in Feature_Type) return Natural;
    function  Scenario_Element   (F : in Feature_Type;
-                                 I : in Natural)      return Scenario_Type;
+                                 I : in Natural)      return Scenario_Handle;
    procedure Scenario_Append    (F : in out Feature_Type;
-                                 S : in     Scenario_Type);
+                                 S : in     Scenario_Handle);
 
    ----------------------------------------------------------------------------
 
@@ -93,20 +94,20 @@ package XReq.Features is
 private
 
    package Scenario_Container is
-      new Ada.Containers.Vectors (Natural, Scenario_Type,
-                                  XReq.Scenarios.Equals); --  TODO
+      new Ada.Containers.Vectors (Natural, Scenario_Handle, "=");
 
-   type Feature_Type is tagged
+   type Feature_Type is new Reffy.Counted_Type with
       record
          M_Name        : Unbounded_String;
          M_Description : Unbounded_String;
          M_Filetype    : Unbounded_String;
          Pos           : Position_Type;
-         Background    : Scenario_Type;
+         Background    : Scenario_Handle;
          Scenarios     : Scenario_Container.Vector;
          Lang          : Language_Handle;
       end record;
 
-   Null_Feature : constant Feature_Type := (others => <>);
+   Null_Feature : constant Feature_Type :=
+     (Reffy.Counted_Type with others => <>);
 
 end XReq.Features;

@@ -77,7 +77,7 @@ package body XReq.Features is
    --  Feature_Type  --  Background  --
    ------------------------------------
 
-   function  Background  (F : in Feature_Type) return Scenario_Type is
+   function  Background  (F : in Feature_Type) return Scenario_Handle is
    begin
       return F.Background;
    end Background;
@@ -112,7 +112,7 @@ package body XReq.Features is
       CRLF : constant String := "" & ASCII.LF;
       Res  : Unbounded_String;
       Cur  : Scenario_Container.Cursor := First (F.Scenarios);
-      Sce  : Scenario_Type;
+      Sce  : Scenario_Handle;
 
    begin
       if not Parsed (Self.all) then
@@ -120,13 +120,13 @@ package body XReq.Features is
       end if;
       Append (Res, "Feature: " & F.Name & CRLF);
       Append (Res, CRLF);
-      Append (Res, "  Background: " & F.Background.Name & CRLF);
-      F.Background.Output_Steps (Res);
+      Append (Res, "  Background: " & F.Background.R.Name & CRLF);
+      F.Background.R.Output_Steps (Res);
       Append (Res, CRLF);
       while Has_Element (Cur) loop
          Sce := Element (Cur);
-         Append (Res, "  Scenario: " & Sce.Name & CRLF);
-         Sce.Output_Steps (Res);
+         Append (Res, "  Scenario: " & Sce.R.Name & CRLF);
+         Sce.R.Output_Steps (Res);
          Append (Res, CRLF);
          Next (Cur);
       end loop;
@@ -158,10 +158,11 @@ package body XReq.Features is
    ----------------------------------------
 
    procedure Set_Background (F      : in out Feature_Type;
-                             Bg     : in     Scenario_Type)
+                             Bg     : in     Scenario_Handle)
    is
    begin
       F.Background := Bg;
+      pragma Assert (F.Background.Valid = Bg.Valid);
    end Set_Background;
 
    -----------------------------------------
@@ -240,7 +241,7 @@ package body XReq.Features is
    ---------------------------------
 
    function  Scenario_Element   (F : in Feature_Type;
-                                 I : in Natural)      return Scenario_Type
+                                 I : in Natural)      return Scenario_Handle
    is
       use Scenario_Container;
    begin
@@ -252,7 +253,7 @@ package body XReq.Features is
    --------------------------------
 
    procedure Scenario_Append    (F : in out Feature_Type;
-                                 S : in     Scenario_Type)
+                                 S : in     Scenario_Handle)
    is
       use Scenario_Container;
    begin

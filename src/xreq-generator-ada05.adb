@@ -30,6 +30,7 @@ with XReq.Args;
 with XReq.Language.Handles;
 with XReq.Steps.Result;
 with XReq.Scenarios.Result;
+with XReq.Scenarios.Result.Handles;
 
 use Ada.Directories;
 use GNAT.OS_Lib;
@@ -40,6 +41,7 @@ use XReq.Args;
 use XReq.Language.Handles;
 use XReq.Steps.Result;
 use XReq.Scenarios.Result;
+use XReq.Scenarios.Result.Handles;
 
 package body XReq.Generator.Ada05 is
 
@@ -48,14 +50,14 @@ package body XReq.Generator.Ada05 is
                                 Name       : in     String;
                                 T          : in     String_Tables.Table);
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
-                                Scenario   : in     Result_Scenario_Type;
+                                Scenario   : in     Result_Scenario_Handle;
                                 Step       : in     Result_Step_Handle;
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
                                 Fake       : in     Boolean := False;
                                 Outline    : in     Boolean := False);
    procedure Generate_Scenario (S          : in out Ada_Generator_Type;
-                                Scenario   : in     Result_Scenario_Type;
+                                Scenario   : in     Result_Scenario_Handle;
                                 Name       : in     Unbounded_String;
                                 Seq_Num    : in     Integer;
                                 Num_Steps  : out    Natural;
@@ -75,7 +77,7 @@ package body XReq.Generator.Ada05 is
       use Ada.Characters.Handling;
       Basename    : Unbounded_String;
       Pkgname     : constant String :=
-                    Job.Result.Filetype & "_" & Base_Name (Job.Feature_File);
+                    Job.Result.R.Filetype & "_" & Base_Name (Job.Feature_File);
    begin
       Gen.Feature := Job.Result;
       Get_Unique_String (
@@ -118,7 +120,7 @@ package body XReq.Generator.Ada05 is
    ---------------------
 
    procedure Generate_Step     (S          : in out Ada_Generator_Type;
-                                Scenario   : in     Result_Scenario_Type;
+                                Scenario   : in     Result_Scenario_Handle;
                                 Step       : in     Result_Step_Handle;
                                 Num        : in     Natural;
                                 Background : in     Boolean := False;
@@ -295,7 +297,7 @@ package body XReq.Generator.Ada05 is
    -------------------------
 
    procedure Generate_Scenario (S          : in out Ada_Generator_Type;
-                                Scenario   : in     Result_Scenario_Type;
+                                Scenario   : in     Result_Scenario_Handle;
                                 Name       : in     Unbounded_String;
                                 Seq_Num    : in     Integer;
                                 Num_Steps  : out    Natural;
@@ -308,6 +310,7 @@ package body XReq.Generator.Ada05 is
       Steps_Count : Natural := 0;
          --  True if it is the first scenario of the outline
    begin
+      pragma Assert (Scenario.Valid);
 
       -------------------------------------------------------------------------
       --  Declaration  --------------------------------------------------------
@@ -359,7 +362,7 @@ package body XReq.Generator.Ada05 is
       S.Adb.New_Line;
       S.Adb.Put_Line ("is");
       S.Adb.Indent;
-      if Scenario.Outline then
+      if Scenario.R.Outline then
          S.Adb.Put_Line ("Outline_Table : Table_Type;");
       end if;
       S.Adb.Put_Line    ("Num_Step      : Natural := 0;");
@@ -368,10 +371,10 @@ package body XReq.Generator.Ada05 is
       S.Adb.Put_Line    ("Fail          : Boolean := Stop;");
       S.Adb.Put_Line    ("Tags          : constant " &
                      "XReqLib.Format.Tag_Array_Type (1 .." &
-                     String'(Scenario.Tag_Count'Img) & ") :=");
+                     String'(Scenario.R.Tag_Count'Img) & ") :=");
       S.Adb.Put_Indent;
       S.Adb.Put ("      (");
-      for I in Scenario.Tag_First .. Scenario.Tag_Last loop
+      for I in Scenario.R.Tag_First .. Scenario.R.Tag_Last loop
          if I > 0 then
             S.Adb.Put (", ");
             S.Adb.New_Line;
@@ -380,9 +383,9 @@ package body XReq.Generator.Ada05 is
          end if;
          S.Adb.Put (String'(Integer'Image (I + 1)) &
                     " => Ada.Strings.Unbounded.To_Unbounded_String (" &
-                    Ada_String (Scenario.Tag_Element (I)) & ")");
+                    Ada_String (Scenario.R.Tag_Element (I)) & ")");
       end loop;
-      if Scenario.Tag_Count = 0 then
+      if Scenario.R.Tag_Count = 0 then
          S.Adb.Put ("others => Ada.Strings.Unbounded.Null_Unbounded_String");
       end if;
       S.Adb.Put (");");
@@ -401,7 +404,7 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line ("Format.Start_Background (First);");
       else
          S.Adb.Put_Line ("if Cond.Eval (Tags) and then Cond.Eval (" &
-                         Ada_String (To_String (Scenario.Position.File)) &
+                         Ada_String (To_String (Scenario.R.Position.File)) &
                          ", Num_Scenario) then");
          S.Adb.Indent;
          S.Adb.Put_Line ("if not Count_Mode then");
@@ -409,8 +412,8 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line ("if First then");
          S.Adb.Put_Line ("   Priv_Feature (Format);");
          S.Adb.Put_Line ("end if;");
-         if Scenario.Outline then
-            Generate_Table (S, "Outline_Table", Scenario.Table);
+         if Scenario.R.Outline then
+            Generate_Table (S, "Outline_Table", Scenario.R.Table);
             S.Adb.Put_Line ("Format.Enter_Outline;");
          else
             S.Adb.Put_Line ("Format.Enter_Scenario;");
@@ -419,14 +422,14 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line ("   --  Background has already been shown, " &
                                 "show scenario");
          S.Adb.Put_Indent; S.Adb.Put ("  Format.");
-         if Scenario.Outline then
+         if Scenario.R.Outline then
             S.Adb.Put ("Put_Outline");
          else
             S.Adb.Put ("Put_Scenario");
          end if;
-         S.Adb.Put (" (" & Ada_String (Scenario.Name) & ", " &
-                           Ada_String (To_String (Scenario.Position)) & ", " &
-                           "Tags);");
+         S.Adb.Put (" (" & Ada_String (Scenario.R.Name) & ", " &
+                           Ada_String (To_String (Scenario.R.Position)) &
+                           ", " & "Tags);");
          S.Adb.New_Line;
          S.Adb.Put_Line ("end if;");
          S.Adb.Put_Line ("------------------");
@@ -435,19 +438,19 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line (S.Fn_Backgnd &
                          " (Format, Report, First, Cond, Fail);");
          S.Adb.Put_Line ("Stop := Stop or (First and Fail);");
-         if Scenario.Outline then
+         if Scenario.R.Outline then
             S.Adb.Put_Line ("Format.Start_Outline;");
          else
             S.Adb.Put_Line ("Format.Start_Scenario;");
          end if;
       end if;
       M := 1;
-      if not Background or else Scenario.Step_Count /= 0 then
+      if not Background or else Scenario.R.Step_Count /= 0 then
          if Background then
             S.Adb.Put_Line ("------------------");
             S.Adb.Put_Line ("--  Background  --");
             S.Adb.Put_Line ("------------------");
-         elsif Scenario.Outline then
+         elsif Scenario.R.Outline then
             S.Adb.Put_Line ("--------------------------");
             S.Adb.Put_Line ("--   Scenario Outline   --");
             S.Adb.Put_Line ("--------------------------");
@@ -460,34 +463,34 @@ package body XReq.Generator.Ada05 is
          S.Adb.Indent;
          if Background then
             S.Adb.Put_Line ("Format.Put_Background (" &
-                              Ada_String (Scenario.Name) & ", " &
-                              Ada_String (To_String (Scenario.Position)) &
+                              Ada_String (Scenario.R.Name) & ", " &
+                              Ada_String (To_String (Scenario.R.Position)) &
                               ", " & "Tags);");
-         elsif Scenario.Outline then
+         elsif Scenario.R.Outline then
             S.Adb.Put_Line ("Format.Put_Outline (" &
-                              Ada_String (Scenario.Name) & ", " &
-                              Ada_String (To_String (Scenario.Position)) &
+                              Ada_String (Scenario.R.Name) & ", " &
+                              Ada_String (To_String (Scenario.R.Position)) &
                               ", " & "Tags);");
          else
             S.Adb.Put_Line ("Format.Put_Scenario (" &
-                              Ada_String (Scenario.Name) & ", " &
-                              Ada_String (To_String (Scenario.Position)) &
+                              Ada_String (Scenario.R.Name) & ", " &
+                              Ada_String (To_String (Scenario.R.Position)) &
                               ", " & "Tags);");
          end if;
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
-         for I in Scenario.Step_First .. Scenario.Step_Last loop
-            Generate_Step (S, Scenario, Scenario.Step_Element (I), M,
-                           Background, Scenario.Outline, Scenario.Outline);
+         for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
+            Generate_Step (S, Scenario, Scenario.R.all.Step_Element (I), M,
+                           Background, Scenario.R.Outline, Scenario.R.Outline);
             M := M + 1;
-            if not Scenario.Outline then
+            if not Scenario.R.Outline then
                Steps_Count := Steps_Count + 1;
             end if;
          end loop;
       end if;
-      if Scenario.Outline then
+      if Scenario.R.Outline then
          N := 0;
-         for J in Scenario.Outline_First .. Scenario.Outline_Last loop
+         for J in Scenario.R.Outline_First .. Scenario.R.Outline_Last loop
             N := N + 1;
             S.Adb.Put_Line ("--------------------------");
             S.Adb.Put_Line ("--  Generated Scenario  --");
@@ -508,18 +511,18 @@ package body XReq.Generator.Ada05 is
             S.Adb.Put_Line ("  Format.Put_Scenario_Outline (" &
                             Ada.Strings.Fixed.Trim
                               (N'Img, Ada.Strings.Left) & ", " &
-                            Ada_String (Scenario.Name) & ", " &
-                            Ada_String (To_String (Scenario.Position)) & ", " &
-                            "Tags);");
+                            Ada_String (Scenario.R.Name) & ", " &
+                            Ada_String (To_String (Scenario.R.Position)) &
+                            ", " & "Tags);");
             S.Adb.Put_Line ("end Priv_Put_Scenario;");
             S.Adb.UnIndent;
             S.Adb.Put_Line ("begin");
             S.Adb.Indent;
-            for I in Scenario.Outline_Step_First (J) ..
-                              Scenario.Outline_Step_Last (J)
+            for I in Scenario.R.Outline_Step_First (J) ..
+                              Scenario.R.Outline_Step_Last (J)
             loop
                Generate_Step (S, Scenario,
-                              Scenario.Outline_Step_Element (J, I), M,
+                              Scenario.R.Outline_Step_Element (J, I), M,
                               Background, False, True);
                M := M + 1;
                Steps_Count := Steps_Count + 1;
@@ -553,7 +556,7 @@ package body XReq.Generator.Ada05 is
                                                  Steps_Count'Img & ";");
          S.Adb.Put_Line ("end if;");
       else
-         if Scenario.Outline then
+         if Scenario.R.Outline then
             S.Adb.Put_Line ("Format.Stop_Outline;");
          else
             S.Adb.Put_Line ("if Fail then");
@@ -569,8 +572,8 @@ package body XReq.Generator.Ada05 is
          S.Adb.UnIndent;
          S.Adb.Put_Line ("else  --  Count_Mode");
          S.Adb.Indent;
-         if Scenario.Outline then
-            for J in Scenario.Outline_First .. Scenario.Outline_Last loop
+         if Scenario.R.Outline then
+            for J in Scenario.R.Outline_First .. Scenario.R.Outline_Last loop
                S.Adb.Put_Line (S.Fn_Backgnd &
                                " (Format, Report, First, Cond, Fail, True);");
             end loop;
@@ -600,19 +603,22 @@ package body XReq.Generator.Ada05 is
       use String_Vectors;
       Str : Unbounded_String;
       N   : Positive := 1;
+      Sce : Result_Scenario_Handle;
       Num_Steps_Scenario   : Natural := 0;
       Num_Steps_Background : Natural := 0;
       Total_Steps          : Natural := 0;
    begin
-      Generate_Scenario (S, S.Feature.Background, S.Fn_Backgnd, 0,
+      Generate_Scenario (S, S.Feature.R.Background, S.Fn_Backgnd, 0,
                          Num_Steps_Background, True);
-      for I in S.Feature.Scenario_First .. S.Feature.Scenario_Last loop
+      for I in S.Feature.R.Scenario_First .. S.Feature.R.Scenario_Last loop
+         Sce := S.Feature.R.all.Scenario_Element (I);
          Get_Unique_String (S.Pool,
-            To_Identifier ("Scenario_" & S.Feature.Scenario_Element (I).Name),
-            Str);
+            To_Identifier
+              ("Scenario_" & Sce.R.Name), Str);
          Append (S.Fn_Steps, Str);
-         Generate_Scenario (S, S.Feature.Scenario_Element (I), Str, N,
-                            Num_Steps_Scenario);
+         Generate_Scenario
+           (S, S.Feature.R.all.Scenario_Element (I),
+            Str, N, Num_Steps_Scenario);
          N := N + 1;
          Total_Steps := Num_Steps_Background + Num_Steps_Scenario;
       end loop;
@@ -652,10 +658,10 @@ package body XReq.Generator.Ada05 is
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
       use String_Vectors;
-      E           : Result_Scenario_Type;
+      E           : Result_Scenario_Handle;
       Num         : Positive := 1;
       Total_Steps : Natural := 0;
-      Lang        : constant Language_Handle := Gen.Feature.Language;
+      Lang        : constant Language_Handle := Gen.Feature.R.Language;
    begin
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");
@@ -698,10 +704,11 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.Put_Line ("begin");
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.Put_Feature (" &
-                        Ada_String (Gen.Feature.Name) & ", " &
-                        Ada_String (Gen.Feature.Description) &
+                        Ada_String (Gen.Feature.R.Name) & ", " &
+                        Ada_String (Gen.Feature.R.Description) &
                         ", " &
-                        Ada_String (To_String (Gen.Feature.Position)) & ");");
+                        Ada_String (To_String (Gen.Feature.R.Position)) &
+                        ");");
       Gen.Adb.UnIndent;
       Gen.Adb.Put_Line ("end Priv_Feature;");
       Generate_Feature (Gen, Total_Steps);
@@ -732,12 +739,12 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.Put_Line ("if List_Mode then");
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("Format.List_Feature (" &
-                        Ada_String (Gen.Feature.Name) & ");");
-      for I in Gen.Feature.Scenario_First .. Gen.Feature.Scenario_Last loop
-         E := Gen.Feature.Scenario_Element (I);
+                        Ada_String (Gen.Feature.R.Name) & ");");
+      for I in Gen.Feature.R.Scenario_First .. Gen.Feature.R.Scenario_Last loop
+         E := Gen.Feature.R.all.Scenario_Element (I);
          Gen.Adb.Put_Line ("Format.List_Scenario (" &
-                           Ada_String (E.Name) & ", " &
-                           Ada_String (To_String (E.Position.File)) &
+                           Ada_String (E.R.Name) & ", " &
+                           Ada_String (To_String (E.R.Position.File)) &
                            "," & String'(Num'Img) & ");");
          Num := Num + 1;
       end loop;

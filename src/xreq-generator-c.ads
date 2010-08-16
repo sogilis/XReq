@@ -21,13 +21,13 @@ with Ada.Strings.Unbounded;
 with Util.Strings;
 with Util.Strings.Pool;
 with XReqLib;
-with XReq.Features.Result;
+with XReq.Features.Result.Handles;
 
 use Ada.Strings.Unbounded;
 use Util.Strings;
 use Util.Strings.Pool;
 use XReqLib;
-use XReq.Features.Result;
+use XReq.Features.Result.Handles;
 
 package XReq.Generator.C is
 
@@ -53,7 +53,7 @@ private
 
    type C_Generator_Type is new Generator_Type with
       record
-         Feature      : Result_Feature_Type;
+         Feature      : Result_Feature_Handle;
          H_File       : Unbounded_String;
          C_File       : Unbounded_String;
          H            : Buffer_Type;

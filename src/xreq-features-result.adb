@@ -18,6 +18,7 @@
 -------------------------------------------------------------------------------
 
 with Ada.Strings.Unbounded;
+with XReq.Scenarios;
 
 use Ada.Strings.Unbounded;
 
@@ -27,47 +28,50 @@ package body XReq.Features.Result is
    --  Result_Feature_Type  --  Process_Feature  --
    ------------------------------------------------
 
-   procedure Process_Feature (Res     : out Result_Feature_Type;
-                              Feature : in  Feature_Ptr;
-                              Steps   : in  Step_File_List_Handle;
-                              Log     : in  Logger_Ptr;
+   procedure Process_Feature (Res           : in out Result_Feature_Type;
+                              Feature       : in     Feature_Handle;
+                              Steps         : in     Step_File_List_Handle;
+                              Log           : in     Logger_Ptr;
                               Missing_Steps : in out String_Set;
                               Step_Matching : in     Boolean := False)
    is
-      R_Scen : Result_Scenario_Type;
-      Result : Result_Feature_Type;
+      R_Scen : Result_Scenario_Handle;
       Errors : Boolean;
    begin
-      if not Feature.Parsed then
+      if not Feature.R.Parsed then
          raise Unparsed_Feature;
       end if;
-      Result.Make            (Feature.Name);
-      Result.Set_Position    (Feature.Position);
-      Result.Set_Description (Feature.Description);
-      Result.Set_Filetype    (Feature.Filetype);
-      Result.Set_Language    (Feature.Language);
-      Process_Scenario (R_Scen, Feature.Background,
-                        Steps,
-                        Log, Errors, Missing_Steps, Step_Matching);
-      Result.Set_Background (R_Scen);
+      Res.Set_Name        (Feature.R.Name);
+      Res.Set_Position    (Feature.R.Position);
+      Res.Set_Description (Feature.R.Description);
+      Res.Set_Filetype    (Feature.R.Filetype);
+      Res.Lang :=          Feature.R.Language;
+      R_Scen := Create;
+      R_Scen.Ref.Process_Scenario
+        (Feature.R.Background, Steps,
+         Log, Errors, Missing_Steps, Step_Matching);
+      pragma Assert (R_Scen.Valid);
+      Res.Set_Background (R_Scen);
+      pragma Assert (Res.Background.Valid);
       if Errors then
-         Result.Fail := True;
+         Res.Fail := True;
       end if;
-      for I in Feature.Scenario_First .. Feature.Scenario_Last loop
-         Process_Scenario (R_Scen, Feature.Scenario_Element (I),
-                           Steps,
-                           Log, Errors, Missing_Steps, Step_Matching);
+      for I in Feature.R.Scenario_First .. Feature.R.Scenario_Last loop
+         R_Scen := Create;
+         R_Scen.Ref.Process_Scenario
+           (Feature.R.Scenario_Element (I), Steps,
+            Log, Errors, Missing_Steps, Step_Matching);
          if Errors then
-            Result.Fail := True;
+            Res.Fail := True;
          end if;
-         Result.Scenario_Append (R_Scen);
+         Res.Scenario_Append (R_Scen);
       end loop;
-      if Result.Fail then
+      if Res.Fail then
          Log.Put_Line ("XReq can create the procedures for you if you " &
                        "use --fill-steps");
       end if;
-      Assert (Result.Language.Valid);
-      Res := Result;
+      pragma Assert (Res.Language.Valid);
+      pragma Assert (Res.Background.Valid);
    end Process_Feature;
 
    ------------------------------------------
@@ -80,18 +84,18 @@ package body XReq.Features.Result is
    is
       CRLF   : constant String := "" & ASCII.LF;
       Buffer : Unbounded_String;
-      S      : constant String := Res.Background.Name;
-      E      : Result_Scenario_Type;
+      S      : constant String := Res.Background.R.Name;
+      E      : Result_Scenario_Handle;
    begin
       Append (Buffer, Indent & "Feature " & Res.Name & CRLF);
       Append (Buffer, Indent & "   Background " & S & CRLF);
-      Append (Buffer, Res.Background.To_Code (Indent & "      "));
+      Append (Buffer, Background (Res).R.To_Code (Indent & "      "));
       Append (Buffer, Indent & "   End Background " & S & CRLF);
       for I in Res.Scenario_First .. Res.Scenario_Last loop
          E := Res.Scenario_Element (I);
-         Append (Buffer, Indent & "   Scenario " & E.Name & CRLF);
-         Append (Buffer, E.To_Code (Indent & "      "));
-         Append (Buffer, Indent & "   End Scenario " & E.Name & CRLF);
+         Append (Buffer, Indent & "   Scenario " & E.R.Name & CRLF);
+         Append (Buffer, E.R.To_Code (Indent & "      "));
+         Append (Buffer, Indent & "   End Scenario " & E.R.Name & CRLF);
       end loop;
       Append (Buffer, Indent & "End Feature " & Res.Name & CRLF);
       return To_String (Buffer);
@@ -116,5 +120,68 @@ package body XReq.Features.Result is
       F.Fail := Fail;
    end Set_Fail;
 
+   ------------------
+   --  Background  --
+   ------------------
 
+   function  Background     (F    : in     Result_Feature_Type)
+                                    return Result_Scenario_Handle is
+      Super : constant Feature_Type'Class := F;
+      S1    : constant Scenario_Handle := Super.Background;
+   begin
+      return S2 : Result_Scenario_Handle do
+         S2.Set (Scenarios.Result.Result_Scenario_Ptr (S1.Ref));
+      end return;
+   end Background;
+
+   ----------------------
+   --  Set_Background  --
+   ----------------------
+
+   procedure Set_Background (F    : in out Result_Feature_Type;
+                             Bg   : in     Result_Scenario_Handle) is
+      use XReq.Scenarios;
+      Ptr   : Scenario_Ptr;
+   begin
+      Ptr := Scenario_Ptr (Bg.Ref);
+      if Bg.Valid then
+         pragma Assert (Ptr /= null);
+         null;
+      else
+         pragma Assert (Ptr  = null);
+         null;
+      end if;
+      F.Background.Set (Ptr);
+      pragma Assert (F.Background.Valid = Bg.Valid);
+   end Set_Background;
+
+   --  Inbherited Collection: Scenario  ---------------------------------------
+
+   ------------------------
+   --  Scenario_Element  --
+   ------------------------
+
+   function  Scenario_Element   (F : in     Result_Feature_Type;
+                                 I : in     Natural)
+                                     return Result_Scenario_Handle is
+      Super : constant Feature_Type'Class := F;
+      S1 : constant Scenario_Handle := Super.Scenario_Element (I);
+   begin
+      return S2 : Result_Scenario_Handle do
+         S2.Set (Scenarios.Result.Result_Scenario_Ptr (S1.Ref));
+      end return;
+   end Scenario_Element;
+
+   -----------------------
+   --  Scenario_Append  --
+   -----------------------
+
+   procedure Scenario_Append    (F : in out Result_Feature_Type;
+                                 S : in     Result_Scenario_Handle) is
+      Super : Feature_Type'Class := F;
+      S1 : Scenario_Handle;
+   begin
+      S1.Set (Scenarios.Scenario_Ptr (S.Ref));
+      Super.Scenario_Append (S1);
+   end Scenario_Append;
 end XReq.Features.Result;

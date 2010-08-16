@@ -21,13 +21,13 @@ with Ada.Strings.Unbounded;
 with XReqLib;
 with Util.Strings;
 with Util.Strings.Pool;
-with XReq.Features.Result;
+with XReq.Features.Result.Handles;
 
 use Ada.Strings.Unbounded;
 use XReqLib;
 use Util.Strings;
 use Util.Strings.Pool;
-use XReq.Features.Result;
+use XReq.Features.Result.Handles;
 
 package XReq.Generator.Ada05 is
 
@@ -53,7 +53,7 @@ private
 
    type Ada_Generator_Type is new Generator_Type with
       record
-         Feature    : Result_Feature_Type;
+         Feature    : Result_Feature_Handle;
          Ads_File   : Unbounded_String;
          Adb_File   : Unbounded_String;
          Adb        : Buffer_Type;

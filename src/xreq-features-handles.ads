@@ -17,25 +17,13 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with AUnit;
-with AUnit.Test_Suites;
+with Reffy.Handles;
 
+package XReq.Features.Handles is
 
-package Test_Suite.Features is
+   package Handles_Pkg is new Reffy.Handles (Feature_Type, Feature_Ptr);
 
-   procedure Add_Tests (
-      Ret : in AUnit.Test_Suites.Access_Test_Suite);
+   use type Handles_Pkg.Handle;
+   subtype Feature_Handle is Handles_Pkg.Handle;
 
-   --  Test type
-   type Test_1 is new Test_Case_Type with null record;
-   type Test_2 is new Test_Case_Type with null record;
-
-   --  Operation on Test_1
-   function  Name (T : in     Test_1) return String;
-   procedure Run  (T : in out Test_1);
-
-   --  Operation on Test_2
-   function  Name (T : in     Test_2) return String;
-   procedure Run  (T : in out Test_2);
-
-end Test_Suite.Features;
+end XReq.Features.Handles;

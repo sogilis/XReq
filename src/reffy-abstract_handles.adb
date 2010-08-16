@@ -122,7 +122,9 @@ package body Reffy.Abstract_Handles is
          H.DecRef;
       end if;
       H.Pointer := Obj;
-      H.IncRef;
+      if Obj /= null then
+         H.IncRef;
+      end if;
    end Set;
 
    function  Ref (H : Handle) return Object_Ptr is

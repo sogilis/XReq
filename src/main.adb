@@ -229,7 +229,7 @@ begin
       XReq.Job.Make (Job,
          Feature_File => To_String (Arg));
 
-      Env.Ref.Fill_Missing (Feature_File (Job));
+      Env.Ref.Fill_Missing (Job.Feature_File);
       Env.Ref.Load (Logger, Fill_Steps);
 
       ------------------------
@@ -237,7 +237,7 @@ begin
       ------------------------
 
       Run (Job, Env, Logger, To_String (Fill_Pkg), Step_Match);
-      if Job.Result.Fail then
+      if Job.Result.R.Fail then
          Put_Line (Standard_Error, "Failure to compile " & Feature_File (Job));
          Set_Exit_Status (Failure);
          if not Keep_Going then
@@ -250,13 +250,9 @@ begin
 
       Arg := Args (I + 1);
 
-      -------------------
-      --  Cleanup Job  --
-      -------------------
-
-      Cleanup (Job);
-
-      -------------------
+      ----------------------
+      --  Print Progress  --
+      ----------------------
 
       if Progress then
          Logger.Put_Line (-1, "completed" & I'Img & " out of" & Args_Last'Img);

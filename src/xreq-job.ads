@@ -19,16 +19,16 @@
 
 with Ada.Strings.Unbounded;
 with Util.IO;
-with XReq.Features;
-with XReq.Features.Result;
+with XReq.Features.Handles;
+with XReq.Features.Result.Handles;
 with XReq.Environment;
 with XReq.Environment.Handles;
 with XReqLib;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
-use XReq.Features;
-use XReq.Features.Result;
+use XReq.Features.Handles;
+use XReq.Features.Result.Handles;
 use XReq.Environment.Handles;
 use XReqLib;
 
@@ -44,7 +44,7 @@ package XReq.Job is
    type Job_Type is tagged private;
 
    function  Feature_File (Job : in Job_Type) return String;
-   function  Result       (Job : in Job_Type) return Result_Feature_Type;
+   function  Result       (Job : in Job_Type) return Result_Feature_Handle;
 
    procedure Make     (Job           : out    Job_Type;
                        Feature_File  : in     String);
@@ -53,12 +53,10 @@ package XReq.Job is
                        Logger        : in     Logger_Ptr;
                        Add_Steps_Pkg : in     String  := "";
                        Step_Matching : in     Boolean := False);
-   --  IMPORTANT: call Cleanup afterwards
-   procedure Cleanup  (Job           : in out Job_Type);
 
 
-   procedure Init (Env          : out    Environment_Handle;
-                   Job          : out    Job_Type;
+   procedure Init (Env          : in out Environment_Handle;
+                   Job          : in out Job_Type;
                    Logger       : in     Logger_Ptr;
                    Feature_File : in     String;
                    Step_Dir     : in     String_Vector :=
@@ -70,8 +68,8 @@ private
    type Job_Type is tagged
       record
          Feature_File : Unbounded_String;
-         Feature      : Feature_Ptr;
-         Result       : Result_Feature_Type;
+         Feature      : Feature_Handle;
+         Result       : Result_Feature_Handle;
       end record;
 
 end XReq.Job;

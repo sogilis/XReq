@@ -21,7 +21,7 @@ with XReq;
 with XReqLib;
 with XReq.Steps;
 with XReq.Steps.Handles;
-with XReq.Scenarios;
+with XReq.Scenarios.Handles;
 with XReq.Features;
 with XReq.Features.Files;
 with Util.IO;
@@ -31,7 +31,7 @@ use XReq;
 use XReqLib;
 use XReq.Steps;
 use XReq.Steps.Handles;
-use XReq.Scenarios;
+use XReq.Scenarios.Handles;
 use XReq.Features;
 use XReq.Features.Files;
 use Util.IO;
@@ -45,7 +45,6 @@ package body Test_Suite.Features is
    begin
       Ret.Add_Test (new Test_1);
       Ret.Add_Test (new Test_2);
-      Ret.Add_Test (new Test_3);
    end Add_Tests;
 
    --  Test_1  ----------------------------------------------------------------
@@ -60,7 +59,7 @@ package body Test_Suite.Features is
       use Text_IO;
       Feature  : Feature_File_Type := Null_Feature_File;
       File     : constant String := "tests/features/simplest.feature";
-      Scenario : Scenario_Type;
+      Scenario : Scenario_Handle;
       Stanza   : Step_Handle;
 
       CRLF : constant String := "" & ASCII.LF;
@@ -131,16 +130,16 @@ package body Test_Suite.Features is
       T.Assert (Feature.Description = "",
               "Feature description while there is none");
 
-      T.Assert (Feature.Background.Name = "",
+      T.Assert (Feature.Background.R.Name = "",
               "Background name while there is none");
 
-      T.Assert (Feature.Background.Step_Count /= 0,
+      T.Assert (Feature.Background.R.Step_Count /= 0,
               "No background stanzas");
 
-      T.Assert (Feature.Background.Step_Count = 1,
+      T.Assert (Feature.Background.R.Step_Count = 1,
               "More than one line of background");
 
-      Stanza := Feature.Background.Step_Element (0);
+      Stanza := Feature.Background.R.Step_Element (0);
 
       T.Assert (Stanza.R.Kind = Step_Given,
               "The first step of the background is not a Given");
@@ -156,13 +155,13 @@ package body Test_Suite.Features is
 
       Scenario := Feature.Scenario_Element (0);
 
-      T.Assert (Scenario.Name = "Run a good step",
+      T.Assert (Scenario.R.Name = "Run a good step",
               "Name of the scenario incorrect");
 
-      T.Assert (Scenario.Step_Count = 1,
+      T.Assert (Scenario.R.Step_Count = 1,
               "No or more than one stanza in the scenario");
 
-      Stanza := Scenario.Step_Element (0);
+      Stanza := Scenario.R.Step_Element (0);
 
       T.Assert (Stanza.R.Kind = Step_Given,
               "The first step of the scenario is not a Given");
@@ -190,7 +189,7 @@ package body Test_Suite.Features is
       Feature1 : Feature_Type := Null_Feature;
       Feature2 : Feature_File_Type;
       File     : constant String := "tests/features/simplest2.feature";
-      Scenario : Scenario_Type;
+      Scenario : Scenario_Handle;
 
    begin
 
@@ -199,20 +198,21 @@ package body Test_Suite.Features is
       T.Assert (Feature1.Name = "Sample2", "Incorrect feature name");
       T.Assert (Feature1.Parsed, "Feature_Type is always parsed");
 
-      Scenario.Make ("Background");
-      Step_Append (Scenario, Stanza_Given ("this step works"));
+      Scenario.R.Make ("Background");
+      Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Feature1.Set_Background (Scenario);
 
-      Scenario.Make ("Run a good step");
-      Step_Append (Scenario, Stanza_Given ("this step works"));
-      Step_Append (Scenario, Stanza_Given ("I am in front of a cake machine"));
-      Step_Append (Scenario, Stanza_When  ("I insert money"));
-      Step_Append (Scenario, Stanza_When  ("I push the button"));
-      Step_Append (Scenario, Stanza_Then  ("I get a cake"));
+      Scenario.R.Make ("Run a good step");
+      Scenario.R.Step_Append (Stanza_Given ("this step works"));
+      Scenario.R.Step_Append (Stanza_Given
+                                          ("I am in front of a cake machine"));
+      Scenario.R.Step_Append (Stanza_When  ("I insert money"));
+      Scenario.R.Step_Append (Stanza_When  ("I push the button"));
+      Scenario.R.Step_Append (Stanza_Then  ("I get a cake"));
       Feature1.Scenario_Append (Scenario);
 
-      Scenario.Make ("Another good step");
-      Step_Append (Scenario, Stanza_Given ("this step works"));
+      Scenario.R.Make ("Another good step");
+      Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Feature1.Scenario_Append (Scenario);
 
       Make  (Feature2, File);
@@ -234,28 +234,5 @@ package body Test_Suite.Features is
 
    end Run;
 
-
-   --  Test_3  ----------------------------------------------------------------
-
-   function  Name (T : in Test_3) return String is
-      pragma Unreferenced (T);
-   begin
-      return ("XReq.Scenarios");
-   end Name;
-
-   procedure Run (T : in out Test_3) is
-      S1, S2 : Scenario_Type;
-   begin
-
-      S1.Make ("Name", Position ("A", 5), True);
-      S2.Make ("Name", Position ("A", 5), True);
-
-      T.Assert (Equals (S1, S2), "S1 /= S2");
-
-      S2.Make ("Name", Position ("A", 5), False);
-
-      T.Assert (not Equals (S1, S2), "S1 = S2");
-
-   end Run;
 
 end Test_Suite.Features;

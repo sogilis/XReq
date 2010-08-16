@@ -180,7 +180,6 @@ package body Test_Suite.Job is
 
       Run (Job, Env, Std_Logger);
 
-      Cleanup (Job);
    end Run;
 
    --  Test_Options  ----------------------------------------------------------

@@ -21,13 +21,13 @@ with Ada.Containers.Vectors;
 with Util.IO;
 with Util.Strings;
 with XReq.Steps.Result.Handles;
-with XReq.Scenarios;
+with XReq.Scenarios.Handles;
 with XReq.Step_Definition_List.Handles;
 
 use Util.IO;
 use Util.Strings;
 use XReq.Steps.Result.Handles;
-use XReq.Scenarios;
+use XReq.Scenarios.Handles;
 use XReq.Step_Definition_List.Handles;
 
 package XReq.Scenarios.Result is
@@ -39,21 +39,21 @@ package XReq.Scenarios.Result is
    --  Contain a list of procedure names matching the step definitions along
    --  with their parameters.
 
-   type Result_Scenario_Type is new
-     XReq.Scenarios.Scenario_Type with private;
+   type Result_Scenario_Type is new XReq.Scenarios.Scenario_Type with private;
+   type Result_Scenario_Ptr is access all Result_Scenario_Type'Class;
 
    --  Creation  --------------------------------------------------------------
 
    procedure Make             (Res           : out    Result_Scenario_Type;
-                               Scenario      : in     Scenario_Type);
+                               Scenario      : in     Scenario_Handle);
 
    --  Processing  ------------------------------------------------------------
 
    function  To_Code          (Res           : in     Result_Scenario_Type;
                                Indent        : in     String := "")
                                                return String;
-   procedure Process_Scenario (Res           : out    Result_Scenario_Type;
-                               Scenario      : in     Scenario_Type;
+   procedure Process_Scenario (Res           : in out Result_Scenario_Type;
+                               Scenario      : in     Scenario_Handle;
                                Steps         : in     Step_File_List_Handle;
                                Log           : in     Logger_Ptr;
                                Errors        : out    Boolean;

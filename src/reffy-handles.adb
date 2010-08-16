@@ -24,5 +24,10 @@ package body Reffy.Handles is
       H.Set (new Object_Type'(Obj));
    end Set_New;
 
+--   procedure Set_New (H : in out Handle) is
+--   begin
+--      H.Set (new Object_Type);
+--   end Set_New;
+
 end Reffy.Handles;
 

@@ -24,35 +24,39 @@ with Util.IO;
 with Util.Strings;
 with XReqLib.String_Tables;
 with XReq.Lang;
-with XReq.Features;
+with XReq.Features.Handles;
 with XReq.Features.Files;
 with XReq.Step_Definitions.Handles;
 with XReq.Step_Definition_List.Handles;
 with XReq.Scenarios;
+with XReq.Scenarios.Handles;
 with XReq.Steps;
 with XReq.Steps.Handles;
 with XReq.Steps.Result;
 with XReq.Steps.Result.Handles;
 with XReq.Scenarios.Result;
-with XReq.Features.Result;
+with XReq.Scenarios.Result.Handles;
+with XReq.Features.Result.Handles;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
 use Util.Strings;
 use XReq.Lang;
-use XReq.Features;
+use XReq.Features.Handles;
 use XReq.Features.Files;
 use XReq.Step_Definitions.Handles;
 use XReq.Step_Definition_List.Handles;
-use XReq.Scenarios;
+use XReq.Scenarios.Handles;
 use XReq.Steps;
 use XReq.Steps.Handles;
 use XReq.Steps.Result;
 use XReq.Steps.Result.Handles;
-use XReq.Scenarios.Result;
-use XReq.Features.Result;
+use XReq.Scenarios.Result.Handles;
+use XReq.Features.Result.Handles;
 
 package body Test_Suite.Result is
+
+   subtype Table_Type is XReqLib.String_Tables.Table;
 
    procedure Add_Tests (
       Ret : in AUnit.Test_Suites.Access_Test_Suite)
@@ -105,17 +109,17 @@ package body Test_Suite.Result is
       use Result_Steps;
       use Ada.Containers;
 
-      function Eq (S : in Result_Scenario_Type;
+      function Eq (S : in Result_Scenario_Handle;
                    V : in Result_Steps.Vector) return Boolean;
-      function Eq (S : in Result_Scenario_Type;
+      function Eq (S : in Result_Scenario_Handle;
                    V : in Result_Steps.Vector) return Boolean is
          H : Result_Step_Handle;
       begin
-         if Integer (Length (V)) /= S.Step_Count then
+         if Integer (Length (V)) /= S.R.Step_Count then
             return False;
          end if;
-         for I in S.Step_First .. S.Step_Last loop
-            H := S.Step_Element (I);
+         for I in S.R.Step_First .. S.R.Step_Last loop
+            H := S.R.all.Step_Element (I);
             if Result_Step_Type (H.R.all) /= Element (V, I) then
                Std_Logger.Put_Line ("Fail at index" & I'Img);
                return False;
@@ -124,8 +128,8 @@ package body Test_Suite.Result is
          return True;
       end Eq;
 
-      Result        : Result_Scenario_Type;
-      Scenario      : Scenario_Type;
+      Result        : Result_Scenario_Handle;
+      Scenario      : Scenario_Handle;
       Steps         : Step_File_List_Handle;
       Ideal_Result  : Result_Steps.Vector;
       A             : Result_Step_Handle;
@@ -135,11 +139,11 @@ package body Test_Suite.Result is
    begin
       Steps.Ref.Load ("tests/features/step_definitions", Lang_Ada);
 
-      Scenario.Make ("Scenario");
-      Step_Append (Scenario, Stanza_Given ("this step works"));
-      Step_Append (Scenario, Stanza_When  ("this step works too"));
+      Scenario.R.Make ("Scenario");
+      Scenario.R.Step_Append (Stanza_Given ("this step works"));
+      Scenario.R.Step_Append (Stanza_When  ("this step works too"));
 
-      Process_Scenario (Result, Scenario,
+      Result.R.Process_Scenario (Scenario,
                         Steps, Std_Logger, Errors, Missing_Steps);
 
       T.Assert (not Errors, "Errors happened while processing scenario (1)");
@@ -151,37 +155,37 @@ package body Test_Suite.Result is
               (Stanza_When ("this step works too"),
                Steps.Ref.all.Find (Stanza_When  ("this step works too"))));
 
-      T.Assert (Result.Step_Count = 2,
-              "Wrong length of result, " & Result.Step_Count'Img &
+      T.Assert (Result.R.Step_Count = 2,
+              "Wrong length of result, " & Result.R.Step_Count'Img &
               " instead of 2");
 
-      A := Result.Step_Element (0);
+      A := Result.R.all.Step_Element (0);
       B := Element (Ideal_Result, 0);
       T.Assert (A.R.Procedure_Name = "Sample1.This_Step_Works",
                 "Wrong Step #0: " & A.R.To_Code);
       T.Assert (Result_Step_Type (A.R.all) = B,
               "Wrong Step #0: " & A.R.To_Code & " /= " & B.To_Code);
 
-      A := Result.Step_Element (1);
+      A := Result.R.all.Step_Element (1);
       B := Element (Ideal_Result, 1);
       T.Assert (A.R.Procedure_Name = "Sample1.This_Step_Works_Too",
                 "Wrong Step #1: " & A.R.To_Code);
       T.Assert (Result_Step_Type (A.R.all) = B,
               "Wrong Step #1: " & A.R.To_Code & " /= " & B.To_Code);
 
-      T.Assert (Integer (Length (Ideal_Result)) = Result.Step_Count,
-              "Wrong scenario result length (1)" & Result.Step_Count'Img &
+      T.Assert (Integer (Length (Ideal_Result)) = Result.R.Step_Count,
+              "Wrong scenario result length (1)" & Result.R.Step_Count'Img &
               " instead of" & Length (Ideal_Result)'Img);
 
       T.Assert (Eq (Result, Ideal_Result),
               "Wrong scenario result (1)");
 
-      Step_Append (Scenario, Stanza_When  ("this step doesn't work"));
-      Process_Scenario (Result, Scenario,
-                        Steps, Std_Logger, Errors, Missing_Steps);
+      Scenario.R.Step_Append (Stanza_When  ("this step doesn't work"));
+      Result.R.Process_Scenario
+        (Scenario, Steps, Std_Logger, Errors, Missing_Steps);
       T.Assert (Errors, "No error while processing scenario (2)");
 
-      T.Assert (Integer (Length (Ideal_Result)) = Result.Step_Count,
+      T.Assert (Integer (Length (Ideal_Result)) = Result.R.Step_Count,
               "Wrong scenario result length (2)");
 
       T.Assert (Eq (Result, Ideal_Result),
@@ -199,10 +203,11 @@ package body Test_Suite.Result is
 
    procedure Run (T : in out Test_Result_Feature_Type) is
       CRLF     : constant String := "" & ASCII.LF;
-      R_Scen   : Result_Scenario_Type;
-      Expected : Result_Feature_Type;
-      Result   : Result_Feature_Type;
+      R_Scen   : Result_Scenario_Handle;
+      Expected : constant Result_Feature_Handle := Create;
+      Result   : Result_Feature_Handle;
       Feature  : Feature_File_Ptr;
+      Feature2 : Feature_Handle;
       Steps    : Step_File_List_Handle;
       Exp_Str  : constant String :=
                "Feature Sample"                     & CRLF &
@@ -224,39 +229,39 @@ package body Test_Suite.Result is
       Steps.R.Load   ("tests/features/step_definitions", Lang_Ada);
       Feature := new Feature_File_Type'(Create
             ("tests/features/sample.feature"));
+      Feature2.Set (XReq.Features.Feature_Ptr (Feature));
 
       declare
          procedure P;
          procedure P is
          begin
-            Process_Feature (Result, Feature_Ptr (Feature),
-                             Steps, Std_Logger, Missing_Steps);
+            Result.R.Process_Feature
+              (Feature2, Steps, Std_Logger, Missing_Steps);
          end P;
          procedure A is new Assert_Except (Test_Result_Feature_Type, P);
       begin
          A (T, "Process_Feature should raise Unparsed_Feature",
-            Unparsed_Feature'Identity);
+            XReq.Features.Unparsed_Feature'Identity);
       end;
 
       Parse (Feature.all, Std_Logger);
 
-      T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
+      T.Assert (Feature2.R.Name = "Sample",
               "Feature name incorrect");
 
-      Process_Feature (Result, Feature_Ptr (Feature),
-                       Steps, Std_Logger, Missing_Steps);
+      Result.R.Process_Feature (Feature2, Steps, Std_Logger, Missing_Steps);
 
-      T.Assert (Result.Name = "Sample",
+      T.Assert (Result.R.Name = "Sample",
               "Feature name incorrect (2)");
 
-      R_Scen.Step_Append (Create
+      R_Scen.R.Step_Append (Create
         (Stanza_Given ("this step works"),
          (Proc_Name => To_Unbounded_String ("Sample1.This_Step_Works"),
           others    => <>)));
-      Expected.Set_Background (R_Scen);
-      R_Scen.Set_Name ("Run a good step");
-      Expected.Scenario_Append (R_Scen);
-      Expected.Set_Name ("Sample");
+      Expected.R.Set_Background (R_Scen);
+      R_Scen.R.Set_Name ("Run a good step");
+      Expected.R.Scenario_Append (R_Scen);
+      Expected.R.Set_Name ("Sample");
 
 --       Can't Test the "=" operator without loading twice the same file
 --
@@ -265,9 +270,9 @@ package body Test_Suite.Result is
 --               To_String (Result) & "Expected:" & CRLF &
 --               To_String (Expected) & "---");
 
-      T.Assert (Result.To_Code = Exp_Str,
+      T.Assert (Result.R.To_Code = Exp_Str,
               "To_String value not expected:" & CRLF &
-              "Got:      <<<" & Result.To_Code & ">>>" & CRLF &
+              "Got:      <<<" & Result.R.To_Code & ">>>" & CRLF &
               "Expected: <<<" & Exp_Str & ">>>");
 
    end Run;
@@ -295,26 +300,26 @@ package body Test_Suite.Result is
                                                     & CRLF &
                "   End Scenario Run a good step"    & CRLF &
                "End Feature simplest feature"       & CRLF;
-      R_Scen   : Result_Scenario_Type;
-      Feature  : Result_Feature_Type;
+      R_Scen   : Result_Scenario_Handle;
+      Feature  : constant Result_Feature_Handle := Create;
       Matches  : Step_Match_Vectors.Vector;
    begin
 
       Append (Matches, (1, 15));
-      R_Scen.Step_Append (Create
+      R_Scen.R.Step_Append (Create
         (Stanza_Given ("this step works"),
          (Proc_Name => To_Unbounded_String ("Sample1.This_Step_Works"),
           Matches   => Matches,
           others    => <>)));
-      R_Scen.Set_Name ("BG");
-      Feature.Set_Background (R_Scen);
-      R_Scen.Set_Name ("Run a good step");
-      Feature.Scenario_Append (R_Scen);
-      Feature.Set_Name ("simplest feature");
+      R_Scen.R.Set_Name ("BG");
+      Feature.R.Set_Background (R_Scen);
+      R_Scen.R.Set_Name ("Run a good step");
+      Feature.R.Scenario_Append (R_Scen);
+      Feature.R.Set_Name ("simplest feature");
 
-      T.Assert (Feature.To_Code = Expected,
+      T.Assert (Feature.R.To_Code = Expected,
               "To_String value not expected:" & CRLF &
-              "Got:      <<<" & Feature.To_Code & ">>>" & CRLF &
+              "Got:      <<<" & Feature.R.To_Code & ">>>" & CRLF &
               "Expected: <<<" & Expected & ">>>");
 
    end Run;
@@ -331,8 +336,8 @@ package body Test_Suite.Result is
    procedure Run (T : in out Test_Result_Scenario_Outline) is
       use Ada.Containers;
       use XReqLib.String_Tables;
-      Scenario  : Scenario_Type := Null_Scenario_Outline;
-      Result    : Result_Scenario_Type;
+      Scenario  : Scenario_Handle;
+      Result    : Result_Scenario_Handle;
       Steps     : Step_File_List_Handle;
       Errors    : Boolean;
       I         : Natural;
@@ -346,13 +351,14 @@ package body Test_Suite.Result is
                    Found & """ for " & Description);
       end Equals;
    begin
+      Scenario.Set_New (XReq.Scenarios.Null_Scenario_Outline);
       Steps.R.Load ("tests/features/step_definitions", Lang_Ada);
 
-      Step_Append (Scenario, Stanza_Given ("A is <A> and B is <B>"));
-      Step_Append (Scenario, Stanza_When  ("A is '<A>' and B is '<B>'"));
-      Step_Append (Scenario, Stanza_Then  ("C is <C>"));
+      Scenario.R.Step_Append (Stanza_Given ("A is <A> and B is <B>"));
+      Scenario.R.Step_Append (Stanza_When  ("A is '<A>' and B is '<B>'"));
+      Scenario.R.Step_Append (Stanza_Then  ("C is <C>"));
 
-      Table := Scenario.Table;
+      Table := Scenario.R.Table;
 
       Table.Put (0, 0, "A");
       Table.Put (1, 0, "B");
@@ -370,54 +376,54 @@ package body Test_Suite.Result is
       Table.Put (1, 3, "y");
       Table.Put (2, 3, "z");
 
-      Scenario.Set_Table (Table);
+      Scenario.R.Set_Table (Table);
 
-      Process_Scenario (Result, Scenario,
-                        Steps, Std_Logger, Errors, Missing_Steps);
+      Result.R.Process_Scenario
+        (Scenario, Steps, Std_Logger, Errors, Missing_Steps);
 
       T.Assert (not Errors, "Errors while Process_Scenario");
 
-      T.Assert (Result.Outline, "The result should be an outline");
-      T.Assert (Result.Outline_Count = 3, "Should find 3 sub scenarios");
-      T.Assert (Result.Step_Count = 3, "Should find 3 steps for outline" &
-                ". Found" & Result.Step_Count'Img);
+      T.Assert (Result.R.Outline, "The result should be an outline");
+      T.Assert (Result.R.Outline_Count = 3, "Should find 3 sub scenarios");
+      T.Assert (Result.R.Step_Count = 3, "Should find 3 steps for outline" &
+                ". Found" & Result.R.Step_Count'Img);
 
       I := 0;
 
-      T.Assert (Result.Outline_Step_Count (I) = 3, "3 steps in scenario 1");
-      Equals (Result.Outline_Step_Element (I, 0).R.Stanza,
+      T.Assert (Result.R.Outline_Step_Count (I) = 3, "3 steps in scenario 1");
+      Equals (Result.R.Outline_Step_Element (I, 0).R.Stanza,
               "A is [a] and B is [b]",
               "1st step of 1st scenario");
-      Equals (Result.Outline_Step_Element (I, 1).R.Stanza,
+      Equals (Result.R.Outline_Step_Element (I, 1).R.Stanza,
               "A is '[a]' and B is '[b]'",
               "2nd step of 1st scenario");
-      Equals (Result.Outline_Step_Element (I, 2).R.Stanza,
+      Equals (Result.R.Outline_Step_Element (I, 2).R.Stanza,
               "C is [c]",
               "3rd step of 1st scenario");
 
       I := 1;
 
-      T.Assert (Result.Outline_Step_Count (I) = 3, "3 steps in scenario 2");
-      Equals (Result.Outline_Step_Element (I, 0).R.Stanza,
+      T.Assert (Result.R.Outline_Step_Count (I) = 3, "3 steps in scenario 2");
+      Equals (Result.R.Outline_Step_Element (I, 0).R.Stanza,
               "A is 1 and B is 2",
               "1st step of 2nd scenario");
-      Equals (Result.Outline_Step_Element (I, 1).R.Stanza,
+      Equals (Result.R.Outline_Step_Element (I, 1).R.Stanza,
               "A is '1' and B is '2'",
               "2nd step of 2nd scenario");
-      Equals (Result.Outline_Step_Element (I, 2).R.Stanza,
+      Equals (Result.R.Outline_Step_Element (I, 2).R.Stanza,
               "C is 3",
               "3rd step of 2nd scenario");
 
       I := 2;
 
-      T.Assert (Result.Outline_Step_Count (I) = 3, "3 steps in scenario 3");
-      Equals (Result.Outline_Step_Element (I, 0).R.Stanza,
+      T.Assert (Result.R.Outline_Step_Count (I) = 3, "3 steps in scenario 3");
+      Equals (Result.R.Outline_Step_Element (I, 0).R.Stanza,
               "A is x and B is y",
               "1st step of 3rd scenario");
-      Equals (Result.Outline_Step_Element (I, 1).R.Stanza,
+      Equals (Result.R.Outline_Step_Element (I, 1).R.Stanza,
               "A is 'x' and B is 'y'",
               "2nd step of 3rd scenario");
-      Equals (Result.Outline_Step_Element (I, 2).R.Stanza,
+      Equals (Result.R.Outline_Step_Element (I, 2).R.Stanza,
               "C is z",
               "3rd step of 3rd scenario");
 
