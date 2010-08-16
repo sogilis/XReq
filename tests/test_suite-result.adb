@@ -33,7 +33,7 @@ with XReq.Steps.Handles;
 with XReq.Steps.Result;
 with XReq.Steps.Result.Handles;
 with XReq.Scenarios.Result;
-with XReq.Result_Features;
+with XReq.Features.Result;
 
 use Ada.Strings.Unbounded;
 use Util.IO;
@@ -48,7 +48,7 @@ use XReq.Steps.Handles;
 use XReq.Steps.Result;
 use XReq.Steps.Result.Handles;
 use XReq.Scenarios.Result;
-use XReq.Result_Features;
+use XReq.Features.Result;
 
 package body Test_Suite.Result is
 

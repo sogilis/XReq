@@ -20,7 +20,7 @@
 with Ada.Strings.Unbounded;
 with Util.IO;
 with XReq.Features;
-with XReq.Result;
+with XReq.Features.Result;
 with XReq.Environment;
 with XReq.Environment.Handles;
 with XReqLib;
@@ -28,7 +28,7 @@ with XReqLib;
 use Ada.Strings.Unbounded;
 use Util.IO;
 use XReq.Features;
-use XReq.Result;
+use XReq.Features.Result;
 use XReq.Environment.Handles;
 use XReqLib;
 

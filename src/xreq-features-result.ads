@@ -17,25 +17,19 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with XReqLib;
 with XReqLib.Generic_Features;
-with Util.IO;
 with Util.Strings;
 with XReq.Scenarios.Result;
 with XReq.Features;
 with XReq.Step_Definition_List.Handles;
-with XReq.Language.Handles;
 
-use XReqLib;
-use Util.IO;
 use Util.Strings;
 use XReq.Scenarios.Result;
 use XReq.Features;
 use XReq.Step_Definition_List.Handles;
-use XReq.Language.Handles;
 
 
-package XReq.Result_Features is
+package XReq.Features.Result is
 
    ---------------------------
    --  Result_Feature_Type  --
@@ -82,4 +76,4 @@ private
          Lang : Language_Handle;
       end record;
 
-end XReq.Result_Features;
+end XReq.Features.Result;

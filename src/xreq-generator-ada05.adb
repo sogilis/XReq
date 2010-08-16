@@ -28,6 +28,8 @@ with XReq.Step_Definitions;
 with XReq.Steps.Result.Handles;
 with XReq.Args;
 with XReq.Language.Handles;
+with XReq.Steps.Result;
+with XReq.Scenarios.Result;
 
 use Ada.Directories;
 use GNAT.OS_Lib;
@@ -36,6 +38,8 @@ use XReq.Step_Definitions;
 use XReq.Steps.Result.Handles;
 use XReq.Args;
 use XReq.Language.Handles;
+use XReq.Steps.Result;
+use XReq.Scenarios.Result;
 
 package body XReq.Generator.Ada05 is
 

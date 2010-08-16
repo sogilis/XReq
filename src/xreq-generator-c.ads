@@ -21,13 +21,13 @@ with Ada.Strings.Unbounded;
 with Util.Strings;
 with Util.Strings.Pool;
 with XReqLib;
-with XReq.Result;
+with XReq.Features.Result;
 
 use Ada.Strings.Unbounded;
 use Util.Strings;
 use Util.Strings.Pool;
 use XReqLib;
-use XReq.Result;
+use XReq.Features.Result;
 
 package XReq.Generator.C is
 

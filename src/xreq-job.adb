@@ -18,10 +18,8 @@
 -------------------------------------------------------------------------------
 
 with Util.Strings;
-with XReq.Result_Features;
 
 use Util.Strings;
-use XReq.Result_Features;
 
 package body XReq.Job is
 

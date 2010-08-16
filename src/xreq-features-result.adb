@@ -21,7 +21,7 @@ with Ada.Strings.Unbounded;
 
 use Ada.Strings.Unbounded;
 
-package body XReq.Result_Features is
+package body XReq.Features.Result is
 
    ------------------------------------------------
    --  Result_Feature_Type  --  Process_Feature  --
@@ -127,4 +127,4 @@ package body XReq.Result_Features is
       return F.Lang;
    end Language;
 
-end XReq.Result_Features;
+end XReq.Features.Result;
