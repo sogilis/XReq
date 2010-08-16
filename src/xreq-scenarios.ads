@@ -24,6 +24,7 @@ with XReqLib.String_Tables;
 with XReqLib.Interface_Scenarios;
 with XReq.Steps;
 with XReq.Steps.Handles;
+with Reffy;
 
 use Ada.Strings.Unbounded;
 use XReqLib;
@@ -38,12 +39,13 @@ package XReq.Scenarios is
    --  Scenario_Type  --
    ---------------------
 
-   type Scenario_Type is new Scenario_Interface with private;
+   type Scenario_Type is
+      new Reffy.Counted_Type and Scenario_Interface with private;
    type Scenario_Ptr is access all Scenario_Type'Class;
 
    --  Creation  --------------------------------------------------------------
 
-   procedure Make         (Scenario : out    Scenario_Type;
+   procedure Make         (Scenario : in out Scenario_Type;
                            Name     : in     String;
                            Position : in     Position_Type := Null_Position;
                            Outline  : in     Boolean := False;
@@ -118,13 +120,15 @@ private
          --  GCOV_IGNORE_END
       end record;
 
-   type Scenario_Type is new Scenario_Interface with
+   type Scenario_Type is new Reffy.Counted_Type and Scenario_Interface with
       record
          D : Scenario_Record;
       end record;
 
-   Null_Scenario         : constant Scenario_Type := (others => <>);
+   Null_Scenario         : constant Scenario_Type :=
+     (Reffy.Counted_Type with others => <>);
    Null_Scenario_Outline : constant Scenario_Type :=
-     (D => Scenario_Record'(Outline => True, others => <>));
+     (Reffy.Counted_Type with
+      D => Scenario_Record'(Outline => True, others => <>));
 
 end XReq.Scenarios;

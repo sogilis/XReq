@@ -66,6 +66,14 @@ package XReq.Features.Result is
    procedure Set_Fail (F    : in out Result_Feature_Type;
                        Fail : in     Boolean := True);
 
+   --  Inbherited Collection: Scenario  ---------------------------------------
+
+--   function  Scenario_Element   (F : in     Feature_Type;
+--                                 I : in     Natural)
+--                                     return Result_Scenario_Type;
+--   procedure Scenario_Append    (F : in out Feature_Type;
+--                                 S : in     Result_Scenario_Type);
+
    ----------------------------------------------------------------------------
 
 private

@@ -24,7 +24,7 @@ package body XReq.Scenarios is
    -------------------------------
 
 
-   procedure Make         (Scenario : out    Scenario_Type;
+   procedure Make         (Scenario : in out Scenario_Type;
                            Name     : in     String;
                            Position : in     Position_Type := Null_Position;
                            Outline  : in     Boolean := False;
@@ -33,14 +33,16 @@ package body XReq.Scenarios is
    begin
       if Outline then
          Scenario := Scenario_Type'
-           (D => (Outline => True,
+           (Reffy.Counted_Type (Scenario) with
+            D => (Outline => True,
                   Name    => To_Unbounded_String (Name),
                   Pos     => Position,
                   Tags    => Tags,
                   others  => <>));
       else
          Scenario := Scenario_Type'
-           (D => (Outline => False,
+           (Reffy.Counted_Type (Scenario) with
+            D => (Outline => False,
                   Name    => To_Unbounded_String (Name),
                   Pos     => Position,
                   Tags    => Tags,
