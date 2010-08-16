@@ -41,9 +41,19 @@ package body XReq.Job is
    --  Job_Type  --  Feature_File  --
    ----------------------------------
 
-   function  Feature_File (Job : in Job_Type) return String is begin
+   function  Feature_File (Job : in Job_Type) return String is
+   begin
       return To_String (Job.Feature_File);
    end Feature_File;
+
+   ----------------------------
+   --  Job_Type  --  Result  --
+   ----------------------------
+
+   function  Result       (Job : in Job_Type) return Result_Feature_Type is
+   begin
+      return Job.Result;
+   end Result;
 
    -------------------------
    --  Job_Type  --  Run  --
@@ -64,7 +74,7 @@ package body XReq.Job is
       end if;
 
       F.Make (Feature_File (Job));
-      Job.Feature := Generic_Feature_Ptr (F);
+      Job.Feature := Feature_Ptr (F);
 
       F.Parse (Logger);
 

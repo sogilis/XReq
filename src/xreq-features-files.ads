@@ -17,10 +17,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
-with Ada.Strings.Unbounded;
 with Util.IO;
 
-use Ada.Strings.Unbounded;
 use Util.IO;
 
 package XReq.Features.Files is
@@ -29,7 +27,7 @@ package XReq.Features.Files is
    --  Feature_File_Type  --
    -------------------------
 
-   type Feature_File_Type is new Generic_Feature_Type with private;
+   type Feature_File_Type is new Feature_Type with private;
    type Feature_File_Ptr  is access all Feature_File_Type'Class;
 
    procedure Make      (F         : out    Feature_File_Type;
@@ -49,7 +47,7 @@ package XReq.Features.Files is
 
 private  ----------------------------------------------------------------------
 
-   type Feature_File_Type is new Generic_Feature_Type with
+   type Feature_File_Type is new Feature_Type with
       record
          Parsed      : Boolean := False;
          File_Name   : Unbounded_String;

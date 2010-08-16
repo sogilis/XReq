@@ -91,6 +91,15 @@ package body XReqLib.Generic_Features is
       return To_String (F.Filetype);
    end Filetype;
 
+   ----------------------------------
+   --  Feature_Type  --  Language  --
+   ----------------------------------
+
+   function  Language  (F : in  Feature_Type) return Language_Handle is
+   begin
+      return F.Lang;
+   end Language;
+
    -----------------------------------
    --  Feature_Type  --  To_String  --
    -----------------------------------
@@ -175,6 +184,16 @@ package body XReqLib.Generic_Features is
    begin
       F.Filetype := To_Unbounded_String (FType);
    end Set_Filetype;
+
+   --------------------------------------
+   --  Feature_Type  --  Set_Language  --
+   --------------------------------------
+
+   procedure Set_Language       (F      : in out Feature_Type;
+                                 Lang   : in     Language_Handle) is
+   begin
+      F.Lang := Lang;
+   end Set_Language;
 
    --------------------------------------------
    --  Feature_Type  --  Append_Description  --

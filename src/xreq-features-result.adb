@@ -28,7 +28,7 @@ package body XReq.Features.Result is
    ------------------------------------------------
 
    procedure Process_Feature (Res     : out Result_Feature_Type;
-                              Feature : in  Generic_Feature_Ptr;
+                              Feature : in  Feature_Ptr;
                               Steps   : in  Step_File_List_Handle;
                               Log     : in  Logger_Ptr;
                               Missing_Steps : in out String_Set;
@@ -41,11 +41,11 @@ package body XReq.Features.Result is
       if not Feature.Parsed then
          raise Unparsed_Feature;
       end if;
-      Make (Result, Feature.Name);
+      Result.Make            (Feature.Name);
       Result.Set_Position    (Feature.Position);
       Result.Set_Description (Feature.Description);
       Result.Set_Filetype    (Feature.Filetype);
-      Result.Lang :=          Feature.Language;
+      Result.Set_Language    (Feature.Language);
       Process_Scenario (R_Scen, Feature.Background,
                         Steps,
                         Log, Errors, Missing_Steps, Step_Matching);
@@ -116,15 +116,5 @@ package body XReq.Features.Result is
       F.Fail := Fail;
    end Set_Fail;
 
-   ----------------
-   --  Language  --
-   ----------------
-
-   function  Language (F    : in     Result_Feature_Type)
-                              return Language_Handle
-   is
-   begin
-      return F.Lang;
-   end Language;
 
 end XReq.Features.Result;

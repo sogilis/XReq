@@ -20,9 +20,11 @@
 with Ada.Strings.Unbounded;
 with Ada.Containers.Vectors;
 with XReqLib.Interface_Scenarios;
+with XReq.Language.Handles;
 
 use Ada.Strings.Unbounded;
 use XReqLib.Interface_Scenarios;
+use XReq.Language.Handles;
 
 generic
 
@@ -57,6 +59,7 @@ package XReqLib.Generic_Features is
    function  Background  (F : in Feature_Type) return Scenario_Type;
    function  Filetype    (F : in Feature_Type) return String;
    function  Description (F : in Feature_Type) return String;
+   function  Language    (F : in Feature_Type) return Language_Handle;
 
    --  Properties: Write  -----------------------------------------------------
 
@@ -72,6 +75,8 @@ package XReqLib.Generic_Features is
                                  FType  : in     String);
    procedure Append_Description (F      : in out Feature_Type;
                                  Desc   : in     String);
+   procedure Set_Language       (F      : in out Feature_Type;
+                                 Lang   : in     Language_Handle);
 
    --  Collection: Scenario  --------------------------------------------------
 
@@ -101,6 +106,7 @@ private
          Pos         : Position_Type;
          Background  : Scenario_Type;
          Scenarios   : Scenario_Container.Vector;
+         Lang        : Language_Handle;
       end record;
 
    Null_Feature : constant Feature_Type := (others => <>);

@@ -41,14 +41,10 @@ package XReq.Job is
    --  This type describes a job to run, that is a feature that is to be
    --  compiled in a test file.
 
-   type Job_Type is
-      record
-         Feature_File : Unbounded_String;
-         Feature      : Generic_Feature_Ptr;
-         Result       : Result_Feature_Type;
-      end record;
+   type Job_Type is tagged private;
 
    function  Feature_File (Job : in Job_Type) return String;
+   function  Result       (Job : in Job_Type) return Result_Feature_Type;
 
    procedure Make     (Job           : out    Job_Type;
                        Feature_File  : in     String);
@@ -69,5 +65,13 @@ package XReq.Job is
                                          Empty_String_Vector;
                    Out_Dir      : in     String := "");
 
+private
+
+   type Job_Type is tagged
+      record
+         Feature_File : Unbounded_String;
+         Feature      : Feature_Ptr;
+         Result       : Result_Feature_Type;
+      end record;
 
 end XReq.Job;

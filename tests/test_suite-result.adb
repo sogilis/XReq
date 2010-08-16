@@ -229,7 +229,7 @@ package body Test_Suite.Result is
          procedure P;
          procedure P is
          begin
-            Process_Feature (Result, Generic_Feature_Ptr (Feature),
+            Process_Feature (Result, Feature_Ptr (Feature),
                              Steps, Std_Logger, Missing_Steps);
          end P;
          procedure A is new Assert_Except (Test_Result_Feature_Type, P);
@@ -243,7 +243,7 @@ package body Test_Suite.Result is
       T.Assert (Feature_Ptr (Feature).all.Name = "Sample",
               "Feature name incorrect");
 
-      Process_Feature (Result, Generic_Feature_Ptr (Feature),
+      Process_Feature (Result, Feature_Ptr (Feature),
                        Steps, Std_Logger, Missing_Steps);
 
       T.Assert (Result.Name = "Sample",

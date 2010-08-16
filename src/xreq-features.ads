@@ -19,50 +19,94 @@
 
 with XReqLib;
 with XReq.Scenarios;
-with XReqLib.Generic_Features;
+with Ada.Strings.Unbounded;
+with Ada.Containers.Vectors;
 with XReq.Language.Handles;
 
 use XReqLib;
 use XReq.Scenarios;
+use Ada.Strings.Unbounded;
 use XReq.Language.Handles;
 
 package XReq.Features is
 
    Parse_Error : exception;
 
-   --------------------
-   --  Feature_Type  --
-   --------------------
+   -------------------
+   -- Feature_Type  --
+   -------------------
 
-   package Features_Pkg is new XReqLib.Generic_Features
-      (Scenario_Type, XReq.Scenarios.Equals);
+   type Feature_Type is tagged private;
+   type Feature_Ptr  is access all Feature_Type'Class;
 
-   subtype Feature_Type is Features_Pkg.Feature_Type;
-   subtype Feature_Ptr  is Features_Pkg.Feature_Ptr;
+   procedure Free            (F      : in out Feature_Ptr);
 
-   procedure Free (F : in out Feature_Ptr)  renames Features_Pkg.Free;
-   procedure Make (F :    out Feature_Type;
-                   Name : in  String := "") renames Features_Pkg.Make;
+   --  Creation  --------------------------------------------------------------
 
-   Unparsed_Feature : exception renames Features_Pkg.Unparsed_Feature;
-   Null_Feature     : constant Feature_Type := Features_Pkg.Null_Feature;
+   procedure Make            (F      : out    Feature_Type;
+                              Name   : in     String := "");
 
-   ----------------------------
-   --  Generic_Feature_Type  --
-   ----------------------------
+   --  Process  ---------------------------------------------------------------
 
-   type Generic_Feature_Type is new Feature_Type with private;
-   type Generic_Feature_Ptr  is access all Generic_Feature_Type'Class;
+   function  To_String   (F : in Feature_Type) return String;
 
-   function  Language  (F : in Generic_Feature_Type) return Language_Handle;
+   --  Properties: Read  ------------------------------------------------------
 
+   function  Parsed      (F : in Feature_Type) return Boolean;
+   function  Name        (F : in Feature_Type) return String;
+   function  Position    (F : in Feature_Type) return Position_Type;
+   function  Background  (F : in Feature_Type) return Scenario_Type;
+   function  Filetype    (F : in Feature_Type) return String;
+   function  Description (F : in Feature_Type) return String;
+   function  Language    (F : in Feature_Type) return Language_Handle;
 
+   --  Properties: Write  -----------------------------------------------------
 
-private  ----------------------------------------------------------------------
+   procedure Set_Name           (F      : in out Feature_Type;
+                                 Name   : in     String);
+   procedure Set_Position       (F      : in out Feature_Type;
+                                 Pos    : in     Position_Type);
+   procedure Set_Background     (F      : in out Feature_Type;
+                                 Bg     : in     Scenario_Type);
+   procedure Set_Description    (F      : in out Feature_Type;
+                                 Desc   : in     String);
+   procedure Set_Filetype       (F      : in out Feature_Type;
+                                 FType  : in     String);
+   procedure Append_Description (F      : in out Feature_Type;
+                                 Desc   : in     String);
 
-   type Generic_Feature_Type is new Feature_Type with
+   --  Collection: Scenario  --------------------------------------------------
+
+   function  Scenario_First     (F : in Feature_Type) return Natural;
+   function  Scenario_Last      (F : in Feature_Type) return Integer;
+   function  Scenario_Count     (F : in Feature_Type) return Natural;
+   function  Scenario_Element   (F : in Feature_Type;
+                                 I : in Natural)      return Scenario_Type;
+   procedure Scenario_Append    (F : in out Feature_Type;
+                                 S : in     Scenario_Type);
+
+   ----------------------------------------------------------------------------
+
+   Null_Feature     : constant Feature_Type;
+   Unparsed_Feature : exception;
+
+private
+
+   package Scenario_Container is
+      new Ada.Containers.Vectors (Natural, Scenario_Type,
+                                  XReq.Scenarios.Equals); --  TODO
+
+   type Feature_Type is tagged
       record
-         Lang : Language_Handle;
+         M_Name        : Unbounded_String;
+         M_Description : Unbounded_String;
+         M_Filetype    : Unbounded_String;
+         Pos           : Position_Type;
+         Background    : Scenario_Type;
+         Scenarios     : Scenario_Container.Vector;
+         Lang          : Language_Handle;
       end record;
+
+   Null_Feature : constant Feature_Type := (others => <>);
 
 end XReq.Features;

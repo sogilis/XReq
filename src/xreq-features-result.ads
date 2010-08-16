@@ -53,7 +53,7 @@ package XReq.Features.Result is
                               Indent        : in     String := "")
                                               return String;
    procedure Process_Feature (Res           : out    Result_Feature_Type;
-                              Feature       : in     Generic_Feature_Ptr;
+                              Feature       : in     Feature_Ptr;
                               Steps         : in     Step_File_List_Handle;
                               Log           : in     Logger_Ptr;
                               Missing_Steps : in out String_Set;
@@ -62,8 +62,6 @@ package XReq.Features.Result is
    --  Properties  ------------------------------------------------------------
 
    function  Fail     (F    : in     Result_Feature_Type) return Boolean;
-   function  Language (F    : in     Result_Feature_Type)
-                              return Language_Handle;
 
    procedure Set_Fail (F    : in out Result_Feature_Type;
                        Fail : in     Boolean := True);
@@ -75,7 +73,6 @@ private
    type Result_Feature_Type is new Features_Package.Feature_Type with
       record
          Fail : Boolean       := False;
-         Lang : Language_Handle;
       end record;
 
 end XReq.Features.Result;
