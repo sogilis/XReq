@@ -71,6 +71,7 @@ package XReq.Steps is
 
    function  Arg_First    (S : in     Step_Type)     return Natural;
    function  Arg_Last     (S : in     Step_Type)     return Integer;
+   function  Arg_Count    (S : in     Step_Type)     return Natural;
    function  Arg_Element  (S : in     Step_Type;
                            I : in     Natural)       return Argument_Type;
    procedure Arg_Append   (S : in out Step_Type;

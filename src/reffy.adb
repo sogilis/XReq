@@ -45,6 +45,12 @@ package body Reffy is
 
    --  Counted_Type  ----------------------------------------------------------
 
+   function  "="        (A, B   :        Counted_Type) return Boolean is
+      pragma Unreferenced (A, B);
+   begin
+      return True;
+   end "=";
+
    function  Ref       (C :        Counted_Type) return Natural is
    begin
       return C.Ref;
@@ -58,6 +64,12 @@ package body Reffy is
    end RefChange;
 
    --  Limited_Counted_Type  --------------------------------------------------
+
+   function  "="        (A, B   :    Limited_Counted_Type) return Boolean is
+      pragma Unreferenced (A, B);
+   begin
+      return True;
+   end "=";
 
    function  Ref       (C :        Limited_Counted_Type) return Natural is
    begin

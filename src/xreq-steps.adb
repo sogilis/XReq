@@ -131,6 +131,17 @@ package body XReq.Steps is
       return Integer (Length (S.Args)) - 1;
    end Arg_Last;
 
+   ----------------------------------
+   --  Stanza_Type  --  Arg_Count  --
+   ----------------------------------
+
+   function Arg_Count (S : in Step_Type) return Natural is
+      use Argument_Vectors;
+      use Ada.Containers;
+   begin
+      return Integer (Length (S.Args));
+   end Arg_Count;
+
    ---------------------------------
    --  Stanza_Type  --  Arg_Last  --
    ---------------------------------

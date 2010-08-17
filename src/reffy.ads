@@ -35,8 +35,9 @@ package Reffy is
    type Counted_Type is
       new Ada.Finalization.Controlled and Counted with private;
 
-   function  Ref        (C :        Counted_Type) return Natural;
-   procedure RefChange  (C : in out Counted_Type; Inc : Integer);
+   function  "="        (A, B   :        Counted_Type) return Boolean;
+   function  Ref        (C      :        Counted_Type) return Natural;
+   procedure RefChange  (C      : in out Counted_Type; Inc : Integer);
    procedure Initialize (Object : in out Counted_Type) is null;
    procedure Adjust     (Object : in out Counted_Type) is null;
    procedure Finalize   (Object : in out Counted_Type) is null;
@@ -46,8 +47,9 @@ package Reffy is
    type Limited_Counted_Type is
       new Ada.Finalization.Limited_Controlled and Counted with private;
 
-   function  Ref        (C :        Limited_Counted_Type) return Natural;
-   procedure RefChange  (C : in out Limited_Counted_Type; Inc : Integer);
+   function  "="        (A, B   :        Limited_Counted_Type) return Boolean;
+   function  Ref        (C      :        Limited_Counted_Type) return Natural;
+   procedure RefChange  (C      : in out Limited_Counted_Type; Inc : Integer);
    procedure Initialize (Object : in out Limited_Counted_Type) is null;
    procedure Finalize   (Object : in out Limited_Counted_Type) is null;
 

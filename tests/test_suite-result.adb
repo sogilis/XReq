@@ -22,6 +22,7 @@ with Ada.Containers;
 with Ada.Strings.Unbounded;
 with Util.IO;
 with Util.Strings;
+with XReqLib;
 with XReqLib.String_Tables;
 with XReq.Lang;
 with XReq.Features.Handles;
@@ -41,6 +42,7 @@ with XReq.Features.Result.Handles;
 use Ada.Strings.Unbounded;
 use Util.IO;
 use Util.Strings;
+use XReqLib;
 use XReq.Lang;
 use XReq.Features.Handles;
 use XReq.Features.Files;
@@ -168,8 +170,24 @@ package body Test_Suite.Result is
       B := Element (Ideal_Result, 0);
       T.Assert (A.R.Procedure_Name = "Sample1.This_Step_Works",
                 "Wrong Step #0: " & A.R.To_Code);
+      declare
+         AA : constant Step_Type := Step_Type (A.R.all);
+         BB : constant Step_Type := Step_Type (B);
+      begin
+         T.Assert (Equals (AA, BB),
+                 "Wrong Step #0 Step_Type (Equals): """ &
+                 AA.To_String & """ /= """ & BB.To_String & """ OR " &
+                 To_String (AA.Position) & " /= " & To_String (BB.Position) &
+                 " OR" & AA.Arg_Count'Img & " /=" & BB.Arg_Count'Img);
+         T.Assert (AA = BB,
+                 "Wrong Step #0 Step_Type (""=""): """ &
+                 AA.To_String & """ /= """ & BB.To_String & """ OR " &
+                 To_String (AA.Position) & " /= " & To_String (BB.Position) &
+                 " OR" & AA.Arg_Count'Img & " /=" & BB.Arg_Count'Img);
+      end;
       T.Assert (Result_Step_Type (A.R.all) = B,
-              "Wrong Step #0 (""=""): " & A.R.To_Code & " /= " & B.To_Code);
+              "Wrong Step #0 Result_Step_Type (""=""): " &
+              A.R.To_Code & " /= " & B.To_Code);
 
       A := Result.R.all.Step_Element (1);
       B := Element (Ideal_Result, 1);
