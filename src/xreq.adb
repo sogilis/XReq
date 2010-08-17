@@ -17,6 +17,8 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Text_IO;
+
 package body XReq is
 
    procedure Assert (Bool : in Boolean) is
@@ -26,5 +28,11 @@ package body XReq is
          raise Error;
       end if;
    end Assert;
+
+   procedure Debug (Text : String) is
+      use Ada.Text_IO;
+   begin
+      Put_Line (Text);
+   end Debug;
 
 end XReq;

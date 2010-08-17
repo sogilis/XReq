@@ -108,6 +108,6 @@ private
       end record;
 
    Null_Feature : constant Feature_Type :=
-     (Reffy.Counted_Type with others => <>);
+     (Reffy.Counted_Type with Background => Create, others => <>);
 
 end XReq.Features;

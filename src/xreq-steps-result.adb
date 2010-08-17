@@ -31,7 +31,7 @@ package body XReq.Steps.Result is
                              Match          : in  Step_Match_Type
                                             := Step_Match_Type'(others => <>))
    is
-      --  Super : Step_Type'Class := Self;
+      --  Super : constant access Step_Type'Class := Self'Access;
       Other : constant Step_Type := Step_Type (Step.Ref.all);
    begin
       --  TODO: find a better way

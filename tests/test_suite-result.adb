@@ -144,6 +144,10 @@ package body Test_Suite.Result is
       Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Scenario.R.Step_Append (Stanza_When  ("this step works too"));
 
+      T.Assert (Scenario.R.Step_Count = 2,
+              "Wrong length of scenario, " & Scenario.R.Step_Count'Img &
+              " instead of 2");
+
       Result.R.Process_Scenario (Scenario,
                         Steps, Std_Logger, Errors, Missing_Steps);
 
@@ -165,7 +169,7 @@ package body Test_Suite.Result is
       T.Assert (A.R.Procedure_Name = "Sample1.This_Step_Works",
                 "Wrong Step #0: " & A.R.To_Code);
       T.Assert (Result_Step_Type (A.R.all) = B,
-              "Wrong Step #0: " & A.R.To_Code & " /= " & B.To_Code);
+              "Wrong Step #0 (""=""): " & A.R.To_Code & " /= " & B.To_Code);
 
       A := Result.R.all.Step_Element (1);
       B := Element (Ideal_Result, 1);
@@ -289,6 +293,7 @@ package body Test_Suite.Result is
 
    procedure Run (T : in out Test_To_String) is
       use Step_Match_Vectors;
+      use XReq;
       CRLF     : constant String := "" & ASCII.LF;
       Expected : constant String :=
                "Feature simplest feature"           & CRLF &
@@ -301,7 +306,7 @@ package body Test_Suite.Result is
                                                     & CRLF &
                "   End Scenario Run a good step"    & CRLF &
                "End Feature simplest feature"       & CRLF;
-      R_Scen   : constant Result_Scenario_Handle := Create;
+      R_Scen   : Result_Scenario_Handle := Create;
       Feature  : constant Result_Feature_Handle := Create;
       Matches  : Step_Match_Vectors.Vector;
    begin
@@ -314,6 +319,8 @@ package body Test_Suite.Result is
           others    => <>)));
       R_Scen.R.Set_Name ("BG");
       Feature.R.Set_Background (R_Scen);
+
+      R_Scen.Set_New (Scenarios.Result.Result_Scenario_Type (R_Scen.R.all));
       R_Scen.R.Set_Name ("Run a good step");
       Feature.R.Scenario_Append (R_Scen);
       Feature.R.Set_Name ("simplest feature");
@@ -404,7 +411,9 @@ package body Test_Suite.Result is
 
       I := 1;
 
-      T.Assert (Result.R.Outline_Step_Count (I) = 3, "3 steps in scenario 2");
+      T.Assert (Result.R.Outline_Step_Count (I) = 3,
+                Result.R.Outline_Step_Count (I)'Img &
+                " steps in scenario 2 instead of 3");
       Equals (Result.R.Outline_Step_Element (I, 0).R.Stanza,
               "A is 1 and B is 2",
               "1st step of 2nd scenario");

@@ -58,8 +58,10 @@ package body XReq.Scenarios is
                      Stanza   : in     Step_Handle)
    is
       use Step_Vectors;
+      Counter : constant Integer := Scenario.Step_Count;
    begin
       Append (Scenario.D.Steps, Stanza);
+      pragma Assert (Scenario.Step_Count = Counter + 1);
    end Step_Append;
 
    --------------------------------

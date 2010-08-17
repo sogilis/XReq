@@ -32,6 +32,7 @@ package body XReq.Scenarios.Result is
    procedure Make             (Res           : out    Result_Scenario_Type;
                                Scenario      : in     Scenario_Handle) is
    begin
+      pragma Assert (Scenario.Valid);
       Res.Make (Scenario.R.Name,
                 Scenario.R.Position,
                 Scenario.R.Outline,
@@ -64,7 +65,10 @@ package body XReq.Scenarios.Result is
       Steps_tmp  : Result_Steps.Vector;
       Steps_tmp2 : Step_Vectors.Vector;
       Err        : Boolean;
+      Counter    : Integer;
+      I          : Integer;
    begin
+      pragma Assert (Scenario.Valid);
       Res.Make (Scenario);
       Clear (Res.Scenarios);
       Errors := False;
@@ -72,6 +76,7 @@ package body XReq.Scenarios.Result is
       --  Process all steps
       --
       for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
+         Counter := Res.Step_Count;
          Res_St := Create;
          if Scenario.R.Outline then
             Err := False;
@@ -85,13 +90,16 @@ package body XReq.Scenarios.Result is
             Errors := True;
          else
             Res.Step_Append (Res_St);
+            pragma Assert (Res.Step_Count = Counter + 1);
          end if;
          Res_St.UnRef;
+         pragma Assert (Err or Res.Step_Count = Counter + 1);
       end loop;
       --
       --  For scenario outlines, create scenarios
       --
       if Scenario.R.Outline then
+         I := Res.Outline_First;
          for Y in Scenario.R.Table.First_Y + 1 .. Scenario.R.Table.Last_Y loop
             --
             --  For each row in the examples table,
@@ -99,6 +107,7 @@ package body XReq.Scenarios.Result is
             --  steps
             --
             Clear (Steps_tmp);
+            Clear (Steps_tmp2);
             --  First, populate the step vector with a copy of the unmodified
             --  steps
             for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
@@ -149,8 +158,11 @@ package body XReq.Scenarios.Result is
             --  And append the scenario in the scenario outline
             --
             Append (Res.Scenarios, Steps_tmp);
+            pragma Assert (Res.Step_Count = Res.Outline_Step_Count (I));
+            I := I + 1;
          end loop;
       end if;
+      pragma Assert (Errors or Res.Step_Count = Scenario.R.Step_Count);
    end Process_Scenario;
 
    -------------------------------------------
@@ -271,11 +283,13 @@ package body XReq.Scenarios.Result is
 
    procedure Step_Append  (Scenario : in out Result_Scenario_Type;
                            Stanza   : in     Result_Step_Handle) is
-      Super : Scenario_Type'Class := Scenario;
+      Super : constant access Scenario_Type'Class := Scenario'Access;
       S : Step_Handle;
+      Counter : constant Integer := Scenario.Step_Count;
    begin
       S.Set (Step_Ptr (Stanza.Ref));
       Super.Step_Append (S);
+      pragma Assert (Scenario.Step_Count = Counter + 1);
    end Step_Append;
 
    --------------------
@@ -286,7 +300,7 @@ package body XReq.Scenarios.Result is
                                   Index    : in     Natural)
                                              return Result_Step_Handle
    is
-      Super : constant Scenario_Type'Class := Scenario;
+      Super : constant access constant Scenario_Type'Class := Scenario'Access;
       S1 : constant Step_Handle := Super.Step_Element (Index);
    begin
       return S2 : Result_Step_Handle do

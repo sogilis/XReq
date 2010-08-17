@@ -21,4 +21,6 @@ package XReq is
 
    procedure Assert (Bool : in Boolean);
 
+   procedure Debug (Text : String);
+
 end XReq;

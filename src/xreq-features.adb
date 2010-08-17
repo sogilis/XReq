@@ -30,10 +30,11 @@ package body XReq.Features is
    procedure Make (F      : out    Feature_Type;
                    Name   : in     String := "")
    is
-      Feature : Feature_Type := Null_Feature;
    begin
-      Feature.M_Name := To_Unbounded_String (Name);
-      F := Feature;
+      F := (Reffy.Counted_Type (F) with
+            M_Name     => To_Unbounded_String (Name),
+            Background => Create,
+            others     => <>);
    end Make;
 
    --------------------------------
@@ -255,9 +256,11 @@ package body XReq.Features is
    procedure Scenario_Append    (F : in out Feature_Type;
                                  S : in     Scenario_Handle)
    is
+      Counter : constant Integer := F.Scenario_Count;
       use Scenario_Container;
    begin
       Append (F.Scenarios, S);
+      pragma Assert (F.Scenario_Count = Counter + 1);
    end Scenario_Append;
 
    ------------

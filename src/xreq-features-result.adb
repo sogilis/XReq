@@ -35,12 +35,14 @@ package body XReq.Features.Result is
                               Missing_Steps : in out String_Set;
                               Step_Matching : in     Boolean := False)
    is
-      R_Scen : Result_Scenario_Handle;
-      Errors : Boolean;
+      R_Scen  : Result_Scenario_Handle;
+      Errors  : Boolean;
+      Counter : Integer;
    begin
       if not Feature.R.Parsed then
          raise Unparsed_Feature;
       end if;
+      pragma Assert (Feature.R.Background.Valid);
       Res.Set_Name        (Feature.R.Name);
       Res.Set_Position    (Feature.R.Position);
       Res.Set_Description (Feature.R.Description);
@@ -57,14 +59,18 @@ package body XReq.Features.Result is
          Res.Fail := True;
       end if;
       for I in Feature.R.Scenario_First .. Feature.R.Scenario_Last loop
+         Counter := Res.Scenario_Count;
          R_Scen := Create;
          R_Scen.Ref.Process_Scenario
            (Feature.R.Scenario_Element (I), Steps,
             Log, Errors, Missing_Steps, Step_Matching);
          if Errors then
             Res.Fail := True;
+         else
+            Res.Scenario_Append (R_Scen);
+            pragma Assert (Res.Scenario_Count = Counter + 1);
          end if;
-         Res.Scenario_Append (R_Scen);
+         pragma Assert (Errors or Res.Scenario_Count = Counter + 1);
       end loop;
       if Res.Fail then
          Log.Put_Line ("XReq can create the procedures for you if you " &
@@ -72,6 +78,8 @@ package body XReq.Features.Result is
       end if;
       pragma Assert (Res.Language.Valid);
       pragma Assert (Res.Background.Valid);
+      pragma Assert (Res.Fail or
+                     Res.Scenario_Count = Feature.R.Scenario_Count);
    end Process_Feature;
 
    ------------------------------------------
@@ -126,7 +134,7 @@ package body XReq.Features.Result is
 
    function  Background     (F    : in     Result_Feature_Type)
                                     return Result_Scenario_Handle is
-      Super : constant Feature_Type'Class := F;
+      Super : constant access constant Feature_Type'Class := F'Access;
       S1    : constant Scenario_Handle := Super.Background;
    begin
       return S2 : Result_Scenario_Handle do
@@ -164,7 +172,7 @@ package body XReq.Features.Result is
    function  Scenario_Element   (F : in     Result_Feature_Type;
                                  I : in     Natural)
                                      return Result_Scenario_Handle is
-      Super : constant Feature_Type'Class := F;
+      Super : constant access constant Feature_Type'Class := F'Access;
       S1 : constant Scenario_Handle := Super.Scenario_Element (I);
    begin
       return S2 : Result_Scenario_Handle do
@@ -178,10 +186,12 @@ package body XReq.Features.Result is
 
    procedure Scenario_Append    (F : in out Result_Feature_Type;
                                  S : in     Result_Scenario_Handle) is
-      Super : Feature_Type'Class := F;
+      Counter : constant Integer := F.Scenario_Count;
+      Super : constant access Feature_Type'Class := F'Access;
       S1 : Scenario_Handle;
    begin
       S1.Set (Scenarios.Scenario_Ptr (S.Ref));
       Super.Scenario_Append (S1);
+      pragma Assert (F.Scenario_Count = Counter + 1);
    end Scenario_Append;
 end XReq.Features.Result;
