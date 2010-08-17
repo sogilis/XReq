@@ -198,10 +198,12 @@ package body Test_Suite.Features is
       T.Assert (Feature1.Name = "Sample2", "Incorrect feature name");
       T.Assert (Feature1.Parsed, "Feature_Type is always parsed");
 
+      Scenario := Create;
       Scenario.R.Make ("Background");
       Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Feature1.Set_Background (Scenario);
 
+      Scenario := Create;
       Scenario.R.Make ("Run a good step");
       Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Scenario.R.Step_Append (Stanza_Given
@@ -211,6 +213,7 @@ package body Test_Suite.Features is
       Scenario.R.Step_Append (Stanza_Then  ("I get a cake"));
       Feature1.Scenario_Append (Scenario);
 
+      Scenario := Create;
       Scenario.R.Make ("Another good step");
       Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Feature1.Scenario_Append (Scenario);

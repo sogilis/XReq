@@ -24,7 +24,7 @@ use XReq.Step_Definition_List.Handles;
 package XReq.Step_Definitions.C is
 
    --  Called in XReq.Steps.Load
-   procedure Parse_Directory (Steps      : in out Step_File_List_Handle;
+   procedure Parse_Directory (Steps      : in     Step_File_List_Handle;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False);

@@ -29,14 +29,14 @@ package XReq.Step_Definitions.Ada05 is
 
 
    --  Called in XReq.Steps.Load
-   procedure Parse_Directory (Steps      : in out Step_File_List_Handle;
+   procedure Parse_Directory (Steps      : in     Step_File_List_Handle;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False);
    --  IMPORTANT: deallocate Steps_Type
 
    --  Called in XReq.Steps.Add_Steps
-   procedure Add_Steps       (Steps      : in out Step_File_List_Handle;
+   procedure Add_Steps       (Steps      : in     Step_File_List_Handle;
                               New_Steps  : in     String_Set;
                               Step_Pkg   : in     String;
                               Directory  : in     String;

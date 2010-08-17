@@ -131,7 +131,7 @@ package body Test_Suite.Step_Definitions.Ada05 is
 
    procedure Run (T : in out Test_Parse_Dir) is
       Directory : constant String := "tests/features/step_definitions";
-      Steps     : Step_File_List_Handle;
+      Steps     : constant Step_File_List_Handle := Create;
       Step      : Ada_Step_File_Ptr;
       Found     : Boolean := False;
       I         : Natural;

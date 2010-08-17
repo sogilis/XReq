@@ -74,7 +74,7 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Fill_Missing) is
-      Env  : Environment_Handle;
+      Env  : constant Environment_Handle := Create;
    begin
       Env.Ref.Fill_Missing ("A/B/spec.feature");
       T.Assert (Env.Ref.First_Step_Dir = "A/B/step_definitions",
@@ -91,7 +91,7 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Job_Environment) is
-      Env  : Environment_Handle;
+      Env  : constant Environment_Handle := Create;
    begin
 
       T.Assert (not Env.Ref.Loaded, "Env should NOT be loaded");
@@ -153,10 +153,11 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Run) is
-      Env  : Environment_Handle;
+      Env  : Environment_Handle := Create;
       Job  : Job_Type;
    begin
-      Make (Job, "tests/features/simplest.feature");
+      Job.Make ("tests/features/simplest.feature");
+      Env.Ref.Make;
       Env.Ref.Fill_Missing (Feature_File (Job));
 
       declare
@@ -191,7 +192,7 @@ package body Test_Suite.Job is
    end Name;
 
    procedure Run (T : in out Test_Options) is
-      Env  : Environment_Handle;
+      Env  : constant Environment_Handle := Create;
    begin
 
       Env.Ref.Set_Option ("a", "b");

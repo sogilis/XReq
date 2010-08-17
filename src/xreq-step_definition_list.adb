@@ -36,7 +36,7 @@ package body XReq.Step_Definition_List is
                    Language   : in     Language_Type;
                    Fill_Steps : in     Boolean := False)
    is
-      Self : Handles.Step_File_List_Handle :=
+      Self : constant Handles.Step_File_List_Handle :=
              Handles.Handles_Pkg.Create (Steps'Unchecked_Access);
    begin
       case Language is
@@ -73,7 +73,7 @@ package body XReq.Step_Definition_List is
                         Language   : in     Language_Type;
                         Logger     : in     Logger_Ptr)
    is
-      Self : Handles.Step_File_List_Handle :=
+      Self : constant Handles.Step_File_List_Handle :=
              Handles.Handles_Pkg.Create (Steps'Unchecked_Access);
    begin
       case Language is

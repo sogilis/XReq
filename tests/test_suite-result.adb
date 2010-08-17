@@ -128,9 +128,9 @@ package body Test_Suite.Result is
          return True;
       end Eq;
 
-      Result        : Result_Scenario_Handle;
+      Result        : constant Result_Scenario_Handle := Create;
       Scenario      : Scenario_Handle;
-      Steps         : Step_File_List_Handle;
+      Steps         : constant Step_File_List_Handle := Create;
       Ideal_Result  : Result_Steps.Vector;
       A             : Result_Step_Handle;
       B             : Result_Step_Type;
@@ -139,6 +139,7 @@ package body Test_Suite.Result is
    begin
       Steps.Ref.Load ("tests/features/step_definitions", Lang_Ada);
 
+      Scenario := Create;
       Scenario.R.Make ("Scenario");
       Scenario.R.Step_Append (Stanza_Given ("this step works"));
       Scenario.R.Step_Append (Stanza_When  ("this step works too"));
@@ -203,12 +204,12 @@ package body Test_Suite.Result is
 
    procedure Run (T : in out Test_Result_Feature_Type) is
       CRLF     : constant String := "" & ASCII.LF;
-      R_Scen   : Result_Scenario_Handle;
+      R_Scen   : constant Result_Scenario_Handle := Create;
       Expected : constant Result_Feature_Handle := Create;
-      Result   : Result_Feature_Handle;
+      Result   : constant Result_Feature_Handle := Create;
       Feature  : Feature_File_Ptr;
       Feature2 : Feature_Handle;
-      Steps    : Step_File_List_Handle;
+      Steps    : constant Step_File_List_Handle := Create;
       Exp_Str  : constant String :=
                "Feature Sample"                     & CRLF &
                "   Background "                     & CRLF &
@@ -300,7 +301,7 @@ package body Test_Suite.Result is
                                                     & CRLF &
                "   End Scenario Run a good step"    & CRLF &
                "End Feature simplest feature"       & CRLF;
-      R_Scen   : Result_Scenario_Handle;
+      R_Scen   : constant Result_Scenario_Handle := Create;
       Feature  : constant Result_Feature_Handle := Create;
       Matches  : Step_Match_Vectors.Vector;
    begin
@@ -337,8 +338,8 @@ package body Test_Suite.Result is
       use Ada.Containers;
       use XReqLib.String_Tables;
       Scenario  : Scenario_Handle;
-      Result    : Result_Scenario_Handle;
-      Steps     : Step_File_List_Handle;
+      Result    : constant Result_Scenario_Handle := Create;
+      Steps     : constant Step_File_List_Handle := Create;
       Errors    : Boolean;
       I         : Natural;
       Table     : Table_Type;
