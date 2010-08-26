@@ -16,7 +16,7 @@ else
 ARCHIVENAME=$(UNIXNAME)-$(VERSION)
 endif
 
-if ($(shell uname -s),Darwin)
+ifeq ($(shell uname -s),Darwin)
 SUF_SO=dylib
 else
 SUF_SO=so
