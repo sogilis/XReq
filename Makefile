@@ -16,6 +16,12 @@ else
 ARCHIVENAME=$(UNIXNAME)-$(VERSION)
 endif
 
+if ($(shell uname -s),Darwin)
+SUF_SO=dylib
+else
+SUF_SO=so
+endif
+
 DOC_FILES=README.html HISTORY.html src/README.html reports/index.html
 
 # dynamic makes gcov unhappy: hidden symbol `__gcov_merge_add' is referenced by
@@ -124,29 +130,29 @@ dir:
 
 bin: bin/xreq
 
-lib: lib/$(MODE)/libxreqlib.$(LIBEXT) lib/$(MODE)/libxreq.so
+lib: lib/$(MODE)/libxreqlib.$(LIBEXT) lib/$(MODE)/libxreq.$(SUF_SO)
 
-lib/debug/libxreq.so: dir
+lib/debug/libxreq.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
 
-lib/release/libxreq.so: dir
+lib/release/libxreq.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=release
 
-lib/coverage/libxreq.so: dir
+lib/coverage/libxreq.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
 
-lib/debug/libxreqlib.so: dir
+lib/debug/libxreqlib.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
 
-lib/release/libxreqlib.so: dir
+lib/release/libxreqlib.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
 
-lib/coverage/libxreqlib.so: dir
+lib/coverage/libxreqlib.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
 
@@ -180,12 +186,12 @@ bin/xreq: bin/xreq.$(CONFIG)
 	-rm -f bin/xreq
 	ln -s xreq.$(CONFIG) bin/xreq
 
-lib/gps/libxreqgps.so: dir
+lib/gps/libxreqgps.$(SUF_SO): dir
 	@echo "LINK    $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pgps_plugin.gpr -Xmode=release
-	#$(MAKE) -C src/gps libgprcustom.so && mv src/gps/libgprcustom.so $@
+	#$(MAKE) -C src/gps libgprcustom.$(SUF_SO) && mv src/gps/libgprcustom.$(SUF_SO) $@
 
-gps-plugin: lib/gps/libxreqgps.so
+gps-plugin: lib/gps/libxreqgps.$(SUF_SO)
 
 bin/unit_tests: bin/unit_tests.dbg
 	@echo "LINK    $@"
@@ -218,8 +224,8 @@ bin/feature_tests.cov: bin/xreq features/*.feature
 	$(CP) features/tests/cov/feature_tests $@
 
 ### gprbuild targets are phony ###
-.PHONY: lib/debug/libxreq.so lib/release/libxreq.so lib/coverage/libxreq.so
-.PHONY: lib/debug/libxreqlib.so lib/release/libxreqlib.so lib/coverage/libxreqlib.so
+.PHONY: lib/debug/libxreq.$(SUF_SO) lib/release/libxreq.$(SUF_SO) lib/coverage/libxreq.$(SUF_SO)
+.PHONY: lib/debug/libxreqlib.$(SUF_SO) lib/release/libxreqlib.$(SUF_SO) lib/coverage/libxreqlib.$(SUF_SO)
 .PHONY: lib/debug/libxreqlib.a lib/release/libxreqlib.a lib/coverage/libxreqlib.a
 .PHONY: bin/xreq.cov bin/xreq.rel bin/xreq.dbg
 .PHONY: bin/unit_tests.dbg bin/unit_tests.cov
@@ -317,7 +323,7 @@ else
 cov-zero:
 	$(_LCOV_ZERO)
 
-cov-requirement: bin/xreq.cov lib/coverage/libxreq.so bin/unit_tests.cov
+cov-requirement: bin/xreq.cov lib/coverage/libxreq.$(SUF_SO) bin/unit_tests.cov
 
 cov-cucumber-setup:
 	@echo "RM      bin/xreq"
@@ -785,7 +791,7 @@ install: install-bin install-lib install-gps
 	@echo '--  $(DESTDIR)$(LIBDIR)'
 	@echo '------------------------------------------------------------------'
 
-install-lib: lib/$(INSTALL_MODE)/libxreq.so lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
+install-lib: lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
 	# Installing GPR project file in $(GPRDIR)
 	# mkdir -p $(DESTDIR)$(GPRDIR)
 	# $(INSTALL) -m644 data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
@@ -806,7 +812,7 @@ install-lib: lib/$(INSTALL_MODE)/libxreq.so lib/$(INSTALL_MODE)/libxreqlib.$(LIB
 	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
 	# Installing C library in $(LIBDIR) and C Header files in $(INCLUDEDIR)
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
-	$(INSTALL) -m755 lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
+	$(INSTALL) -m755 lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) $(DESTDIR)$(LIBDIR)/libxreq.$(SUF_SO)
 	$(INSTALL) -m644 src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
 
 install-bin: bin/xreq.$(INSTALL_CONFIG)
@@ -814,12 +820,12 @@ install-bin: bin/xreq.$(INSTALL_CONFIG)
 	$(INSTALL) bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
 
 
-install-gps: lib/gps/libxreqgps.so
+install-gps: lib/gps/libxreqgps.$(SUF_SO)
 ifneq ($(GPSDATADIR),)
 	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
-	$(INSTALL) -m755 lib/gps/libxreqgps.so          $(DESTDIR)$(LIBDIR)/libxreqgps.so
+	$(INSTALL) -m755 lib/gps/libxreqgps.$(SUF_SO)          $(DESTDIR)$(LIBDIR)/libxreqgps.$(SUF_SO)
 endif
 
 uninstall: uninstall-gps
@@ -827,13 +833,13 @@ uninstall: uninstall-gps
 	-$(RM) -rf $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	-$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreq.so
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreq.$(SUF_SO)
 	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreq.h
 	-$(RM) -rf $(DESTDIR)$(DOCDIR)
 	-$(RM) -rf $(DESTDIR)$(DATADIR)/XReq
 
 uninstall-gps:
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreqgps.so
+	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreqgps.$(SUF_SO)
 ifneq ($(GPSDATADIR),)
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
@@ -842,13 +848,13 @@ endif
 
 install-gps-local:
 	ln -sf "`pwd`"/data/gps-plug-in/*.{xml,py} ~/.gps/plug-ins
-	ln -sf "`pwd`"/lib/gps/libxreqgps.so ~/.local/lib
+	ln -sf "`pwd`"/lib/gps/libxreqgps.$(SUF_SO) ~/.local/lib
 
 uninstall-gps-local:
 	-$(RM) ~/.gps/plug-ins/xreq.xml
 	-$(RM) ~/.gps/plug-ins/xreq.py
 	-$(RM) ~/.gps/plug-ins/feature-lang.xml
-	-$(RM) ~/.local/lib/libxreqgps.so
+	-$(RM) ~/.local/lib/libxreqgps.$(SUF_SO)
 
 .PHONY: install install-lib install-bin install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
 
