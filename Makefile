@@ -787,7 +787,8 @@ install: install-bin install-lib install-gps
 
 install-lib: lib/$(INSTALL_MODE)/libxreq.so lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
 	# Installing GPR project file in $(GPRDIR)
-	# $(INSTALL) -m644 -D data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	# mkdir -p $(DESTDIR)$(GPRDIR)
+	# $(INSTALL) -m644 data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	$(INSTALL) -d $(DESTDIR)$(GPRDIR)
 	sed -e 's|%ADAINCLUDEDIR%|$(INCLUDEDIR)/xreqlib|g' \
 	    -e 's|%ADALIBDIR%|$(LIBDIR)/xreqlib|g' \
@@ -804,11 +805,13 @@ install-lib: lib/$(INSTALL_MODE)/libxreq.so lib/$(INSTALL_MODE)/libxreqlib.$(LIB
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
 	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
 	# Installing C library in $(LIBDIR) and C Header files in $(INCLUDEDIR)
-	$(INSTALL) -m755 -D lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
-	$(INSTALL) -m644 -D src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
+	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
+	$(INSTALL) -m755 lib/$(INSTALL_MODE)/libxreq.so $(DESTDIR)$(LIBDIR)/libxreq.so
+	$(INSTALL) -m644 src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
 
 install-bin: bin/xreq.$(INSTALL_CONFIG)
-	$(INSTALL) -D bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
+	mkdir -p $(DESTDIR)$(BINDIR)
+	$(INSTALL) bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
 
 
 install-gps: lib/gps/libxreqgps.so
