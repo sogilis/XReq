@@ -99,15 +99,44 @@ endif
 
 all: bin lib gps-plugin tests doc
 	@echo
-	@echo "####################################################"
-	@echo "##                                                ##"
-	@echo "##  Run 'make help' to get help on this Makefile  ##"
-	@echo "##                                                ##"
-	@echo "####################################################"
+	@echo "########################################################"
+	@echo "##                                                    ##"
+	@echo "##    Run 'make help' to get help on this Makefile    ##"
+	@echo "##                                                    ##"
+	@echo "########################################################"
+	@echo
+	@echo "You built:"
+	@echo "  - Executable:     bin/xreq"
+	@echo "  - Library:        lib/$(MODE)/libxreqlib.$(LIBEXT)"
+	@echo "                    lib/$(MODE)/libxreq.$(SUF_SO)"
+	@echo "  - GPS Plug-In:    lib/gps/libxreqgps.$(SUF_SO)"
+	@echo "  - Tests:          bin/unit_tests"
+	@echo "                    bin/feature_tests"
+	@echo "  - Documentation:  $(DOC_FILES)"
+	@echo
+
+build: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT) lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/gps/libxreqgps.$(SUF_SO)
+	@echo
+	@echo "########################################################"
+	@echo "##                                                    ##"
+	@echo "##    Run 'make help' to get help on this Makefile    ##"
+	@echo "##      You built XReq binaries ready to install      ##"
+	@echo "##                                                    ##"
+	@echo "########################################################"
+	@echo
+	@echo "You built:"
+	@echo "  - Executable:     bin/xreq.$(INSTALL_CONFIG)"
+	@echo "  - Library:        lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)"
+	@echo "                    lib/$(INSTALL_MODE)/libxreq.$(SUF_SO)"
+	@echo "  - GPS Plug-In:    lib/gps/libxreqgps.$(SUF_SO)"
+	@echo
+	@echo "You may install XReq running as a priviledged user:"
+	@echo "    make PREFIX=$(PREFIX) install"
+	@echo
 
 
 
-check-all: all gnatcheck run-unit run-features coverage
+check-all: all build gnatcheck run-unit run-features coverage
 
 $(VERBOSE).SILENT:
 
@@ -118,7 +147,6 @@ $(VERBOSE).SILENT:
 ########################
 
 dir:
-	@-mkdir -p lib
 	@-mkdir -p lib/gps
 	@-mkdir -p lib/release
 	@-mkdir -p lib/debug
@@ -127,6 +155,12 @@ dir:
 	@-mkdir -p doc
 	@-mkdir -p reports
 	@-mkdir -p coverage
+	@-mkdir -p obj/release
+	@-mkdir -p obj/dynamic-release
+	@-mkdir -p obj/debug
+	@-mkdir -p obj/dynamic-debug
+	@-mkdir -p obj/coverage
+	@-mkdir -p obj/dynamic-coverage
 
 bin: bin/xreq
 
@@ -235,7 +269,7 @@ tests: bin/unit_tests bin/feature_tests
 
 doc: dir $(DOC_FILES)
 	
-clean: cov-clean
+clean: cov-clean dir
 	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
 	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=release
 	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
@@ -791,7 +825,7 @@ install: install-bin install-lib install-gps
 	@echo '--  $(DESTDIR)$(LIBDIR)'
 	@echo '------------------------------------------------------------------'
 
-install-lib: lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
+install-lib: #lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
 	# Installing GPR project file in $(GPRDIR)
 	# mkdir -p $(DESTDIR)$(GPRDIR)
 	# $(INSTALL) -m644 data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
@@ -815,12 +849,12 @@ install-lib: lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreqli
 	$(INSTALL) -m755 lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) $(DESTDIR)$(LIBDIR)/libxreq.$(SUF_SO)
 	$(INSTALL) -m644 src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
 
-install-bin: bin/xreq.$(INSTALL_CONFIG)
+install-bin: #bin/xreq.$(INSTALL_CONFIG)
 	mkdir -p $(DESTDIR)$(BINDIR)
 	$(INSTALL) bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
 
 
-install-gps: lib/gps/libxreqgps.$(SUF_SO)
+install-gps: #lib/gps/libxreqgps.$(SUF_SO)
 ifneq ($(GPSDATADIR),)
 	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
@@ -897,6 +931,8 @@ help:
 	@echo
 	@echo "Building:"
 	@echo "    all:            Build everything     [bin gps-plugin tests doc]"
+	@echo "    build:          Build everything for installation"
+	@echo "                                         [bin gps-plugin]"
 	@echo "    bin:            Build XReq           [bin/xreq]"
 	@echo "    bin:            Build XReq libraries [lib]"
 	@echo "    gps-plugin:     Build GPS plugin     [lib/gps]"
@@ -925,7 +961,7 @@ help:
 	@echo "    show-ignored-coverage:"
 	@echo "                    Show lines that are ignored by gcov"
 	@echo
-	@echo "Variables:"
+	@echo "VARIABLES:"
 	@echo
 	@echo "    DESTDIR         root for all installation [$(DESTDIR)]"
 	@echo "    PREFIX          prefix for installation   [$(PREFIX)]"
@@ -938,6 +974,11 @@ help:
 	@echo "    DATADIR         Read only architecture-independant data"
 	@echo "                                              [$(DATADIR)]"
 	@echo "    GPSDATADIR      GPS plugin data           [$(GPSDATADIR)]"
+	@echo
+	@echo "HOW TO INSTALL"
+	@echo
+	@echo "    $ make build   (as normal user)"
+	@echo "    # make install (as priviledged user)"
 
 .PHONY: help show-ignored-coverage
 
