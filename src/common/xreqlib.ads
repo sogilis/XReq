@@ -65,4 +65,6 @@ private
 
    Null_Position : constant Position_Type := (others => <>);
 
+   Elaboration_Status : Natural := 1;
+
 end XReqLib;

@@ -38,4 +38,6 @@ package body XReqLib is
       return Position_Type'(To_Unbounded_String (File), Line);
    end Position;
 
+begin
+   Elaboration_Status := 2;
 end XReqLib;
