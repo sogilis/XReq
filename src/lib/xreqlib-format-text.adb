@@ -327,7 +327,9 @@ package body XReqLib.Format.Text is
          end if;
          Format.Output.Put (Indent * "  ");
          Format.Output.Put (Color (Success));
-         if Format.Has_Previous_Step and Format.Previous_Step_Type = Step then
+         if Format.Has_Previous_Step and then
+            Format.Previous_Step_Type = Step
+         then
             Format.Output.Put ("And ");
          else
             case Step is
