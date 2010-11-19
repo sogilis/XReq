@@ -282,10 +282,13 @@ package body XReqLib.Format is
 
       procedure Finalize (File : in out File_Type) is
          procedure Free is new
-            Ada.Unchecked_Deallocation (Ada.Text_IO.File_Type, Local_File_Ptr);
+            Ada.Unchecked_Deallocation (Ada.Text_IO.File_Type,
+                                        Local_File_Ptr);
       begin
-         File.Close;
-         Free (File.Output_Ptr);
+         if File.Output_Ptr /= null then
+            File.Close;
+            Free (File.Output_Ptr);
+         end if;
       end Finalize;
 
    end New_Text_IO;
