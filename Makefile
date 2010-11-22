@@ -856,9 +856,9 @@ install-bin: #bin/xreq.$(INSTALL_CONFIG)
 
 install-gps: #lib/gps/libxreqgps.$(SUF_SO)
 ifneq ($(GPSDATADIR),)
-	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
-	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
-	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
+	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/library/xreq.xml
+	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/library/xreq.py
+	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/library/feature-lang.xml
 	$(INSTALL) -m755 lib/gps/libxreqgps.$(SUF_SO)          $(DESTDIR)$(LIBDIR)/libxreqgps.$(SUF_SO)
 endif
 
@@ -878,6 +878,9 @@ ifneq ($(GPSDATADIR),)
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/xreq.xml
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/xreq.py
+	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/feature-lang.xml
 endif
 
 install-gps-local:
