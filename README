@@ -118,6 +118,13 @@ directory. The file `gnatcheck.rules` contain the [rules](http://www.adacore.com
 used.
 
 
+Known Problems
+==============
+
+### 2010-11-22: Storage_Error in XReqLib ###
+
+Check that the library has been elaborated.
+
 Strange Things
 ==============
 
@@ -129,48 +136,6 @@ STORAGE_ERROR: stack overflow (or erroneous memory access)
 I don't know what to think of that. Solution: `git clean -fdx`
 
 I hate arcane and obscure things.
-
-### 2010-05-20: Do not work in 64 bits mode (x86_64) ###
-
-Valgrind says:
-
-    ==28717== Invalid free() / delete / delete[]
-    ==28717==    at 0x4A04D72: free (vg_replace_malloc.c:325)
-    ==28717==    by 0x562CF1: __gnat_free (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x561BAE: system__finalization_implementation__finalize_list (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x561BAE: system__finalization_implementation__finalize_list (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x561D70: system__finalization_implementation__finalize_one (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x473A12: xreq__step_definitions__step_container__elements_typeDF (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x46985E: xreq__step_definitions__step_container__finalize__2 (a-convec.adb:727)
-    ==28717==    by 0x561BAE: system__finalization_implementation__finalize_list (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x561D70: system__finalization_implementation__finalize_one (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x537024: ada__finalization__list_controller__finalize__2 (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x561BAE: system__finalization_implementation__finalize_list (in /home/mildred/Documents/Work/2010_SOGILIS_Stage/xreq/bin/xreq.dbg)
-    ==28717==    by 0x410B64: main (b__main.adb:314)
-    ==28717==  Address 0x7dc720 is 0 bytes inside data symbol "ada__strings__unbounded__empty_shared_string"
-
-It seems, the runtime wants to free the structure
-`XReq.Step_Definitions.Step_Definition_Type`:
-
-    type Step_Definition_Type is
-       record
-          Prefix    : Step_Kind;
-          Pattern_R : Pattern_Matcher_Ptr;
-          Pattern_S : Unbounded_String;
-          Proc_Name : Unbounded_String;
-          Position  : Position_Type;
-       end record;
-
-The invalid pointer seems to point to
-`Ada.Strings.Unbounded.Empty_Shared_String`, I wonder if that isn't a GNAT
-problem with freeing memory from `Unbounded_String`s.
-
-It also seems that `Empty_Shared_String` only exists in the source of the
-64-bits version of GNAT (`lib/gcc/**/adainclude/a-strunb.adb`). i haven't found
-it in the 32-bits version. Is that a GNAT problem?
-
-- 64 bits version: GNAT Pro 6.4.0w (20100511-43)
-- 32 bits version: GNAT Pro 6.4.0w (20100131-43)
 
 ### 2010-05-19: Installation without debug symbols fails ###
 
