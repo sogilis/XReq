@@ -84,6 +84,12 @@ package body Steps is
       else
          ENV.Set ("PATH", To_String (XReq_Dir) & "/bin");
       end if;
+      if ENV.Exists ("LD_LIBRARY_PATH") then
+         ENV.Set ("LD_LIBRARY_PATH", To_String (XReq_Dir) & "/lib/debug:" &
+                  ENV.Value ("LD_LIBRARY_PATH"));
+      else
+         ENV.Set ("LD_LIBRARY_PATH", To_String (XReq_Dir) & "/lib/debug");
+      end if;
       if ENV.Exists ("GPR_PROJECT_PATH") then
          ENV.Set ("GPR_PROJECT_PATH", To_String (XReq_Dir) & ":" &
                   ENV.Value ("GPR_PROJECT_PATH"));
