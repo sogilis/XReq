@@ -826,7 +826,9 @@ install: install-bin install-lib install-gps
 	@echo '------------------------------------------------------------------'
 
 install-lib: #lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
+	#
 	# Installing GPR project file in $(GPRDIR)
+	#
 	# mkdir -p $(DESTDIR)$(GPRDIR)
 	# $(INSTALL) -m644 data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
 	$(INSTALL) -d $(DESTDIR)$(GPRDIR)
@@ -834,17 +836,23 @@ install-lib: #lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreql
 	    -e 's|%ADALIBDIR%|$(LIBDIR)/xreqlib|g' \
 	    -e 's|%ADALIBKIND%|$(LIBTYPE)|g' \
 	    data/xreqlib-template.gpr > $(DESTDIR)$(GPRDIR)/xreqlib.gpr
+	#
 	# Installing source files in $(INCLUDEDIR)/xreqlib
+	#
 	$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/common/*.ad[bs]     $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/*.ad[bs]        $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	# Installing Ada library in $(LIBDIR)/xreqlib
+	#
+	# Installing Ada library (libxreqlib) in $(LIBDIR)/xreqlib
+	#
 	$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
 	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
-	# Installing C library in $(LIBDIR) and C Header files in $(INCLUDEDIR)
+	#
+	# Installing C library (libxreq) in $(LIBDIR) and C Header files in $(INCLUDEDIR)
+	#
 	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
 	$(INSTALL) -m755 lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) $(DESTDIR)$(LIBDIR)/libxreq.$(SUF_SO)
 	$(INSTALL) -m644 src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
@@ -957,7 +965,7 @@ help:
 	@echo "    clean:          Clean project"
 	@echo "    archive:        Create a source archive   [$(ARCHIVENAME).tar.bz2]"
 	@echo "    install:        Install XReq"
-	@echo "    unnstall:       Uninstall XReq"
+	@echo "    uninstall:      Uninstall XReq"
 	@echo "    install-gps-local:"
 	@echo "                    Install the GPS plugin in your HOME directory"
 	@echo "                    using symbolic links rather than copying files"
