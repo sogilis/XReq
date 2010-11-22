@@ -20,6 +20,16 @@
 
 with "config";
 
+--  This is the version of the library that should run without the GNAT run-time
+--  and should be able to elaborate itself properly. Currently, this contains
+--  only symbols for the C language.
+
+--  Because it uses automatic elaboration, it cannot be compiled statically. It
+--  should be compatible with ELF targets and might not be compatible with other
+--  platforms. If there is a need for other platforms, there should be a GNAT
+--  Guru in the room to tell us what to do. This is probably removing the 
+--  auto-elaboration and have the program elaborate the library by hand.
+
 library project LibXReq is
 
    type Mode_Type is ("debug", "release", "coverage");
@@ -57,11 +67,11 @@ library project LibXReq is
    package Compiler is
       case Mode is
          when "debug" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Debug & ("-fPIC");
+            for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
          when "release" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Release & ("-fPIC");
+            for Default_Switches ("Ada") use Config.Ada_Switches_Release;
          when "coverage" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage & ("-fPIC");
+            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage;
       end case;
    end Compiler;
 
@@ -75,27 +85,5 @@ library project LibXReq is
             null;
       end case;
    end Binder;
-
---  No liker is allowed in library projects. THIS IS A KILLER.
---  Because of this, the dynamic library (shared object, or DSO) cannot be
---  compiled with the gcov flags, and with gcov. As a consequence, the library 
---  won't work !!! Sometimes, I really do HATE this gprbuild.
---
---  And it doesn't even make sense, libraries are liked like every other binary
---  (except perhaps static libraries, but who use them anyway, except few Ada
---  (programmers that haven't discovered what is a dynamic linker ... Anyway, I
---  can accept static libraries being te default becauseof elaboration, BUT
---  compiling dynamic libraries SHOULD be possible.
-
---    package Linker is
---       case Mode is
---          when "debug" =>
---             for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug;
---          when "coverage" =>
---             for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
---          when others =>
---             null;
---       end case;
---    end Linker;
 
 end LibXReq;

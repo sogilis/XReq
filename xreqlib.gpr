@@ -20,6 +20,10 @@
 
 with "config";
 
+--  This library project is only for Ada users. It requires elaboration. There
+--  is another version in libxreq.gpr that is designed for languages that don't
+--  do the elaboration thing.
+
 library project XReqLib is
 
    type Mode_Type is ("debug", "release", "coverage");
@@ -30,10 +34,6 @@ library project XReqLib is
 
    for Library_Name      use "xreqlib";
    for Source_Dirs       use ("src/lib", "src/common", "src/lib/" & Lib_Kind);
-   --  for Object_Dir        use "obj/" & Lib_Kind & "-" & Mode;
-   --  For some unknown reason, changing the object directory creates a whole
-   --  lot of problems. Compilation of programs using this library fails with:
-   --  undefined reference to `gnat__traceback__symbolic__symbolic_traceback__2'
    for Object_Dir        use "obj/" & Mode;
    for Library_Dir       use "lib/" & Mode;
    for Library_Kind      use Lib_Kind;
@@ -41,11 +41,11 @@ library project XReqLib is
    package Compiler is
       case Mode is
          when "debug" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Debug & ("-fPIC");
+            for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
          when "release" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Release & ("-fPIC");
+            for Default_Switches ("Ada") use Config.Ada_Switches_Release;
          when "coverage" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage & ("-fPIC");
+            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage;
       end case;
    end Compiler;
 
@@ -59,16 +59,5 @@ library project XReqLib is
             null;
       end case;
    end Binder;
-
---    package Linker is
---       case Mode is
---          when "debug" =>
---             for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug;
---          when "coverage" =>
---             for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Coverage;
---          when others =>
---             null;
---       end case;
---    end Linker;
 
 end XReqLib;
