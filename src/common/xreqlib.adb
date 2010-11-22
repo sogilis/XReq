@@ -19,8 +19,22 @@
 
 with Ada.Strings.Fixed;
 with Ada.Strings;
+with Ada.Text_IO;
 
 package body XReqLib is
+
+   procedure Check_Elaboration is
+      use Ada.Text_IO;
+   begin
+      case Elaboration_Status is
+         when 2 => null;
+         when others =>
+            Put_Line ("Warning: XReqLib package is not elaborated (Status:" &
+                      Elaboration_Status'Img & ")");
+            raise XReqLib_Not_Elaborated with
+               "Status" & Elaboration_Status'Img;
+      end case;
+   end Check_Elaboration;
 
    function To_String (Pos : in Position_Type) return String is
       use Ada.Strings.Fixed;

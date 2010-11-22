@@ -22,6 +22,9 @@ with Ada.Containers.Vectors;
 
 package XReqLib is
 
+   XReqLib_Not_Elaborated : exception;
+   procedure Check_Elaboration;
+
    Not_Yet_Implemented : exception;
 
    ----------------------
@@ -66,5 +69,6 @@ private
    Null_Position : constant Position_Type := (others => <>);
 
    Elaboration_Status : Natural := 1;
+   --  Should be 2 after elaboration
 
 end XReqLib;

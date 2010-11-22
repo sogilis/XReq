@@ -27,6 +27,7 @@ with AUnit.Run;
 with AUnit_Reporter;
 with Test_Suite;
 with Coverage_Suite;
+with XReqLib;
 
 use Ada.Text_IO;
 use Ada.Command_Line;
@@ -76,6 +77,8 @@ procedure Test_Main is
    end Display_Help;
 
 begin
+
+   XReqLib.Check_Elaboration;
 
    --  Command Line
 

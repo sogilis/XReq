@@ -87,6 +87,8 @@ procedure Main is
 
 begin
 
+   XReqLib.Check_Elaboration;
+
    -------------------
    --  Get Options  --
    -------------------
