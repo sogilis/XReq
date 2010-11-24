@@ -93,6 +93,7 @@ package XReq.Features is
 
 private
 
+   use XReq.Scenarios.Handles.Handles_Pkg;
    package Scenario_Container is
       new Ada.Containers.Vectors (Natural, Scenario_Handle, "=");
 

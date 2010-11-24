@@ -87,6 +87,7 @@ package XReq.Scenarios.Result is
 
 private
 
+   use XReq.Steps.Result.Handles.Handles_Pkg;
    package Result_Steps is new Ada.Containers.Vectors
       (Natural, Result_Step_Handle, "=");
 

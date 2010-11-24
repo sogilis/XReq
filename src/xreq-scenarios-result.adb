@@ -54,6 +54,7 @@ package body XReq.Scenarios.Result is
                                Missing_Steps : in out String_Set;
                                Step_Matching : in Boolean := False)
    is
+      use XReq.Steps.Handles.Handles_Pkg;
       package Step_Vectors is new Ada.Containers.Vectors
         (Natural, Step_Handle, "=");
       use Result_Steps;
