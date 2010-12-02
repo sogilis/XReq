@@ -34,17 +34,6 @@ use XReqLib.Format.Text;
 
 package body XReqLib.CLI is
 
-   procedure Check_Elaboration;
-   procedure Check_Elaboration is
-   begin
-      case Elaboration_Status is
-         when 2 => null;
-         when others =>
-            Put_Line ("Warning: XReqLib package is not elaborated (Status:" &
-                      Elaboration_Status'Img & ")");
-      end case;
-   end Check_Elaboration;
-
    procedure Help (Name : in String := Command_Name) is
    begin
 
