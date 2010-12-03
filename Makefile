@@ -169,50 +169,74 @@ lib: lib/$(MODE)/libxreqlib.$(LIBEXT) lib/$(MODE)/libxreq.$(SUF_SO)
 lib/debug/libxreq.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
+	$(CP) lib/external-dynamic-debug/$(notdir $@) $@
 
 lib/release/libxreq.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=release
+	$(CP) lib/external-dynamic-release/$(notdir $@) $@
 
 lib/coverage/libxreq.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
+	$(CP) lib/external-dynamic-coverage/$(notdir $@) $@
 
 lib/debug/libxreqlib.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
+	$(CP) lib/dynamic-debug/$(notdir $@) $@
+	$(CP) lib/dynamic-debug/*.ali $(dir $@)
+	chmod +r $(dir $@)/*.ali
 
 lib/release/libxreqlib.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
+	$(CP) lib/dynamic-release/$(notdir $@) $@
+	$(CP) lib/dynamic-release/*.ali $(dir $@)
+	chmod +r $(dir $@)/*.ali
 
 lib/coverage/libxreqlib.$(SUF_SO): dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
+	$(CP) lib/dynamic-coverage/$(notdir $@) $@
+	$(CP) lib/dynamic-coverage/*.ali $(dir $@)
+	chmod +r $(dir $@)/*.ali
 
 lib/debug/libxreqlib.a: dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=static  -Xmode=debug
+	$(CP) lib/static-debug/$(notdir $@) $@
+	$(CP) lib/static-debug/*.ali $(dir $@)
+	chmod +r $(dir $@)/*.ali
 
 lib/release/libxreqlib.a: dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=static  -Xmode=release
+	$(CP) lib/static-release/$(notdir $@) $@
+	$(CP) lib/static-release/*.ali $(dir $@)
+	chmod +r $(dir $@)/*.ali
 
 lib/coverage/libxreqlib.a: dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
+	$(CP) lib/static-coverage/$(notdir $@) $@
+	$(CP) lib/static-coverage/*.ali $(dir $@)
+	chmod +r $(dir $@)/*.ali
 
 bin/xreq.cov: lib/coverage/libxreqlib.$(LIBEXT)
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=coverage
+	test -f $@
 
 bin/xreq.rel: lib/release/libxreqlib.$(LIBEXT)
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=release
+	test -f $@
 
 bin/xreq.dbg: lib/debug/libxreqlib.$(LIBEXT)
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pxreq.gpr    -Xtype=$(LIBTYPE) -Xmode=debug
+	test -f $@
 
 
 bin/xreq: bin/xreq.$(CONFIG)
@@ -223,6 +247,7 @@ bin/xreq: bin/xreq.$(CONFIG)
 lib/gps/libxreqgps.$(SUF_SO): dir
 	@echo "LINK    $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Pgps_plugin.gpr -Xmode=release
+	test -f $@
 	#$(MAKE) -C src/gps libgprcustom.$(SUF_SO) && mv src/gps/libgprcustom.$(SUF_SO) $@
 
 gps-plugin: lib/gps/libxreqgps.$(SUF_SO)
@@ -234,10 +259,12 @@ bin/unit_tests: bin/unit_tests.dbg
 bin/unit_tests.dbg: dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Punit_tests.gpr -Xmode=debug
+	test -f $@
 
 bin/unit_tests.cov: dir
 	@echo "GNAT    BUILD   $@"
 	$(GPRBUILD) $(GPRBUILD_FLAGS) -Punit_tests.gpr -Xmode=coverage
+	test -f $@
 
 bin/feature_tests: bin/feature_tests.dbg
 	@echo "LINK    $@"
@@ -820,8 +847,8 @@ install: install-bin install-lib install-gps
 	@echo '--  your ADA_PROJECT_PATH or GPR_PROJECT_PATH to point to the path'
 	@echo '--  $(DESTDIR)$(GPRDIR)'
 	@echo '------------------------------------------------------------------'
-	@echo '--  To be able to use the library for C, you may need to update'
-	@echo '--  your LD_LIBRARY_PATH to point to the path'
+	@echo '--  To be able to use the library, you may need to update your'
+	@echo '--  LD_LIBRARY_PATH to point to the path'
 	@echo '--  $(DESTDIR)$(LIBDIR)'
 	@echo '------------------------------------------------------------------'
 
@@ -845,11 +872,18 @@ install-lib: #lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreql
 	$(CP) src/lib/*.ad[bs]        $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
 	#
-	# Installing Ada library (libxreqlib) in $(LIBDIR)/xreqlib
+	# Installing Ada library (libxreqlib) in $(LIBDIR) and $(LIBDIR)/xreqlib
 	#
 	$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
-	$(CP) lib/$(INSTALL_MODE)/*.ali lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)/xreqlib
+	$(CP) lib/$(INSTALL_MODE)/libxreqlib.* lib/$(INSTALL_MODE)/*.ali $(DESTDIR)$(LIBDIR)/xreqlib
+ifeq ($(LIBTYPE),dynamic)
+	# Copy the dynamic library to the libdir as well to get the executable
+	# find it. Don't know how to tell the linker in the project file to look
+	# in $(LIBDIR) instead of $(LIBDIR)/xreqlib. And don't want to install
+	# ALI files directly in $(LIBDIR)
+	$(CP) lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)
+endif
 	#
 	# Installing C library (libxreq) in $(LIBDIR) and C Header files in $(INCLUDEDIR)
 	#
