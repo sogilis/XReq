@@ -835,7 +835,7 @@ check: gnatcheck coverage run-cucumber run-unit
 ##               ##
 ###################
 
-install: install-bin install-lib install-gps
+install: install-bin install-lib install-gps install-gpr
 	@echo '------------------------------------------------------------------'
 	@echo '--  XReq has now been installed.'
 	@echo '------------------------------------------------------------------'
@@ -900,9 +900,12 @@ install-gps: #lib/gps/libxreqgps.$(SUF_SO)
 ifneq ($(GPSDATADIR),)
 	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/library/xreq.xml
 	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/library/xreq.py
-	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/library/feature-lang.xml
+	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
 	$(INSTALL) -m755 lib/gps/libxreqgps.$(SUF_SO)          $(DESTDIR)$(LIBDIR)/libxreqgps.$(SUF_SO)
 endif
+
+install-gpr: data/gprconfig.xml
+	$(INSTALL) -m644 data/gprconfig.xml $(DESTDIR)$(DATADIR)/gprconfig/xreq.xml
 
 uninstall: uninstall-gps
 	-$(RM) -rf $(DESTDIR)$(BINDIR)/xreq
@@ -925,6 +928,9 @@ ifneq ($(GPSDATADIR),)
 	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/feature-lang.xml
 endif
 
+uninstall-gpr: data/gprconfig.xml
+	-$(RM) -rf $(DESTDIR)$(DATADIR)/gprconfig/xreq.xml
+
 install-gps-local:
 	ln -sf "`pwd`"/data/gps-plug-in/*.{xml,py} ~/.gps/plug-ins
 	ln -sf "`pwd`"/lib/gps/libxreqgps.$(SUF_SO) ~/.local/lib
@@ -935,7 +941,7 @@ uninstall-gps-local:
 	-$(RM) ~/.gps/plug-ins/feature-lang.xml
 	-$(RM) ~/.local/lib/libxreqgps.$(SUF_SO)
 
-.PHONY: install install-lib install-bin install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local
+.PHONY: install install-lib install-bin install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local install-gpr uninstall-gpr
 
 
 

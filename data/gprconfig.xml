@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<gprconfig>
+  
+  <compiler_description>
+    <name>XReq</name>
+    <executable>xreq</executable>
+    <version>0.01git</version>
+    <languages>feature,requirement</languages>
+  </compiler_description>
+
+  <configuration>
+    <compilers>
+      <compiler language="feature" />
+    </compilers>
+    <config>
+      package Naming is
+        for Body_Suffix ("feature") use ".feature";
+      end Naming;
+    </config>
+  </configuration>
+  
+  <!-- Problem: I don't know how to make gprbuild understand that feature files
+       do not build into object files but in adb/ads files. The following
+       configuration is disabled. -->
+  
+  <!--
+  <configuration>
+    <compilers>
+      <compiler name="XReq" language="feature" />
+    </compilers>
+    <config>
+      package Compiler is
+        for Driver ("feature") use "${PATH(feature)}${EXEC(feature)}";
+      end Compiler;
+      package Binder is
+        for Prefix ("feature") use "xreq_f__";
+      end Binder;
+    </config>
+  </configuration>
+  -->
+
+</gprconfig>
