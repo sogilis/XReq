@@ -668,10 +668,12 @@ package body XReq.Generator.Ada05 is
       Gen.Ads.Put_Line ("with XReqLib.Args;");
       Gen.Ads.Put_Line ("with XReqLib.Report;");
       Gen.Ads.Put_Line ("with XReqLib.Format;");
+      Gen.Adb.Put_Line ("with XReqLib.Register;");
       Gen.Ads.Put_Line ("use  XReqLib;");
       Gen.Ads.Put_Line ("use  XReqLib.Args;");
       Gen.Ads.Put_Line ("use  XReqLib.Report;");
       Gen.Ads.Put_Line ("use  XReqLib.Format;");
+      Gen.Adb.Put_Line ("use  XReqLib.Register;");
       Gen.Ads.Put_Line ("package " & Gen.Id_Pkgname & " is");
       Gen.Adb.Put_Line ("package body " & Gen.Id_Pkgname & " is");
       Gen.Ads.Indent;
@@ -768,6 +770,12 @@ package body XReq.Generator.Ada05 is
       Gen.Ads.UnIndent;
       Gen.Adb.UnIndent;
       Gen.Adb.New_Line;
+      Gen.Adb.Put_Line ("begin");
+      Gen.Adb.New_Line;
+      Gen.Adb.Indent;
+      Gen.Adb.Put_Line ("Register_Feature (Run'Access);");
+      Gen.Adb.UnIndent;
+      Gen.Adb.New_Line;
       Gen.Ads.Put_Line ("end " & Gen.Id_Pkgname & ";");
       Gen.Adb.Put_Line ("end " & Gen.Id_Pkgname & ";");
       Generate_With (Gen);
@@ -819,6 +827,12 @@ package body XReq.Generator.Ada05 is
 
    begin
       With_B.Put_Line ("--  File: " & Filename);
+      I := First (Gens);
+      while Has_Element (I) loop
+         E := Ada_Generator_Ptr (Element (I));
+         With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
+         Next (I);
+      end loop;
       With_B.Put_Line ("with Ada.Command_Line;");
       With_B.Put_Line ("with Ada.Real_Time;");
       With_B.Put_Line ("with XReqLib;");
@@ -827,6 +841,7 @@ package body XReq.Generator.Ada05 is
       With_B.Put_Line ("with XReqLib.Report;");
       With_B.Put_Line ("with XReqLib.Format;");
       With_B.Put_Line ("with XReqLib.Format.Text;");
+      With_B.Put_Line ("with XReqLib.Register;");
       With_B.Put_Line ("use  Ada.Real_Time;");
       With_B.Put_Line ("use  XReqLib;");
       With_B.Put_Line ("use  XReqLib.CLI;");
@@ -834,6 +849,7 @@ package body XReq.Generator.Ada05 is
       With_B.Put_Line ("use  XReqLib.Report;");
       With_B.Put_Line ("use  XReqLib.Format;");
       With_B.Put_Line ("use  XReqLib.Format.Text;");
+      With_B.Put_Line ("use  XReqLib.Register;");
       Body_B.Put_Line ("procedure " & Prc_Name & " is");
       Body_B.Indent;
       Body_B.Put_Line ("Self_Name : constant String := " &
@@ -856,23 +872,11 @@ package body XReq.Generator.Ada05 is
       Body_B.Put_Line    ("Format.Start_Tests;");
       Body_B.Put_Line    ("Time_Start := Clock;");
       Body_B.Put_Line    ("--  Count Steps");
-      I := First (Gens);
-      while Has_Element (I) loop
-         E := Ada_Generator_Ptr (Element (I));
-         With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
-         Body_B.Put_Line (E.Full_Name & ".Run (Format, Cond, Report, " &
-                                              "Count_Mode => True);");
-         Next (I);
-      end loop;
+      Body_B.Put_Line    ("Call_Features (Format, Cond, Report, " &
+                                         "Count_Mode => True);");
       Body_B.Put_Line    ("Format.Set_Num_Steps (Report.Num_Steps);");
       Body_B.Put_Line    ("--  Run Steps");
-      I := First (Gens);
-      while Has_Element (I) loop
-         E := Ada_Generator_Ptr (Element (I));
-         Body_B.Put_Line (E.Full_Name & ".Run (Format, Cond, Report, " &
-                                              "List_Mode);");
-         Next (I);
-      end loop;
+      Body_B.Put_Line    ("Call_Features (Format, Cond, Report, List_Mode);");
       Body_B.Put_Line    ("Time_Stop := Clock;");
       Body_B.Put_Line    ("Time_Delta := To_Duration " &
                                              "(Time_Stop - Time_Start);");
