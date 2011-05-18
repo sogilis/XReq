@@ -23,4 +23,8 @@ package XReq is
 
    procedure Debug (Text : String);
 
+   package Constants is
+      Version : constant String := "0.1-git";
+   end Constants;
+
 end XReq;

@@ -57,7 +57,7 @@ procedure Main is
    Env        : Environment_Handle := Create;
    Job        : Job_Type;
    Quit       : Boolean := False;
-   Options    : constant String := "help h -help k -keep-going " &
+   Options    : constant String := "help h -help V -version k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
               "-fill-steps -progress -partial -step-matching m -make " &
               "q -quiet -fill-steps-in= c: ";
@@ -106,6 +106,13 @@ begin
          Full_Switch = "-help"
       then
          XReq.CLI.Help;
+         Quit := True;
+         exit Getopt_Loop;
+
+      elsif Full_Switch = "V" or else
+         Full_Switch = "-version"
+      then
+         XReq.CLI.Version;
          Quit := True;
          exit Getopt_Loop;
 

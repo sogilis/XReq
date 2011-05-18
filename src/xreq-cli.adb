@@ -56,6 +56,9 @@ package body XReq.CLI is
       Put_Line ("    -h, -help, --help");
       Put_Line ("        Help message");
       Put_Line ("");
+      Put_Line ("    -V, --version");
+      Put_Line ("        Show version");
+      Put_Line ("");
       Put_Line ("    -s, --step STEPDIR");
       Put_Line ("        Specify a step directory.  By default, the step/ directory relative");
       Put_Line ("        to each feature file specified is searched.");
@@ -143,5 +146,10 @@ package body XReq.CLI is
       pragma Style_Checks (On);
 
    end Help;
+
+   procedure Version is
+   begin
+      Put_Line ("XReq version: " & Constants.Version);
+   end Version;
 
 end XReq.CLI;

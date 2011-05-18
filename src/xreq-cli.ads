@@ -21,4 +21,6 @@ package XReq.CLI is
 
    procedure Help;
 
+   procedure Version;
+
 end XReq.CLI;
