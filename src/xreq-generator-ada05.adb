@@ -249,7 +249,9 @@ package body XReq.Generator.Ada05 is
             Insert (S.With_Pkg, Pkgname);
          end if;
          --  Call to step
+         S.Adb.Put_Line ("Call_Hook (Hook_Begin, Hook_Step);");
          S.Adb.Put_Line (Procname & " (Args);");
+         S.Adb.Put_Line ("Call_Hook (Hook_End, Hook_Step);");
          --  Count step
          S.Adb.Put_Line ("Report.Count_Steps_Passed := " &
                          "Report.Count_Steps_Passed + 1;");
@@ -277,6 +279,7 @@ package body XReq.Generator.Ada05 is
       if not Fake then
          S.Adb.Put_Line ("exception");
          S.Adb.Put_Line ("   when Err : others =>");
+         S.Adb.Put_Line ("     Call_Hook (Hook_End, Hook_Step);");
          S.Adb.Put_Line ("     Report.Count_Steps_Failed := " &
                               "Report.Count_Steps_Failed + 1;");
          S.Adb.Put_Line ("     Fail := True;");
@@ -417,6 +420,7 @@ package body XReq.Generator.Ada05 is
             S.Adb.Put_Line ("Format.Enter_Outline;");
          else
             S.Adb.Put_Line ("Format.Enter_Scenario;");
+            S.Adb.Put_Line ("Call_Hook (Hook_Begin, Hook_Scenario);");
          end if;
          S.Adb.Put_Line ("if not First then");
          S.Adb.Put_Line ("   --  Background has already been shown, " &
@@ -503,6 +507,7 @@ package body XReq.Generator.Ada05 is
                S.Adb.Put_Line ("Fail := Stop;");
             end if;
             S.Adb.Put_Line ("Format.Start_Scenario;");
+            S.Adb.Put_Line ("Call_Hook (Hook_StartH, Hook_Scenario);");
             S.Adb.Put_Line ("declare");
             S.Adb.Indent;
             S.Adb.Put_Line ("procedure Priv_Put_Scenario;");
@@ -536,6 +541,7 @@ package body XReq.Generator.Ada05 is
             S.Adb.Put_Line ("   Report.Count_Scenario_Passed := " &
                               "Report.Count_Scenario_Passed + 1;");
             S.Adb.Put_Line ("end if;");
+            S.Adb.Put_Line ("Call_Hook (Hook_End, Hook_Scenario);");
             S.Adb.Put_Line ("Format.Stop_Scenario;");
             First := False;
          end loop;
@@ -559,6 +565,7 @@ package body XReq.Generator.Ada05 is
          if Scenario.R.Outline then
             S.Adb.Put_Line ("Format.Stop_Outline;");
          else
+            S.Adb.Put_Line ("Call_Hook (Hook_End, Hook_Scenario);");
             S.Adb.Put_Line ("if Fail then");
             S.Adb.Put_Line ("   Report.Count_Scenario_Failed := " &
                               "Report.Count_Scenario_Failed + 1;");
@@ -755,12 +762,14 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.Indent;
       Gen.Adb.Put_Line ("if not Count_Mode then");
       Gen.Adb.Put_Line ("   Format.Start_Feature;");
+      Gen.Adb.Put_Line ("   Call_Hook (Hook_Begin, Hook_Feature);");
       Gen.Adb.Put_Line ("end if;");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
          Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) & " " &
                            "(Format, Report, First, Cond, Stop, Count_Mode);");
       end loop;
       Gen.Adb.Put_Line ("if not Count_Mode then");
+      Gen.Adb.Put_Line ("   Call_Hook (Hook_End, Hook_Feature);");
       Gen.Adb.Put_Line ("   Format.Stop_Feature;");
       Gen.Adb.Put_Line ("end if;");
       Gen.Adb.UnIndent;

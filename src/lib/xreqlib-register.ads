@@ -29,6 +29,22 @@ package XReqLib.Register is
       List_Mode  : in Boolean := False;
       Count_Mode : in Boolean := False);
 
+   type Hook_Timing    is (Hook_Begin, Hook_End);
+   type Hook_Position  is (Hook_Test_Suite,
+                           Hook_Feature,
+                           Hook_Scenario,
+                           Hook_Step);
+   type Hook_Procedure is access procedure
+     (Timing   : Hook_Timing;
+      Position : Hook_Position);
+
+   procedure Register_Hook (Timing   : Hook_Timing;
+                            Position : Hook_Position;
+                            Callback : Hook_Procedure);
+
+   procedure Call_Hook (Timing   : Hook_Timing;
+                        Position : Hook_Position);
+
    procedure Register_Feature (Proc : Feature_Procedure);
 
    procedure Call_Features

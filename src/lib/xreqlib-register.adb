@@ -19,20 +19,53 @@
 
 package body XReqLib.Register is
 
-   type List_Type;
-   type List_Access is access all List_Type;
+   type Hook_List_Type;
+   type Hook_List_Access is access all Hook_List_Type;
 
-   type List_Type is
+   type Hook_List_Type is
       record
-         Proc : Feature_Procedure := null;
-         Next : List_Access := null;
+         Timing   : Hook_Timing;
+         Position : Hook_Position;
+         Proc     : Hook_Procedure := null;
+         Next     : Hook_List_Access := null;
       end record;
 
-   All_Procedures : List_Access := null;
+   All_Hooks : Hook_List_Access := null;
+
+   procedure Register_Hook (Timing   : Hook_Timing;
+                            Position : Hook_Position;
+                            Callback : Hook_Procedure) is
+   begin
+      All_Hooks := new Hook_List_Type'(Timing, Position, Callback, All_Hooks);
+   end Register_Hook;
+
+   procedure Call_Hook (Timing   : Hook_Timing;
+                        Position : Hook_Position)
+   is
+      P : Hook_List_Access := All_Hooks;
+   begin
+      while P /= null loop
+         if P.Timing = Timing and P.Position = Position then
+            P.Proc (Timing, Position);
+         end if;
+         P := P.Next;
+      end loop;
+   end Call_Hook;
+
+   type Feature_List_Type;
+   type Feature_List_Access is access all Feature_List_Type;
+
+   type Feature_List_Type is
+      record
+         Proc : Feature_Procedure := null;
+         Next : Feature_List_Access := null;
+      end record;
+
+   All_Features : Feature_List_Access := null;
 
    procedure Register_Feature (Proc : Feature_Procedure) is
    begin
-      All_Procedures := new List_Type'(Proc, All_Procedures);
+      All_Features := new Feature_List_Type'(Proc, All_Features);
    end Register_Feature;
 
    procedure Call_Features
@@ -42,12 +75,14 @@ package body XReqLib.Register is
       List_Mode  : in Boolean := False;
       Count_Mode : in Boolean := False)
    is
-      P : List_Access := All_Procedures;
+      P : Feature_List_Access := All_Features;
    begin
+      Call_Hook (Hook_Begin, Hook_Test_Suite);
       while P /= null loop
          P.Proc (Format, Cond, Report, List_Mode, Count_Mode);
          P := P.Next;
       end loop;
+      Call_Hook (Hook_End, Hook_Test_Suite);
    end Call_Features;
 
 end XReqLib.Register;
