@@ -462,11 +462,8 @@ package body XReqLib.Format.HTML is
    procedure Put_Error      (Format     : in out HTML_Format_Type;
                              Err        : in Exception_Occurrence)
    is
-      --  use Ada.Exceptions.Traceback;
       use XReqLib.Error_Handling;
-      --  Trace : constant Tracebacks_Array := Tracebacks (Err);
-      Error : constant String :=
-         Exception_Name (Err) & ": " & Exception_Message (Err) & ASCII.LF;
+      Error : constant String := Exception_To_String (Err);
    begin
       if Format.Have_Background then
          Tmpl.step_error_background (Format.Output,

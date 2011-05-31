@@ -21,6 +21,7 @@ with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
 with XReqLib.ANSI;
+with XReqLib.Error_Handling;
 
 use Ada.Strings;
 use Ada.Strings.Fixed;
@@ -395,24 +396,26 @@ package body XReqLib.Format.Text is
    procedure Put_Error      (Format     : in out Text_Format_Type;
                              Err        : in Exception_Occurrence)
    is
---       Info : constant String := Exception_Information (Err);
---       Line : Positive := 1;
+      use XReqLib.Error_Handling;
+      function Indent_String return String;
+      Error : constant String := Exception_To_String (Err);
+
+      function Indent_String return String is
+      begin
+         if Format.In_Outline then
+            return "        ";
+         else
+            return "      ";
+         end if;
+      end Indent_String;
    begin
-      if Format.In_Outline then
-         Format.Output.Put ("  ");
-      end if;
-      Format.Output.Put_Line ("      " & Exception_Name (Err) &
-                ": " & Exception_Message (Err));
---       Format.Output.Put ("      ");
---       for I in Info'Range loop
---          if Line > 1 then
---             Format.Output.Put (Info (I));
---          end if;
---          if Info (I) = ASCII.LF and I /= info'Last then
---             Format.Output.Put ("      ");
---             Line := Line + 1;
---          end if;
---       end loop;
+      Format.Output.Put (Indent_String);
+      for I in Error'Range loop
+         Format.Output.Put (Error (I));
+         if Error (I) = ASCII.LF and I /= Error'Last then
+            Format.Output.Put (Indent_String);
+         end if;
+      end loop;
    end Put_Error;
 
    -------------------

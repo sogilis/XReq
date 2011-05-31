@@ -39,7 +39,7 @@ abstract project Config is
    Ada_Switches_Debug := Ada_Switches & (
       "-gnata",         --  Pragma Debug and Assert
       "-gnatVa",        --  Validity checking
-      "-gnatD",         --  Output low level code
+--    "-gnatD",         --  Output low level code
       "-g"              --  Debug
       );
 

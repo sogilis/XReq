@@ -17,18 +17,23 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
---  with GNAT.Traceback.Symbolic;
+with GNAT.Traceback.Symbolic;
 
 package body XReqLib.Error_Handling is
 
+   function Exception_To_String (E : Exception_Occurrence) return String is
+   begin
+      return Exception_Name (E) & ": " & Exception_Message (E) & ASCII.LF &
+         ASCII.LF & "Stack Trace:" & ASCII.LF & Symbolic_Traceback (E);
+   end Exception_To_String;
 
    function Symbolic_Traceback (E : Exception_Occurrence) return String is
    begin
-      --  return GNAT.Traceback.Symbolic.Symbolic_Traceback (E);
+      return GNAT.Traceback.Symbolic.Symbolic_Traceback (E);
       --  TODO: GNAT.Traceback.Symbolic creates an undefined reference to the
       --        the symbol: gnat__traceback__symbolic__symbolic_traceback__2
       --        when compiling a dynamic library
-      return Exception_Information (E);
+      --  return Exception_Information (E);
    end Symbolic_Traceback;
 
 end XReqLib.Error_Handling;
