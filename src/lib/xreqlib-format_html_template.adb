@@ -421,6 +421,7 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "" & ASCII.LF);
       Put (File, "    </style>" & ASCII.LF);
       Put (File, "    <script type=""text/javascript"">" & ASCII.LF);
+      Put (File, "      /* <![CDATA[ */" & ASCII.LF);
       Put (File, "      var loaded=false;" & ASCII.LF);
       Put (File, "      var timeout_id;" & ASCII.LF);
       Put (File, "      function refresh(){" & ASCII.LF);
@@ -526,6 +527,7 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "      window.onload = function() {" & ASCII.LF);
       Put (File, "        refresh_periodic(2500);" & ASCII.LF);
       Put (File, "      }" & ASCII.LF);
+      Put (File, "      /* ]]> */" & ASCII.LF);
       Put (File, "    </script>" & ASCII.LF);
       Put (File, "  </head>" & ASCII.LF);
       Put (File, "  <body>" & ASCII.LF);
