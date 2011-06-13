@@ -50,7 +50,7 @@ void XReq_Time_Stop  (XReq_Duration*);
 
 void XReq_Format_Set_Num_Steps (XReq_Format*, long);
 void XReq_Format_List_Feature  (XReq_Format*, const XReq_Cstr);
-void XReq_Format_List_Scenario (XReq_Format*, const XReq_Cstr, const XReq_Cstr, long);
+void XReq_Format_List_Scenario (XReq_Format*, const XReq_Cstr, const XReq_Cstr, long, long);
 void XReq_Format_Free          (XReq_Format*);
 
 void XReq_Format_Start_Tests   (XReq_Format*);
@@ -89,7 +89,7 @@ void XReq_Formet_STR_Outline  (XReq_Format*, const XReq_Cstr);
 XReq_Conditional* XReq_Conditional_New  ();
 void      XReq_Conditional_Free         (XReq_Conditional*);
 XReq_Bool XReq_Conditional_Eval_Tags    (XReq_Conditional*, XReq_Tags);
-XReq_Bool XReq_Conditional_Eval_Position(XReq_Conditional*, const XReq_Cstr, long);
+XReq_Bool XReq_Conditional_Eval_Position(XReq_Conditional*, const XReq_Cstr, long, long);
 
 XReq_Report* XReq_Report_New   ();
 void XReq_Report_step_Free     (XReq_Report*);

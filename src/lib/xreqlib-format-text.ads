@@ -76,6 +76,8 @@ private
       record
          Has_Previous_Step  : Boolean := False;
          Previous_Step_Type : Step_Kind;
+         Last_Scenario      : Unbounded_String;
+         Failed_Step_List   : Unbounded_String;
       end record;
 
 end XReqLib.Format.Text;

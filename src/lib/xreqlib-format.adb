@@ -209,13 +209,14 @@ package body XReqLib.Format is
    procedure List_Scenario  (Format     : in out Format_Type;
                              Name       : in     String;
                              Filename   : in     String;
+                             Line       : in     Positive;
                              Num        : in     Positive)
    is
       use Ada.Strings;
       use Ada.Strings.Fixed;
    begin
-      Format.Output.Put_Line ("  " & Filename & ":" & Trim (Num'Img, Left) &
-                                     " " & Name);
+      Format.Output.Put_Line ("  " & Filename & "#" & Trim (Num'Img, Left) &
+                              ":" & Trim (Line'Img, Left) & " " & Name);
    end List_Scenario;
 
    -------------------
@@ -383,24 +384,83 @@ package body XReqLib.Format is
 
    function  Eval   (Cond     : in Conditional_Type;
                      File     : in String;
+                     Line     : in Integer;
                      Num      : in Integer) return Boolean
    is
       use String_Vectors;
       use Ada.Strings.Fixed;
       use Ada.Strings;
+      procedure Decompose (C : String; Line, Pos, First, Last : out Integer);
+      function Basename (S : String) return String;
       I   : String_Vectors.Cursor;
-      Pos : constant String := File & ":" & Trim (Num'Img, Left);
+
+      procedure Decompose (C : String; Line, Pos, First, Last : out Integer) is
+      begin
+         First := C'First;
+         Last := C'Last;
+         Line := -1;
+         Pos  := -1;
+         for I in reverse C'Range loop
+            case C (I) is
+               when ':' =>
+                  begin
+                     Line := Integer'Value (C (I + 1 .. Last));
+                  exception
+                     when Constraint_Error =>
+                        raise Constraint_Error with C & Integer'Image (I + 1) &
+                           Last'Img;
+                  end;
+                  Last := I - 1;
+               when '#' =>
+                  begin
+                     Pos  := Integer'Value (C (I + 1 .. Last));
+                  exception
+                     when Constraint_Error =>
+                        raise Constraint_Error with C & Integer'Image (I + 1) &
+                           Last'Img;
+                  end;
+                  Last := I - 1;
+               when others =>
+                  null;
+            end case;
+         end loop;
+      end Decompose;
+
+      function Basename (S : String) return String is
+         First : Integer := S'First;
+      begin
+         for I in reverse S'Range loop
+            if S (I) = '/' then
+               First := I + 1;
+               exit;
+            end if;
+         end loop;
+         return S (First .. S'Last);
+      end Basename;
    begin
       if Integer (Length (Cond.Scenarios)) = 0 then
          return True;
       end if;
       I := First (Cond.Scenarios);
       while Has_Element (I) loop
-         if To_String (Element (I)) = Pos or else
-            To_String (Element (I)) = File
-         then
-            return True;
-         end if;
+         declare
+            C : constant String := To_String (Element (I));
+            Request_Line, Request_Pos, First, Last : Integer;
+            Has_Line, Has_Pos : Boolean;
+            Is_Line, Is_Pos : Boolean;
+            Is_File : Boolean;
+         begin
+            Decompose (C, Request_Line, Request_Pos, First, Last);
+            Has_Line := Request_Line > 0;
+            Has_Pos  := Request_Pos > 0;
+            Is_Line  := not Has_Line or Line = Request_Line;
+            Is_Pos   := not Has_Pos  or Num  = Request_Pos;
+            Is_File  := C (First .. Last) = File or else
+                        C (First .. Last) = Basename (File);
+            if Is_File and Is_Line and Is_Pos then
+               return True;
+            end if;
+         end;
          Next (I);
       end loop;
       return False;

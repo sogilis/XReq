@@ -119,9 +119,10 @@ package body XReqLib.C_Interface is  --  GCOV_IGNORE_BEGIN
 
    procedure XReq_Format_List_Scenario (Format : in XReq_Format_Ptr;
                                         A, B   : in XReq_Cstr;
-                                        C      : in long) is
+                                        C, D   : in long) is
    begin
-      Format.all.List_Scenario (Value (A), Value (B), Integer (C));
+      Format.all.List_Scenario (Value (A), Value (B),
+                                Integer (C), Integer (D));
    end XReq_Format_List_Scenario;
 
 
@@ -337,11 +338,11 @@ package body XReqLib.C_Interface is  --  GCOV_IGNORE_BEGIN
    end XReq_Conditional_Eval_Tags;
    function  XReq_Conditional_Eval_Position (Cond : in XReq_Conditional_Ptr;
                                              Pos  : in XReq_Cstr;
-                                             N    : in long)
+                                             N, M : in long)
                                                 return XReq_Bool
    is
    begin
-      return Convert (Cond.all.Eval (Value (Pos), Integer (N)));
+      return Convert (Cond.all.Eval (Value (Pos), Integer (N), Integer (M)));
    end XReq_Conditional_Eval_Position;
 
 

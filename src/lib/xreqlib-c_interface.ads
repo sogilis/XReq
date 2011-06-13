@@ -99,7 +99,7 @@ package XReqLib.C_Interface is  --  GCOV_IGNORE_BEGIN
                                         A      : in XReq_Cstr);
    procedure XReq_Format_List_Scenario (Format : in XReq_Format_Ptr;
                                         A, B   : in XReq_Cstr;
-                                        C      : in long);
+                                        C, D   : in long);
    procedure XReq_Format_Free          (Format : in XReq_Format_Ptr);
    ---
    ---  void XReq_Format_Start_Tests   (XReq_Format*);
@@ -203,7 +203,7 @@ package XReqLib.C_Interface is  --  GCOV_IGNORE_BEGIN
                                                return XReq_Bool;
    function  XReq_Conditional_Eval_Position (Cond : in XReq_Conditional_Ptr;
                                              Pos  : in XReq_Cstr;
-                                             N    : in long)
+                                             N, M : in long)
                                                 return XReq_Bool;
    ---
    ---  XReq_Report* XReq_Report_New   ();

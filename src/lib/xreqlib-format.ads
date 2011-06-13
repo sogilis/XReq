@@ -183,6 +183,7 @@ package XReqLib.Format is
    procedure List_Scenario  (Format     : in out Format_Type;
                              Name       : in     String;
                              Filename   : in     String;
+                             Line       : in     Positive;
                              Num        : in     Positive);
 
    ----------------------------------------------------------------------------
@@ -219,6 +220,7 @@ package XReqLib.Format is
 
    function  Eval   (Cond     : in Conditional_Type;
                      File     : in String;
+                     Line     : in Integer;
                      Num      : in Integer) return Boolean;
 
    Null_Condition : constant Conditional_Type := (others => <>);

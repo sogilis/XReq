@@ -17,6 +17,7 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Command_Line;
 with Ada.Strings;
 with Ada.Strings.Fixed;
 with Ada.Strings.Unbounded;
@@ -243,6 +244,7 @@ package body XReqLib.Format.Text is
                            Tags     : in     Tag_Array_Type)
    is
    begin
+      Format.Last_Scenario := To_Unbounded_String (Position);
       Put_Scenario_Outline (Format, 0, Scenario, Position, Tags);
    end Put_Scenario;
 
@@ -319,6 +321,10 @@ package body XReqLib.Format.Text is
       Right   : Integer;
 
    begin
+      if Success = Status_Failed then
+         Append (Format.Failed_Step_List, Ada.Command_Line.Command_Name &
+                 " " & Format.Last_Scenario & ASCII.LF);
+      end if;
       if not (Format.In_Outline  and
               Format.In_Scenario and
               Success = Status_Passed)
@@ -432,6 +438,10 @@ package body XReqLib.Format.Text is
       Need_Comma : Boolean;
    begin
       if not Format.First_Feature then
+         Format.Output.New_Line;
+      end if;
+      if Format.Failed_Step_List /= Null_Unbounded_String then
+         Format.Output.Put (To_String (Format.Failed_Step_List));
          Format.Output.New_Line;
       end if;
       if Count_Scenarios > 1 then
