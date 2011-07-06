@@ -1,0 +1,42 @@
+--  To compile features files, just run:
+--      redo features/xreq
+--  or run:
+--      ./do features/xreq
+--
+--  To generate the missing step definitions:
+--      xreq --fill-steps-in generated_steps features/*.feature
+--
+--  This will create the files:
+--      features/tests/*.ad[bs]
+--
+--  Then you can recompile this project
+
+with "xreqlib";
+with "calculator";
+
+project Xreq_Tests is
+
+   for Languages use ("Ada", "feature");
+   for Main use ("xreq_tests");
+   for Source_Dirs use ("features/obj", "features/support", "features/step_definitions", "features");
+   for Object_Dir use "features/obj";
+
+   package Naming is
+     for Body_Suffix ("feature") use ".feature";
+   end Naming;
+
+   package Builder is
+      for Executable ("test_suite.adb") use "xreq_tests";
+   end Builder;
+
+   package Compiler is
+      for Default_Switches ("ada") use ("-gnat05", "-g");
+      for Driver ("feature") use "";
+   end Compiler;
+
+   package Binder is
+      for Default_Switches ("ada") use ("-E");
+   end Binder;
+
+end Xreq_Tests;
+
