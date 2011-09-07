@@ -905,6 +905,7 @@ ifneq ($(GPSDATADIR),)
 endif
 
 install-gpr: data/gprconfig.xml
+	mkdir -p $(DESTDIR)$(DATADIR)/gprconfig
 	$(INSTALL) -m644 data/gprconfig.xml $(DESTDIR)$(DATADIR)/gprconfig/xreq.xml
 
 uninstall: uninstall-gps
