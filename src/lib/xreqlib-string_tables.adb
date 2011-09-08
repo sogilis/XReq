@@ -58,4 +58,46 @@ package body XReqLib.String_Tables is
       return To_String (Element (C));
    end Element;
 
+   procedure Compare_With (T     : in Table;
+                           Other : in Table;
+                           Ignore_Missing_Headers : in Boolean := False)
+   is
+      Result   : Boolean;
+      Reason   : Comparison_Failure_Type;
+      DataSet1 : Table_Data_Set;
+      DataSet2 : Table_Data_Set;
+      Rec      : Natural;
+   begin
+      T.Compare (Other                  => Other,
+                 Ignore_Missing_Headers => Ignore_Missing_Headers,
+                 Result                 => Result,
+                 Reason                 => Reason,
+                 DataSet1               => DataSet1,
+                 DataSet2               => DataSet2,
+                 Rec                    => Rec);
+      if not Result then
+         case Reason is
+            when Fail_Sparse =>
+               raise Comparison_Failed with "Sparse table";
+            when Fail_Num_Records =>
+               raise Comparison_Failed with "Number of record not identical:"
+                   & T.Records_Count'Img & " and" & Other.Records_Count'Img;
+            when Fail_Missing_Header =>
+               if DataSet1 = 0 then
+                  raise Comparison_Failed with
+                    "Missing Header in first table: "
+                      & To_String (Other.Get_Record (DataSet2, 0));
+               else
+                  raise Comparison_Failed with
+                    "Missing Header in second table: "
+                      & To_String (T.Get_Record (DataSet1, 0));
+               end if;
+            when Fail_Cell =>
+               raise Comparison_Failed with
+                 "Record" & Rec'Img & " is not identical for data set "
+                   & To_String (T.Get_Record (DataSet1, 0));
+         end case;
+      end if;
+   end Compare_With;
+
 end XReqLib.String_Tables;

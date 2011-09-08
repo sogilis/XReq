@@ -341,37 +341,267 @@ package body XReqLib.Tables is
       return Maps.Has_Element (C.C);
    end Has_Element;
 
+   -------------------
+   --  Header_Kind  --
+   -------------------
+
+   function  Header_Kind     (T : in     Table) return Table_Header_Kind is
+   begin
+      return T.Head;
+   end Header_Kind;
+
+   -----------------------
+   --  Set_Header_Kind  --
+   -----------------------
+
+   procedure Set_Header_Kind (T : in out Table;
+                              H : in     Table_Header_Kind := None) is
+   begin
+      T.Head := H;
+   end Set_Header_Kind;
+
+   ---------------------
+   --  Convert_To_XY  --
+   ---------------------
+
+   procedure Convert_To_XY   (T    : in     Table;
+                              Row  : in     Positive;
+                              Col  : in     Positive;
+                              X    : out    Integer;
+                              Y    : out    Integer) is
+   begin
+      if T.Head = Transpose then
+         Y := Col + T.First_Y - 1;
+         X := Row + T.First_X - 1;
+      else
+         Y := Row + T.First_Y - 1;
+         X := Col + T.First_X - 1;
+      end if;
+   end Convert_To_XY;
+
+   ----------------------
+   --  Convert_To_Pos  --
+   ----------------------
+
+   procedure Convert_To_Pos  (T    : in     Table;
+                              X    : in     Integer;
+                              Y    : in     Integer;
+                              Row  : out    Positive;
+                              Col  : out    Positive) is
+   begin
+      if T.Head = Transpose then
+         Col := Y - T.First_Y + 1;
+         Row := X - T.First_X + 1;
+      else
+         Row := Y - T.First_Y + 1;
+         Col := X - T.First_X + 1;
+      end if;
+   end Convert_To_Pos;
+
+   -------------
+   --  Width  --
+   -------------
+
+   function  Width           (T    : in     Table) return Natural is
+   begin
+      if T.Head = Transpose then
+         return T.Length_Y;
+      else
+         return T.Length_X;
+      end if;
+   end Width;
+
+   --------------
+   --  Height  --
+   --------------
+
+   function  Height          (T    : in     Table) return Natural is
+   begin
+      if T.Head = Transpose then
+         return T.Length_X;
+      else
+         return T.Length_Y;
+      end if;
+   end Height;
+
+   -----------
+   --  Get  --
+   -----------
+
+   function  Get             (T    : in     Table;
+                              Row  : in     Positive;
+                              Col  : in     Positive) return Element_Type is
+      X, Y : Integer;
+   begin
+      T.Convert_To_XY (Row, Col, X, Y);
+      return T.Item (X, Y);
+   end Get;
+   -----------
+   --  Set  --
+   -----------
+
+   procedure Set             (T    : in out Table;
+                              Row  : in     Positive;
+                              Col  : in     Positive;
+                              Elem : in     Element_Type) is
+      X, Y : Integer;
+   begin
+      T.Convert_To_XY (Row, Col, X, Y);
+      T.Put (X, Y, Elem);
+   end Set;
+
+   -----------------------
+   --  Data_Sets_Count  --
+   -----------------------
+
+   function  Data_Sets_Count (T : in    Table) return Natural is
+   begin
+      if T.Head = Transpose or T.Head = First_Column then
+         return T.Length_Y;
+      else
+         return T.Length_X;
+      end if;
+   end Data_Sets_Count;
+
+   ---------------------
+   --  Data_Sets_For  --
+   ---------------------
+
+   function  Data_Set_For    (T : in    Table;
+                              H : in    Element_Type) return Table_Data_Set
+   is
+      D : Table_Data_Set := 1;
+   begin
+      loop
+         if T.Get_Record (D, 0) = H then
+            return D;
+         end if;
+         D := D + 1;
+      end loop;
+   end Data_Set_For;
+
+   ---------------------
+   --  Records_Count  --
+   ---------------------
+
+   function  Records_Count   (T : in    Table) return Natural is
+   begin
+      if T.Head = Transpose or T.Head = First_Column then
+         return T.Length_X;
+      else
+         return T.Length_Y;
+      end if;
+   end Records_Count;
+
+   ------------------
+   --  Get_Record  --
+   ------------------
+
+   function  Get_Record      (T : in    Table;
+                              D : in    Table_Data_Set;
+                              R : in    Natural) return Element_Type
+   is
+      C : constant Integer := Integer (D) - 1;
+   begin
+      if T.Head = Transpose or T.Head = First_Column then
+         return T.Item (T.First_X + R, T.First_Y + C);
+      else
+         return T.Item (T.First_X + C, T.First_Y + R);
+      end if;
+   end Get_Record;
+
+   -----------------
+   --  Is_Sparse  --
+   -----------------
+
+   function  Is_Sparse       (T : in    Table) return Boolean is
+   begin
+      return T.Count < T.Length_X * T.Length_Y;
+   end Is_Sparse;
+
+   ---------------
+   --  Compare  --
+   ---------------
+
+   procedure Compare         (T     : in    Table;
+                              Other : in    Table;
+                              Ignore_Missing_Headers : in Boolean := False;
+                              Result   : out Boolean;
+                              Reason   : out Comparison_Failure_Type;
+                              DataSet1 : out Table_Data_Set;
+                              DataSet2 : out Table_Data_Set;
+                              Rec      : out Natural)
+   is
+      type Parsed_DS_Array is
+        array (Table_Data_Set
+               range Table_Data_Set'(1) .. Table_Data_Set (T.Data_Sets_Count))
+        of Boolean;
+      D1 : Table_Data_Set := 1;
+      D2 : Table_Data_Set := 1;
+      Parsed_Data_Sets : Parsed_DS_Array := (others => False);
+   begin
+      Result := True;
+      if T.Is_Sparse or Other.Is_Sparse then
+         Result := False;
+         Reason := Fail_Sparse;
+      elsif T.Records_Count /= Other.Records_Count then
+         Result := False;
+         Reason := Fail_Num_Records;
+      else
+         while D2 <= Table_Data_Set (Other.Data_Sets_Count) loop
+            begin
+               D1 := T.Data_Set_For (Other.Get_Record (D2, 0));
+               Parsed_Data_Sets (D1) := True;
+               for R in 1 .. T.Records_Count loop
+                  if T.Get_Record (D1, R) /= Other.Get_Record (D2, R) then
+                     Result := False;
+                     Reason := Fail_Cell;
+                     DataSet1 := D1;
+                     DataSet2 := D2;
+                     Rec := R;
+                     return;
+                  end if;
+               end loop;
+            exception
+               when Constraint_Error =>
+                  if not Ignore_Missing_Headers then
+                     Result := False;
+                     Reason := Fail_Missing_Header;
+                     DataSet1 := 0;
+                     DataSet2 := D2;
+                     Rec := 0;
+                     return;
+                  end if;
+            end;
+            D2 := D2 + 1;
+         end loop;
+         for DS in Parsed_Data_Sets'Range loop
+            if not Parsed_Data_Sets (DS) then
+               Result := False;
+               Reason := Fail_Missing_Header;
+               DataSet1 := DS;
+               DataSet2 := 0;
+               Rec := 0;
+               return;
+            end if;
+         end loop;
+      end if;
+   end Compare;
+
    -----------
    --  "="  --
    -----------
 
    function "=" (Left, Right : in Table) return Boolean is
-
       use Maps;
-
---       function Equals (Left, Right : in Maps.Map) return Boolean is
---          I  : Maps.Cursor := First (Left);
---          K  : Key_Type;
---          E1 : Element_Type;
---          E2 : Element_Type;
---       begin
---          while Has_Element (I) loop
---             K := Key (I);
---             E1 := Element (I);
---             E2 := Element (Right, K);
---             Next (I);
---          end loop;
---          return True;
---       end Equals;
-
    begin
       return Left.First_X = Right.First_X and then
              Left.First_Y = Right.First_Y and then
              Left.Last_X  = Right.Last_X  and then
              Left.Last_Y  = Right.Last_Y  and then
              Left.Count   = Right.Count   and then
+             Left.Head    = Right.Head    and then
              Left.Map     = Right.Map;
---              Equals (Left.Map, Right.Map);
    end "=";
 
 end XReqLib.Tables;
