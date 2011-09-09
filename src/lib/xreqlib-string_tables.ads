@@ -47,6 +47,11 @@ package XReqLib.String_Tables is
    procedure Put     (T    : in out Table;
                       X, Y : in     Integer;
                       Elem : in     String);
+
+   function  Get_Record (T   : in Table;
+                         Rec : in Positive;
+                         Set : in String) return String;
+
    function  Element (C    : in     Cursor) return String;
 
 

@@ -58,6 +58,15 @@ package body XReqLib.String_Tables is
       return To_String (Element (C));
    end Element;
 
+   function  Get_Record (T   : in Table;
+                         Rec : in Positive;
+                         Set : in String) return String
+   is
+   begin
+      return To_String
+        (T.Get_Record (T.Data_Set_For (To_Unbounded_String (Set)), Rec));
+   end Get_Record;
+
    procedure Compare_With (T     : in Table;
                            Other : in Table;
                            Ignore_Missing_Headers : in Boolean := False)

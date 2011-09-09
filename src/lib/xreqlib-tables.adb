@@ -485,12 +485,17 @@ package body XReqLib.Tables is
    ---------------------
 
    function  Records_Count   (T : in    Table) return Natural is
+      Length : Integer;
    begin
       if T.Head = Transpose or T.Head = First_Column then
-         return T.Length_X;
+         Length := T.Length_X;
       else
-         return T.Length_Y;
+         Length := T.Length_Y;
       end if;
+      if T.Head = First_Column or T.Head = First_Row then
+         Length := Length - 1;
+      end if;
+      return Length;
    end Records_Count;
 
    ------------------
