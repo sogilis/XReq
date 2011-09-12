@@ -196,6 +196,14 @@ package body XReqLib.Tables is
    is
       use Maps;
    begin
+      if T.First_X > T.Last_X then
+         T.First_X := X;
+         T.Last_X := X;
+      end if;
+      if T.First_Y > T.Last_Y then
+         T.First_Y := Y;
+         T.Last_Y := Y;
+      end if;
       Include (T.Map, Key_Type'(X, Y), Elem);
       if X < T.First_X then
          T.First_X := X;
