@@ -52,6 +52,18 @@ package XReqLib.String_Tables is
                          Rec : in Positive;
                          Set : in String) return String;
 
+   procedure Set_Header_Name (T : in out Table;
+                              Old_Header, New_Header : String);
+
+   procedure Compare_With (T     : in Table;
+                           Other : in Table;
+                           Ignore_Missing_Headers : in Boolean := False);
+
+   procedure Import_Data_Set (T : in out Table;
+                              Other_Table : in Table;
+                              Other_Header : String;
+                              Rename : String);
+
    function  Element (C    : in     Cursor) return String;
 
 
@@ -67,9 +79,5 @@ package XReqLib.String_Tables is
                           renames Unbounded_String_Tables.Has_Element;
 
    Comparison_Failed : exception;
-
-   procedure Compare_With (T     : in Table;
-                           Other : in Table;
-                           Ignore_Missing_Headers : in Boolean := False);
 
 end XReqLib.String_Tables;

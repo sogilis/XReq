@@ -33,6 +33,8 @@ package XReqLib.Tables is
 
    type Table_Data_Set is new Integer range 0 .. Integer'Last;
 
+   First_Table_Data_Set : constant Table_Data_Set := 1;
+
    type Key_Type is
       record
          X : Integer;
@@ -107,13 +109,24 @@ package XReqLib.Tables is
                               Col  : in     Positive;
                               Elem : in     Element_Type);
 
-   function  Data_Sets_Count (T : in    Table) return Natural;
-   function  Data_Set_For    (T : in    Table;
-                              H : in    Element_Type) return Table_Data_Set;
-   function  Records_Count   (T : in    Table) return Natural;
-   function  Get_Record      (T : in    Table;
-                              D : in    Table_Data_Set;
-                              R : in    Natural) return Element_Type;
+   function  Data_Sets_Count (T : in     Table) return Natural;
+   function  Last_Data_Set   (T : in     Table) return Table_Data_Set;
+   function  Next_Data_Set   (T : in     Table) return Table_Data_Set;
+   function  Data_Set_For    (T : in     Table;
+                              H : in     Element_Type) return Table_Data_Set;
+   function  Records_Count   (T : in     Table) return Natural;
+   function  Get_Record      (T : in     Table;
+                              D : in     Table_Data_Set;
+                              R : in     Natural) return Element_Type;
+   procedure Get_Record      (T : in     Table;
+                              D : in     Table_Data_Set;
+                              R : in     Natural;
+                              Elem : out Element_Type;
+                              Ok   : out Boolean);
+   procedure Set_Record      (T : in out Table;
+                              D : in     Table_Data_Set;
+                              R : in     Natural;
+                              E : in     Element_Type);
 
    function  Is_Sparse       (T : in    Table) return Boolean;
 
@@ -127,6 +140,16 @@ package XReqLib.Tables is
                               DataSet1 : out Table_Data_Set;
                               DataSet2 : out Table_Data_Set;
                               Rec      : out Natural);
+
+   function Transpose (T : in Table) return Table;
+
+   procedure Set_Header_Name (T : in out Table;
+                              Old_Header, New_Header : Element_Type);
+
+   procedure Import_Data_Set (T : in out Table;
+                              Other_Table : in Table;
+                              Other_Header : Element_Type;
+                              Rename : Element_Type);
 
 --    Empty_Table : constant Table := <>;
 

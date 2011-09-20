@@ -472,6 +472,24 @@ package body XReqLib.Tables is
    end Data_Sets_Count;
 
    ---------------------
+   --  Last_Data_Set  --
+   ---------------------
+
+   function  Last_Data_Set   (T : in     Table) return Table_Data_Set is
+   begin
+      return Table_Data_Set (T.Data_Sets_Count);
+   end Last_Data_Set;
+
+   ---------------------
+   --  Next_Data_Set  --
+   ---------------------
+
+   function  Next_Data_Set   (T : in     Table) return Table_Data_Set is
+   begin
+      return Table_Data_Set (T.Data_Sets_Count + 1);
+   end Next_Data_Set;
+
+   ---------------------
    --  Data_Sets_For  --
    ---------------------
 
@@ -510,6 +528,25 @@ package body XReqLib.Tables is
    --  Get_Record  --
    ------------------
 
+   procedure Get_Record      (T : in     Table;
+                              D : in     Table_Data_Set;
+                              R : in     Natural;
+                              Elem : out Element_Type;
+                              Ok   : out Boolean)
+   is
+      C : constant Integer := Integer (D) - 1;
+   begin
+      if T.Head = Transpose or T.Head = First_Column then
+         T.Item (T.First_X + R, T.First_Y + C, Elem, Ok);
+      else
+         T.Item (T.First_X + C, T.First_Y + R, Elem, Ok);
+      end if;
+   end Get_Record;
+
+   ------------------
+   --  Get_Record  --
+   ------------------
+
    function  Get_Record      (T : in    Table;
                               D : in    Table_Data_Set;
                               R : in    Natural) return Element_Type
@@ -522,6 +559,24 @@ package body XReqLib.Tables is
          return T.Item (T.First_X + C, T.First_Y + R);
       end if;
    end Get_Record;
+
+   ------------------
+   --  Set_Record  --
+   ------------------
+
+   procedure Set_Record      (T : in out Table;
+                              D : in     Table_Data_Set;
+                              R : in     Natural;
+                              E : in     Element_Type)
+   is
+      C : constant Integer := Integer (D) - 1;
+   begin
+      if T.Head = Transpose or T.Head = First_Column then
+         T.Put (T.First_X + R, T.First_Y + C, E);
+      else
+         T.Put (T.First_X + C, T.First_Y + R, E);
+      end if;
+   end Set_Record;
 
    -----------------
    --  Is_Sparse  --
@@ -600,6 +655,63 @@ package body XReqLib.Tables is
          end loop;
       end if;
    end Compare;
+
+   -----------------
+   --  Transpose  --
+   -----------------
+
+   function Transpose (T : in Table) return Table is
+      Res : Table;
+      I : Cursor;
+      K : Key_Type;
+   begin
+      I := First (T);
+      while Has_Element (I) loop
+         K := Key (I);
+         Put (Res, K.Y, K.X, Element (I));
+         Next (I);
+      end loop;
+      return Res;
+   end Transpose;
+
+   -----------------------
+   --  Set_Header_Name  --
+   -----------------------
+
+   procedure Set_Header_Name (T : in out Table;
+                              Old_Header, New_Header : Element_Type) is
+   begin
+      for I in First_Table_Data_Set .. Last_Data_Set (T) loop
+         if Get_Record (T, I, 0) = Old_Header then
+            Set_Record (T, I, 0, New_Header);
+         end if;
+      end loop;
+   end Set_Header_Name;
+
+   -----------------------
+   --  Import_Data_Set  --
+   -----------------------
+
+   procedure Import_Data_Set (T : in out Table;
+                              Other_Table : in Table;
+                              Other_Header : Element_Type;
+                              Rename : Element_Type)
+   is
+      D1 : constant Table_Data_Set := T.Next_Data_Set;
+      D2 : constant Table_Data_Set := Other_Table.Data_Set_For (Other_Header);
+      I    : Integer := 1;
+      Rec  : Element_Type;
+      Have : Boolean := True;
+   begin
+      T.Set_Record (D1, 0, Rename);
+      while Have loop
+         Other_Table.Get_Record (D2, I, Rec, Have);
+         if Have then
+            T.Set_Record (D1, I, Rec);
+         end if;
+         I := I + 1;
+      end loop;
+   end Import_Data_Set;
 
    -----------
    --  "="  --

@@ -109,4 +109,30 @@ package body XReqLib.String_Tables is
       end if;
    end Compare_With;
 
+   -----------------------
+   --  Set_Header_Name  --
+   -----------------------
+
+   procedure Set_Header_Name (T : in out Table;
+                              Old_Header, New_Header : String) is
+   begin
+      T.Set_Header_Name (To_Unbounded_String (Old_Header),
+                         To_Unbounded_String (New_Header));
+   end Set_Header_Name;
+
+   -----------------------
+   --  Import_Data_Set  --
+   -----------------------
+
+   procedure Import_Data_Set (T : in out Table;
+                              Other_Table : in Table;
+                              Other_Header : String;
+                              Rename : String)
+   is
+   begin
+      T.Import_Data_Set (Other_Table,
+                         To_Unbounded_String (Other_Header),
+                         To_Unbounded_String (Rename));
+   end Import_Data_Set;
+
 end XReqLib.String_Tables;
