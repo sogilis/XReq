@@ -408,6 +408,7 @@ package body XReq.Generator.Ada05 is
       else
          S.Adb.Put_Line ("if Cond.Eval (Tags) and then Cond.Eval (" &
                          Ada_String (To_String (Scenario.R.Position.File)) &
+                         "," & String'(Scenario.R.Position.Line'Img) &
                          ", Num_Scenario) then");
          S.Adb.Indent;
          S.Adb.Put_Line ("if not Count_Mode then");
@@ -753,8 +754,9 @@ package body XReq.Generator.Ada05 is
          E := Gen.Feature.R.all.Scenario_Element (I);
          Gen.Adb.Put_Line ("Format.List_Scenario (" &
                            Ada_String (E.R.Name) & ", " &
-                           Ada_String (To_String (E.R.Position.File)) &
-                           "," & String'(Num'Img) & ");");
+                           Ada_String (To_String (E.R.Position.File)) & "," &
+                           String'(E.R.Position.Line'Img) & "," &
+                           String'(Num'Img) & ");");
          Num := Num + 1;
       end loop;
       Gen.Adb.UnIndent;
