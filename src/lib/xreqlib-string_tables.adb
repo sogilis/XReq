@@ -58,4 +58,81 @@ package body XReqLib.String_Tables is
       return To_String (Element (C));
    end Element;
 
+   function  Get_Record (T   : in Table;
+                         Rec : in Positive;
+                         Set : in String) return String
+   is
+   begin
+      return To_String
+        (T.Get_Record (T.Data_Set_For (To_Unbounded_String (Set)), Rec));
+   end Get_Record;
+
+   procedure Compare_With (T     : in Table;
+                           Other : in Table;
+                           Ignore_Missing_Headers : in Boolean := False)
+   is
+      Result   : Boolean;
+      Reason   : Comparison_Failure_Type;
+      DataSet1 : Table_Data_Set;
+      DataSet2 : Table_Data_Set;
+      Rec      : Natural;
+   begin
+      T.Compare (Other                  => Other,
+                 Ignore_Missing_Headers => Ignore_Missing_Headers,
+                 Result                 => Result,
+                 Reason                 => Reason,
+                 DataSet1               => DataSet1,
+                 DataSet2               => DataSet2,
+                 Rec                    => Rec);
+      if not Result then
+         case Reason is
+            when Fail_Sparse =>
+               raise Comparison_Failed with "Sparse table";
+            when Fail_Num_Records =>
+               raise Comparison_Failed with "Number of record not identical:"
+                   & T.Records_Count'Img & " and" & Other.Records_Count'Img;
+            when Fail_Missing_Header =>
+               if DataSet1 = 0 then
+                  raise Comparison_Failed with
+                    "Missing Header in first table: "
+                      & To_String (Other.Get_Record (DataSet2, 0));
+               else
+                  raise Comparison_Failed with
+                    "Missing Header in second table: "
+                      & To_String (T.Get_Record (DataSet1, 0));
+               end if;
+            when Fail_Cell =>
+               raise Comparison_Failed with
+                 "Record" & Rec'Img & " is not identical for data set "
+                   & To_String (T.Get_Record (DataSet1, 0));
+         end case;
+      end if;
+   end Compare_With;
+
+   -----------------------
+   --  Set_Header_Name  --
+   -----------------------
+
+   procedure Set_Header_Name (T : in out Table;
+                              Old_Header, New_Header : String) is
+   begin
+      T.Set_Header_Name (To_Unbounded_String (Old_Header),
+                         To_Unbounded_String (New_Header));
+   end Set_Header_Name;
+
+   -----------------------
+   --  Import_Data_Set  --
+   -----------------------
+
+   procedure Import_Data_Set (T : in out Table;
+                              Other_Table : in Table;
+                              Other_Header : String;
+                              Rename : String)
+   is
+   begin
+      T.Import_Data_Set (Other_Table,
+                         To_Unbounded_String (Other_Header),
+                         To_Unbounded_String (Rename));
+   end Import_Data_Set;
+
 end XReqLib.String_Tables;

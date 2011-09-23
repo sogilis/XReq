@@ -128,8 +128,11 @@ package body XReqLib.Format.Text is
                if not Num and Pad > 0 then
                   Format.Output.Put (Pad * " ");
                end if;
+               Format.Output.Put (" ");
+            else
+               Format.Output.Put ((Width (X) + 2) * "-");
             end if;
-            Format.Output.Put (" |");
+            Format.Output.Put ("|");
          end loop;
          Format.Output.New_Line;
       end loop;
