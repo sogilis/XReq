@@ -25,6 +25,7 @@ with Ada.Strings.Unbounded.Hash;
 with Ada.IO_Exceptions;
 with Ada.Exceptions;
 with Ada.Containers.Hashed_Maps;
+with AUnit.Assertions;
 with Util.IO;
 
 use Ada.Text_IO;
@@ -32,6 +33,7 @@ use Ada.Directories;
 use Ada.Strings.Unbounded;
 use Ada.Exceptions;
 use Ada.Containers;
+use AUnit.Assertions;
 
 
 package body Coverage_Suite is
@@ -239,11 +241,11 @@ package body Coverage_Suite is
          Next (I);
       end loop;
       Ratio := Percent (100 * Covered / Total);
-      T.Assert (Covered = Total,
-                "File: " & To_String (T.File_Name) & " " &
-                Trim (Percent'Image (Ratio), Left) & "% covered (" &
-                Trim (Natural'Image (Covered), Left) & "/" &
-                Trim (Natural'Image (Total), Left) & ")");
+      Assert (Covered = Total,
+              "File: " & To_String (T.File_Name) & " " &
+              Trim (Percent'Image (Ratio), Left) & "% covered (" &
+              Trim (Natural'Image (Covered), Left) & "/" &
+              Trim (Natural'Image (Total), Left) & ")");
    end Run_Test;
 
    --  GCov_Test  -------------------------------------------------------------
@@ -285,7 +287,7 @@ package body Coverage_Suite is
 
       Read_Gcov (File_Path, Count, Covered, Ignored, Error);
 
-      T.Assert (Count /= 0 or Ignored /= 0,
+      Assert (Count /= 0 or Ignored /= 0,
               "File: coverage/" & To_String (T.File) & " " &
               "error, non executable file" &
               CRLF & Read_Whole_File (File_Path));
@@ -297,13 +299,13 @@ package body Coverage_Suite is
          Ratio   := Percent (Ratio_F);
       end if;
 
-      T.Assert (Error <= 0,
+      Assert (Error <= 0,
               "File: coverage/" & To_String (T.File) & " error line" &
               Integer'Image (Error)
               --  & CRLF & Read_Whole_File (File_Path));
               );
 
-      T.Assert (Covered = Count,
+      Assert (Covered = Count,
               "File: coverage/" & To_String (T.File) & Percent'Image (Ratio) &
               "% covered (" & Trim (Natural'Image (Covered), Left) & "/" &
               Trim (Natural'Image (Count), Left) & ")" &
