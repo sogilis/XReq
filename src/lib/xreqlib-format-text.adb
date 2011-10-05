@@ -30,6 +30,11 @@ use Ada.Strings.Unbounded;
 
 package body XReqLib.Format.Text is
 
+   procedure Put_Tags    (Format     : in out Text_Format_Type;
+                          Tags       : in     Tag_Array_Type);
+
+   procedure Put_Scenario (Format   : in out Text_Format_Type);
+
    procedure Put_Table      (Format     : in out Text_Format_Type;
                              T          : in     Table_Type;
                              Indent     : in     String);
@@ -142,20 +147,18 @@ package body XReqLib.Format.Text is
    --  Put_Feature  --
    -------------------
 
-   procedure Put_Feature (Format      : in out Text_Format_Type;
-                          Feature     : in     String;
-                          Description : in     String;
-                          Position    : in     String)
-   is
-      pragma Unreferenced (Position);
+   procedure Put_Feature (Format      : in out Text_Format_Type) is
       Has_Description : Boolean := False;
+      Description     : constant String
+        := To_String (Format.Feature.Description);
    begin
-      if Format.First_Feature then
-         Format.First_Feature := False;
-      else
+      Format.Output.Buffer_Discard;
+      Format.Output.Buffer_Start;
+      if Format.Feature_ID > 1 then
          Format.Output.New_Line;
       end if;
-      Format.Output.Put_Line (Format.S_Feature & " " & Feature);
+      Format.Output.Put_Line
+        (To_String (Format.S_Feature & " " & Format.Feature.Name));
       for I in Description'Range loop
          if Description (I) = ASCII.LF then
             if I < Description'Last then
@@ -175,131 +178,116 @@ package body XReqLib.Format.Text is
       end if;
    end Put_Feature;
 
+   ----------------
+   --  Put_Tags  --
+   ----------------
+
+   procedure Put_Tags    (Format     : in out Text_Format_Type;
+                          Tags       : in     Tag_Array_Type) is
+   begin
+      for I in Tags'Range loop
+         Format.Output.Put_Line
+            ("  " & ANSI_C & To_String (Tags (I)) & ANSI_X);
+      end loop;
+   end Put_Tags;
+
+   ---------------------
+   --  Enter_Outline  --
+   ---------------------
+
+   procedure Enter_Outline    (Format     : in out Text_Format_Type) is
+   begin
+      Format.Output.New_Line;
+      Put_Tags (Format, Convert (Format.Outline.Tags));
+      Format.Output.Put ("  " & Format.S_Outline);
+      if Format.Outline.Name /= "" then
+         Format.Output.Put (" " & To_String (Format.Outline.Name));
+      end if;
+      Format.Output.New_Line;
+   end Enter_Outline;
+
+   ---------------------
+   --  Begin_Outline  --
+   ---------------------
+
+   procedure Begin_Outline    (Format     : in out Text_Format_Type) is
+   begin
+      null;
+   end Begin_Outline;
+
+   ----------------------
+   --  Enter_Scenario  --
+   ----------------------
+
+   procedure Enter_Scenario (Format   : in out Text_Format_Type) is
+   begin
+      Format.Output.Buffer_Commit;
+      if Format.Scenario_ID > 1 then
+         Put_Scenario (Format);
+      end if;
+   end Enter_Scenario;
+
    ----------------------
    --  Put_Background  --
    ----------------------
 
-   procedure Put_Background (Format     : in out Text_Format_Type;
-                             Background : in     String;
-                             Position   : in     String;
-                             Tags       : in     Tag_Array_Type)
-   is
-      pragma Unreferenced (Position);
+   procedure Put_Background (Format     : in out Text_Format_Type) is
    begin
-      Format.Output.New_Line;
-      for I in Tags'Range loop
-         Format.Output.Put_Line
-            ("  " & ANSI_C & To_String (Tags (I)) & ANSI_X);
-      end loop;
-      Format.Output.Put ("  Background:");
-      if Background /= "" then
-         Format.Output.Put (" " & Background);
+      if Format.Scenario_ID = 1 then
+         Format.Output.New_Line;
+         Format.Output.Put ("  Background:");
+         if Format.Background.Name /= "" then
+            Format.Output.Put (" " & To_String (Format.Background.Name));
+         end if;
+         Format.Output.New_Line;
       end if;
-      Format.Output.New_Line;
-      Format.Has_Previous_Step := False;
    end Put_Background;
 
-   -------------------
-   --  Put_Outline  --
-   -------------------
+   ----------------------
+   --  Begin_Scenario  --
+   ----------------------
 
-   procedure Put_Outline    (Format     : in out Text_Format_Type;
-                             Scenario   : in     String;
-                             Position   : in     String;
-                             Tags       : in     Tag_Array_Type)
-   is
-      pragma Unreferenced (Position);
+   procedure Begin_Scenario (Format   : in out Text_Format_Type) is
    begin
-      Format.Output.New_Line;
-      for I in Tags'Range loop
-         Format.Output.Put_Line
-            ("  " & ANSI_C & To_String (Tags (I)) & ANSI_X);
-      end loop;
-      Format.Output.Put ("  " & Format.S_Outline);
-      if Scenario /= "" then
-         Format.Output.Put (" " & Scenario);
+      if Format.Scenario_ID = 1 then
+         Put_Scenario (Format);
       end if;
-      Format.Output.New_Line;
-      Format.Has_Previous_Step := False;
-   end Put_Outline;
-
-   --------------------------
-   --  Put_Outline_Report  --
-   --------------------------
-
-   procedure Put_Outline_Report
-                            (Format     : in out Text_Format_Type;
-                             Table      : in     Table_Type)
-   is
-   begin
-      Format.Output.New_Line;
-      Format.Output.Put_Line ("    Examples:");
-      Put_Table (Format, Table, "      ");
-   end Put_Outline_Report;
+   end Begin_Scenario;
 
    --------------------
    --  Put_Scenario  --
    --------------------
 
-   procedure Put_Scenario (Format   : in out Text_Format_Type;
-                           Scenario : in     String;
-                           Position : in     String;
-                           Tags     : in     Tag_Array_Type)
-   is
-   begin
-      Format.Last_Scenario := To_Unbounded_String (Position);
-      Put_Scenario_Outline (Format, 0, Scenario, Position, Tags);
-   end Put_Scenario;
-
-   ----------------------------
-   --  Put_Scenario_Outline  --
-   ----------------------------
-
-   procedure Put_Scenario_Outline
-                            (Format     : in out Text_Format_Type;
-                             Num        : in     Natural;
-                             Scenario   : in     String;
-                             Position   : in     String;
-                             Tags       : in     Tag_Array_Type)
-   is
-      pragma Unreferenced (Position);
-      Indent : Integer := 2;
+   procedure Put_Scenario (Format   : in out Text_Format_Type) is
+      Indent : Integer := 1;
       Scen : constant String := Format.S_Scenario;
    begin
       if Format.In_Outline then
-         Indent := Indent + 2;
+         Indent := Indent + 1;
       end if;
       Format.Output.New_Line;
-      if not Format.In_Outline then
-         for I in Tags'Range loop
-            Format.Output.Put_Line
-               ((Indent * " ") & ANSI_C & To_String (Tags (I)) & ANSI_X);
-         end loop;
+      if Format.In_Outline then
+         Format.Output.Put ((Indent * "  ")
+                            & Scen (Scen'First .. Scen'Last - 1)
+                            & Format.Scenario_ID'Img & ":");
+      else
+         Put_Tags (Format, Convert (Format.Scenario.Tags));
+         Format.Output.Put ((Indent * "  ") & Scen);
       end if;
-      Format.Output.Put ((Indent * " ") & Scen (Scen'First .. Scen'Last - 1));
-      if Num > 0 then
-         Format.Output.Put (Num'Img);
-      end if;
-      Format.Output.Put (":");
-      if Scenario /= "" then
-         Format.Output.Put (" " & Scenario);
+      if Format.Scenario.Name /= "" then
+         Format.Output.Put (" " & To_String (Format.Scenario.Name));
       end if;
       Format.Output.New_Line;
-      Format.Has_Previous_Step := False;
-   end Put_Scenario_Outline;
+   end Put_Scenario;
 
    ----------------
    --  Put_Step  --
    ----------------
 
    procedure Put_Step       (Format     : in out Text_Format_Type;
-                             Step       : in     Step_Kind;
-                             Name       : in     String;
-                             Position   : in     String;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
    is
-      pragma Unreferenced (Position);
       procedure Put_Long_String (Indent, Text : in String);
 
       procedure Put_Long_String (Indent, Text : in String) is
@@ -318,31 +306,39 @@ package body XReqLib.Format.Text is
          Format.Output.Put_Line (Indent & """""""");
       end Put_Long_String;
 
+      Name    : constant String := To_String (Format.Step.Name);
       Indent  : Integer := 2;
       Inserts : array (1 .. Name'Last + 1) of Unbounded_String;
       Left    : Integer;
       Right   : Integer;
 
    begin
+      --  Append scenario to the list of failed scenarios on failure
       if Success = Status_Failed then
-         Append (Format.Failed_Step_List, Ada.Command_Line.Command_Name &
-                 " " & Format.Last_Scenario & ASCII.LF);
+         Append (Format.Failed_Step_List, Ada.Command_Line.Command_Name
+                 & " " & Format.Scenario.Position & ASCII.LF);
       end if;
-      if not (Format.In_Outline  and
-              Format.In_Scenario and
-              Success = Status_Passed)
+
+      if Format.Debug_Mode           --  Display every step in debug mode
+        or not Format.In_Background  --  Display steps not in background
+        or Format.Scenario_ID = 1    --  Display steps in first background
+        or Success = Status_Failed   --  Display failed steps
       then
          if Format.In_Outline and Format.In_Scenario then
             Indent := Indent + 1;
          end if;
+
+         --  Put Step
+         --------------
+
          Format.Output.Put (Indent * "  ");
          Format.Output.Put (Color (Success));
-         if Format.Has_Previous_Step and then
-            Format.Previous_Step_Type = Step
+         if Format.Step_ID > 1
+           and then Format.Previous_Step_Type = Format.Step.Kind
          then
             Format.Output.Put ("And ");
          else
-            case Step is
+            case Format.Step.Kind is
                when Step_Given => Format.Output.Put ("Given ");
                when Step_When  => Format.Output.Put ("When ");
                when Step_Then  => Format.Output.Put ("Then ");
@@ -359,8 +355,14 @@ package body XReqLib.Format.Text is
          end loop;
          Format.Output.Put (To_String (Inserts (Inserts'Last)));
          Format.Output.Put (ANSI_X);
+         if Format.In_Background and Format.Scenario_ID > 1 then
+            Format.Output.Put (" (background)");
+         end if;
          Format.Output.New_Line;
          Indent := Indent + 1;
+
+         --  Put Args
+         --------------
 
          Loop_Args :
          for I in Args.First .. Args.Last loop
@@ -393,8 +395,6 @@ package body XReqLib.Format.Text is
                   Format.Output.New_Line;
             end case;
          end loop Loop_Args;
-         Format.Has_Previous_Step  := True;
-         Format.Previous_Step_Type := Step;
       end if;
    end Put_Step;
 
@@ -406,26 +406,34 @@ package body XReqLib.Format.Text is
                              Err        : in Exception_Occurrence)
    is
       use XReqLib.Error_Handling;
-      function Indent_String return String;
-      Error : constant String := Exception_To_String (Err);
-
-      function Indent_String return String is
-      begin
-         if Format.In_Outline then
-            return "        ";
-         else
-            return "      ";
-         end if;
-      end Indent_String;
+      Error  : constant String := Exception_To_String (Err);
+      Indent : Integer := 3;
    begin
-      Format.Output.Put (Indent_String);
+      if Format.In_Outline then
+         Indent := Indent + 1;
+      end if;
+      Format.Output.Put (Indent * "  ");
       for I in Error'Range loop
          Format.Output.Put (Error (I));
          if Error (I) = ASCII.LF and I /= Error'Last then
-            Format.Output.Put (Indent_String);
+            Format.Output.Put (Indent * "  ");
          end if;
       end loop;
    end Put_Error;
+
+   --------------------------
+   --  Put_Outline_Report  --
+   --------------------------
+
+   procedure Put_Outline_Report
+                            (Format     : in out Text_Format_Type;
+                             Table      : in     Table_Type)
+   is
+   begin
+      Format.Output.New_Line;
+      Format.Output.Put_Line ("    Examples:");
+      Put_Table (Format, Table, "      ");
+   end Put_Outline_Report;
 
    -------------------
    --  Put_Summary  --
@@ -440,9 +448,7 @@ package body XReqLib.Format.Text is
       Count_Steps     : constant Natural := Report.Num_Steps;
       Need_Comma : Boolean;
    begin
-      if not Format.First_Feature then
-         Format.Output.New_Line;
-      end if;
+      Format.Output.New_Line;
       if Format.Failed_Step_List /= Null_Unbounded_String then
          Format.Output.Put (To_String (Format.Failed_Step_List));
          Format.Output.New_Line;
