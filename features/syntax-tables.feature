@@ -54,7 +54,7 @@ Feature: Tables
           Then the table should be equal to:
             | a | b |
             | c | d |
-            | e | |
+            | e |---|
 
       1 scenario (1 passed)
       2 steps (2 passed)

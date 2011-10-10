@@ -340,7 +340,7 @@ package body XReq.Generator.Ada05 is
       --  Format     : Object that handle writing what happens
       --  Report     : Counters of passed, skipped and faikled steps/scenarios
       --  Stop       : Set to True if there is a step that fails.
-      --  Cound_Mode : Only return the number of steps in Report
+      --  Count_Mode : Only return the number of steps in Report
 
       --  VARIABLES:
 
@@ -504,7 +504,7 @@ package body XReq.Generator.Ada05 is
       --               if input value is True, all steps will be skipped
       --               if output value is true, skip all other scenarios of
       --               this feature
-      --  Cound_Mode : Only return the number of steps in Report
+      --  Count_Mode : Only return the number of steps in Report
 
       --  VARIABLES:
 
@@ -563,7 +563,7 @@ package body XReq.Generator.Ada05 is
          Generate_Scenario_Body (S, Scenario);
       else
 
-         S.Adb.Put_Line ("if not Cound_Mode then");
+         S.Adb.Put_Line ("if not Count_Mode then");
          S.Adb.Indent;
          Generate_Table (S, "Outline_Table", Scenario.R.Table);
          S.Adb.Put_Line ("Format.Start_Outline ("
@@ -583,7 +583,7 @@ package body XReq.Generator.Ada05 is
             Generate_Scenario_Body (S, Scenario);
          end loop;
 
-         S.Adb.Put_Line ("if not Cound_Mode then");
+         S.Adb.Put_Line ("if not Count_Mode then");
          S.Adb.Indent;
          S.Adb.Put_Line ("Format.Put_Outline_Report (Outline_Table);");
          S.Adb.Put_Line ("Format.Stop_Outline;");
