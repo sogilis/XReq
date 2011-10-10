@@ -1,0 +1,6 @@
+export HAVE_M='1'
+if [ -z "$LDFLAGS" ]; then
+        export LDFLAGS='-lm'
+else
+        export LDFLAGS="$LDFLAGS"' ''-lm'
+fi

@@ -1,0 +1,35 @@
+#!/bin/sh
+REDOCONF=$(dirname "$0")
+eval $("$REDOCONF"/sh-init)
+
+BASEDIR="$1"
+
+# Try and find a redo implementation.
+WHICH_REDO=
+for d in "$REDO" "redo" "$REDOCONF/minimal-redo"; do
+	if "$d" "$REDOCONF/null" 2>/dev/null; then
+		WHICH_REDO="$d"
+		break
+	fi
+done
+if [ -n "$WHICH_REDO" ]; then
+	REDO="$WHICH_REDO"
+else
+	die "Can't find a working version of the 'redo' program."
+fi
+
+# Use our redo implementation to build a config file.
+echo 'Constructing configuration file...'
+if ! "$REDO" "$BASEDIR/config" ; then
+	die "Configuration failed."
+fi
+
+# Everything worked! Tell the user what to do next.
+cat << EOF
+
+Edit "$BASEDIR/config" to change the configuration.
+
+Run the following command to build this software package:
+
+    $REDO $BASEDIR/all
+EOF

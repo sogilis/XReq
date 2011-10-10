@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# A script to set up the environment variables redoconf expects.
+#
+# This script should be called from a POSIX-compliant shell as follows:
+#
+#	eval $(path/to/redoconf/sh-init)
+#
+# It creates a REDOCONF variable containing the absolute path to the redoconf
+# directory, and loads the "util.sh" library.
+set -e
+
+REL_REDOCONF=$(dirname "$0")
+. "$REL_REDOCONF"/util.sh
+
+rc_if_exists redo-ifchange "$REL_REDOCONF/util.sh"
+
+REDOCONF=$(rc_abspath "$REL_REDOCONF")
+
+printf "REDOCONF=%s;" $(rc_shquote "$REDOCONF")
+printf ". %s/util.sh" $(rc_shquote "$REDOCONF")

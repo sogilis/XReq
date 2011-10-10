@@ -1,5 +1,11 @@
 ##                         Copyright (C) 2010, Sogilis                       ##
 
+ifeq ($(shell which redo 2>/dev/null),)
+REDO=redoconf/minimal-redo
+else
+REDO=redo
+endif
+
 GNATMAKE=gnatmake
 TEST_SUITES=test coverage
 CONFIG=dbg
@@ -294,43 +300,11 @@ bin/feature_tests.cov: bin/xreq features/*.feature
 
 tests: bin/unit_tests bin/feature_tests
 
-doc: dir $(DOC_FILES)
+doc:
+	$(REDO) doc
 	
-clean: cov-clean dir
-	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=debug
-	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=release
-	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=coverage
-	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=debug
-	-gprclean -q -Pxreq.gpr    -Xtype=dynamic -Xmode=release
-	-gprclean -q -Pxreq.gpr    -Xtype=static  -Xmode=coverage
-	-gprclean -q -Plibxreq.gpr -Xtype=dynamic -Xmode=debug
-	-gprclean -q -Plibxreq.gpr -Xtype=dynamic -Xmode=coverage
-	-gprclean -q -Plibxreq.gpr -Xtype=dynamic -Xmode=release
-	-gprclean -q -Pxreqlib.gpr -Xtype=dynamic -Xmode=debug
-	-gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=release
-	-gprclean -q -Pxreqlib.gpr -Xtype=dynamic -Xmode=coverage
-	-gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=debug
-	-gprclean -q -Pxreqlib.gpr -Xtype=dynamic -Xmode=release
-	-gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
-	-$(RM) -rf tmp
-	-$(RM) -rf obj/*/*
-	-$(RM) -rf lib/*/*
-	-$(RM) bin/*
-	-$(RM) README.html
-	-$(RM) src/README.html
-	-$(RM) reports/*.aunit.xml
-	-$(RM) reports/gnatcheck*.out
-	-$(RM) reports/gnatcheck*.log
-	-$(RM) reports/*.gcov
-	-$(RM) reports/features*.html
-	-$(RM) reports/features*.junit/*
-	-$(RM) features/data/tmp-*
-	-$(RM) features/data/step_definitions*/*.[od]
-	-$(RM) features/data/step_definitions*/*.gcda
-	-$(RM) features/data/step_definitions*/*.gcno
-	-$(RM) -rf features/tests/*
-	-$(RM) -rf tests/features/tests/*
-	-find . -name "*~" -print0 | xargs -0 rm
+clean:
+	$(REDO) clean
 
 _tests_requirements: bin lib
 
@@ -1041,25 +1015,16 @@ src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.ad
 ##    MARKDOWN    ##
 ##                ##
 ####################
-
-MARKDOWN_URL=http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip
-MARKDOWN_DIR=Markdown_1.0.1
 MARKDOWN_CMDLINE=tools/Markdown.pl <$< >$@
 
-tools/Markdown.zip:
-	@echo "WGET    $@"
-	wget $(MARKDOWN_URL) -O $@
-
 tools/Markdown.pl:
-	$(MAKE) Markdown.zip
-	@echo "UNZIP   $@"
-	unzip -u -j tools/Markdown.zip $(MARKDOWN_DIR)/Markdown.pl -d tools
-	@echo "CHMOD   $@"
-	chmod +x $@
-	@echo "RM      tools/Markdown.zip"
-	-$(RM) tools/Markdown.zip
+	$(REDO) tools/Markdown.pl
 
 %.html: %.mdwn tools/Markdown.pl
+	@echo "MDWN    $@"
+	$(MARKDOWN_CMDLINE)
+
+%.html: %.md tools/Markdown.pl
 	@echo "MDWN    $@"
 	$(MARKDOWN_CMDLINE)
 

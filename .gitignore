@@ -8,4 +8,6 @@
 /.cucumber-rerun*.txt
 /GNAT-TEMP-*.TMP
 /.redo/
-
+/.do_built
+/.do_built.dir/
+/config
