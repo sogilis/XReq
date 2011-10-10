@@ -298,7 +298,8 @@ bin/feature_tests.cov: bin/xreq features/*.feature
 .PHONY: bin/unit_tests.dbg bin/unit_tests.cov
 .PHONY: bin/feature_tests.dbg bin/feature_tests.cov
 
-tests: bin/unit_tests bin/feature_tests
+tests: bin/feature_tests # bin/unit_tests
+	@echo "WARNING: Unit tests were not compiled because AUnit version is out of date"
 
 doc:
 	$(REDO) doc
@@ -879,6 +880,7 @@ ifneq ($(GPSDATADIR),)
 endif
 
 install-gpr: data/gprconfig.xml
+	mkdir -p $(DESTDIR)$(DATADIR)/gprconfig
 	$(INSTALL) -m644 data/gprconfig.xml $(DESTDIR)$(DATADIR)/gprconfig/xreq.xml
 
 uninstall: uninstall-gps

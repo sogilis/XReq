@@ -53,13 +53,12 @@ library project LibXReq is
                               "XReqLib.Tables",
                               "XReqLib.General",
                               "XReqLib.Asserts",
-                              "XReqLib.C_Interface",
                               "XReqLib.CLI",
                               "XReqLib.Util",
                               "XReqLib.ANSI",
                               "XReqLib.Error_Handling",
                               "XReqLib.Format",
-                              "XReqLib.Format.HTML",
+--                              "XReqLib.Format.HTML",
                               "XReqLib.Format.Text");
    for Library_Options   use Config.Ada_Switches_Linker_Coverage;
    --  Why isn't this in package Linker, this is really damn confusing !!!

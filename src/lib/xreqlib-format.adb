@@ -17,12 +17,37 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
 with Ada.Strings.Maps.Constants;
 with XReqLib.Format.Text;
-with XReqLib.Format.HTML;
+--  with XReqLib.Format.HTML;
 
 package body XReqLib.Format is
+
+   ---------------
+   --  Convert  --
+   ---------------
+
+   function Convert (Tags : Tag_Array_Type) return Tag_Array_Vector.Vector is
+      use Tag_Array_Vector;
+   begin
+      return T : Tag_Array_Vector.Vector do
+         for I in Tags'Range loop
+            Append (T, Tags (I));
+         end loop;
+      end return;
+   end Convert;
+
+   function Convert (Tags : Tag_Array_Vector.Vector) return Tag_Array_Type is
+      use Tag_Array_Vector;
+   begin
+      return T : Tag_Array_Type (1 .. Integer (Length (Tags))) do
+         for I in T'Range loop
+            T (I) := Element (Tags, I);
+         end loop;
+      end return;
+   end Convert;
 
    ------------------------
    --  Start/Stop_Tests  --
@@ -42,12 +67,19 @@ package body XReqLib.Format is
    --  Start/Stop_Feature  --
    --------------------------
 
-   procedure Start_Feature  (Format      : in out Format_Type) is
+   procedure Start_Feature  (Format      : in out Format_Type;
+                             Feature     : in     String;
+                             Description : in     String;
+                             Position    : in     String) is
    begin
-      Format.Feature_ID    := Format.Feature_ID + 1;
-      Format.Background_ID := 0;
-      Format.Scenario_ID   := 0;
-      Format.In_Feature    := True;
+      Format.Feature_ID  := Format.Feature_ID + 1;
+      Format.Scenario_ID := 0;
+      Format.Step_ID     := 0;
+      Format.In_Feature  := True;
+      Format.Feature     := (Name        => To_Unbounded_String (Feature),
+                             Description => To_Unbounded_String (Description),
+                             Position    => To_Unbounded_String (Position),
+                             others      => <>);
    end Start_Feature;
 
    procedure Stop_Feature   (Format      : in out Format_Type) is
@@ -59,14 +91,17 @@ package body XReqLib.Format is
    --  Start/Stop_Outline  --
    --------------------------
 
-   procedure Enter_Outline  (Format     : in out Format_Type) is
+   procedure Start_Outline  (Format     : in out Format_Type;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type) is
    begin
-      Format.Scenario_ID := Format.Scenario_ID + 1;
-   end Enter_Outline;
-
-   procedure Start_Outline  (Format     : in out Format_Type) is
-   begin
+      Format.Previous_Step_Type := Step_Null;
       Format.In_Outline := True;
+      Format.Outline    := (Name     => To_Unbounded_String (Scenario),
+                            Position => To_Unbounded_String (Position),
+                            Tags     => Convert (Tags),
+                            others   => <>);
    end Start_Outline;
 
    procedure Stop_Outline   (Format     : in out Format_Type) is
@@ -78,19 +113,19 @@ package body XReqLib.Format is
    --  Start/Stop_Scenario  --
    ---------------------------
 
-   procedure Enter_Scenario (Format     : in out Format_Type) is
+   procedure Start_Scenario (Format     : in out Format_Type;
+                             Scenario   : in     String;
+                             Position   : in     String;
+                             Tags       : in     Tag_Array_Type) is
    begin
-      if not Format.In_Outline then
-         Format.Scenario_ID := Format.Scenario_ID + 1;
-      end if;
-   end Enter_Scenario;
-
-   procedure Start_Scenario (Format     : in out Format_Type) is
-   begin
-      if not Format.In_Outline then
-         Format.Step_ID  := 0;
-      end if;
+      Format.Previous_Step_Type := Step_Null;
+      Format.Scenario_ID := Format.Scenario_ID + 1;
+      Format.Step_ID     := 0;
       Format.In_Scenario := True;
+      Format.Scenario    := (Name     => To_Unbounded_String (Scenario),
+                             Position => To_Unbounded_String (Position),
+                             Tags     => Convert (Tags),
+                             others   => <>);
    end Start_Scenario;
 
    procedure Stop_Scenario  (Format     : in out Format_Type) is
@@ -103,16 +138,17 @@ package body XReqLib.Format is
    -----------------------------
 
    procedure Start_Background (Format     : in out Format_Type;
-                               First      : in Boolean) is
-      pragma Unreferenced (First);
+                               Background : in     String;
+                               Position   : in     String) is
    begin
-      Format.Background_ID := Format.Background_ID + 1;
+      Format.Previous_Step_Type := Step_Null;
       Format.In_Background := True;
+      Format.Background    := (Name     => To_Unbounded_String (Background),
+                               Position => To_Unbounded_String (Position),
+                               others   => <>);
    end Start_Background;
 
-   procedure Stop_Background  (Format     : in out Format_Type;
-                               First      : in Boolean) is
-      pragma Unreferenced (First);
+   procedure Stop_Background  (Format     : in out Format_Type) is
    begin
       Format.In_Background := False;
    end Stop_Background;
@@ -121,18 +157,25 @@ package body XReqLib.Format is
    --  Start/Stop_Step  --
    -----------------------
 
-   procedure Start_Step     (Format     : in out Format_Type) is
+   procedure Start_Step     (Format     : in out Format_Type;
+                             Step       : in     Step_Kind;
+                             Name       : in     String;
+                             Position   : in     String) is
    begin
       Format.Step_ID := Format.Step_ID + 1;
       Format.In_Step := True;
-      if not Format.In_Outline or Format.In_Scenario then
-         Format.Exec_Steps := Format.Exec_Steps + 1;
-      end if;
+      Format.Step    := (Kind     => Step,
+                         Name     => To_Unbounded_String (Name),
+                         Position => To_Unbounded_String (Position));
    end Start_Step;
 
    procedure Stop_Step      (Format     : in out Format_Type) is
    begin
+      if Format.In_Scenario then
+         Format.Exec_Steps := Format.Exec_Steps + 1;
+      end if;
       Format.In_Step := False;
+      Format.Previous_Step_Type := Format.Step.Kind;
    end Stop_Step;
 
    ---------------------
@@ -146,8 +189,8 @@ package body XReqLib.Format is
    begin
       if N = "text" then
          return Format_Ptr (XReqLib.Format.Text.New_Text_Format);
-      elsif N = "html" then
-         return Format_Ptr (XReqLib.Format.HTML.New_HTML_Format);
+--        elsif N = "html" then
+--           return Format_Ptr (XReqLib.Format.HTML.New_HTML_Format);
       else
          return null;
       end if;
@@ -193,13 +236,12 @@ package body XReqLib.Format is
    procedure List_Feature   (Format     : in out Format_Type;
                              Name       : in     String) is
    begin
-      if Format.First_Feature then
-         Format.First_Feature := False;
-      else
+      if Format.Feature_ID > 0 then
          Format.Output.New_Line;
       end if;
       Format.Output.Put_Line ("Feature: " & Name);
       Format.Output.New_Line;
+      Format.Feature_ID := Format.Feature_ID + 1;
    end List_Feature;
 
    ---------------------
@@ -219,17 +261,56 @@ package body XReqLib.Format is
                               ":" & Trim (Line'Img, Left) & " " & Name);
    end List_Scenario;
 
+   ------------
+   --  Free  --
+   ------------
+   procedure Free (Self : in out Format_Ptr) is
+      procedure Dealloc is new Ada.Unchecked_Deallocation
+        (Format_Type'Class, Format_Ptr);
+   begin
+      Dealloc (Self);
+   end Free;
+
+
+
    -------------------
    --  New_Text_IO  --
    -------------------
 
    package body New_Text_IO is
 
+      procedure Buffer_Start (File : in out File_Type) is
+      begin
+         pragma Assert (not File.Buffering);
+         File.Buffering := True;
+         File.Buffer := Null_Unbounded_String;
+      end Buffer_Start;
+
+      procedure Buffer_Commit (File : in out File_Type) is
+      begin
+         File.Buffering := False;
+         File.Put (To_String (File.Buffer));
+         File.Buffer := Null_Unbounded_String;
+      end Buffer_Commit;
+
+      procedure Buffer_Discard (File : in out File_Type) is
+      begin
+         File.Buffering := False;
+         File.Buffer := Null_Unbounded_String;
+      end Buffer_Discard;
+
+      function  Buffered       (File :        File_Type) return Boolean is
+      begin
+         return File.Buffering;
+      end Buffered;
+
       procedure Put (File : in out File_Type;
                      Item : in     String)
       is
       begin
-         if File.Output_Ownership then
+         if File.Buffering then
+            Append (File.Buffer, Item);
+         elsif File.Output_Ownership then
             Ada.Text_IO.Put (File.Output_Ptr.all, Item);
          else
             Ada.Text_IO.Put (File.Output_Access.all, Item);
@@ -247,7 +328,9 @@ package body XReqLib.Format is
                           Item : in     String)
       is
       begin
-         if File.Output_Ownership then
+         if File.Buffering then
+            Append (File.Buffer, Item & ASCII.LF);
+         elsif File.Output_Ownership then
             Ada.Text_IO.Put_Line (File.Output_Ptr.all, Item);
          else
             Ada.Text_IO.Put_Line (File.Output_Access.all, Item);
@@ -257,7 +340,9 @@ package body XReqLib.Format is
       procedure New_Line (File : in out File_Type)
       is
       begin
-         if File.Output_Ownership then
+         if File.Buffering then
+            Append (File.Buffer, "" & ASCII.LF);
+         elsif File.Output_Ownership then
             Ada.Text_IO.New_Line (File.Output_Ptr.all);
          else
             Ada.Text_IO.New_Line (File.Output_Access.all);
