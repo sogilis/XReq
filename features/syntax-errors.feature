@@ -14,9 +14,9 @@ Feature: Parsing Errors
 
         Background: B
           And this is a step
-            \"""
+            \"\"\"
             With a long string
-            \"""
+            \"\"\"
 
       """
     When I run xreq features/data/tmp-error-and.feature
@@ -100,9 +100,9 @@ Feature: Parsing Errors
 
         Background: B
           Given this step works
-            \"""with stray characters
+            \"\"\"with stray characters
             With a long string
-            \"""
+            \"\"\"
 
       """
 
@@ -110,7 +110,7 @@ Feature: Parsing Errors
     Then it should pass
     And the output should contain
       """
-      ERROR: stray characers after """ in features/data/tmp-longstring.feature line 5
+      ERROR: stray characers after \"\"\" in features/data/tmp-longstring.feature line 5
 
       """
 
@@ -118,7 +118,7 @@ Feature: Parsing Errors
     Then it should pass
     And the output should contain
       """
-      features/data/tmp-longstring.feature:5: ERROR: stray characers after """
+      features/data/tmp-longstring.feature:5: ERROR: stray characers after \"\"\"
 
       """
 

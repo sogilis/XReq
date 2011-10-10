@@ -16,12 +16,12 @@ Feature: Long strings
 
         Background:
           Given this step works
-            \"""
+            \"\"\"
             a
-            \"""
-            \"""
+            \"\"\"
+            \"\"\"
             b
-            \"""
+            \"\"\"
 
         Scenario: A
           Given the long string:
@@ -53,12 +53,12 @@ Feature: Long strings
 
         Background:
           Given this step works
-            \"""
+            \"\"\"
             a
-            \"""
-            \"""
+            \"\"\"
+            \"\"\"
             b
-            \"""
+            \"\"\"
 
         Scenario: A
           Given the long string:

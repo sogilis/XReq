@@ -12,10 +12,10 @@ Feature: HTML reports
 
       Background: Set things up
         Given this step works
-          \"""
+          \"\"\"
           abc
           def
-          \"""
+          \"\"\"
 
       Scenario: Run a good step
         Given this step works
@@ -32,10 +32,10 @@ Feature: HTML reports
 
       Background:
         Given this step works
-          \"""
+          \"\"\"
           abc
           def
-          \"""
+          \"\"\"
         And this fails periodically
         And this is ignored
 
@@ -62,28 +62,28 @@ Feature: HTML reports
 
         Background: definitions
           Given it fails
-            \"""
+            \"\"\"
             This is a long string
             that take two lines
 
-            \"""
+            \"\"\"
           And this is ignored
 
         Scenario: A
           Given this step works
           And this is ignored
-            \"""
+            \"\"\"
             Another multi-line string
-            \"""
+            \"\"\"
           Then do nothing
 
         Scenario: B
           Given this step works
           And this is ignored
           Then do nothing
-            \"""
+            \"\"\"
             Another multi-line string
-            \"""
+            \"\"\"
       """
     And a file "features/data/tmp-pass.feature":
       """
@@ -92,20 +92,20 @@ Feature: HTML reports
         Background: definitions
           Given this step works
           And   I match "this" and "that"
-            \"""
+            \"\"\"
             This is a long string
             that take two lines
 
-            \"""
+            \"\"\"
           And this is ignored
 
         @tagA
         Scenario: A
           Given this step works
           And this is ignored
-            \"""
+            \"\"\"
             Another multi-line string
-            \"""
+            \"\"\"
           Then do nothing
 
         @tagB
@@ -118,9 +118,9 @@ Feature: HTML reports
             | 4 | 6ty | JKHG   |
           And this is ignored
           Then do nothing
-            \"""
+            \"\"\"
             Another multi-line string
-            \"""
+            \"\"\"
       """
     And a file "features/data/tmp-pass2.feature":
       """
@@ -133,22 +133,22 @@ Feature: HTML reports
         Background: definitions
           Given this step works
           And this is ignored
-            \"""
+            \"\"\"
             Sample
-            \"""
-            \"""
+            \"\"\"
+            \"\"\"
             <strong>
             Second
             &&
             String
             </strong>
-            \"""
+            \"\"\"
 
         Scenario:
           Given this step works
-            \"""
+            \"\"\"
             Another "multi-line" string
-            \"""
+            \"\"\"
           And this is ignored
           Then do nothing
       """
