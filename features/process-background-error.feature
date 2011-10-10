@@ -95,6 +95,8 @@ Feature: Skip scenarios after a background error
           Given this step works with STEP
           And this is ignored
 
+      ./always_fail_suite 
+
       4 scenarios (4 failed)
       20 steps (1 failed, 18 skipped, 1 passed)
 
@@ -132,6 +134,8 @@ Feature: Skip scenarios after a background error
         Scenario: Run a good step 4
           Given this step works with STEP
           And this is ignored
+
+      ./always_fail_suite 
 
       4 scenarios (4 failed)
       20 steps (1 failed, 18 skipped, 1 passed)
@@ -183,6 +187,9 @@ Feature: Skip scenarios after a background error
           And this step works with BACKGROUND
           And this step works with STEP
           And this is ignored
+
+      ./periodic_fail_suite features/data/tmp-periodic_fail.feature:12
+      ./periodic_fail_suite features/data/tmp-periodic_fail.feature:20
 
       4 scenarios (2 failed, 2 passed)
       20 steps (2 failed, 6 skipped, 12 passed)
@@ -237,6 +244,9 @@ Feature: Skip scenarios after a background error
           And this step works with BACKGROUND
           And this step works with STEP
           And this is ignored
+
+      ./periodic_fail_suite features/data/tmp-periodic_fail.feature:12
+      ./periodic_fail_suite features/data/tmp-periodic_fail.feature:20
 
       4 scenarios (2 failed, 2 passed)
       20 steps (2 failed, 6 skipped, 12 passed)

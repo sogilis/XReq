@@ -245,6 +245,8 @@ Feature: Auto fill in of steps definitions
           When I type on my keyboard "toto"
           Then I should see "toto"
 
+      features/tests/suite features/test.feature:3
+
       1 scenario (1 failed)
       3 steps (1 failed, 2 skipped)
 
@@ -353,6 +355,8 @@ Feature: Auto fill in of steps definitions
             NEW_STEPS.GIVEN_A_COMPUTER.NOT_YET_IMPLEMENTED: Procedure Given_a_computer not implemented
           When I type on my keyboard "toto"
           Then I should see "toto"
+
+      features/tests/suite features/test.feature:3
 
       1 scenario (1 failed)
       3 steps (1 failed, 2 skipped)

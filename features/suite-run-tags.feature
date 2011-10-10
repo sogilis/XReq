@@ -39,6 +39,8 @@ Feature: Tags
         @tag2
         Scenario: S
           Given this step works
+      
+      ./suite 
 
       1 scenario (1 failed)
       2 steps (1 failed, 1 skipped)
@@ -149,6 +151,8 @@ Feature: Tags
         @tag2
         Scenario: S
           Given this step works
+      
+      ./suite 
 
       1 scenario (1 failed)
       2 steps (1 failed, 1 skipped)

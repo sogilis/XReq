@@ -55,7 +55,7 @@ Given /^a file "(.*)":$/ do |filename, filecontent|
 end
 
 When /^I run xreq (.*)$/ do |args|
-  cmd = "xreq " + args + " 2>&1";
+  cmd = "xreq.dbg " + args + " 2>&1";
   #puts cmd;
   #puts FileUtils.pwd();
   @last_command_output = `#{cmd}`;
@@ -91,12 +91,12 @@ When /^I run "(.*)" in (.*)$/ do |command, dir|
 end
 
 When /^I run the test suite "([^"]*)" in (.*)$/ do |command, dir|
-  When("I run \"#{command} --no-color\" in #{dir}")
+  When("I run \"#{command} --no-color --no-stacktrace\" in #{dir}")
   @last_command_output.sub!(/Finished in ([0-9]*m )?[0-9]*s\n$/, "");
 end
 
 When /^I run the test suite "([^"]*)"$/ do |command|
-  When("I run \"#{command} --no-color\"")
+  When("I run \"#{command} --no-color --no-stacktrace\"")
   @last_command_output.sub!(/Finished in ([0-9]+m )?[0-9]+s\n$/, "");
 end
 

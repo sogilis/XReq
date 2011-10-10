@@ -25,15 +25,8 @@ gprclean -q -Pxreqlib.gpr -Xtype=static  -Xmode=coverage
 rm -rf tmp
 rm -rf obj/*/*
 rm -rf lib/*/*
-rm bin/*
 rm README.html
 rm src/README.html
-rm reports/*.aunit.xml
-rm reports/gnatcheck*.out
-rm reports/gnatcheck*.log
-rm reports/*.gcov
-rm reports/features*.html
-rm reports/features*.junit/*
 rm features/data/tmp-*
 rm features/data/step_definitions*/*.[od]
 rm features/data/step_definitions*/*.gcda
@@ -45,4 +38,5 @@ find . -name "*~" -print0 | xargs -0 rm
 
 ) 2>/dev/null >&2
 
+rc_clean_children
 

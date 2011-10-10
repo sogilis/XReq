@@ -24,6 +24,7 @@ with GNAT.OS_Lib;
 with GNAT.Command_Line;
 with XReqLib.Format.Text;
 with XReqLib.ANSI;
+with XReqLib.Error_Handling;
 
 use Ada.Exceptions;
 use Ada.Strings.Unbounded;
@@ -77,6 +78,9 @@ package body XReqLib.CLI is
       Put_Line ("    --no-color");
       Put_Line ("        Don't show colors on terminal output");
       Put_Line ("");
+      Put_Line ("    --no-stacktrace");
+      Put_Line ("        Don't show stack traces on terminal output");
+      Put_Line ("");
 
       --         ---------------------------------------------------------------------------XXX
       --         0         10        20        30        40        50        60        70
@@ -104,8 +108,8 @@ package body XReqLib.CLI is
    is
       use String_Vectors;
       Parser     : Opt_Parser;
-      Options    : constant String := "help h -help f: -format= o: -output= " &
-                                   "-debug d -tags= t: -list -no-color";
+      Options    : constant String := "help h -help f: -format= o: -output= "
+        & "-debug d -tags= t: -list -no-color -no-stacktrace";
       Output     : Unbounded_String := Null_Unbounded_String;
       Arg        : Unbounded_String;
       Debug_Mode : Boolean := False;
@@ -161,6 +165,9 @@ package body XReqLib.CLI is
 
          elsif Full_Switch (Parser) = "-no-color" then
             XReqLib.ANSI.Use_ANSI_Sequences := False;
+
+         elsif Full_Switch (Parser) = "-no-stacktrace" then
+            XReqLib.Error_Handling.Show_Traces := False;
 
          else  --  Never happen unless a bug in Getopt     --  GCOV_IGNORE
             raise Invalid_Switch;                          --  GCOV_IGNORE

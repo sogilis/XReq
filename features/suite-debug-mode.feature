@@ -47,6 +47,8 @@ Feature: debug mode for test suites
             -------------------------------------------------------------------------
             Debug text for working step BAR
 
+      features/data/tests/suite features/data/tmp-debug-mode.feature:3
+
       2 scenarios (1 failed, 1 passed)
       5 steps (1 failed, 1 skipped, 3 passed)
 

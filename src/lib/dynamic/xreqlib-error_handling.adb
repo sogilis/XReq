@@ -22,9 +22,15 @@ with GNAT.Traceback.Symbolic;
 package body XReqLib.Error_Handling is
 
    function Exception_To_String (E : Exception_Occurrence) return String is
+      Basic_Information : constant String
+        := Exception_Name (E) & ": " & Exception_Message (E) & ASCII.LF;
    begin
-      return Exception_Name (E) & ": " & Exception_Message (E) & ASCII.LF &
-         ASCII.LF & "Stack Trace:" & ASCII.LF & Symbolic_Traceback (E);
+      if Show_Traces then
+         return Basic_Information & ASCII.LF
+           & "Stack Trace:" & ASCII.LF & Symbolic_Traceback (E);
+      else
+         return Basic_Information;
+      end if;
    end Exception_To_String;
 
    function Symbolic_Traceback (E : Exception_Occurrence) return String is

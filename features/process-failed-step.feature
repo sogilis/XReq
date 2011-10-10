@@ -43,6 +43,8 @@ Feature: Error handling in steps
         Scenario: Run a good step
           Given this step works
 
+      ./suite features/data/tmp-simple_error.feature:6
+
       2 scenarios (1 failed, 1 passed)
       5 steps (1 failed, 1 skipped, 3 passed)
 

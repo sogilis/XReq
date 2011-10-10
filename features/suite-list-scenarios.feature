@@ -59,14 +59,14 @@ Feature: List all scenarios compiled in a test suite
       """
       Feature: A
 
-        features/data/tmp-a.feature:1 S1
-        features/data/tmp-a.feature:2 S2
-        features/data/tmp-a.feature:3 S3
+        features/data/tmp-a.feature#1:10 S1
+        features/data/tmp-a.feature#2:13 S2
+        features/data/tmp-a.feature#3:16 S3
 
       Feature: B
 
-        features/data/tmp-b.feature:1 S1
-        features/data/tmp-b.feature:2 S2
-        features/data/tmp-b.feature:3 S3
+        features/data/tmp-b.feature#1:10 S1
+        features/data/tmp-b.feature#2:13 S2
+        features/data/tmp-b.feature#3:16 S3
 
       """

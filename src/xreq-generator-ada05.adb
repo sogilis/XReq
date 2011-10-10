@@ -508,7 +508,7 @@ package body XReq.Generator.Ada05 is
                S.Adb.Put_Line ("Fail := Stop;");
             end if;
             S.Adb.Put_Line ("Format.Start_Scenario;");
-            S.Adb.Put_Line ("Call_Hook (Hook_StartH, Hook_Scenario);");
+            S.Adb.Put_Line ("Call_Hook (Hook_Begin, Hook_Scenario);");
             S.Adb.Put_Line ("declare");
             S.Adb.Indent;
             S.Adb.Put_Line ("procedure Priv_Put_Scenario;");

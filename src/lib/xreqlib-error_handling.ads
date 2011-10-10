@@ -23,6 +23,8 @@ use Ada.Exceptions;
 
 package XReqLib.Error_Handling is
 
+   Show_Traces : Boolean := True;
+
    function Exception_To_String (E : Exception_Occurrence) return String;
 
    function Symbolic_Traceback (E : Exception_Occurrence) return String;
