@@ -84,8 +84,10 @@ package XReqLib.Format is
    type Status_Type is (Status_Passed, Status_Skipped, Status_Failed,
                         Status_Outline);
 
-   type Format_Type is abstract tagged private;
+   type Format_Type is interface;
    type Format_Ptr  is access all Format_Type'Class;
+
+
 
    ----------------------------------------------------------------------------
    --
@@ -94,11 +96,11 @@ package XReqLib.Format is
    --  Put_Summary
    --  Stop_Tests
 
-   procedure Start_Tests    (Format      : in out Format_Type);
+   procedure Start_Tests    (Format      : in out Format_Type) is abstract;
    procedure Put_Summary    (Format      : in out Format_Type;
                              Report      : in     Report_Type;
                              D           : in     Duration) is abstract;
-   procedure Stop_Tests     (Format      : in out Format_Type);
+   procedure Stop_Tests     (Format      : in out Format_Type) is abstract;
 
    ----------------------------------------------------------------------------
    --
@@ -110,9 +112,9 @@ package XReqLib.Format is
    procedure Start_Feature  (Format      : in out Format_Type;
                              Feature     : in     String;
                              Description : in     String;
-                             Position    : in     String);
+                             Position    : in     String) is abstract;
    procedure Put_Feature    (Format      : in out Format_Type) is abstract;
-   procedure Stop_Feature   (Format      : in out Format_Type);
+   procedure Stop_Feature   (Format      : in out Format_Type) is abstract;
 
    ----------------------------------------------------------------------------
    --
@@ -127,13 +129,13 @@ package XReqLib.Format is
    procedure Start_Outline  (Format     : in out Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;
-                             Tags       : in     Tag_Array_Type);
+                             Tags       : in     Tag_Array_Type) is abstract;
    procedure Enter_Outline  (Format     : in out Format_Type) is abstract;
    procedure Begin_Outline  (Format     : in out Format_Type) is abstract;
    procedure Put_Outline_Report
                             (Format     : in out Format_Type;
                              Table      : in     Table_Type) is abstract;
-   procedure Stop_Outline   (Format     : in out Format_Type);
+   procedure Stop_Outline   (Format     : in out Format_Type) is abstract;
 
    ----------------------------------------------------------------------------
    --
@@ -147,10 +149,10 @@ package XReqLib.Format is
    procedure Start_Scenario (Format     : in out Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;
-                             Tags       : in     Tag_Array_Type);
+                             Tags       : in     Tag_Array_Type) is abstract;
    procedure Enter_Scenario (Format     : in out Format_Type) is abstract;
    procedure Begin_Scenario (Format     : in out Format_Type) is abstract;
-   procedure Stop_Scenario  (Format     : in out Format_Type);
+   procedure Stop_Scenario  (Format     : in out Format_Type) is abstract;
 
    ----------------------------------------------------------------------------
    --
@@ -161,9 +163,9 @@ package XReqLib.Format is
 
    procedure Start_Background (Format     : in out Format_Type;
                                Background : in     String;
-                               Position   : in     String);
+                               Position   : in     String) is abstract;
    procedure Put_Background   (Format     : in out Format_Type) is abstract;
-   procedure Stop_Background  (Format     : in out Format_Type);
+   procedure Stop_Background  (Format     : in out Format_Type) is abstract;
 
    ----------------------------------------------------------------------------
    --
@@ -175,7 +177,7 @@ package XReqLib.Format is
    procedure Start_Step     (Format     : in out Format_Type;
                              Step       : in     Step_Kind;
                              Name       : in     String;
-                             Position   : in     String);
+                             Position   : in     String) is abstract;
    procedure Put_Step       (Format     : in out Format_Type;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type)
@@ -183,35 +185,35 @@ package XReqLib.Format is
    procedure Put_Error      (Format     : in out Format_Type;
                              Err        : in     Exception_Occurrence)
                              is abstract;
-   procedure Stop_Step      (Format     : in out Format_Type);
+   procedure Stop_Step      (Format     : in out Format_Type) is abstract;
 
    ----------------------------------------------------------------------------
 
    procedure Set_Output     (Format     : in out Format_Type;
-                             Output     : in     String);
+                             Output     : in     String) is abstract;
    procedure Set_Debug      (Format     : in out Format_Type;
-                             Debug_Mode : in     Boolean);
+                             Debug_Mode : in     Boolean) is abstract;
    procedure Set_Num_Steps  (Format     : in out Format_Type;
-                             Num_Steps  : in     Natural);
+                             Num_Steps  : in     Natural) is abstract;
 
    procedure List_Feature   (Format     : in out Format_Type;
-                             Name       : in     String);
+                             Name       : in     String) is abstract;
 
    procedure List_Scenario  (Format     : in out Format_Type;
                              Name       : in     String;
                              Filename   : in     String;
                              Line       : in     Positive;
-                             Num        : in     Positive);
+                             Num        : in     Positive) is abstract;
 
    ----------------------------------------------------------------------------
 
-   procedure S_Feature  (F : in out Format_Type; S : in String);
-   procedure S_Scenario (F : in out Format_Type; S : in String);
-   procedure S_Outline  (F : in out Format_Type; S : in String);
+   procedure S_Feature  (F : in out Format_Type; S : in String) is abstract;
+   procedure S_Scenario (F : in out Format_Type; S : in String) is abstract;
+   procedure S_Outline  (F : in out Format_Type; S : in String) is abstract;
 
-   function  S_Feature  (F : in Format_Type) return String;
-   function  S_Scenario (F : in Format_Type) return String;
-   function  S_Outline  (F : in Format_Type) return String;
+   function  S_Feature  (F : in Format_Type) return String is abstract;
+   function  S_Scenario (F : in Format_Type) return String is abstract;
+   function  S_Outline  (F : in Format_Type) return String is abstract;
 
    ----------------------------------------------------------------------------
 
@@ -243,49 +245,5 @@ package XReqLib.Format is
 
    function Get_Duration (D : in Duration) return String;
    --  Need this to be public in order to be tested
-
-private
-
-   type Sub_Element_Type is
-      record
-         Name        : Unbounded_String;
-         Description : Unbounded_String;
-         Position    : Unbounded_String;
-         Tags        : Tag_Array_Vector.Vector;
-      end record;
-
-   type Sub_Step_Type is
-      record
-         Kind     : Step_Kind;
-         Name     : Unbounded_String;
-         Position : Unbounded_String;
-      end record;
-
-   type Format_Type is abstract tagged
-      record
-         Output        : New_Text_IO.File_Type;
-         Debug_Mode    : Boolean := False; --  Debug mode, extra information
-         In_Tests      : Boolean := False; --  True between Start/Stop_Tests
-         In_Feature    : Boolean := False; --  True between Start/Stop_Feature
-         In_Outline    : Boolean := False; --  True between Start/Stop_Outline
-         In_Scenario   : Boolean := False; --  True between Start/Stop_Scenario
-         In_Background : Boolean := False; --  True between Start/S_Background
-         In_Step       : Boolean := False; --  True between Start/Stop_Step
-         Feature_ID    : Natural := 0;     --  Feature number, start at 1
-         Scenario_ID   : Natural := 0;     --  Scenario (outline) n. in feature
-         Step_ID       : Natural := 0;     --  Step num. in scenario (outline)
-         Num_Steps     : Natural := 0;     --  How many steps executed in total
-         Exec_Steps    : Natural := 0;     --  Steps executed until now
-         Str_Feature   : Unbounded_String := To_Unbounded_String ("Feature:");
-         Str_Scenario  : Unbounded_String := To_Unbounded_String ("Scenario:");
-         Str_Outline   : Unbounded_String := To_Unbounded_String
-                                                         ("Scenario Outline:");
-         Feature       : Sub_Element_Type;
-         Outline       : Sub_Element_Type;
-         Scenario      : Sub_Element_Type;
-         Background    : Sub_Element_Type;
-         Step          : Sub_Step_Type;
-         Previous_Step_Type : Step_All_Kind := Step_Null;
-      end record;
 
 end XReqLib.Format;

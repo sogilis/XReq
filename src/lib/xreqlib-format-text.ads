@@ -17,9 +17,11 @@
 --                                                                           --
 -------------------------------------------------------------------------------
 
+with XReqLib.Format.Base; use XReqLib.Format.Base;
+
 package XReqLib.Format.Text is
 
-   type Text_Format_Type is new Format_Type with private;
+   type Text_Format_Type is new Base_Format_Type with private;
    type Text_Format_Ptr  is access all Text_Format_Type;
 
    overriding
@@ -63,7 +65,7 @@ package XReqLib.Format.Text is
 
 private
 
-   type Text_Format_Type is new Format_Type with
+   type Text_Format_Type is new Base_Format_Type with
       record
          Failed_Step_List : Unbounded_String;
       end record;
