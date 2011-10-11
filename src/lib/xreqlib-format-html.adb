@@ -384,10 +384,7 @@ package body XReqLib.Format.HTML is
    procedure End_Background  (Format   : in out HTML_Format_Type)
    is
    begin
-      Tmpl.background_end
-        (Format.Output,
-         Param_feature_id => To_String (Format.Feature_ID),
-         Param_num        => To_String (Format.Scenario_ID));
+      Tmpl.background_end (Format.Output);
    end End_Background;
 
    ----------------
@@ -422,6 +419,10 @@ package body XReqLib.Format.HTML is
          if Format.Curr_Scenario.Status = Status_Skipped then
             Format.Curr_Scenario.Status := Status_Passed;
          end if;
+         Tmpl.step_success
+           (Format.Output,
+            Param_feature_id => To_String (Format.Feature_ID),
+            Param_num        => To_String (Format.Scenario_ID));
       end if;
 
       --  Prefix step stanza
@@ -505,19 +506,12 @@ package body XReqLib.Format.HTML is
       use XReqLib.Error_Handling;
       Error : constant String := Exception_To_String (Err);
    begin
-      if Format.In_Background then
-         Tmpl.step_error_background (Format.Output,
-            Param_error      => HTML_Text (Error),
-            Param_trace      => HTML_Text (Symbolic_Traceback (Err)),
-            Param_feature_id => To_String (Format.Feature_ID),
-            Param_num        => To_String (Format.Scenario_ID));
-      else
-         Tmpl.step_error_scenario (Format.Output,
-            Param_error      => HTML_Text (Error),
-            Param_trace      => HTML_Text (Symbolic_Traceback (Err)),
-            Param_feature_id => To_String (Format.Feature_ID),
-            Param_num        => To_String (Format.Scenario_ID));
-      end if;
+      Tmpl.step_error
+        (Format.Output,
+         Param_error      => HTML_Text (Error),
+         Param_trace      => HTML_Text (Symbolic_Traceback (Err)),
+         Param_feature_id => To_String (Format.Feature_ID),
+         Param_num        => To_String (Format.Scenario_ID));
    end Put_Error;
 
    -----------------

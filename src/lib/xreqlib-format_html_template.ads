@@ -25,9 +25,7 @@ package XReqLib.Format_HTML_Template is
          Param_title : in String);
 
    procedure background_end
-        (File : in out File_Type;
-         Param_feature_id : in String;
-         Param_num : in String);
+        (File : in out File_Type);
 
    procedure outline_begin
         (File : in out File_Type;
@@ -111,14 +109,7 @@ package XReqLib.Format_HTML_Template is
         (File : in out File_Type;
          Param_string : in String);
 
-   procedure step_error_background
-        (File : in out File_Type;
-         Param_error : in String;
-         Param_trace : in String;
-         Param_feature_id : in String;
-         Param_num : in String);
-
-   procedure step_error_scenario
+   procedure step_error
         (File : in out File_Type;
          Param_error : in String;
          Param_trace : in String;
@@ -127,6 +118,11 @@ package XReqLib.Format_HTML_Template is
 
    procedure step_debug_end
         (File : in out File_Type);
+
+   procedure step_success
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String);
 
    procedure step_end
         (File : in out File_Type;

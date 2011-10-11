@@ -114,17 +114,17 @@ td {
   border-color: aqua;
 }
 
-.scenario.fail .title {
+.scenario.fail > .title {
   color: #fffbd3;
   background-color: #c20000;
 }
 
-.scenario.pass .title {
+.scenario.pass > .title {
   color: #dbffb4;
   background-color: #65c400;
 }
 
-.scenario.skip .title {
+.scenario.skip > .title {
   color: #004444;
   background-color: aqua;
 }
@@ -360,15 +360,19 @@ p.position {
   margin-right: 1%;
 }
 
-.feature:hover .feature-header .position {
+.feature:hover > .feature-header > .position {
   color: grey;
 }
 
-.scenario:hover .title .position {
+.scenario:hover > .title > .position {
   color: white;
 }
 
-.step:hover .position {
+.background:hover > .title > .position {
+  color: grey;
+}
+
+.step:hover > .position {
   color: grey;
 }
 
@@ -530,6 +534,127 @@ p.position {
     </div>
     <p id="link-refresh"><a href="" onClick="stop_refresh(); return false">stop refresh</a></p>
 <?garbage?>
+
+      
+      
+      
+      
+    <div id="feature-20" class="feature skip">
+      <div class="feature-header">
+        <p class="position">features/data/tmp-tag-conditional1.feature:1</p>
+        <h2 class="title-feature">Feature: Feature</h2>
+        <pre>This is executed conditionnally
+
+</pre>
+        <hr class="clear hidden" />
+      </div>
+      <div id="feature-20-scenario-1" class="scenario skip">
+        <div class="title">
+          <p class="position">features/data/tmp-tag-conditional1.feature:9</p>
+          <h3 class="title-scenario">Scenario: S1</h3>
+          <hr class="clear hidden" />
+
+        </div>
+        <ul class="tags">
+          <li>@tag1</li>
+          <li>@tag1a</li>
+        </ul>
+      <div id="feature-20-background-1" class="background">
+        <div class="title">
+          <p class="position">features/data/tmp-tag-conditional1.feature:5</p>
+
+          <h3 class="title-background">Background: </h3>
+          <hr class="clear hidden" />
+        </div>
+        <div class="background-steps">
+        <div class="background step pass">
+          <p class="position">features/data/tmp-tag-conditional1.feature:6</p>
+          <p>Given this step works</p>
+          <hr class="clear hidden" />
+
+          <script type="text/javascript">/*<![CDATA[*/
+            setProgress(135, 179);
+          /*]]>*/</script>
+        </div> <!-- step -->
+        </div> <!-- background-steps -->
+        <h3 class="title-background">Scenario:</h3>
+      </div> <!-- background -->
+        <div class="step pass">
+          <p class="position">features/data/tmp-tag-conditional1.feature:10</p>
+
+          <p>Given this step works</p>
+          <hr class="clear hidden" />
+          <script type="text/javascript">/*<![CDATA[*/
+            setProgress(136, 179);
+          /*]]>*/</script>
+        </div> <!-- step -->
+        <script type="text/javascript">/*<![CDATA[*/
+          var backgrnd = document.getElementById("feature-20-background-1");
+          var scenario = document.getElementById("feature-20-scenario-1");
+          if (backgrnd.className != "scenario fail" && scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
+      </div> <!-- scenario -->
+
+      <div id="feature-20-scenario-2" class="scenario skip">
+        <div class="title">
+          <p class="position">features/data/tmp-tag-conditional1.feature:13</p>
+          <h3 class="title-scenario">Scenario: S2</h3>
+          <hr class="clear hidden" />
+        </div>
+        <ul class="tags">
+          <li>@tag2</li>
+
+          <li>@tag2a</li>
+        </ul>
+      <div id="feature-20-background-2" class="background">
+        <div class="title">
+          <p class="position">features/data/tmp-tag-conditional1.feature:5</p>
+          <h3 class="title-background">Background: </h3>
+          <hr class="clear hidden" />
+
+        </div>
+        <div class="background-steps">
+        <div class="background step pass">
+          <p class="position">features/data/tmp-tag-conditional1.feature:6</p>
+          <p>Given this step works</p>
+          <hr class="clear hidden" />
+          <script type="text/javascript">/*<![CDATA[*/
+            setProgress(137, 179);
+          /*]]>*/</script>
+        </div> <!-- step -->
+
+        </div> <!-- background-steps -->
+        <h3 class="title-background">Scenario:</h3>
+      </div> <!-- background -->
+        <div class="step pass">
+          <p class="position">features/data/tmp-tag-conditional1.feature:14</p>
+          <p>Given this step works</p>
+          <hr class="clear hidden" />
+          <script type="text/javascript">/*<![CDATA[*/
+            setProgress(138, 179);
+          /*]]>*/</script>
+
+        </div> <!-- step -->
+        <script type="text/javascript">/*<![CDATA[*/
+          var backgrnd = document.getElementById("feature-20-background-1");
+          var scenario = document.getElementById("feature-20-scenario-2");
+          if (backgrnd.className != "scenario fail" && scenario.className != "scenario fail") {
+            scenario.className = "scenario pass"
+          };
+        /*]]>*/</script>
+      </div> <!-- scenario -->
+      <script type="text/javascript">/*<![CDATA[*/
+        var feature = document.getElementById("feature-20");
+        if (feature.className != "feature fail") {
+          feature.className = "feature pass"
+        };
+      /*]]>*/</script>
+    </div> <!-- feature -->
+
+
+
     <div id="feature-1" class="feature skip">
       <div class="feature-header">
         <h2 class="title-feature">Feature: Ambiguous step definition error reporting</h2>
@@ -638,6 +763,8 @@ end Steps2;
       </div> <!-- scenario -->
       
       
+      
+      
 
         <!-- outline-examples-end -->
         </div>
@@ -664,6 +791,24 @@ end Steps2;
         <div class="step skip"><p>Then it should <span class="capture">fail</span></p></div>
       </div> <!-- scenario -->
     </div> <!-- feature -->
+    
+    
+    
+    
+    
+    
+    
+    
+
+      
+      
+      
+    
+    
+    
+    
+    
+    
 <?var name="feature-begin"?>
     <div id="feature-<?placeholder name="id"?>" class="feature skip">
       <div class="feature-header">
@@ -673,19 +818,16 @@ end Steps2;
         <hr class="clear hidden" />
       </div>
 <?var name="background-begin"?>
-      <div id="feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>" class="scenario skip">
+      <div id="feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>" class="background">
         <div class="title">
           <p class="position"><?placeholder name="position"?></p>
           <h3 class="title-background">Background: <?placeholder name="title"?></h3>
           <hr class="clear hidden" />
         </div>
+        <div class="background-steps">
 <?var name="background-end"?>
-        <script type="text/javascript">/*<![CDATA[*/
-          var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>");
-          if (scenario.className != "scenario fail") {
-            scenario.className = "scenario pass"
-          };
-        /*]]>*/</script>
+        </div> <!-- background-steps -->
+        <h3 class="title-background">Scenario:</h3>
       </div> <!-- background -->
 <?var name="outline-begin"?>
       <div id="feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>" class="scenario skip">
@@ -748,17 +890,7 @@ end Steps2;
           <hr />
 <?var name="step-paragraph"?>
           <p><?placeholder name="string"?></p>
-<?var name="step-error-background"?>
-          <hr />
-          <pre class="error"><?placeholder name="error"?></pre>
-          <p>Stack trace:</p>
-          <pre class="error trace"><?placeholder name="trace"?></pre>
-          <script type="text/javascript">/*<![CDATA[*/
-            document.getElementById("feature-<?placeholder name="feature_id"?>-background-<?placeholder name="num"?>").className = "scenario fail";
-            document.getElementById("feature-<?placeholder name="feature_id"?>").className = "feature fail";
-            setStatusFailed();
-          /*]]>*/</script>
-<?var name="step-error-scenario"?>
+<?var name="step-error"?>
           <hr />
           <pre class="error"><?placeholder name="error"?></pre>
           <p>Stack trace:</p>
@@ -772,19 +904,27 @@ end Steps2;
           <script type="text/javascript">/*<![CDATA[*/
             debugInit();
           /*]]>*/</script>
+<?var name="step-success"?>
+          <script type="text/javascript">/*<![CDATA[*/
+            document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>").className = "scenario pass";
+            var feat = document.getElementById("feature-<?placeholder name="feature_id"?>");
+            if (feat.className != "feature fail") {
+              feat.className = "feature pass";
+            }
+          /*]]>*/</script>
 <?var name="step-end"?>
           <script type="text/javascript">/*<![CDATA[*/
             setProgress(<?placeholder name="num"?>, <?placeholder name="total"?>);
           /*]]>*/</script>
         </div> <!-- step -->
 <?var name="scenario-end"?>
-        <script type="text/javascript">/*<![CDATA[*/
+        <!--script type="text/javascript">/*<![CDATA[*/
           var backgrnd = document.getElementById("feature-<?placeholder name="feature_id"?>-background-1");
           var scenario = document.getElementById("feature-<?placeholder name="feature_id"?>-scenario-<?placeholder name="num"?>");
           if (backgrnd.className != "scenario fail" && scenario.className != "scenario fail") {
             scenario.className = "scenario pass"
           };
-        /*]]>*/</script>
+        /*]]>*/</script-->
       </div> <!-- scenario -->
 <?var name="feature-end"?>
       <script type="text/javascript">/*<![CDATA[*/

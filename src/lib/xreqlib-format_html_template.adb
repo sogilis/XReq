@@ -123,17 +123,17 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "  border-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario.fail .title {" & ASCII.LF);
+      Put (File, ".scenario.fail > .title {" & ASCII.LF);
       Put (File, "  color: #fffbd3;" & ASCII.LF);
       Put (File, "  background-color: #c20000;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario.pass .title {" & ASCII.LF);
+      Put (File, ".scenario.pass > .title {" & ASCII.LF);
       Put (File, "  color: #dbffb4;" & ASCII.LF);
       Put (File, "  background-color: #65c400;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario.skip .title {" & ASCII.LF);
+      Put (File, ".scenario.skip > .title {" & ASCII.LF);
       Put (File, "  color: #004444;" & ASCII.LF);
       Put (File, "  background-color: aqua;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
@@ -369,15 +369,19 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "  margin-right: 1%;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".feature:hover .feature-header .position {" & ASCII.LF);
+      Put (File, ".feature:hover > .feature-header > .position {" & ASCII.LF);
       Put (File, "  color: grey;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".scenario:hover .title .position {" & ASCII.LF);
+      Put (File, ".scenario:hover > .title > .position {" & ASCII.LF);
       Put (File, "  color: white;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
-      Put (File, ".step:hover .position {" & ASCII.LF);
+      Put (File, ".background:hover > .title > .position {" & ASCII.LF);
+      Put (File, "  color: grey;" & ASCII.LF);
+      Put (File, "}" & ASCII.LF);
+      Put (File, "" & ASCII.LF);
+      Put (File, ".step:hover > .position {" & ASCII.LF);
       Put (File, "  color: grey;" & ASCII.LF);
       Put (File, "}" & ASCII.LF);
       Put (File, "" & ASCII.LF);
@@ -578,7 +582,7 @@ package body XReqLib.Format_HTML_Template is
       Put (File, Param_feature_id);
       Put (File, "-background-");
       Put (File, Param_num);
-      Put (File, """ class=""scenario skip"">" & ASCII.LF);
+      Put (File, """ class=""background"">" & ASCII.LF);
       Put (File, "        <div class=""title"">" & ASCII.LF);
       Put (File, "          <p class=""position"">");
       Put (File, Param_position);
@@ -588,23 +592,14 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "</h3>" & ASCII.LF);
       Put (File, "          <hr class=""clear hidden"" />" & ASCII.LF);
       Put (File, "        </div>" & ASCII.LF);
+      Put (File, "        <div class=""background-steps"">" & ASCII.LF);
    end background_begin;
 
    procedure background_end
-        (File : in out File_Type;
-         Param_feature_id : in String;
-         Param_num : in String) is
+        (File : in out File_Type) is
    begin
-      Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
-      Put (File, "          var scenario = document.getElementById(""feature-");
-      Put (File, Param_feature_id);
-      Put (File, "-background-");
-      Put (File, Param_num);
-      Put (File, """);" & ASCII.LF);
-      Put (File, "          if (scenario.className != ""scenario fail"") {" & ASCII.LF);
-      Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
-      Put (File, "          };" & ASCII.LF);
-      Put (File, "        /*]]>*/</script>" & ASCII.LF);
+      Put (File, "        </div> <!-- background-steps -->" & ASCII.LF);
+      Put (File, "        <h3 class=""title-background"">Scenario:</h3>" & ASCII.LF);
       Put (File, "      </div> <!-- background -->" & ASCII.LF);
    end background_end;
 
@@ -815,35 +810,7 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "</p>" & ASCII.LF);
    end step_paragraph;
 
-   procedure step_error_background
-        (File : in out File_Type;
-         Param_error : in String;
-         Param_trace : in String;
-         Param_feature_id : in String;
-         Param_num : in String) is
-   begin
-      Put (File, "          <hr />" & ASCII.LF);
-      Put (File, "          <pre class=""error"">");
-      Put (File, Param_error);
-      Put (File, "</pre>" & ASCII.LF);
-      Put (File, "          <p>Stack trace:</p>" & ASCII.LF);
-      Put (File, "          <pre class=""error trace"">");
-      Put (File, Param_trace);
-      Put (File, "</pre>" & ASCII.LF);
-      Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
-      Put (File, "            document.getElementById(""feature-");
-      Put (File, Param_feature_id);
-      Put (File, "-background-");
-      Put (File, Param_num);
-      Put (File, """).className = ""scenario fail"";" & ASCII.LF);
-      Put (File, "            document.getElementById(""feature-");
-      Put (File, Param_feature_id);
-      Put (File, """).className = ""feature fail"";" & ASCII.LF);
-      Put (File, "            setStatusFailed();" & ASCII.LF);
-      Put (File, "          /*]]>*/</script>" & ASCII.LF);
-   end step_error_background;
-
-   procedure step_error_scenario
+   procedure step_error
         (File : in out File_Type;
          Param_error : in String;
          Param_trace : in String;
@@ -869,7 +836,7 @@ package body XReqLib.Format_HTML_Template is
       Put (File, """).className = ""feature fail"";" & ASCII.LF);
       Put (File, "            setStatusFailed();" & ASCII.LF);
       Put (File, "          /*]]>*/</script>" & ASCII.LF);
-   end step_error_scenario;
+   end step_error;
 
    procedure step_debug_end
         (File : in out File_Type) is
@@ -878,6 +845,26 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "            debugInit();" & ASCII.LF);
       Put (File, "          /*]]>*/</script>" & ASCII.LF);
    end step_debug_end;
+
+   procedure step_success
+        (File : in out File_Type;
+         Param_feature_id : in String;
+         Param_num : in String) is
+   begin
+      Put (File, "          <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "            document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, "-scenario-");
+      Put (File, Param_num);
+      Put (File, """).className = ""scenario pass"";" & ASCII.LF);
+      Put (File, "            var feat = document.getElementById(""feature-");
+      Put (File, Param_feature_id);
+      Put (File, """);" & ASCII.LF);
+      Put (File, "            if (feat.className != ""feature fail"") {" & ASCII.LF);
+      Put (File, "              feat.className = ""feature pass"";" & ASCII.LF);
+      Put (File, "            }" & ASCII.LF);
+      Put (File, "          /*]]>*/</script>" & ASCII.LF);
+   end step_success;
 
    procedure step_end
         (File : in out File_Type;
@@ -899,7 +886,7 @@ package body XReqLib.Format_HTML_Template is
          Param_feature_id : in String;
          Param_num : in String) is
    begin
-      Put (File, "        <script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
+      Put (File, "        <!--script type=""text/javascript"">/*<![CDATA[*/" & ASCII.LF);
       Put (File, "          var backgrnd = document.getElementById(""feature-");
       Put (File, Param_feature_id);
       Put (File, "-background-1"");" & ASCII.LF);
@@ -911,7 +898,7 @@ package body XReqLib.Format_HTML_Template is
       Put (File, "          if (backgrnd.className != ""scenario fail"" && scenario.className != ""scenario fail"") {" & ASCII.LF);
       Put (File, "            scenario.className = ""scenario pass""" & ASCII.LF);
       Put (File, "          };" & ASCII.LF);
-      Put (File, "        /*]]>*/</script>" & ASCII.LF);
+      Put (File, "        /*]]>*/</script-->" & ASCII.LF);
       Put (File, "      </div> <!-- scenario -->" & ASCII.LF);
    end scenario_end;
 
