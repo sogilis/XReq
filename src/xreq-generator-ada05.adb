@@ -212,6 +212,7 @@ package body XReq.Generator.Ada05 is
       --  Run Step  --
       -------------------------------------------------------------------------
       S.Adb.Put_Line ("Format.Start_Step (Prefix, Stanza, Pos);");
+      S.Adb.Put_Line ("Format.Begin_Step;");
       --  Skip if failure
       S.Adb.Put_Line ("if Fail then");
       S.Adb.Indent;
@@ -272,6 +273,7 @@ package body XReq.Generator.Ada05 is
       end if;
       --  End block
       S.Adb.Put_Line ("end;");
+      S.Adb.Put_Line ("Format.End_Step;");
       S.Adb.Put_Line ("Format.Stop_Step;");
    end Generate_Step;
 
@@ -388,10 +390,12 @@ package body XReq.Generator.Ada05 is
                       & Ada_String (Scenario.R.Name) & ", "
                       & Ada_String (To_String (Scenario.R.Position)) & ");");
       if Scenario.R.Step_Count /= 0 then
+         S.Adb.Put_Line ("Format.Begin_Background;");
          S.Adb.Put_Line ("Format.Put_Background;");
          for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
             Generate_Step (S, Scenario, Scenario.R.all.Step_Element (I));
          end loop;
+         S.Adb.Put_Line ("Format.End_Background;");
       end if;
       S.Adb.Put_Line ("--------------------");
       S.Adb.Put_Line ("--  Finalization  --");
@@ -471,6 +475,7 @@ package body XReq.Generator.Ada05 is
       S.Adb.Put_Line ("   Report.Count_Scenario_Passed := " &
                          "Report.Count_Scenario_Passed + 1;");
       S.Adb.Put_Line ("end if;");
+      S.Adb.Put_Line ("Format.End_Scenario;");
       S.Adb.Put_Line ("Format.Stop_Scenario;");
       S.Adb.UnIndent;
       S.Adb.Put_Line ("end if;");
@@ -586,6 +591,7 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line ("if not Count_Mode then");
          S.Adb.Indent;
          S.Adb.Put_Line ("Format.Put_Outline_Report (Outline_Table);");
+         S.Adb.Put_Line ("Format.End_Outline;");
          S.Adb.Put_Line ("Format.Stop_Outline;");
          S.Adb.UnIndent;
          S.Adb.Put_Line ("end if;");
@@ -654,6 +660,7 @@ package body XReq.Generator.Ada05 is
    procedure Generate (Gen : in out Ada_Generator_Type;
                        Log : in     Logger_Ptr) is
       use String_Vectors;
+      use Ada.Containers;
       E           : Result_Scenario_Handle;
       Num         : Positive := 1;
       Lang        : constant Language_Handle := Gen.Feature.R.Language;
@@ -745,6 +752,9 @@ package body XReq.Generator.Ada05 is
          Gen.Adb.Put_Line (Element (Gen.Fn_Steps, I) & " " &
                            "(Format, Report, Cond, Stop, Count_Mode);");
       end loop;
+      if Length (Gen.Fn_Steps) = 0 then
+         Gen.Adb.Put_Line ("null;");
+      end if;
       Gen.Adb.UnIndent;
 
       --  Run Mode
@@ -757,6 +767,7 @@ package body XReq.Generator.Ada05 is
                         ", " &
                         Ada_String (To_String (Gen.Feature.R.Position)) &
                         ");");
+      Gen.Adb.Put_Line ("Format.Begin_Feature;");
       Gen.Adb.Put_Line ("Format.Put_Feature;");
       Gen.Adb.Put_Line ("Call_Hook (Hook_Begin, Hook_Feature);");
       for I in 0 .. Integer (Length (Gen.Fn_Steps)) - 1 loop
@@ -764,6 +775,7 @@ package body XReq.Generator.Ada05 is
                            "(Format, Report, Cond, Stop, Count_Mode);");
       end loop;
       Gen.Adb.Put_Line ("Call_Hook (Hook_End, Hook_Feature);");
+      Gen.Adb.Put_Line ("Format.End_Feature;");
       Gen.Adb.Put_Line ("Format.Stop_Feature;");
 
       -------------------
@@ -877,6 +889,7 @@ package body XReq.Generator.Ada05 is
       Body_B.Put_Line ("if Continue then");
       Body_B.Indent;
       Body_B.Put_Line    ("Format.Start_Tests;");
+      Body_B.Put_Line    ("Format.Begin_Tests;");
       Body_B.Put_Line    ("Time_Start := Clock;");
       Body_B.Put_Line    ("--  Count Steps");
       Body_B.Put_Line    ("Call_Features (Format, Cond, Report, " &
@@ -896,6 +909,7 @@ package body XReq.Generator.Ada05 is
                              "(Ada.Command_Line.Failure);");
       Body_B.UnIndent;
       Body_B.Put_Line    ("end if;");
+      Body_B.Put_Line    ("Format.End_Tests;");
       Body_B.Put_Line    ("Format.Stop_Tests;");
       Body_B.UnIndent;
       Body_B.Put_Line    ("end if;");

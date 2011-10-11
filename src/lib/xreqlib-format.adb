@@ -21,7 +21,7 @@ with Ada.Unchecked_Deallocation;
 with Ada.Strings.Fixed;
 with Ada.Strings.Maps.Constants;
 with XReqLib.Format.Text;
---  with XReqLib.Format.HTML;
+with XReqLib.Format.HTML;
 
 package body XReqLib.Format is
 
@@ -60,8 +60,8 @@ package body XReqLib.Format is
    begin
       if N = "text" then
          return Format_Ptr (XReqLib.Format.Text.New_Text_Format);
---        elsif N = "html" then
---           return Format_Ptr (XReqLib.Format.HTML.New_HTML_Format);
+      elsif N = "html" then
+         return Format_Ptr (XReqLib.Format.HTML.New_HTML_Format);
       else
          return null;
       end if;

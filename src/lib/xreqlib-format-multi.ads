@@ -30,41 +30,27 @@ package XReqLib.Format.Multi is
    procedure Finalize   (Object : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Tests
-   --    <features...>
-   --  Put_Summary
-   --  Stop_Tests
 
    procedure Start_Tests    (Format      : in out Multi_Format_Type);
+   procedure Begin_Tests    (Format      : in out Multi_Format_Type);
    procedure Put_Summary    (Format      : in out Multi_Format_Type;
                              Report      : in     Report_Type;
                              D           : in     Duration);
+   procedure End_Tests      (Format      : in out Multi_Format_Type);
    procedure Stop_Tests     (Format      : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Feature
-   --  Put_Feature
-   --    <scenarios and scenario outlines...>
-   --  Stop_Feature
 
    procedure Start_Feature  (Format      : in out Multi_Format_Type;
                              Feature     : in     String;
                              Description : in     String;
                              Position    : in     String);
+   procedure Begin_Feature  (Format      : in out Multi_Format_Type);
    procedure Put_Feature    (Format      : in out Multi_Format_Type);
+   procedure End_Feature    (Format      : in out Multi_Format_Type);
    procedure Stop_Feature   (Format      : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Outline
-   --  Enter_Outline
-   --    <steps with Success=Status_Outline...>
-   --  Begin_Outline
-   --    <scenarios...>
-   --  Put_Outline_Report
-   --  Stop_Outline
 
    procedure Start_Outline  (Format     : in out Multi_Format_Type;
                              Scenario   : in     String;
@@ -75,16 +61,10 @@ package XReqLib.Format.Multi is
    procedure Put_Outline_Report
                             (Format     : in out Multi_Format_Type;
                              Table      : in     Table_Type);
+   procedure End_Outline    (Format     : in out Multi_Format_Type);
    procedure Stop_Outline   (Format     : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Scenario
-   --  Enter_Scenario
-   --    <background>
-   --  Begin_Scenario
-   --    <steps...>
-   --  Stop_Scenario
 
    procedure Start_Scenario (Format     : in out Multi_Format_Type;
                              Scenario   : in     String;
@@ -92,37 +72,32 @@ package XReqLib.Format.Multi is
                              Tags       : in     Tag_Array_Type);
    procedure Enter_Scenario (Format     : in out Multi_Format_Type);
    procedure Begin_Scenario (Format     : in out Multi_Format_Type);
+   procedure End_Scenario   (Format     : in out Multi_Format_Type);
    procedure Stop_Scenario  (Format     : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Background
-   --    Put_Background
-   --    <steps...>
-   --  Stop_Background
 
    procedure Start_Background (Format     : in out Multi_Format_Type;
                                Background : in     String;
                                Position   : in     String);
+   procedure Begin_Background (Format     : in out Multi_Format_Type);
    procedure Put_Background   (Format     : in out Multi_Format_Type);
+   procedure End_Background   (Format     : in out Multi_Format_Type);
    procedure Stop_Background  (Format     : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Step
-   --  Put_Step
-   --  Put_Error ?
-   --  Stop_Step
 
    procedure Start_Step     (Format     : in out Multi_Format_Type;
                              Step       : in     Step_Kind;
                              Name       : in     String;
                              Position   : in     String);
+   procedure Begin_Step     (Format     : in out Multi_Format_Type);
    procedure Put_Step       (Format     : in out Multi_Format_Type;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type);
    procedure Put_Error      (Format     : in out Multi_Format_Type;
                              Err        : in     Exception_Occurrence);
+   procedure End_Step       (Format     : in out Multi_Format_Type);
    procedure Stop_Step      (Format     : in out Multi_Format_Type);
 
    ----------------------------------------------------------------------------

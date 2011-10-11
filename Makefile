@@ -1010,7 +1010,7 @@ help:
 .PHONY: help show-ignored-coverage
 
 src/lib/xreqlib-format_html_template.ads src/lib/xreqlib-format_html_template.adb: src/xreq-report.template.html tools/template.pl
-	perl tools/template.pl $< XReqLib.Format_HTML_Template $@
+	$(REDO) $@
 
 ####################
 ##                ##

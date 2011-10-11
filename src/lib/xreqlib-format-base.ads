@@ -45,7 +45,9 @@ package XReqLib.Format.Base is
          In_Background : Boolean := False; --  True between Start/S_Background
          In_Step       : Boolean := False; --  True between Start/Stop_Step
          Feature_ID    : Natural := 0;     --  Feature number, start at 1
-         Scenario_ID   : Natural := 0;     --  Scenario (outline) n. in feature
+         Scenario_ID   : Natural := 0;     --  Scenario num. in feature
+         ScenOutl_ID   : Natural := 0;     --  Scenario outline num. in feature
+         Example_ID    : Natural := 0;     --  Example num. in scenario outline
          Step_ID       : Natural := 0;     --  Step num. in scenario (outline)
          Num_Steps     : Natural := 0;     --  How many steps executed in total
          Exec_Steps    : Natural := 0;     --  Steps executed until now
@@ -64,69 +66,49 @@ package XReqLib.Format.Base is
    type Base_Format_Ptr  is access all Base_Format_Type'Class;
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Tests
-   --    <features...>
-   --  Put_Summary
-   --  Stop_Tests
 
    procedure Start_Tests    (Format      : in out Base_Format_Type);
+   procedure Begin_Tests    (Format      : in out Base_Format_Type) is null;
    procedure Put_Summary    (Format      : in out Base_Format_Type;
                              Report      : in     Report_Type;
-                             D           : in     Duration) is abstract;
+                             D           : in     Duration)         is null;
+   procedure End_Tests      (Format      : in out Base_Format_Type) is null;
    procedure Stop_Tests     (Format      : in out Base_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Feature
-   --  Put_Feature
-   --    <scenarios and scenario outlines...>
-   --  Stop_Feature
 
    procedure Start_Feature  (Format      : in out Base_Format_Type;
                              Feature     : in     String;
                              Description : in     String;
                              Position    : in     String);
-   procedure Put_Feature    (Format      : in out Base_Format_Type)
-                             is abstract;
+   procedure Begin_Feature  (Format      : in out Base_Format_Type) is null;
+   procedure Put_Feature    (Format      : in out Base_Format_Type) is null;
+   procedure End_Feature    (Format      : in out Base_Format_Type) is null;
    procedure Stop_Feature   (Format      : in out Base_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Outline
-   --  Enter_Outline
-   --    <steps with Success=Status_Outline...>
-   --  Begin_Outline
-   --    <scenarios...>
-   --  Put_Outline_Report
-   --  Stop_Outline
 
    procedure Start_Outline  (Format     : in out Base_Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type);
-   procedure Enter_Outline  (Format     : in out Base_Format_Type) is abstract;
-   procedure Begin_Outline  (Format     : in out Base_Format_Type) is abstract;
+   procedure Enter_Outline  (Format     : in out Base_Format_Type) is null;
+   procedure Begin_Outline  (Format     : in out Base_Format_Type) is null;
    procedure Put_Outline_Report
                             (Format     : in out Base_Format_Type;
-                             Table      : in     Table_Type) is abstract;
+                             Table      : in     Table_Type)       is null;
+   procedure End_Outline    (Format     : in out Base_Format_Type) is null;
    procedure Stop_Outline   (Format     : in out Base_Format_Type);
 
    ----------------------------------------------------------------------------
-   --
-   --  Start_Scenario
-   --  Enter_Scenario
-   --    <background>
-   --  Begin_Scenario
-   --    <steps...>
-   --  Stop_Scenario
 
    procedure Start_Scenario (Format     : in out Base_Format_Type;
                              Scenario   : in     String;
                              Position   : in     String;
                              Tags       : in     Tag_Array_Type);
-   procedure Enter_Scenario (Format     : in out Base_Format_Type) is abstract;
-   procedure Begin_Scenario (Format     : in out Base_Format_Type) is abstract;
+   procedure Enter_Scenario (Format     : in out Base_Format_Type) is null;
+   procedure Begin_Scenario (Format     : in out Base_Format_Type) is null;
+   procedure End_Scenario   (Format     : in out Base_Format_Type) is null;
    procedure Stop_Scenario  (Format     : in out Base_Format_Type);
 
    ----------------------------------------------------------------------------
@@ -139,8 +121,9 @@ package XReqLib.Format.Base is
    procedure Start_Background (Format     : in out Base_Format_Type;
                                Background : in     String;
                                Position   : in     String);
-   procedure Put_Background   (Format     : in out Base_Format_Type)
-                               is abstract;
+   procedure Begin_Background (Format     : in out Base_Format_Type) is null;
+   procedure Put_Background   (Format     : in out Base_Format_Type) is null;
+   procedure End_Background   (Format     : in out Base_Format_Type) is null;
    procedure Stop_Background  (Format     : in out Base_Format_Type);
 
    ----------------------------------------------------------------------------
@@ -154,13 +137,13 @@ package XReqLib.Format.Base is
                              Step       : in     Step_Kind;
                              Name       : in     String;
                              Position   : in     String);
+   procedure Begin_Step     (Format     : in out Base_Format_Type) is null;
    procedure Put_Step       (Format     : in out Base_Format_Type;
                              Args       : in     Arg_Type;
-                             Success    : in     Status_Type)
-                             is abstract;
+                             Success    : in     Status_Type)      is null;
    procedure Put_Error      (Format     : in out Base_Format_Type;
-                             Err        : in     Exception_Occurrence)
-                             is abstract;
+                             Err        : in Exception_Occurrence) is null;
+   procedure End_Step       (Format     : in out Base_Format_Type) is null;
    procedure Stop_Step      (Format     : in out Base_Format_Type);
 
    ----------------------------------------------------------------------------

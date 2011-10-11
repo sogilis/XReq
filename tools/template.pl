@@ -1,48 +1,40 @@
 #!/usr/bin/perl
 
-if ($ARGV[0] eq "-h") {
-  print "template.pl [FILE [PACKAGE_NAME [ADS [ADB]]]]";
-  exit;
-}
 
 $pkgname = "StdIn";
+$ADB = 0;
+$ADS = 0;
 
-if ($ARGV[0] eq "-" or not $ARGV[0]) {
+while(1) {
+  if ($ARGV[0] eq "-h") {
+    print "template.pl [-ads[=FILE]] [-adb[=FILE]] [PACKAGE_NAME [SRC_FILE|-]]\n";
+    exit;
+  } elsif ($ARGV[0] eq "-ads") {
+    $ADS = *STDOUT
+  } elsif ($ARGV[0] eq "-adb") {
+    $ADB = *STDOUT
+  } elsif ($ARGV[0] =~ m/^-ads=(.*)$/) {
+    print "Write: $1\n";
+    open $ADS, ">$1"
+  } elsif ($ARGV[0] =~ m/^-adb=(.*)$/) {
+    print "Write: $1\n";
+    open $ADB, ">$1"
+  } else {
+    last;
+  }
+  shift;
+}
+
+if ($ARGV[0]) {
+  $pkgname = $ARGV[0];
+}
+
+if ($ARGV[1] eq "-" or not $ARGV[1]) {
   $INFO = *STDIN;
 } else {
-  $pkgname = $ARGV[0];
-  $pkgname =~ s/\./_/g;
-  open INFO, $ARGV[0];
-  $INFO = *INFO;
+  open $INFO, '<', $ARGV[1];
 }
 
-if ($ARGV[1]) {
-  $pkgname = $ARGV[1];
-}
-
-$ads_file = $ARGV[2];
-$adb_file = $ARGV[3];
-
-if ($ads_file) {
-
-  if ($ads_file =~ m/\.adb$/) {
-    $ads_file =~ s/\.adb$/.ads/;
-  } elsif ($ads_file !~ m/\.ads$/) {
-    $ads_file =~ s/$/.ads/;
-  }
-
-  if ($ads_file and not $adb_file) {
-    $adb_file = $ads_file;
-    $adb_file =~ s/\.ads$/.adb/;
-  }
-
-}
-
-open ADS, ">$ads_file" if $ads_file;
-open ADB, ">$adb_file" if $adb_file;
-
-print "Write: $ads_file\n" if $ads_file;
-print "Write: $adb_file\n" if $adb_file;
 
 %variables = ();
 @variable_order = ();
@@ -63,7 +55,7 @@ while ($line = <$INFO>) {
   }
 }
 
-close INFO;
+close $INFO;
 
 $pkgname =~ s/[\.\-]/./g;
 $pkgname =~ s/[^A-Za-z0-9_\.]/_/g;
@@ -121,11 +113,8 @@ $ads .= "\nend $pkgname;\n";
 $adb .= "\nend $pkgname;\n";
 
 
-print ADS $ads if $ads_file;
-print $ads unless $ads_file;
-print "\n" unless $ads_file or $adb_file;
-print $adb unless $adb_file;
-print ADB $adb if $adb_file;
+print $ADS $ads if $ADS;
+print $ADB $adb if $ADB;
 
-close ADS;
-close ADB;
+close $ADS if $ADS;
+close $ADB if $ADB;

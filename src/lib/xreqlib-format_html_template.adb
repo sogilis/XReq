@@ -732,11 +732,14 @@ package body XReqLib.Format_HTML_Template is
 
    procedure step_begin
         (File : in out File_Type;
+         Param_background : in String;
          Param_status : in String;
          Param_position : in String;
          Param_stanza : in String) is
    begin
-      Put (File, "        <div class=""step ");
+      Put (File, "        <div class=""");
+      Put (File, Param_background);
+      Put (File, "step ");
       Put (File, Param_status);
       Put (File, """>" & ASCII.LF);
       Put (File, "          <p class=""position"">");

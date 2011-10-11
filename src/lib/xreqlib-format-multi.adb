@@ -50,6 +50,19 @@ package body XReqLib.Format.Multi is
    end Start_Tests;
 
    -----------------
+   -- Begin_Tests --
+   -----------------
+
+   procedure Begin_Tests (Format      : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).Begin_Tests;
+         Next (I);
+      end loop;
+   end Begin_Tests;
+
+   -----------------
    -- Put_Summary --
    -----------------
 
@@ -65,6 +78,19 @@ package body XReqLib.Format.Multi is
          Next (I);
       end loop;
    end Put_Summary;
+
+   ---------------
+   -- End_Tests --
+   ---------------
+
+   procedure End_Tests (Format      : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).End_Tests;
+         Next (I);
+      end loop;
+   end End_Tests;
 
    ----------------
    -- Stop_Tests --
@@ -97,6 +123,19 @@ package body XReqLib.Format.Multi is
       end loop;
    end Start_Feature;
 
+   -------------------
+   -- Begin_Feature --
+   -------------------
+
+   procedure Begin_Feature (Format      : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).Begin_Feature;
+         Next (I);
+      end loop;
+   end Begin_Feature;
+
    -----------------
    -- Put_Feature --
    -----------------
@@ -109,6 +148,19 @@ package body XReqLib.Format.Multi is
          Next (I);
       end loop;
    end Put_Feature;
+
+   -----------------
+   -- End_Feature --
+   -----------------
+
+   procedure End_Feature (Format      : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).End_Feature;
+         Next (I);
+      end loop;
+   end End_Feature;
 
    ------------------
    -- Stop_Feature --
@@ -183,6 +235,19 @@ package body XReqLib.Format.Multi is
       end loop;
    end Put_Outline_Report;
 
+   -----------------
+   -- End_Outline --
+   -----------------
+
+   procedure End_Outline (Format     : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).End_Outline;
+         Next (I);
+      end loop;
+   end End_Outline;
+
    ------------------
    -- Stop_Outline --
    ------------------
@@ -240,6 +305,19 @@ package body XReqLib.Format.Multi is
       end loop;
    end Begin_Scenario;
 
+   ------------------
+   -- End_Scenario --
+   ------------------
+
+   procedure End_Scenario (Format     : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).End_Scenario;
+         Next (I);
+      end loop;
+   end End_Scenario;
+
    -------------------
    -- Stop_Scenario --
    -------------------
@@ -270,6 +348,19 @@ package body XReqLib.Format.Multi is
       end loop;
    end Start_Background;
 
+   ----------------------
+   -- Begin_Background --
+   ----------------------
+
+   procedure Begin_Background (Format     : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).Begin_Background;
+         Next (I);
+      end loop;
+   end Begin_Background;
+
    --------------------
    -- Put_Background --
    --------------------
@@ -282,6 +373,19 @@ package body XReqLib.Format.Multi is
          Next (I);
       end loop;
    end Put_Background;
+
+   --------------------
+   -- End_Background --
+   --------------------
+
+   procedure End_Background (Format     : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).End_Background;
+         Next (I);
+      end loop;
+   end End_Background;
 
    ---------------------
    -- Stop_Background --
@@ -313,6 +417,19 @@ package body XReqLib.Format.Multi is
          Next (I);
       end loop;
    end Start_Step;
+
+   ----------------
+   -- Begin_Step --
+   ----------------
+
+   procedure Begin_Step (Format     : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).Begin_Step;
+         Next (I);
+      end loop;
+   end Begin_Step;
 
    --------------
    -- Put_Step --
@@ -346,6 +463,19 @@ package body XReqLib.Format.Multi is
          Next (I);
       end loop;
    end Put_Error;
+
+   --------------
+   -- End_Step --
+   --------------
+
+   procedure End_Step (Format     : in out Multi_Format_Type) is
+      I : Cursor := First (Format.Sub_Formats);
+   begin
+      while Has_Element (I) loop
+         Element (I).End_Step;
+         Next (I);
+      end loop;
+   end End_Step;
 
    ---------------
    -- Stop_Step --

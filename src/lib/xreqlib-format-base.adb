@@ -46,6 +46,7 @@ package body XReqLib.Format.Base is
    begin
       Format.Feature_ID  := Format.Feature_ID + 1;
       Format.Scenario_ID := 0;
+      Format.ScenOutl_ID := 0;
       Format.Step_ID     := 0;
       Format.In_Feature  := True;
       Format.Feature     := (Name        => To_Unbounded_String (Feature),
@@ -69,11 +70,15 @@ package body XReqLib.Format.Base is
                              Tags       : in     Tag_Array_Type) is
    begin
       Format.Previous_Step_Type := Step_Null;
-      Format.In_Outline := True;
-      Format.Outline    := (Name     => To_Unbounded_String (Scenario),
-                            Position => To_Unbounded_String (Position),
-                            Tags     => Convert (Tags),
-                            others   => <>);
+      Format.ScenOutl_ID := Format.ScenOutl_ID + 1;
+      Format.Scenario_ID := Format.Scenario_ID + 1;
+      Format.Example_ID  := 0;
+      Format.Step_ID     := 0;
+      Format.In_Outline  := True;
+      Format.Outline     := (Name     => To_Unbounded_String (Scenario),
+                             Position => To_Unbounded_String (Position),
+                             Tags     => Convert (Tags),
+                             others   => <>);
    end Start_Outline;
 
    procedure Stop_Outline   (Format     : in out Base_Format_Type) is
@@ -98,6 +103,11 @@ package body XReqLib.Format.Base is
                              Position => To_Unbounded_String (Position),
                              Tags     => Convert (Tags),
                              others   => <>);
+      if Format.In_Outline then
+         Format.Example_ID := Format.Example_ID + 1;
+      else
+         Format.ScenOutl_ID := Format.ScenOutl_ID + 1;
+      end if;
    end Start_Scenario;
 
    procedure Stop_Scenario  (Format     : in out Base_Format_Type) is
