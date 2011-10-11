@@ -84,7 +84,7 @@ package XReqLib.Format is
    type Status_Type is (Status_Passed, Status_Skipped, Status_Failed,
                         Status_Outline);
 
-   type Format_Type is interface;
+   type Format_Type is limited interface;
    type Format_Ptr  is access all Format_Type'Class;
 
 
@@ -210,10 +210,6 @@ package XReqLib.Format is
    procedure S_Feature  (F : in out Format_Type; S : in String) is abstract;
    procedure S_Scenario (F : in out Format_Type; S : in String) is abstract;
    procedure S_Outline  (F : in out Format_Type; S : in String) is abstract;
-
-   function  S_Feature  (F : in Format_Type) return String is abstract;
-   function  S_Scenario (F : in Format_Type) return String is abstract;
-   function  S_Outline  (F : in Format_Type) return String is abstract;
 
    ----------------------------------------------------------------------------
 

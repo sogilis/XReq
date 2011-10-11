@@ -23,6 +23,7 @@ with Ada.Text_IO;
 with GNAT.OS_Lib;
 with GNAT.Command_Line;
 with XReqLib.Format.Text;
+with XReqLib.Format.Multi;
 with XReqLib.ANSI;
 with XReqLib.Error_Handling;
 
@@ -31,6 +32,7 @@ use Ada.Strings.Unbounded;
 use Ada.Text_IO;
 use GNAT.OS_Lib;
 use GNAT.Command_Line;
+use XReqLib.Format.Multi;
 use XReqLib.Format.Text;
 
 package body XReqLib.CLI is
@@ -107,12 +109,14 @@ package body XReqLib.CLI is
                               Name       : in     String := Command_Name)
    is
       use String_Vectors;
-      Parser     : Opt_Parser;
-      Options    : constant String := "help h -help f: -format= o: -output= "
+      Parser       : Opt_Parser;
+      Options      : constant String := "help h -help f: -format= o: -output= "
         & "-debug d -tags= t: -list -no-color -no-stacktrace";
-      Output     : Unbounded_String := Null_Unbounded_String;
-      Arg        : Unbounded_String;
-      Debug_Mode : Boolean := False;
+      Output       : Unbounded_String := Null_Unbounded_String;
+      Arg          : Unbounded_String;
+      Debug_Mode   : Boolean := False;
+      Last_Format  : Format_Ptr := null;
+      Multi_Format : constant Multi_Format_Ptr := New_Multi_Format;
    begin
       Check_Elaboration;
 
@@ -121,7 +125,7 @@ package body XReqLib.CLI is
       Cond       := Null_Condition;
       Initialize_Option_Scan (Parser, Args);
       Args       := null;  --  Parser takes ownership
-      Format     := null;
+      Format     := Format_Ptr (Multi_Format);
       Continue   := True;
 
       Getopt_Loop :
@@ -151,17 +155,29 @@ package body XReqLib.CLI is
          elsif Full_Switch (Parser) = "f" or
                Full_Switch (Parser) = "-format"
          then
-            Free (Format);
-            Format := Get_Formatter (Parameter (Parser));
-            if Format = null then
-               Put_Line (Current_Error,
-                         "Invalid format: " & Parameter (Parser));
-            end if;
+            declare
+               F : constant Format_Ptr := Get_Formatter (Parameter (Parser));
+            begin
+               if F = null then
+                  Put_Line (Current_Error,
+                            "Invalid format: " & Parameter (Parser));
+               else
+                  Last_Format := F;
+                  Multi_Format.Add_Sub_Format (F);
+                  if Output /= Null_Unbounded_String then
+                     F.Set_Output (To_String (Output));
+                  end if;
+               end if;
+            end;
 
          elsif Full_Switch (Parser) = "o" or
                Full_Switch (Parser) = "-output"
          then
-            Output := To_Unbounded_String (Parameter (Parser));
+            if Last_Format /= null then
+               Last_Format.Set_Output (Parameter (Parser));
+            else
+               Output := To_Unbounded_String (Parameter (Parser));
+            end if;
 
          elsif Full_Switch (Parser) = "-no-color" then
             XReqLib.ANSI.Use_ANSI_Sequences := False;
@@ -186,11 +202,12 @@ package body XReqLib.CLI is
 
 
       if Continue then
-         if Format = null then
-            Format := Format_Ptr (New_Text_Format);
-         end if;
-         if Output /= Null_Unbounded_String then
-            Format.Set_Output (To_String (Output));
+         if Last_Format = null then
+            Last_Format := Format_Ptr (New_Text_Format);
+            Multi_Format.Add_Sub_Format (Last_Format);
+            if Output /= Null_Unbounded_String then
+               Last_Format.Set_Output (To_String (Output));
+            end if;
          end if;
          Format.Set_Debug (Debug_Mode);
       else
