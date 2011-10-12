@@ -414,7 +414,8 @@ package body XReq.Generator.Ada05 is
 
    procedure Generate_Scenario_Body
      (S          : in out Ada_Generator_Type;
-      Scenario   : in     Result_Scenario_Handle)
+      Scenario   : in     Result_Scenario_Handle;
+      Outline_ID : in     Integer := -1)
    is
    begin
       S.Adb.Put_Line ("if Count_Mode then");
@@ -456,9 +457,19 @@ package body XReq.Generator.Ada05 is
       S.Adb.New_Line;
       S.Adb.Put_Line ("Format.Begin_Scenario;");
 
-      for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
-         Generate_Step (S, Scenario, Scenario.R.all.Step_Element (I));
-      end loop;
+      if Outline_ID < 0 then
+         for I in Scenario.R.Step_First .. Scenario.R.Step_Last loop
+            Generate_Step (S, Scenario, Scenario.R.all.Step_Element (I));
+         end loop;
+      else
+         for I in Scenario.R.Outline_Step_First (Outline_ID)
+           .. Scenario.R.Outline_Step_Last (Outline_ID)
+         loop
+            Generate_Step
+              (S, Scenario,
+               Scenario.R.all.Outline_Step_Element (Outline_ID, I));
+         end loop;
+      end if;
 
       --  Finalize
       --------------
@@ -585,7 +596,7 @@ package body XReq.Generator.Ada05 is
          S.Adb.Put_Line ("end if;");
 
          for I in Scenario.R.Outline_First .. Scenario.R.Outline_Last loop
-            Generate_Scenario_Body (S, Scenario);
+            Generate_Scenario_Body (S, Scenario, I);
          end loop;
 
          S.Adb.Put_Line ("if not Count_Mode then");

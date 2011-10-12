@@ -205,6 +205,7 @@ package body XReqLib.Format.Text is
 
    procedure Enter_Outline    (Format     : in out Text_Format_Type) is
    begin
+      Format.Output.Buffer_Commit;
       Format.Output.New_Line;
       Put_Tags (Format, Convert (Format.Outline.Tags));
       Format.Output.Put ("  " & Format.S_Outline);
@@ -231,6 +232,9 @@ package body XReqLib.Format.Text is
    begin
       Format.Background_Failed := False;
       Format.Output.Buffer_Commit;
+      if Format.In_Outline then
+         Format.Output.Buffer_Start;
+      end if;
       if Format.Scenario_ID > 1 then
          Put_Scenario (Format);
       end if;
@@ -279,7 +283,7 @@ package body XReqLib.Format.Text is
       if Format.In_Outline then
          Format.Output.Put ((Indent * "  ")
                             & Scen (Scen'First .. Scen'Last - 1)
-                            & Format.Scenario_ID'Img & ":");
+                            & Format.Example_ID'Img & ":");
       else
          Put_Tags (Format, Convert (Format.Scenario.Tags));
          Format.Output.Put ((Indent * "  ") & Scen);
@@ -289,6 +293,17 @@ package body XReqLib.Format.Text is
       end if;
       Format.Output.New_Line;
    end Put_Scenario;
+
+   --------------------
+   --  End_Scenario  --
+   --------------------
+
+   procedure End_Scenario (Format   : in out Text_Format_Type) is
+   begin
+      if Format.In_Outline then
+         Format.Output.Buffer_Discard;
+      end if;
+   end End_Scenario;
 
    ----------------
    --  Put_Step  --
@@ -323,6 +338,11 @@ package body XReqLib.Format.Text is
       Right   : Integer;
 
    begin
+      --  Show outline scenario on failure
+      if Format.In_Outline and Success = Status_Failed then
+         Format.Output.Buffer_Commit;
+      end if;
+
       --  Update status
       if Success = Status_Failed and Format.In_Background then
          Format.Background_Failed := True;
@@ -453,6 +473,7 @@ package body XReqLib.Format.Text is
                              Table      : in     Table_Type)
    is
    begin
+      Format.Output.Buffer_Discard;
       Format.Output.New_Line;
       Format.Output.Put_Line ("    Examples:");
       Put_Table (Format, Table, "      ");

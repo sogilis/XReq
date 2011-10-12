@@ -50,7 +50,7 @@ Feature: Tables
           Given a table:
             | a | b |
             | c | d |
-            | e | |
+            | e |---|
           Then the table should be equal to:
             | a | b |
             | c | d |

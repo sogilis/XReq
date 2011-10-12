@@ -144,6 +144,8 @@ Feature: Scenario Outlines
           Then I should have <left> cucumbers
 
           Scenario 2: eating
+            Given there are 20 cucumbers
+            When I eat 5 cucumbers
             Then I should have NaN cucumbers
               XREQLIB.NOT_YET_IMPLEMENTED: The step definition cound not be found
 
@@ -151,6 +153,8 @@ Feature: Scenario Outlines
             | start | eat | left |
             |    12 |   5 |    7 |
             |    20 |   5 | NaN  |
+      
+      ./failing_suite features/data/tmp-outline2.feature:4
 
       2 scenarios (1 failed, 1 passed)
       6 steps (1 failed, 5 passed)

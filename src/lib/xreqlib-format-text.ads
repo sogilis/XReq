@@ -50,6 +50,10 @@ package XReqLib.Format.Text is
    procedure Enter_Scenario (Format     : in out Text_Format_Type);
 
    overriding
+   procedure End_Scenario   (Format     : in out Text_Format_Type);
+
+
+   overriding
    procedure Put_Step       (Format     : in out Text_Format_Type;
                              Args       : in     Arg_Type;
                              Success    : in     Status_Type);
