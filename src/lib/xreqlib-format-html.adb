@@ -527,6 +527,7 @@ package body XReqLib.Format.HTML is
         (Format.Output,
          Param_num   => To_String (Format.Exec_Steps),
          Param_total => To_String (Format.Num_Steps));
+      Format.Previous_Step_Type := Format.Step.Kind;
    end End_Step;
    -----------------------
    --  New_HTML_Format  --

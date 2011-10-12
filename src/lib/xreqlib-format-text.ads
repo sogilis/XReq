@@ -67,7 +67,11 @@ private
 
    type Text_Format_Type is new Base_Format_Type with
       record
-         Failed_Step_List : Unbounded_String;
+         Failed_Step_List  : Unbounded_String;
+
+         Background_Failed : Boolean := False;
+         --  Tell if a step in the background failed, in which case we will
+         --  display all the remaining steps.
       end record;
 
 end XReqLib.Format.Text;

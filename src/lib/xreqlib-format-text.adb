@@ -221,6 +221,7 @@ package body XReqLib.Format.Text is
 
    procedure Enter_Scenario (Format   : in out Text_Format_Type) is
    begin
+      Format.Background_Failed := False;
       Format.Output.Buffer_Commit;
       if Format.Scenario_ID > 1 then
          Put_Scenario (Format);
@@ -250,6 +251,7 @@ package body XReqLib.Format.Text is
    procedure Begin_Scenario (Format   : in out Text_Format_Type) is
    begin
       if Format.Scenario_ID = 1 then
+         Format.Previous_Step_Type := Step_Null;
          Put_Scenario (Format);
       end if;
    end Begin_Scenario;
@@ -313,8 +315,15 @@ package body XReqLib.Format.Text is
       Right   : Integer;
 
    begin
-      --  Append scenario to the list of failed scenarios on failure
-      if Success = Status_Failed then
+      --  Update status
+      if Success = Status_Failed and Format.In_Background then
+         Format.Background_Failed := True;
+      end if;
+
+      --  Append scenario to the list of failed scenarios
+      if Success = Status_Failed
+        or (Success = Status_Skipped and Format.Step_ID = 1)
+      then
          Append (Format.Failed_Step_List, Ada.Command_Line.Command_Name
                  & " " & Format.Scenario.Position & ASCII.LF);
       end if;
@@ -323,6 +332,10 @@ package body XReqLib.Format.Text is
         or not Format.In_Background  --  Display steps not in background
         or Format.Scenario_ID = 1    --  Display steps in first background
         or Success = Status_Failed   --  Display failed steps
+        or Format.Background_Failed  --  Display steps after a failed step in a
+      --  scenario. This is not equivalent to skipped tests because some
+      --  scenarios are entirely skipped, and we don't want to display all
+      --  the skipped background steps.
       then
          if Format.In_Outline and Format.In_Scenario then
             Indent := Indent + 1;
@@ -395,6 +408,8 @@ package body XReqLib.Format.Text is
                   Format.Output.New_Line;
             end case;
          end loop Loop_Args;
+
+         Format.Previous_Step_Type := Format.Step.Kind;
       end if;
    end Put_Step;
 

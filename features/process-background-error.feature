@@ -95,7 +95,10 @@ Feature: Skip scenarios after a background error
           Given this step works with STEP
           And this is ignored
 
-      ./always_fail_suite 
+      ./always_fail_suite features/data/tmp-always_fail.feature:8
+      ./always_fail_suite features/data/tmp-always_fail.feature:12
+      ./always_fail_suite features/data/tmp-always_fail.feature:16
+      ./always_fail_suite features/data/tmp-always_fail.feature:20
 
       4 scenarios (4 failed)
       20 steps (1 failed, 18 skipped, 1 passed)
@@ -135,7 +138,7 @@ Feature: Skip scenarios after a background error
           Given this step works with STEP
           And this is ignored
 
-      ./always_fail_suite 
+      ./always_fail_suite features/data/tmp-always_fail.feature:8
 
       4 scenarios (4 failed)
       20 steps (1 failed, 18 skipped, 1 passed)
@@ -166,33 +169,26 @@ Feature: Skip scenarios after a background error
 
         Scenario: Run a good step 2
       This step works BACKGROUND
-          Given this fails periodically
+          Given this fails periodically (background)
             XREQLIB.ASSERTS.ERROR: State is FALSE (should be TRUE)
-          And this step works with BACKGROUND
+          And this step works with BACKGROUND (background)
           And this step works with STEP
           And this is ignored
 
         Scenario: Run a good step 3
-      This step works BACKGROUND
-      State is TRUE OK
-      This step works BACKGROUND
-      This step works STEP
           Given this step works with STEP
           And this is ignored
 
         Scenario: Run a good step 4
-      This step works BACKGROUND
-          Given this fails periodically
-            XREQLIB.ASSERTS.ERROR: State is FALSE (should be TRUE)
-          And this step works with BACKGROUND
-          And this step works with STEP
+          Given this step works with STEP
           And this is ignored
 
       ./periodic_fail_suite features/data/tmp-periodic_fail.feature:12
+      ./periodic_fail_suite features/data/tmp-periodic_fail.feature:16
       ./periodic_fail_suite features/data/tmp-periodic_fail.feature:20
 
-      4 scenarios (2 failed, 2 passed)
-      20 steps (2 failed, 6 skipped, 12 passed)
+      4 scenarios (3 failed, 1 passed)
+      20 steps (1 failed, 13 skipped, 6 passed)
 
       """
 

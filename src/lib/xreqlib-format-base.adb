@@ -157,7 +157,6 @@ package body XReqLib.Format.Base is
          Format.Exec_Steps := Format.Exec_Steps + 1;
       end if;
       Format.In_Step := False;
-      Format.Previous_Step_Type := Format.Step.Kind;
    end Stop_Step;
 
    ------------------
