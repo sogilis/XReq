@@ -152,7 +152,6 @@ package body XReqLib.Format.Text is
       Description     : constant String
         := To_String (Format.Feature.Description);
    begin
-      Format.Output.Buffer_Discard;
       Format.Output.Buffer_Start;
       if Format.Feature_ID > 1 then
          Format.Output.New_Line;
@@ -177,6 +176,15 @@ package body XReqLib.Format.Text is
          Format.Output.New_Line;
       end if;
    end Put_Feature;
+
+   -------------------
+   --  End_Feature  --
+   -------------------
+
+   procedure End_Feature (Format      : in out Text_Format_Type) is
+   begin
+      Format.Output.Buffer_Discard;
+   end End_Feature;
 
    ----------------
    --  Put_Tags  --
@@ -463,7 +471,9 @@ package body XReqLib.Format.Text is
       Count_Steps     : constant Natural := Report.Num_Steps;
       Need_Comma : Boolean;
    begin
-      Format.Output.New_Line;
+      if Count_Scenarios > 0 then
+         Format.Output.New_Line;
+      end if;
       if Format.Failed_Step_List /= Null_Unbounded_String then
          Format.Output.Put (To_String (Format.Failed_Step_List));
          Format.Output.New_Line;

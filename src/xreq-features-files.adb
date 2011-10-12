@@ -304,11 +304,13 @@ package body XReq.Features.Files is
 
             if Detect then
                Current_Stanza := Create;
-               if Current_Prefix /= Step_Null then
+               if Current_Prefix = Step_Null then
+                  --  Ignore step but still parse it
+                  Current_Stanza.R.Set_Kind (Step_Given);
+                  Read_Step (Current_Stanza);
+               else
                   Current_Stanza.R.Set_Kind (Current_Prefix);
-               end if;
-               Read_Step (Current_Stanza);
-               if Current_Prefix /= Step_Null then
+                  Read_Step (Current_Stanza);
                   Scenario.R.Step_Append (Current_Stanza);
                end if;
             end if;

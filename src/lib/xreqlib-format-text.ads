@@ -26,6 +26,8 @@ package XReqLib.Format.Text is
 
    overriding
    procedure Put_Feature    (Format     : in out Text_Format_Type);
+   overriding
+   procedure End_Feature    (Format     : in out Text_Format_Type);
 
    overriding
    procedure Put_Background (Format     : in out Text_Format_Type);

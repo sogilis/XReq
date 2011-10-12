@@ -33,6 +33,7 @@ package body XReqLib.Format.Base is
    procedure Stop_Tests     (Format      : in out Base_Format_Type) is
    begin
       Format.In_Tests := False;
+      Format.Output.Buffer_Commit;
    end Stop_Tests;
 
    --------------------------
