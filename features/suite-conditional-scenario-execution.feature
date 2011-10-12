@@ -53,7 +53,7 @@ Feature: Run conditionally scenarios
     When I run xreq -m -x suite features/data/tmp-a.feature features/data/tmp-b.feature
     Then it should pass
 
-    When I run the test suite "./suite features/data/tmp-a.feature:1 features/data/tmp-b.feature:3" in features/data/tests
+    When I run the test suite "./suite features/data/tmp-a.feature#1 features/data/tmp-b.feature#3" in features/data/tests
     Then it should pass with
       """
       Feature: A

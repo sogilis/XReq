@@ -13,8 +13,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB
-
         Background:
           Given this step doesn't work
 
@@ -30,7 +28,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB
         Background:
           Given this step doesn't work
             XREQLIB.ASSERTS.ERROR: Assertion failed
@@ -40,7 +37,7 @@ Feature: Tags
         Scenario: S
           Given this step works
       
-      ./suite 
+      ./suite features/data/tmp-tags1.feature:7
 
       1 scenario (1 failed)
       2 steps (1 failed, 1 skipped)
@@ -50,10 +47,6 @@ Feature: Tags
     When I run the test suite "./suite -f html -o report.html" in features/data/tests
     Then it should fail
     And "features/data/tests/report.html" should exist
-    And "features/data/tests/report.html" should contain
-      """
-      @tagB
-      """
     And "features/data/tests/report.html" should contain
       """
       @tag1
@@ -69,8 +62,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB
-
         Background:
           Given this step doesn't work
 
@@ -86,7 +77,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB
         Background:
           Given this step doesn't work
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
@@ -105,10 +95,6 @@ Feature: Tags
     When I run the test suite "./suite -f html -o report.html" in features/data/tests
     Then it should fail
     And "features/data/tests/report.html" should exist
-    And "features/data/tests/report.html" should contain
-      """
-      @tagB
-      """
     And "features/data/tests/report.html" should contain
       """
       @tag1
@@ -124,8 +110,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB @tagC
-
         Background:
           Given this step doesn't work
 
@@ -141,8 +125,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB
-        @tagC
         Background:
           Given this step doesn't work
             XREQLIB.ASSERTS.ERROR: Assertion failed
@@ -152,7 +134,7 @@ Feature: Tags
         Scenario: S
           Given this step works
       
-      ./suite 
+      ./suite features/data/tmp-tags2.feature:7
 
       1 scenario (1 failed)
       2 steps (1 failed, 1 skipped)
@@ -162,14 +144,6 @@ Feature: Tags
     When I run the test suite "./suite -f html -o report.html" in features/data/tests
     Then it should fail
     And "features/data/tests/report.html" should exist
-    And "features/data/tests/report.html" should contain
-      """
-      @tagB
-      """
-    And "features/data/tests/report.html" should contain
-      """
-      @tagC
-      """
     And "features/data/tests/report.html" should contain
       """
       @tag1
@@ -185,8 +159,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB @tagC
-
         Background:
           Given this step doesn't work
 
@@ -202,8 +174,6 @@ Feature: Tags
       """
       Feature: F
 
-        @tagB
-        @tagC
         Background:
           Given this step doesn't work
             XREQLIB.C_INTERFACE.XREQ_FORMAT_PUT_ERROR.STEP_ERROR: Assertion failed
@@ -224,14 +194,6 @@ Feature: Tags
     And "features/data/tests/report.html" should exist
     And "features/data/tests/report.html" should contain
       """
-      @tagB
-      """
-    And "features/data/tests/report.html" should contain
-      """
-      @tagC
-      """
-    And "features/data/tests/report.html" should contain
-      """
       @tag1
       """
     And "features/data/tests/report.html" should contain
@@ -245,7 +207,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1 @tagB2
         Background:
           Given this step works
 
@@ -266,8 +227,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 
@@ -287,7 +246,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1 @tagB2
         Background:
           Given this step works
 
@@ -308,8 +266,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 
@@ -329,7 +285,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1 @tagB2
         Background:
           Given this step works
 
@@ -362,8 +317,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 
@@ -389,8 +342,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 
@@ -411,7 +362,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1 @tagB2
         Background:
           Given this step works
 
@@ -436,8 +386,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 
@@ -462,8 +410,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 
@@ -489,8 +435,6 @@ Feature: Tags
       Feature: Feature
         This is executed conditionnally
 
-        @tagB1
-        @tagB2
         Background:
           Given this step works
 

@@ -268,7 +268,7 @@ package body XReq.Features.Files is
                Continue    := False;
                Detect      := False;
             elsif Detect_Keyword ("#") then
-               null;
+               Detect      := False;
             elsif Outline and then Detect_Keyword (K.Examples) then
                Read_Line;
                if not End_Of_File then
