@@ -121,6 +121,15 @@ used.
 Known Problems
 ==============
 
+### 2011-12-05: Problem parsing step definitions ###
+
+You should define the procedures on the step definition packages in one line.
+If you split the procedure on two lines, the procedure name will not be detected
+properly.
+
+If you have a body part in your package, the step definition generation will put
+the generated procedures in the body part of the package.
+
 ### 2010-11-22: Storage_Error in XReqLib ###
 
 Check that the library has been elaborated.
