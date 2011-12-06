@@ -273,14 +273,14 @@ package body XReq.Step_Definitions.Ada05 is
             Procedure_S := Null_Unbounded_String;
             Char := Element (Line_S, Idx);
             while
-               Idx < Length (Line_S) and
-               ((Char >= 'a' and Char <= 'z') or
-                (Char >= 'A' and Char <= 'Z') or
-                (Char >= '0' and Char <= '9') or
-                Char = '_')
+              (Char >= 'a' and Char <= 'z') or
+              (Char >= 'A' and Char <= 'Z') or
+              (Char >= '0' and Char <= '9') or
+              Char = '_'
             loop
                Append (Procedure_S, Char);
                Idx  := Idx + 1;
+               exit when Idx > Length (Line_S);
                Char := Element (Line_S, Idx);
             end loop;
 --             Put_Line ("Procedure " & To_String (Procedure_S));

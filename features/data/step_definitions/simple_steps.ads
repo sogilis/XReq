@@ -12,7 +12,8 @@ package Simple_Steps is
    --  @given ^I match "([^"]*)" and "([^"]*)"$
 
    --  @given ^this step works$
-   procedure Given_this_step_works (Args : in out Arg_Type);
+   procedure Given_this_step_works
+     (Args : in out Arg_Type);
 
    --  @given ^this step works with (.*)$
    procedure Given_this_step_works_with (Args : in out Arg_Type);
