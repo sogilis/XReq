@@ -58,12 +58,15 @@ endif
 
 ifeq ($(CONFIG),dbg)
 MODE=debug
+BUILD_MODE=debug
 endif
 ifeq ($(CONFIG),rel)
 MODE=release
+BUILD_MODE=release
 endif
 ifeq ($(CONFIG),cov)
 MODE=coverage
+BUILD_MODE=coverage
 endif
 ifeq ($(LIBTYPE),static)
 LIBEXT=a
@@ -93,23 +96,20 @@ XREQ_FLAGS=
 endif
 endif
 
-DESTDIR    =
-PREFIX     =$(shell which $(GPRBUILD) 2>/dev/null | sed -e's/\/bin\/[^/]*//')
-PREFIX_GPS =$(shell which $(GPS) 2>/dev/null | sed -e's/\/bin\/[^/]*//')
-ifeq ($(PREFIX),)
-PREFIX     =/usr/local
-endif
-BINDIR     = $(PREFIX)/bin
-INCLUDEDIR = $(PREFIX)/include
-LIBDIR     = $(PREFIX)/lib
-GPRDIR     = $(PREFIX)/lib/gnat
-DATADIR    = $(PREFIX)/share
-DOCDIR     = $(DATADIR)/doc/XReq
-ifneq ($(PREFIX_GPS),)
-GPSDATADIR = $(PREFIX_GPS)/share/gps
-else
-GPSDATADIR =
-endif
+
+export VERBOSE
+export LIBTYPE
+export BUILD_MODE
+export DESTDIR
+export PREFIX
+export PREFIX_GPS
+export BINDIR
+export INCLUDEDIR
+export LIBDIR
+export GPRDIR
+export DATADIR
+export DOCDIR
+export GPSDATADIR
 
 all: bin lib gps-plugin tests doc
 	@echo
@@ -130,7 +130,7 @@ all: bin lib gps-plugin tests doc
 	@echo
 
 build: redo
-	@$(REDO) release
+	$(REDO) release
 
 check-all: all build gnatcheck run-unit run-features coverage
 
@@ -801,7 +801,7 @@ check: gnatcheck coverage run-cucumber run-unit
 ###################
 
 install: redo
-	@$(REDO) install
+	$(REDO) install
 
 .PHONY: install
 
