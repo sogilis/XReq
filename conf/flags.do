@@ -5,10 +5,10 @@ redo-ifchange help
 redo-ifchange verbose_level
 . ./verbose_level
 
-if [ 0 == "$VERBOSE" ]; then
+if [ 0 = "$VERBOSE" ]; then
   : ${GPRBUILD_VERBOSE_FLAGS:=-q}
   : ${XREQ_FLAGS:=-q}
-elif [ 1 == "$VERBOSE" ]; then
+elif [ 1 = "$VERBOSE" ]; then
   : ${GPRBUILD_VERBOSE_FLAGS:=}
   : ${XREQ_FLAGS:=}
 else

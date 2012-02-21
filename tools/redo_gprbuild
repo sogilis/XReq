@@ -18,8 +18,8 @@ redo_gprbuild(){
   : ${GPRBUILD_FLAGS:=-p}
   : ${GPR_FLAGS:=}
 
-  echo $GPRBUILD $GPRBUILD_FLAGS $GPR_FLAGS -P"$gpr" -o "$2" --create-map-file="$out.map" >&2
-  $GPRBUILD $GPRBUILD_FLAGS $GPR_FLAGS -P"$gpr" -o "$2" --create-map-file="$out.map" >&2
+  echo $GPRBUILD $GPRBUILD_FLAGS -P"$gpr" $GPR_FLAGS >&2
+  $GPRBUILD $GPRBUILD_FLAGS -P"$gpr" $GPR_FLAGS -o "$2" --create-map-file="$out.map" >&2
 
   if [ -f "$out.map" ]; then
 
@@ -27,21 +27,23 @@ redo_gprbuild(){
     local objfiles="$(grep "^LOAD " "$out.map" | cut -c6-)"
     
     # move into object directory
-    pushd "$(gnat ls -P"$gpr" -v | grep "^Object Search Path:$" -A2 | tail -n 1 | sed 's/^\s*//')" >/dev/null
+    local olddir="$(pwd)"
+    cd "$(gnat ls -P"$gpr" $GPR_FLAGS -v | grep "^Object Search Path:$" -A2 | tail -n 1 | sed 's/^\s*//')"
 
     # mark object files as dependencies
-    xargs -d "\n" redo-ifchange <<<"$objfiles"
+    echo "$objfiles" | xargs -d "\n" redo-ifchange
     
     # mark source files for each object file as dependency
-    grep "\.o$" <<<"$objfiles" \
-      | xargs -d "\n" -n 1 gnat ls $GPR_FLAGS -P"$gpr" -d -a -s \
+    echo "$objfiles" \
+      | grep "\.o$" \
+      | xargs -d "\n" -n 1 gnat ls -P"$gpr" $GPR_FLAGS -d -a -s \
       | grep -v -F "Can't find library info for " \
       | sed 's/^\s*//' \
       | grep . \
       | xargs -d "\n" redo-ifchange
     
     # move back
-    popd >/dev/null
+    cd "$olddir"
     
     # remove map file
     rm -f "$out.map"
