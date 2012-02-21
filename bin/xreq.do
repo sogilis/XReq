@@ -1,6 +1,3 @@
-export BUILD_MODE=dbg
-export LIBTYPE=static
-
 redo-ifchange ../conf/build_mode ../conf/flags ../conf/libtype
 . ../conf/build_mode
 . ../conf/flags

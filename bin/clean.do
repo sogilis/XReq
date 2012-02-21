@@ -1,4 +1,2 @@
-eval $(../redoconf/sh-init)
-
-rc_clean
+rm -f xreq.dbg xreq.rel xreq.cov
 

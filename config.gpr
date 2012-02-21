@@ -20,6 +20,12 @@
 
 abstract project Config is
 
+   type Mode_Type is ("debug", "release", "coverage");
+   Mode : Mode_Type := external ("mode", "debug");
+
+   type Lib_Type is ("static", "dynamic");
+   Lib_Kind : Lib_Type := external ("type", "static");
+
    --  http://gcc.gnu.org/onlinedocs/gcc-3.4.6/gnat_ugn_unw/Style-Checking.html
 
    Ada_Switches := (

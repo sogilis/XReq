@@ -23,26 +23,20 @@ with "xreqlib.gpr";
 
 project XReq is
 
-   type Mode_Type is ("debug", "release", "coverage");
-   Mode : Mode_Type := external ("mode", "debug");
-
-   type Lib_Type is ("static", "dynamic");
-   Lib_Kind : Lib_Type := external ("type", "static");
-
    for Languages   use ("Ada");
    for Main        use ("main");
    for Source_Dirs use ("src");
-   for Object_Dir  use "obj/" & Mode;
+   for Object_Dir  use "obj/" & Config.Mode;
    for Exec_Dir    use "bin";
 
    Extra_Linker_Flags := ();
---    case Lib_Kind is
---       when "static" =>  Extra_Linker_Flags := ("-static");
---       when "dynamic" => Extra_Linker_Flags := ();
---    end case;
+   case Config.Lib_Kind is
+      when "static" =>  Extra_Linker_Flags := ("-static");
+      when "dynamic" => Extra_Linker_Flags := ();
+   end case;
 
    package Builder is
-      case Mode is
+      case Config.Mode is
          when "debug" =>
             for Executable ("main.adb") use "xreq.dbg";
          when "release" =>
@@ -53,7 +47,7 @@ project XReq is
    end Builder;
 
    package Compiler is
-      case Mode is
+      case Config.Mode is
          when "debug" =>
             for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
          when "release" =>
@@ -64,7 +58,7 @@ project XReq is
    end Compiler;
 
    package Binder is
-      case Mode is
+      case Config.Mode is
          when "debug" =>
             for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Debug;
          when "coverage" =>
@@ -75,7 +69,7 @@ project XReq is
    end Binder;
 
    package Linker is
-      case Mode is
+      case Config.Mode is
          when "debug" =>
             for Default_Switches ("Ada") use Config.Ada_Switches_Linker_Debug & Extra_Linker_Flags;
          when "coverage" =>

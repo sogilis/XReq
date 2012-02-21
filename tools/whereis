@@ -1,0 +1,4 @@
+#!/bin/sh
+
+which "$1" 2>/dev/null | sed -e's/\/bin\/[^/]*//'
+

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+recursive=false
+alifile=
+project=
+
+while [ -n "$1" ]; do
+  case "$1" in
+    -r)
+      recursive=true
+      ;;
+    -P)
+      shift
+      project=-P$1
+      ;;
+    *)
+      alifile="$1"
+      shift
+      break
+      ;;
+  esac
+  shift
+done
+
+if [ -z "$alifile" ]; then
+  echo "Please specify an ALI file" >&2
+  exit 1
+fi
+
+# grep '^D' $alifile
+gnat ls -s -d -a $project "$alifile"
+

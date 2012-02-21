@@ -1,3 +1,11 @@
+
+redo-ifchange ../conf/install_dirs ../conf/libtype
+. ../conf/install_dirs
+. ../conf/libtype
+
+exec >"$3"
+cat <<EOF
+
 -------------------------------------------------------------------------------
 --  XReq  --  Behaviour Driven Developpement tool for compiled languages     --
 --  Copyright (c) 2010, SOGILIS <http://sogilis.com>                         --
@@ -16,38 +24,17 @@
 --  along with this program.  If not, see <http://www.gnu.org/licenses/>.    --
 --                                                                           --
 -------------------------------------------------------------------------------
--- kate: hl Ada; indent-width 3;
-
-with "config.gpr";
 
 library project XReqLib is
 
    for Library_Name      use "xreqlib";
-   for Source_Dirs       use ("src/lib", "src/lib/" & Config.Lib_Kind);
-   for Object_Dir        use "obj/" & Config.Mode;
-   for Library_Dir       use "lib";
-   for Library_Kind      use Config.Lib_Kind;
-
-   package Compiler is
-      case Config.Mode is
-         when "debug" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Debug;
-         when "release" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Release;
-         when "coverage" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Coverage;
-      end case;
-   end Compiler;
-
-   package Binder is
-      case Config.Mode is
-         when "debug" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Debug;
-         when "coverage" =>
-            for Default_Switches ("Ada") use Config.Ada_Switches_Binder_Coverage;
-         when others =>
-            null;
-      end case;
-   end Binder;
+   for Source_Dirs       use ("$INCLUDEDIR/xreqlib");
+   for Library_Dir       use "$LIBDIR/xreqlib";
+   for Library_Kind      use "$LIBTYPE";
+   for Externally_Built  use "true";
 
 end XReqLib;
+
+--  kate: hl Ada
+
+EOF
