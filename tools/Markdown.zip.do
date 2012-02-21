@@ -1,3 +1,4 @@
-eval $(../redoconf/sh-init)
-rc_source ./config
+redo-ifchange config
+. ./config
+
 wget "$MARKDOWN_URL" -O "$3" >&2

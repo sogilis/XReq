@@ -30,10 +30,10 @@ project XReq is
    for Exec_Dir    use "bin";
 
    Extra_Linker_Flags := ();
-   case Config.Lib_Kind is
-      when "static" =>  Extra_Linker_Flags := ("-static");
-      when "dynamic" => Extra_Linker_Flags := ();
-   end case;
+--   case Config.Lib_Kind is
+--      when "static" =>  Extra_Linker_Flags := ("-static");
+--      when "dynamic" => Extra_Linker_Flags := ();
+--   end case;
 
    package Builder is
       case Config.Mode is

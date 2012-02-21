@@ -1,11 +1,15 @@
-eval $(redoconf/sh-init)
-rc_source ./config
+redo-ifchange "tools/Markdown.pl"
 
-if [ -f "$1.mdwn" ]; then
-  compile_md "$1.mdwn"
-elif [ -f "$1.md" ]; then
-  compile_md "$1.md"
-elif [ -f "$1" ]; then
-  compile_md "$1"
+exec >&2
+
+if [ -f "$2.mdwn" ]; then
+  tools/Markdown.pl <"$2.mdwn" >"$3"
+elif [ -f "$2.md" ]; then
+  tools/Markdown.pl <"$2.md" >"$3"
+elif [ -f "$2" ]; then
+  tools/Markdown.pl <"$2" >"$3"
+else
+  echo "Cannot make $1"
+  exit 1
 fi
 

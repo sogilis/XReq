@@ -1,4 +1,4 @@
-redo-ifchange ../conf/build_mode ../conf/flags ../conf/libtype ../tools/redo_gprbuild ../lib/xreqlib
+redo-ifchange ../conf/build_mode ../conf/flags ../conf/libtype ../tools/redo_gprbuild ../src/lib/sources
 . ../conf/build_mode
 . ../conf/flags
 . ../conf/libtype

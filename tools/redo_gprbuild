@@ -1,0 +1,51 @@
+#!/bin/echo This file must be sourced by a shell
+# kate: hl sh;
+
+redo_gprbuild(){
+  if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "redo_gprbuild: must specify a gpr project and an output file (\$3)" >&2
+    return 1
+  elif ! [ -f "$1" ]; then
+    echo "$1: file not found" >&2
+    return 1
+  fi
+  
+  # get absolute paths for arguments
+  local gpr="$(cd "`dirname "$1"`"; pwd)/$(basename "$1")"
+  local out="$(cd "`dirname "$2"`"; pwd)/$(basename "$2")"
+  
+  : ${GPRBUILD:=gprbuild}
+  : ${GPRBUILD_FLAGS:=-p}
+  : ${GPR_FLAGS:=}
+
+  echo $GPRBUILD $GPRBUILD_FLAGS $GPR_FLAGS -P"$gpr" -o "$2" --create-map-file="$out.map" >&2
+  $GPRBUILD $GPRBUILD_FLAGS $GPR_FLAGS -P"$gpr" -o "$2" --create-map-file="$out.map" >&2
+
+  if [ -f "$out.map" ]; then
+
+    # extract object files and libraries from map file
+    local objfiles="$(grep "^LOAD " "$out.map" | cut -c6-)"
+    
+    # move into object directory
+    pushd "$(gnat ls -P"$gpr" -v | grep "^Object Search Path:$" -A2 | tail -n 1 | sed 's/^\s*//')" >/dev/null
+
+    # mark object files as dependencies
+    xargs -d "\n" redo-ifchange <<<"$objfiles"
+    
+    # mark source files for each object file as dependency
+    grep "\.o$" <<<"$objfiles" \
+      | xargs -d "\n" -n 1 gnat ls $GPR_FLAGS -P"$gpr" -d -a -s \
+      | grep -v -F "Can't find library info for " \
+      | sed 's/^\s*//' \
+      | grep . \
+      | xargs -d "\n" redo-ifchange
+    
+    # move back
+    popd >/dev/null
+    
+    # remove map file
+    rm -f "$out.map"
+
+  fi
+}
+

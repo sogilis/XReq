@@ -1,7 +1,4 @@
-eval $(redoconf/sh-init)
-
 redo bin/xreq.dbg
-make lib >&2
 
 export XREQ_LANG=Ada
 echo $XREQ_LANG > .cucumber-rerun-lang.txt

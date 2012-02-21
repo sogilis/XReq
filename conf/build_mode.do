@@ -13,7 +13,7 @@ esac
 echo
 echo "--------------------------------------------------------------------------"
 echo "--  Your current build mode: BUILD_MODE=$BUILD_MODE"
-echo "--  Acceptable values: debug, dbg, release, rel, coverage, cov"
+echo "--  Accepted values: debug, dbg, release, rel, coverage, cov"
 echo "--------------------------------------------------------------------------"
 echo "--  You can change this either by changing the environment variable     --"
 echo "--  BUILD_MODE or editing                                               --"

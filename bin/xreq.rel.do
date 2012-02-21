@@ -1,13 +1,10 @@
-export BUILD_MODE=dbg
+export BUILD_MODE=release
 export LIBTYPE=static
 
-redo-ifchange ../conf/build_mode ../conf/flags ../conf/libtype
-. ../conf/build_mode
+redo-ifchange ../conf/flags ../tools/redo_gprbuild ../lib/xreqlib
 . ../conf/flags
-. ../conf/libtype
+. ../tools/redo_gprbuild
 
-redo-always
-exec >&2
-
-$GPRBUILD $GPRBUILD_FLAGS -P../xreq.gpr -Xtype=$LIBTYPE -Xmode=$BUILD_MODE -o "$3"
+GPR_FLAGS="-Xtype=$LIBTYPE -Xmode=$BUILD_MODE"
+redo_gprbuild ../xreq.gpr "$3"
 
