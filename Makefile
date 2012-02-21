@@ -1,10 +1,18 @@
-##                         Copyright (C) 2010, Sogilis                       ##
+##                      Copyright (C) 2010-2012, Sogilis                      ##
 
-ifeq ($(shell which redo 2>/dev/null),)
-REDO=redoconf/minimal-redo
+$(V)$(VERBOSE).SILENT:
+
+REDO=$(shell which redo 2>/dev/null)
+ifeq ($(REDO),)
+redo: tools/redo/redo
+tools/redo/redo:
+	git submodule init
+	git submodule update deps/redo
+REDO=deps/redo/redo
 else
-REDO=redo
+redo:
 endif
+.PHONY: redo
 
 GNATMAKE=gnatmake
 TEST_SUITES=test coverage
