@@ -1,3 +1,4 @@
+redo-ifchange help
 redo-always
 exec >&2
 
@@ -8,20 +9,13 @@ case $LIBTYPE in
   *) LIBTYPE=dynamic ;;
 esac
 
-# Do some magic detection to know if dynamic libraries are not supported
-
 echo
+echo "------------------------------ LIBRARY TYPE ------------------------------"
+echo "--"
+echo "--  LIBTYPE=$LIBTYPE [static, dynamic]"
+echo "--"
+echo "--  Conf file: $(pwd)/$2"
 echo "--------------------------------------------------------------------------"
-echo "--  Your current library type: LIBTYPE=$LIBTYPE [static, dynamic]"
-echo "--------------------------------------------------------------------------"
-echo "--  You can change this either by changing the environment variable     --"
-echo "--  LIBTYPE or editing                                                  --"
-echo "--  $(pwd)/$2"
-echo "--                                                                      --"
-echo "--  If you change that file manually, it won't be overwritten. Delete   --"
-echo "--  to restore the defaults                                             --"
-echo "--------------------------------------------------------------------------"
-echo
 
 echo "export LIBTYPE=$LIBTYPE" | tee "$3" | redo-stamp
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+redo-ifchange help
 redo-always
 exec >&2
 
@@ -36,14 +37,8 @@ if [ -n "$PREFIX_GPS" ]; then
 fi
 
 echo "--"
+echo "--  Conf file: $(pwd)/$2"
 echo "--------------------------------------------------------------------------"
-echo "--  You can change these either by changing the environment or editing  --"
-echo "--  $(pwd)/$2"
-echo "--                                                                      --"
-echo "--  If you change that file manually, it won't be overwritten. Delete   --"
-echo "--  to restore the defaults                                             --"
-echo "--------------------------------------------------------------------------"
-echo
 
 if [ -n "$DESTDIR" ] && [ / != "${DESTDIR:0:1}" ]; then
   echo "ERROR: DESTDIR is not an absolute path." >&2

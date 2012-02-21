@@ -1,6 +1,7 @@
 redo-always
 exec >&2
 
+redo-ifchange help
 redo-ifchange verbose_level
 . ./verbose_level
 
@@ -21,17 +22,11 @@ fi
 echo
 echo "-------------------------- COMPILATION SWITCHES --------------------------"
 echo "--"
-echo "--  GPRBUILD_FLAGS  $GPRBUILD_FLAGS"
-echo "--  XREQ_FLAGS      $XREQ_FLAGS"
+echo "--  GPRBUILD_FLAGS= $GPRBUILD_FLAGS"
+echo "--  XREQ_FLAGS=     $XREQ_FLAGS"
 echo "--"
+echo "--  Conf file: $(pwd)/$2"
 echo "--------------------------------------------------------------------------"
-echo "--  You can change these either by changing the environment or editing  --"
-echo "--  $(pwd)/$2"
-echo "--                                                                      --"
-echo "--  If you change that file manually, it won't be overwritten. Delete   --"
-echo "--  to restore the defaults                                             --"
-echo "--------------------------------------------------------------------------"
-echo
 
 exec >"$3"
 

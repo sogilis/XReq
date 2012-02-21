@@ -129,26 +129,8 @@ all: bin lib gps-plugin tests doc
 	@echo "  - Documentation:  $(DOC_FILES)"
 	@echo
 
-build: bin/xreq.$(INSTALL_CONFIG) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT) lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/gps/libxreqgps.$(SUF_SO)
-	@echo
-	@echo "########################################################"
-	@echo "##                                                    ##"
-	@echo "##    Run 'make help' to get help on this Makefile    ##"
-	@echo "##      You built XReq binaries ready to install      ##"
-	@echo "##                                                    ##"
-	@echo "########################################################"
-	@echo
-	@echo "You built:"
-	@echo "  - Executable:     bin/xreq.$(INSTALL_CONFIG)"
-	@echo "  - Library:        lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)"
-	@echo "                    lib/$(INSTALL_MODE)/libxreq.$(SUF_SO)"
-	@echo "  - GPS Plug-In:    lib/gps/libxreqgps.$(SUF_SO)"
-	@echo
-	@echo "You may install XReq running as a priviledged user:"
-	@echo "    make PREFIX=$(PREFIX) install"
-	@echo
-
-
+build: redo
+	@$(REDO) release
 
 check-all: all build gnatcheck run-unit run-features coverage
 
@@ -818,114 +800,10 @@ check: gnatcheck coverage run-cucumber run-unit
 ##               ##
 ###################
 
-install: install-bin install-lib install-gps install-gpr
-	@echo '------------------------------------------------------------------'
-	@echo '--  XReq has now been installed.'
-	@echo '------------------------------------------------------------------'
-	@echo '--  To be able to use the xreq binary, you may need to update'
-	@echo '--  your PATH to point to'
-	@echo '--  $(DESTDIR)$(BINDIR)'
-	@echo '------------------------------------------------------------------'
-	@echo '--  To be able to use the library for Ada, you may need to update'
-	@echo '--  your ADA_PROJECT_PATH or GPR_PROJECT_PATH to point to the path'
-	@echo '--  $(DESTDIR)$(GPRDIR)'
-	@echo '------------------------------------------------------------------'
-	@echo '--  To be able to use the library, you may need to update your'
-	@echo '--  LD_LIBRARY_PATH to point to the path'
-	@echo '--  $(DESTDIR)$(LIBDIR)'
-	@echo '------------------------------------------------------------------'
+install: redo
+	@$(REDO) install
 
-install-lib: #lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) lib/$(INSTALL_MODE)/libxreqlib.$(LIBEXT)
-	#
-	# Installing GPR project file in $(GPRDIR)
-	#
-	# mkdir -p $(DESTDIR)$(GPRDIR)
-	# $(INSTALL) -m644 data/xreqlib.gpr $(DESTDIR)$(GPRDIR)/xreqlib.gpr
-	$(INSTALL) -d $(DESTDIR)$(GPRDIR)
-	sed -e 's|%ADAINCLUDEDIR%|$(INCLUDEDIR)/xreqlib|g' \
-	    -e 's|%ADALIBDIR%|$(LIBDIR)/xreqlib|g' \
-	    -e 's|%ADALIBKIND%|$(LIBTYPE)|g' \
-	    data/xreqlib-template.gpr > $(DESTDIR)$(GPRDIR)/xreqlib.gpr
-	#
-	# Installing source files in $(INCLUDEDIR)/xreqlib
-	#
-	$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(INSTALL) -d $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(CP) src/common/*.ad[bs]     $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(CP) src/lib/*.ad[bs]        $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	$(CP) src/lib/static/*.ad[bs] $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	#
-	# Installing Ada library (libxreqlib) in $(LIBDIR) and $(LIBDIR)/xreqlib
-	#
-	$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
-	$(INSTALL) -d $(DESTDIR)$(LIBDIR)/xreqlib
-	$(CP) lib/$(INSTALL_MODE)/libxreqlib.* lib/$(INSTALL_MODE)/*.ali $(DESTDIR)$(LIBDIR)/xreqlib
-ifeq ($(LIBTYPE),dynamic)
-	# Copy the dynamic library to the libdir as well to get the executable
-	# find it. Don't know how to tell the linker in the project file to look
-	# in $(LIBDIR) instead of $(LIBDIR)/xreqlib. And don't want to install
-	# ALI files directly in $(LIBDIR)
-	$(CP) lib/$(INSTALL_MODE)/libxreqlib.* $(DESTDIR)$(LIBDIR)
-endif
-	#
-	# Installing C library (libxreq) in $(LIBDIR) and C Header files in $(INCLUDEDIR)
-	#
-	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
-	$(INSTALL) -m755 lib/$(INSTALL_MODE)/libxreq.$(SUF_SO) $(DESTDIR)$(LIBDIR)/libxreq.$(SUF_SO)
-	$(INSTALL) -m644 src/lib/xreq.h $(DESTDIR)$(INCLUDEDIR)/xreq.h
-
-install-bin: #bin/xreq.$(INSTALL_CONFIG)
-	mkdir -p $(DESTDIR)$(BINDIR)
-	$(INSTALL) bin/xreq.$(INSTALL_CONFIG) $(DESTDIR)$(BINDIR)/xreq
-
-
-install-gps: #lib/gps/libxreqgps.$(SUF_SO)
-ifneq ($(GPSDATADIR),)
-	$(INSTALL) -m644 data/gps-plug-in/xreq.xml      $(DESTDIR)$(GPSDATADIR)/library/xreq.xml
-	$(INSTALL) -m644 data/gps-plug-in/xreq.py       $(DESTDIR)$(GPSDATADIR)/library/xreq.py
-	$(INSTALL) -m644 data/gps-plug-in/feature-lang.xml $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
-	$(INSTALL) -m755 lib/gps/libxreqgps.$(SUF_SO)          $(DESTDIR)$(LIBDIR)/libxreqgps.$(SUF_SO)
-endif
-
-install-gpr: data/gprconfig.xml
-	mkdir -p $(DESTDIR)$(DATADIR)/gprconfig
-	$(INSTALL) -m644 data/gprconfig.xml $(DESTDIR)$(DATADIR)/gprconfig/xreq.xml
-
-uninstall: uninstall-gps
-	-$(RM) -rf $(DESTDIR)$(BINDIR)/xreq
-	-$(RM) -rf $(DESTDIR)$(GPRDIR)/xreqlib.gpr
-	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreqlib
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/xreqlib
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreq.$(SUF_SO)
-	-$(RM) -rf $(DESTDIR)$(INCLUDEDIR)/xreq.h
-	-$(RM) -rf $(DESTDIR)$(DOCDIR)
-	-$(RM) -rf $(DESTDIR)$(DATADIR)/XReq
-
-uninstall-gps:
-	-$(RM) -rf $(DESTDIR)$(LIBDIR)/libxreqgps.$(SUF_SO)
-ifneq ($(GPSDATADIR),)
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.xml
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/xreq.py
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/plug-ins/feature-lang.xml
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/xreq.xml
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/xreq.py
-	-$(RM) -rf $(DESTDIR)$(GPSDATADIR)/library/feature-lang.xml
-endif
-
-uninstall-gpr: data/gprconfig.xml
-	-$(RM) -rf $(DESTDIR)$(DATADIR)/gprconfig/xreq.xml
-
-install-gps-local:
-	ln -sf "`pwd`"/data/gps-plug-in/*.{xml,py} ~/.gps/plug-ins
-	ln -sf "`pwd`"/lib/gps/libxreqgps.$(SUF_SO) ~/.local/lib
-
-uninstall-gps-local:
-	-$(RM) ~/.gps/plug-ins/xreq.xml
-	-$(RM) ~/.gps/plug-ins/xreq.py
-	-$(RM) ~/.gps/plug-ins/feature-lang.xml
-	-$(RM) ~/.local/lib/libxreqgps.$(SUF_SO)
-
-.PHONY: install install-lib install-bin install-gps uninstall install-gps-local uninstall-gps uninstall-gps-local install-gpr uninstall-gpr
+.PHONY: install
 
 
 
