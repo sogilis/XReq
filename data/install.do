@@ -1,5 +1,9 @@
-redo-ifchange ../conf/install-dirs
-. ../conf/install-dirs
+redo-ifchange ../conf/install_dirs
+. ../conf/install_dirs
+
+redo-always
+
+set -x
 
 if [ -n "$GPSDATADIR" ]; then
   mkdir -p ${DESTDIR}${GPSDATADIR}/plug-ins

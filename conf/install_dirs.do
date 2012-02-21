@@ -1,3 +1,5 @@
+#!/bin/bash
+
 redo-always
 exec >&2
 
@@ -42,6 +44,11 @@ echo "--  If you change that file manually, it won't be overwritten. Delete   --
 echo "--  to restore the defaults                                             --"
 echo "--------------------------------------------------------------------------"
 echo
+
+if [ -n "$DESTDIR" ] && [ / != "${DESTDIR:0:1}" ]; then
+  echo "ERROR: DESTDIR is not an absolute path." >&2
+  exit 1
+fi
 
 exec >"$3"
 

@@ -1,2 +1,3 @@
-redo-ifchange data/install bin/install
+redo-always
+redo data/install bin/install lib/install
 
