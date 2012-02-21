@@ -1,0 +1,3 @@
+[submodule "tools/redo"]
+	path = tools/redo
+	url = https://github.com/apenwarr/redo.git
