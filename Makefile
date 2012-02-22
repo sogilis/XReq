@@ -7,8 +7,8 @@ ifeq ($(REDO),)
 redo: tools/redo/redo
 tools/redo/redo:
 	git submodule init
-	git submodule update deps/redo
-REDO=deps/redo/redo
+	git submodule update tools/redo
+REDO=tools/redo/redo
 else
 redo:
 endif
