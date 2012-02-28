@@ -1,5 +1,7 @@
-exec 2>/dev/null >&2
 set +e
+exec 2>/dev/null >&2
+
+redo bin/clean
 
 make cov-clean
 
