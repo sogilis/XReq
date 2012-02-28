@@ -239,8 +239,12 @@ package body Util.Strings is
                if Length (Buffer) /= 0 then
                   Append (Buffer, " & ");
                end if;
-               Append (Buffer, "Character'Val (" &
-                               Trim (Character'Pos (C)'Img, Left) & ")");
+               if C = ASCII.LF then
+                  Append (Buffer, "ASCII.LF" & ASCII.LF);
+               else
+                  Append (Buffer, "Character'Val (" &
+                                  Trim (Character'Pos (C)'Img, Left) & ")");
+               end if;
          end case;
       end loop;
       End_String;
@@ -267,13 +271,17 @@ package body Util.Strings is
                Append (Buffer, "\\");
             when Character'First     .. Character'Val (31) |
                  Character'Val (127) .. Character'Last =>
-               A := Character'Pos (C);
-               X := A / 8#100#;
-               A := A - 8#100# * X;
-               Y := A / 8#10#;
-               Z := A - 8#10# * Y;
-               Append (Buffer, "\" & Trim (X'Img, Left) & Trim (Y'Img, Left) &
-                       Trim (Z'Img, Left));
+               if C = ASCII.LF then
+                  Append (Buffer, "\n""" & ASCII.LF & """");
+               else
+                  A := Character'Pos (C);
+                  X := A / 8#100#;
+                  A := A - 8#100# * X;
+                  Y := A / 8#10#;
+                  Z := A - 8#10# * Y;
+                  Append (Buffer, "\" & Trim (X'Img, Left) & Trim (Y'Img, Left)
+                          & Trim (Z'Img, Left));
+               end if;
             when others =>
                Append (Buffer, C);
          end case;
