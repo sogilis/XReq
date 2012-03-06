@@ -1,5 +1,5 @@
 redo-always
-redo data/install bin/install lib/install
+redo data/install bin/install lib/install src/lib/install
 redo-ifchange conf/install_dirs
 
 . conf/install_dirs
