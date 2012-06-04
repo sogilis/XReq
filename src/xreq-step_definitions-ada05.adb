@@ -385,9 +385,7 @@ package body XReq.Step_Definitions.Ada05 is
         "   procedure " & Proc_Name & " (Args : in out Arg_Type) is" & LF &
         "      Not_Yet_Implemented : exception;"                     & LF &
         "   begin"                                                   & LF &
-        "      raise Not_Yet_Implemented"                            & LF &
-        "         with ""Procedure "" & " & Ada_String (Proc_Name) &
-                                    " & "" not implemented"";"       & LF &
+        "      raise Not_Yet_Implemented;"                            & LF &
         "   end " & Proc_Name & ";"                                  & LF;
    end Procedure_Body;
 
@@ -416,6 +414,8 @@ package body XReq.Step_Definitions.Ada05 is
             Put_Line (File, Procedure_Body (To_String (Element (I))));
             Next (I);
          end loop;
+         Put_Line (File, "--  @xreq insert above");
+         New_Line (File);
          Put_Line (File, "end " & Package_Name & ";");
          Close (File);
       else
@@ -423,7 +423,10 @@ package body XReq.Step_Definitions.Ada05 is
          Open (File, In_File, File_Name);
          while not End_Of_File (File) loop
             Line := Get_Whole_Line (File);
-            if Index (Line, "end") = 1 then
+            if Index (Line, "@xreq insert above") > 0
+              or else Index (Line, "end") = 1
+              or else Index (Line, "begin") = 1
+            then
                I := First (Procedures);
                while Has_Element (I) loop
                   Append (Buffer,
