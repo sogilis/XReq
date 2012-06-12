@@ -1,5 +1,5 @@
 redo-always
-redo data/install bin/install lib/install src/lib/install
+redo data/install bin/install lib/install src/lib/install install-gps
 redo-ifchange conf/install_dirs
 
 . conf/install_dirs
