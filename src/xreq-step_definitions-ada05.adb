@@ -399,10 +399,11 @@ package body XReq.Step_Definitions.Ada05 is
                              Logger         : in Logger_Ptr)
    is
       use String_Vectors;
-      File   : File_Type;
-      I      : String_Vectors.Cursor;
-      Buffer : Unbounded_String;
-      Line   : Unbounded_String;
+      File     : File_Type;
+      I        : String_Vectors.Cursor;
+      Buffer   : Unbounded_String;
+      Line     : Unbounded_String;
+      Inserted : Boolean := False;
    begin
       if not Exists (File_Name) then
          Logger.Put_Line ("Generate: " & File_Name);
@@ -423,9 +424,10 @@ package body XReq.Step_Definitions.Ada05 is
          Open (File, In_File, File_Name);
          while not End_Of_File (File) loop
             Line := Get_Whole_Line (File);
-            if Index (Line, "@xreq insert above") > 0
-              or else Index (Line, "end") = 1
-              or else Index (Line, "begin") = 1
+            if not Inserted and then
+              (Index (Line, "@xreq insert above") > 0
+               or else Index (Line, "end") = 1
+               or else Index (Line, "begin") = 1)
             then
                I := First (Procedures);
                while Has_Element (I) loop
@@ -433,6 +435,7 @@ package body XReq.Step_Definitions.Ada05 is
                           Procedure_Body (To_String (Element (I))) & ASCII.LF);
                   Next (I);
                end loop;
+               Inserted := True;
             end if;
             Append (Buffer, Line & ASCII.LF);
          end loop;
@@ -461,6 +464,7 @@ package body XReq.Step_Definitions.Ada05 is
       Idx2   : Integer;
       With_XReqLib : Boolean := False;
       Use_XReqLib  : Boolean := False;
+      Inserted     : Boolean := False;
    begin
       if not Exists (File_Name) then
          Logger.Put_Line ("Generate: " & File_Name);
@@ -496,9 +500,10 @@ package body XReq.Step_Definitions.Ada05 is
             if Idx > 0 and Idx < Idx2 then
                Use_XReqLib := True;
             end if;
-            if Index (Line, "@xreq insert above") > 0
-              or else Index (Line, "end") = 1
-              or else Index (Line, "begin") = 1
+            if not Inserted and then
+              (Index (Line, "@xreq insert above") > 0
+               or else Index (Line, "end") = 1
+               or else Index (Line, "begin") = 1)
             then
                I := First (Procedures);
                J := First (Tags);
@@ -510,6 +515,7 @@ package body XReq.Step_Definitions.Ada05 is
                   Next (I);
                   Next (J);
                end loop;
+               Inserted := True;
             end if;
             Append (Buffer, Line & ASCII.LF);
          end loop;
