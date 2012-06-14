@@ -112,6 +112,7 @@ package body XReq.Steps.Result is
                Log.Put_Line ("  " & Stanza.R.To_String);
             end if;
             Errors := True;
+            return;
       end;
       if not Match.Match then
          RegExp := To_Unbounded_String (Stanza.R.To_Regexp);
