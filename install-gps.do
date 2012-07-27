@@ -1,3 +1,4 @@
+#!/bin/bash
 redo-ifchange conf/install_dirs
 . conf/install_dirs
 
