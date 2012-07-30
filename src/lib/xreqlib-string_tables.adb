@@ -135,4 +135,159 @@ package body XReqLib.String_Tables is
                          To_Unbounded_String (Rename));
    end Import_Data_Set;
 
+   --------------------
+   --  Add_Data_Set  --
+   --------------------
+
+   procedure Add_Data_Set    (T : in out Table;
+                              E : in     String) is
+   begin
+      if T.Is_Empty then
+         T.Put (0, 0, "#");
+      end if;
+      if T.Header_Kind = None then
+         T.Set_Header_Kind (First_Row);
+      end if;
+
+      T.Set_Record (T.Next_Data_Set, 0, To_Unbounded_String (E));
+   end Add_Data_Set;
+
+   ------------------
+   --  Add_Record  --
+   ------------------
+
+   procedure Add_Record      (T : in out Table) is
+      Rec : constant Integer := T.Records_Count + 1;
+      Tmp : constant String  := Rec'Img;
+      Str : constant String  := Tmp (Tmp'First + 1 .. Tmp'Last);
+   begin
+      T.Set_Record (1, Rec, To_Unbounded_String (Str));
+   end Add_Record;
+
+   ----------------
+   --  Add_Data  --
+   ----------------
+
+   procedure Add_Data        (T : in out Table;
+                              Data_Set  : in Table_Data_Set;
+                              Data      : in String;
+                              Auto_Next : in Boolean := True);
+
+   procedure Add_Data        (T : in out Table;
+                              Data_Set  : in Table_Data_Set;
+                              Data      : in String;
+                              Auto_Next : in Boolean := True)
+   is
+      Rec : Integer;
+      Foo : Unbounded_String;
+      Has_Elem : Boolean;
+   begin
+      Rec := T.Records_Count;
+
+      if Auto_Next then
+         T.Get_Record (Data_Set, Rec, Foo, Has_Elem);
+         if Has_Elem then
+            T.Add_Record;
+            Rec := T.Records_Count;
+         end if;
+      end if;
+
+      T.Set_Record (Data_Set, Rec, To_Unbounded_String (Data));
+   end Add_Data;
+
+   ----------------
+   --  Add_Data  --
+   ----------------
+
+   procedure Add_Data        (T : in out Table;
+                              Data_Set  : in String;
+                              Data      : in String;
+                              Auto_Next : in Boolean := True)
+   is
+      DS  : Table_Data_Set;
+   begin
+      DS  := T.Data_Set_For (To_Unbounded_String (Data_Set));
+      Add_Data (T, Integer (DS), Data, Auto_Next);
+   end Add_Data;
+
+   ----------------
+   --  Add_Data  --
+   ----------------
+
+   procedure Add_Data        (T : in out Table;
+                              Index     : in Integer;
+                              Data      : in String;
+                              Auto_Next : in Boolean := True)
+   is
+   begin
+      Add_Data (T,
+                Data_Set  => Table_Data_Set (Index + 1),
+                Data      => Data,
+                Auto_Next => Auto_Next);
+   end Add_Data;
+
+   ----------------------
+   --  Sort_Data_Sets  --
+   ----------------------
+
+   procedure Sort_Data_Sets  (T : in out Table; Key : Table_Data_Set) is
+      procedure Swap (T : in out Table; Rec1, Rec2 : Integer);
+      --  Swap two records
+
+      procedure Swap (T : in out Table; Rec1, Rec2 : Integer) is
+         X, Y : Unbounded_String;
+      begin
+         for DS in T.First_Data_Set .. T.Last_Data_Set loop
+            X := T.Get_Record (DS, Rec1, Null_Unbounded_String);
+            Y := T.Get_Record (DS, Rec2, Null_Unbounded_String);
+
+            if T.Has_Record (DS, Rec1) then
+               T.Set_Record (DS, Rec2, X);
+            else
+               T.Remove_Record (DS, Rec2);
+            end if;
+
+            if T.Has_Record (DS, Rec2) then
+               T.Set_Record (DS, Rec1, Y);
+            else
+               T.Remove_Record (DS, Rec1);
+            end if;
+         end loop;
+      end Swap;
+
+      Rec_Min : constant Integer := T.First_Record;
+      Rec_Max : constant Integer := T.Last_Record;
+      Rec_Low : Integer := Rec_Min;
+      Swapped : Boolean := True;
+      A, B    : Unbounded_String;
+
+   begin
+      while Swapped loop
+         Swapped := False;
+         for Rec in Rec_Low .. Rec_Max - 1 loop
+            A := T.Get_Record (Key, Rec,     Null_Unbounded_String);
+            B := T.Get_Record (Key, Rec + 1, Null_Unbounded_String);
+            if A > B then
+               Swap (T, Rec, Rec + 1);
+               Swapped := True;
+            end if;
+         end loop;
+         Rec_Low := Rec_Low + 1;
+      end loop;
+   end Sort_Data_Sets;
+
+   procedure Sort_Data_Sets  (T : in out Table; Key : String) is
+   begin
+      Sort_Data_Sets (T, Data_Set_For (T, Key));
+   end Sort_Data_Sets;
+
+   --------------------
+   --  Data_Set_For  --
+   --------------------
+
+   function  Data_Set_For    (T : Table; DS : String) return Table_Data_Set is
+   begin
+      return T.Data_Set_For (To_Unbounded_String (DS));
+   end Data_Set_For;
+
 end XReqLib.String_Tables;

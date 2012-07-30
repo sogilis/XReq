@@ -125,6 +125,9 @@ package body XReqLib.Tables is
       use Maps;
    begin
       return Element (T.Map, Key_Type'(X, Y));
+   exception
+      when Constraint_Error =>
+         raise Constraint_Error with "Not in table:" & X'Img & "," & Y'Img;
    end Item;
 
    ----------------------------
@@ -234,9 +237,38 @@ package body XReqLib.Tables is
       Ok := True;
    exception
       when Constraint_Error =>
-         Ok := False;
+         Ok   := False;
          --  Elem := Elem;
    end Item;
+
+   ----------
+   -- Item --
+   ----------
+
+   function  Item    (T    : in     Table;
+                      X, Y : in     Integer;
+                      Default : in  Element_Type)
+                      return Element_Type is
+   begin
+      return T.Item (X, Y);
+   exception
+      when Constraint_Error =>
+         return Default;
+   end Item;
+
+   ----------------
+   --  Has_Item  --
+   ----------------
+
+   function Has_Item
+     (T       : in Table;
+      X, Y    : in Integer)
+      return Boolean
+   is
+      use Maps;
+   begin
+      return Contains (T.Map, Key_Type'(X, Y));
+   end Has_Item;
 
    -------------
    -- First_X --
@@ -368,95 +400,65 @@ package body XReqLib.Tables is
       T.Head := H;
    end Set_Header_Kind;
 
-   ---------------------
-   --  Convert_To_XY  --
-   ---------------------
+   ------------------
+   --  Data_To_XY  --
+   ------------------
 
-   procedure Convert_To_XY   (T    : in     Table;
-                              Row  : in     Positive;
-                              Col  : in     Positive;
+   procedure Data_To_XY      (T    : in     Table;
+                              DS   : in     Table_Data_Set;
+                              Rec  : in     Integer;
                               X    : out    Integer;
-                              Y    : out    Integer) is
+                              Y    : out    Integer)
+   is
+      Rec_Offset : Integer;
    begin
-      if T.Head = Transpose then
-         Y := Col + T.First_Y - 1;
-         X := Row + T.First_X - 1;
+      if T.Head = Transpose or T.Head = None then
+         --  No header, the first data at index 1 must be brought back to 0
+         Rec_Offset := 1;
       else
-         Y := Row + T.First_Y - 1;
-         X := Col + T.First_X - 1;
+         --  If there is a header, it is at index 0
+         Rec_Offset := 0;
       end if;
-   end Convert_To_XY;
+      if T.Head = Transpose or T.Head = First_Column then
+         --  Data Sets are rows (the first column may be the header)
+         X := T.First_X + Rec          - Rec_Offset;
+         Y := T.First_Y + Integer (DS) - 1;
+      else
+         --  Data Sets are columns (the first row may be the header)
+         X := T.First_X + Integer (DS) - 1;
+         Y := T.First_Y + Rec          - Rec_Offset;
+      end if;
+   end Data_To_XY;
 
-   ----------------------
-   --  Convert_To_Pos  --
-   ----------------------
+   ------------------
+   --  XY_To_Data  --
+   ------------------
 
-   procedure Convert_To_Pos  (T    : in     Table;
+   procedure XY_To_Data      (T    : in     Table;
                               X    : in     Integer;
                               Y    : in     Integer;
-                              Row  : out    Positive;
-                              Col  : out    Positive) is
+                              DS   : out    Table_Data_Set;
+                              Rec  : out    Integer)
+   is
+      Rec_Offset : Integer;
    begin
-      if T.Head = Transpose then
-         Col := Y - T.First_Y + 1;
-         Row := X - T.First_X + 1;
+      if T.Head = Transpose or T.Head = None then
+         --  No header, the first data at index 1 must be brought back to 0
+         Rec_Offset := 1;
       else
-         Row := Y - T.First_Y + 1;
-         Col := X - T.First_X + 1;
+         --  If there is a header, it is at index 0
+         Rec_Offset := 0;
       end if;
-   end Convert_To_Pos;
-
-   -------------
-   --  Width  --
-   -------------
-
-   function  Width           (T    : in     Table) return Natural is
-   begin
-      if T.Head = Transpose then
-         return T.Length_Y;
+      if T.Head = Transpose or T.Head = First_Column then
+         --  Data Sets are rows (the first column may be the header)
+         Rec := Integer        (X - T.First_X + Rec_Offset);
+         DS  := Table_Data_Set (Y - T.First_Y + 1);
       else
-         return T.Length_X;
+         --  Data Sets are columns (the first row may be the header)
+         DS  := Table_Data_Set (X - T.First_X + 1);
+         Rec := Integer        (Y - T.First_Y + Rec_Offset);
       end if;
-   end Width;
-
-   --------------
-   --  Height  --
-   --------------
-
-   function  Height          (T    : in     Table) return Natural is
-   begin
-      if T.Head = Transpose then
-         return T.Length_X;
-      else
-         return T.Length_Y;
-      end if;
-   end Height;
-
-   -----------
-   --  Get  --
-   -----------
-
-   function  Get             (T    : in     Table;
-                              Row  : in     Positive;
-                              Col  : in     Positive) return Element_Type is
-      X, Y : Integer;
-   begin
-      T.Convert_To_XY (Row, Col, X, Y);
-      return T.Item (X, Y);
-   end Get;
-   -----------
-   --  Set  --
-   -----------
-
-   procedure Set             (T    : in out Table;
-                              Row  : in     Positive;
-                              Col  : in     Positive;
-                              Elem : in     Element_Type) is
-      X, Y : Integer;
-   begin
-      T.Convert_To_XY (Row, Col, X, Y);
-      T.Put (X, Y, Elem);
-   end Set;
+   end XY_To_Data;
 
    -----------------------
    --  Data_Sets_Count  --
@@ -470,6 +472,16 @@ package body XReqLib.Tables is
          return T.Length_X;
       end if;
    end Data_Sets_Count;
+
+   ---------------------
+   --  First_Data_Set  --
+   ---------------------
+
+   function  First_Data_Set   (T : in     Table) return Table_Data_Set is
+      pragma Unreferenced (T);
+   begin
+      return Table_Data_Set (1);
+   end First_Data_Set;
 
    ---------------------
    --  Last_Data_Set  --
@@ -524,6 +536,47 @@ package body XReqLib.Tables is
       return Length;
    end Records_Count;
 
+   -------------------
+   --  Head_Record  --
+   -------------------
+
+   function  Head_Record     (T : in Table) return Natural is
+   begin
+      if T.Header_Kind = First_Column or T.Header_Kind = First_Row then
+         raise Constraint_Error with "No Header";
+      else
+         return 0;
+      end if;
+   end Head_Record;
+
+   --------------------
+   --  First_Record  --
+   --------------------
+
+   function  First_Record    (T : in Table) return Positive is
+      pragma Unreferenced (T);
+   begin
+      return 1;
+   end First_Record;
+
+   -------------------
+   --  Last_Record  --
+   -------------------
+
+   function  Last_Record     (T : in Table) return Natural is
+   begin
+      return T.Records_Count;
+   end Last_Record;
+
+   -------------------
+   --  Next_Record  --
+   -------------------
+
+   function  Next_Record     (T : in Table) return Positive is
+   begin
+      return T.Last_Record + 1;
+   end Next_Record;
+
    ------------------
    --  Get_Record  --
    ------------------
@@ -534,13 +587,10 @@ package body XReqLib.Tables is
                               Elem : out Element_Type;
                               Ok   : out Boolean)
    is
-      C : constant Integer := Integer (D) - 1;
+      X, Y : Integer;
    begin
-      if T.Head = Transpose or T.Head = First_Column then
-         T.Item (T.First_X + R, T.First_Y + C, Elem, Ok);
-      else
-         T.Item (T.First_X + C, T.First_Y + R, Elem, Ok);
-      end if;
+      T.Data_To_XY (D, R, X, Y);
+      T.Item (X, Y, Elem, Ok);
    end Get_Record;
 
    ------------------
@@ -551,14 +601,68 @@ package body XReqLib.Tables is
                               D : in    Table_Data_Set;
                               R : in    Natural) return Element_Type
    is
-      C : constant Integer := Integer (D) - 1;
+      X, Y : Integer;
    begin
-      if T.Head = Transpose or T.Head = First_Column then
-         return T.Item (T.First_X + R, T.First_Y + C);
-      else
-         return T.Item (T.First_X + C, T.First_Y + R);
-      end if;
+      T.Data_To_XY (D, R, X, Y);
+      return T.Item (X, Y);
+   exception
+      when Constraint_Error =>
+         raise Constraint_Error with "Record" & R'Img & " not in data set"
+           & D'Img & ". " & T.Header_Kind'Img & T.Records_Count'Img
+           & " x" & T.Last_Data_Set'Img;
    end Get_Record;
+
+   ------------------
+   --  Get_Record  --
+   ------------------
+
+   function  Get_Record
+     (T : in     Table;
+      D : in     Table_Data_Set;
+      R : in     Natural;
+      Default : in Element_Type)
+      return Element_Type
+   is
+      Ok : Boolean;
+   begin
+      return E : Element_Type do
+         T.Get_Record (D, R, E, Ok);
+         if not Ok then
+            E := Default;
+         end if;
+      end return;
+   end Get_Record;
+
+   ------------------
+   --  Has_Record  --
+   ------------------
+
+   function Has_Record
+     (T    : in  Table;
+      D    : in  Table_Data_Set;
+      R    : in  Natural)
+      return Boolean
+   is
+      X, Y : Integer;
+   begin
+      T.Data_To_XY (D, R, X, Y);
+      return T.Has_Item (X, Y);
+   end Has_Record;
+
+   ---------------------
+   --  Remove_Record  --
+   ---------------------
+
+   procedure Remove_Record
+     (T    : in out Table;
+      D    : in     Table_Data_Set;
+      R    : in     Natural)
+   is
+      X, Y : Integer;
+   begin
+      T.Data_To_XY (D, R, X, Y);
+      T.Remove (X, Y);
+   end Remove_Record;
 
    ------------------
    --  Set_Record  --
@@ -569,13 +673,10 @@ package body XReqLib.Tables is
                               R : in     Natural;
                               E : in     Element_Type)
    is
-      C : constant Integer := Integer (D) - 1;
+      X, Y : Integer;
    begin
-      if T.Head = Transpose or T.Head = First_Column then
-         T.Put (T.First_X + R, T.First_Y + C, E);
-      else
-         T.Put (T.First_X + C, T.First_Y + R, E);
-      end if;
+      T.Data_To_XY (D, R, X, Y);
+      T.Put (X, Y, E);
    end Set_Record;
 
    -----------------
@@ -671,6 +772,12 @@ package body XReqLib.Tables is
          Put (Res, K.Y, K.X, Element (I));
          Next (I);
       end loop;
+      case T.Header_Kind is
+         when None         => Res.Set_Header_Kind (None);
+         when First_Row    => Res.Set_Header_Kind (First_Column);
+         when First_Column => Res.Set_Header_Kind (First_Row);
+         when Transpose    => Res.Set_Header_Kind (None);
+      end case;
       return Res;
    end Transpose;
 

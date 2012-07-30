@@ -46,37 +46,19 @@ package XReqLib.Tables is
    type Table is tagged private;
    type Cursor is private;
 
-   function Length   (T    : in Table) return Key_Type;
-   function Is_Empty (T    : in Table) return Boolean;
-   function Count    (T    : in Table) return Natural;
-   function First_X  (T    : in Table) return Integer;
-   function First_Y  (T    : in Table) return Integer;
-   function Last_X   (T    : in Table) return Integer;
-   function Last_Y   (T    : in Table) return Integer;
-   function Length_X (T    : in Table) return Integer;
-   function Length_Y (T    : in Table) return Integer;
-   function Item     (T    : in Table;
-                      X, Y : in Integer) return Element_Type;
+   ----------------------------------------------------------------------------
+   ----------------------------  Basic Operations  ----------------------------
+   ----------------------------------------------------------------------------
 
-   procedure Recompute_Boundaries
-                     (T    : in out Table);
-   procedure Clear   (T    : in out Table);
-   procedure Put     (T    : in out Table;
-                      X, Y : in     Integer;
-                      Elem : in     Element_Type);
-   procedure Item    (T    : in     Table;
-                      X, Y : in     Integer;
-                      Elem : out    Element_Type;
-                      Ok   : out    Boolean);
-   procedure Remove  (T    : in out Table;
-                      X, Y : in     Integer;
-                      Recompute : in Boolean := True);
-   procedure First_X (T    : in out Table; X : in Integer);
-   procedure First_Y (T    : in out Table; Y : in Integer);
-   procedure Last_X  (T    : in out Table; X : in Integer);
-   procedure Last_Y  (T    : in out Table; X : in Integer);
-   procedure Add_X   (T    : in out Table);
-   procedure Add_Y   (T    : in out Table);
+   function  Is_Empty  (T : in     Table) return Boolean;
+   function  Count     (T : in     Table) return Natural;
+   function  Is_Sparse (T : in     Table) return Boolean;
+   function  Transpose (T : in     Table) return Table;
+   procedure Clear     (T : in out Table);
+
+   ----------------------------------------------------------------------------
+   -----------------  Iterate over the elements of the table  -----------------
+   ----------------------------------------------------------------------------
 
    function  First       (T : in     Table) return Cursor;
    procedure Next        (C : in out Cursor);
@@ -84,74 +66,185 @@ package XReqLib.Tables is
    function  Key         (C : in     Cursor) return Key_Type;
    function  Has_Element (C : in     Cursor) return Boolean;
 
-   function  Header_Kind     (T : in     Table) return Table_Header_Kind;
-   procedure Set_Header_Kind (T : in out Table;
-                              H : in     Table_Header_Kind := None);
+   ----------------------------------------------------------------------------
+   ----------------------  Table by X and Y Coordinates  ----------------------
+   ----------------------------------------------------------------------------
 
-   procedure Convert_To_XY   (T    : in     Table;
-                              Row  : in     Positive;
-                              Col  : in     Positive;
-                              X    : out    Integer;
-                              Y    : out    Integer);
-   procedure Convert_To_Pos  (T    : in     Table;
-                              X    : in     Integer;
-                              Y    : in     Integer;
-                              Row  : out    Positive;
-                              Col  : out    Positive);
+   --  Table with items indexed by X, Y coordinates
 
-   function  Width           (T    : in     Table) return Natural;
-   function  Height          (T    : in     Table) return Natural;
-   function  Get             (T    : in     Table;
-                              Row  : in     Positive;
-                              Col  : in     Positive) return Element_Type;
-   procedure Set             (T    : in out Table;
-                              Row  : in     Positive;
-                              Col  : in     Positive;
-                              Elem : in     Element_Type);
+   function Length   (T : in Table) return Key_Type;
+   function First_X  (T : in Table) return Integer;
+   function First_Y  (T : in Table) return Integer;
+   function Last_X   (T : in Table) return Integer;
+   function Last_Y   (T : in Table) return Integer;
+   function Length_X (T : in Table) return Integer;
+   function Length_Y (T : in Table) return Integer;
 
-   function  Data_Sets_Count (T : in     Table) return Natural;
-   function  Last_Data_Set   (T : in     Table) return Table_Data_Set;
-   function  Next_Data_Set   (T : in     Table) return Table_Data_Set;
-   function  Data_Set_For    (T : in     Table;
-                              H : in     Element_Type) return Table_Data_Set;
-   function  Records_Count   (T : in     Table) return Natural;
-   function  Get_Record      (T : in     Table;
-                              D : in     Table_Data_Set;
-                              R : in     Natural) return Element_Type;
-   procedure Get_Record      (T : in     Table;
-                              D : in     Table_Data_Set;
-                              R : in     Natural;
-                              Elem : out Element_Type;
-                              Ok   : out Boolean);
-   procedure Set_Record      (T : in out Table;
-                              D : in     Table_Data_Set;
-                              R : in     Natural;
-                              E : in     Element_Type);
+   --  Change the structure of the table
 
-   function  Is_Sparse       (T : in    Table) return Boolean;
+   procedure First_X (T    : in out Table; X : in Integer);
+   procedure First_Y (T    : in out Table; Y : in Integer);
+   procedure Last_X  (T    : in out Table; X : in Integer);
+   procedure Last_Y  (T    : in out Table; X : in Integer);
+   procedure Add_X   (T    : in out Table);
+   procedure Add_Y   (T    : in out Table);
+
+   procedure Recompute_Boundaries
+     (T : in out Table);
+   --  Recompute_Boundaries: recompute first and last X and Y based on the
+   --  elements of the table.
+
+   function Item
+     (T    : in Table;
+      X, Y : in Integer)
+      return Element_Type;
+   --  Item: get item by X and Y coordinates or raise Constraint_Error
+
+   procedure Item
+     (T    : in  Table;
+      X, Y : in  Integer;
+      Elem : out Element_Type;
+      Ok   : out Boolean);
+   --  Item: get item by X and Y coordinates or Ok is False
+
+   function  Item
+     (T       : in Table;
+      X, Y    : in Integer;
+      Default : in Element_Type)
+      return Element_Type;
+   --  Item: get item by X and Y coordinates or return Default
+
+   function Has_Item
+     (T       : in Table;
+      X, Y    : in Integer)
+      return Boolean;
+
+   procedure Put
+     (T    : in out Table;
+      X, Y : in     Integer;
+      Elem : in     Element_Type);
+   --  Put: insert an item in the table by its X and Y coordinates
+
+   procedure Remove
+     (T    : in out Table;
+      X, Y : in     Integer;
+      Recompute : in Boolean := True);
+   --  Remove: remove an item by its X and Y coordinates.
+   --  Recompute must be True or it may lead to inconsistencies.
+
+   ----------------------------------------------------------------------------
+   ------------------------------  Table Header  ------------------------------
+   ----------------------------------------------------------------------------
+
+   function  Header_Kind
+     (T : in     Table)
+      return Table_Header_Kind;
+
+   procedure Set_Header_Kind
+     (T : in out Table;
+      H : in     Table_Header_Kind := None);
+
+   ----------------------------------------------------------------------------
+   ----------------------  Table by Data Set and Record  ----------------------
+   ----------------------------------------------------------------------------
+
+   procedure Data_To_XY
+     (T    : in  Table;
+      DS   : in  Table_Data_Set;
+      Rec  : in  Integer;
+      X    : out Integer;
+      Y    : out Integer);
+
+   procedure XY_To_Data
+     (T    : in  Table;
+      X    : in  Integer;
+      Y    : in  Integer;
+      DS   : out Table_Data_Set;
+      Rec  : out Integer);
+
+   function  Data_Set_For
+     (T : in Table;
+      H : in Element_Type)
+      return Table_Data_Set;
+   --  Data_Set_For: Find the data set index given the header content
+
+
+   function  Data_Sets_Count (T : in Table) return Natural;
+   function  First_Data_Set  (T : in Table) return Table_Data_Set;
+   function  Last_Data_Set   (T : in Table) return Table_Data_Set;
+   function  Next_Data_Set   (T : in Table) return Table_Data_Set;
+
+   function  Records_Count   (T : in Table) return Natural;
+   function  Head_Record     (T : in Table) return Natural;
+   function  First_Record    (T : in Table) return Positive;
+   function  Last_Record     (T : in Table) return Natural;
+   function  Next_Record     (T : in Table) return Positive;
+
+   function  Get_Record
+     (T : Table;
+      D : Table_Data_Set;
+      R : Natural)
+      return Element_Type;
+
+   function  Get_Record
+     (T       : in Table;
+      D       : in Table_Data_Set;
+      R       : in Natural;
+      Default : in Element_Type)
+      return Element_Type;
+
+   procedure Get_Record
+     (T    : in  Table;
+      D    : in  Table_Data_Set;
+      R    : in  Natural;
+      Elem : out Element_Type;
+      Ok   : out Boolean);
+
+   function Has_Record
+     (T    : in  Table;
+      D    : in  Table_Data_Set;
+      R    : in  Natural)
+      return Boolean;
+
+   procedure Remove_Record
+     (T    : in out Table;
+      D    : in     Table_Data_Set;
+      R    : in     Natural);
+
+   procedure Set_Record
+     (T : in out Table;
+      D : in     Table_Data_Set;
+      R : in     Natural;
+      E : in     Element_Type);
+
+   procedure Set_Header_Name
+     (T                      : in out Table;
+      Old_Header, New_Header : Element_Type);
+   --  Replace a header by another
+
+   procedure Import_Data_Set
+     (T : in out Table;
+      Other_Table : in Table;
+      Other_Header : Element_Type;
+      Rename       : Element_Type);
+   --  Import a data set from another table
 
    type Comparison_Failure_Type is
      (Fail_Sparse, Fail_Num_Records, Fail_Missing_Header, Fail_Cell);
-   procedure Compare         (T     : in    Table;
-                              Other : in    Table;
-                              Ignore_Missing_Headers : in Boolean := False;
-                              Result   : out Boolean;
-                              Reason   : out Comparison_Failure_Type;
-                              DataSet1 : out Table_Data_Set;
-                              DataSet2 : out Table_Data_Set;
-                              Rec      : out Natural);
 
-   function Transpose (T : in Table) return Table;
+   procedure Compare
+     (T                      : in  Table;
+      Other                  : in  Table;
+      Ignore_Missing_Headers : in  Boolean := False;
+      Result                 : out Boolean;
+      Reason                 : out Comparison_Failure_Type;
+      DataSet1               : out Table_Data_Set;
+      DataSet2               : out Table_Data_Set;
+      Rec                    : out Natural);
 
-   procedure Set_Header_Name (T : in out Table;
-                              Old_Header, New_Header : Element_Type);
-
-   procedure Import_Data_Set (T : in out Table;
-                              Other_Table : in Table;
-                              Other_Header : Element_Type;
-                              Rename : Element_Type);
-
---    Empty_Table : constant Table := <>;
+   ----------------------------------------------------------------------------
+   ----------------------------  Other Operations  ----------------------------
+   ----------------------------------------------------------------------------
 
    function "=" (Left, Right : in Table) return Boolean;
 

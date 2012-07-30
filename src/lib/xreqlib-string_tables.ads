@@ -24,6 +24,12 @@ use Ada.Strings.Unbounded;
 
 package XReqLib.String_Tables is
 
+   function "+" (X : String) return Unbounded_String
+                 renames To_Unbounded_String;
+
+   function "+" (X : Unbounded_String) return String
+                 renames To_String;
+
    package Unbounded_String_Tables is new XReqLib.Tables
       (Unbounded_String, "=");
 
@@ -77,6 +83,21 @@ package XReqLib.String_Tables is
       renames Unbounded_String_Tables.Key;
    function  Has_Element (C : in     Cursor) return Boolean
                           renames Unbounded_String_Tables.Has_Element;
+
+   procedure Add_Data_Set    (T : in out Table;
+                              E : in     String);
+   procedure Add_Record      (T : in out Table);
+   procedure Add_Data        (T : in out Table;
+                              Data_Set  : in String;
+                              Data      : in String;
+                              Auto_Next : in Boolean := True);
+   procedure Add_Data        (T : in out Table;
+                              Index     : in Integer;
+                              Data      : in String;
+                              Auto_Next : in Boolean := True);
+   procedure Sort_Data_Sets  (T : in out Table; Key : Table_Data_Set);
+   procedure Sort_Data_Sets  (T : in out Table; Key : String);
+   function  Data_Set_For    (T : Table; DS : String) return Table_Data_Set;
 
    Comparison_Failed : exception;
 
