@@ -1,5 +1,4 @@
-require 'test/unit/assertions'
-World(Test::Unit::Assertions)
+require 'rspec/expectations'
 
 Given /^there are ([0-9]+) cucumbers$/ do |cukes|
   @cukes = cukes.to_i
@@ -10,5 +9,5 @@ When /^I eat ([0-9]+) cucumbers$/ do |cukes|
 end
 
 Then /^I should have ([0-9]+) cucumbers$/ do |cukes|
-  assert_equal(cukes.to_i, @cukes)
+  cukes.to_i.should == @cukes
 end

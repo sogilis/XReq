@@ -118,6 +118,8 @@ Feature: Auto fill in of steps definitions
       """
          end Then_tata;
 
+      --  @xreq insert above
+
       end Steps;
       """
 
@@ -145,8 +147,7 @@ Feature: Auto fill in of steps definitions
          procedure Given_a_computer (Args : in out Arg_Type) is
             Not_Yet_Implemented : exception;
          begin
-            raise Not_Yet_Implemented
-               with "Procedure " & "Given_a_computer" & " not implemented";
+            raise Not_Yet_Implemented;
          end Given_a_computer;
 
       end Steps;
@@ -167,8 +168,7 @@ Feature: Auto fill in of steps definitions
          procedure Given_a_computer (Args : in out Arg_Type) is
             Not_Yet_Implemented : exception;
          begin
-            raise Not_Yet_Implemented
-               with "Procedure " & "Given_a_computer" & " not implemented";
+            raise Not_Yet_Implemented;
          end Given_a_computer;
 
          procedure Mixed_Step (Args : in out Arg_Type) is
@@ -241,7 +241,7 @@ Feature: Auto fill in of steps definitions
 
         Scenario:
           Given a computer
-            NEW_STEPS.GIVEN_A_COMPUTER.NOT_YET_IMPLEMENTED: Procedure Given_a_computer not implemented
+            NEW_STEPS.GIVEN_A_COMPUTER.NOT_YET_IMPLEMENTED: new_steps.adb:12
           When I type on my keyboard "toto"
           Then I should see "toto"
 
@@ -352,7 +352,7 @@ Feature: Auto fill in of steps definitions
 
         Scenario:
           Given a computer
-            NEW_STEPS.GIVEN_A_COMPUTER.NOT_YET_IMPLEMENTED: Procedure Given_a_computer not implemented
+            NEW_STEPS.GIVEN_A_COMPUTER.NOT_YET_IMPLEMENTED: new_steps.adb:13
           When I type on my keyboard "toto"
           Then I should see "toto"
 

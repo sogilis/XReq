@@ -91,12 +91,12 @@ When /^I run "(.*)" in (.*)$/ do |command, dir|
 end
 
 When /^I run the test suite "([^"]*)" in (.*)$/ do |command, dir|
-  When("I run \"#{command} --no-color --no-stacktrace\" in #{dir}")
+  step("I run \"#{command} --no-color --no-stacktrace\" in #{dir}")
   @last_command_output.sub!(/Finished in ([0-9]*m )?[0-9]*s\n$/, "");
 end
 
 When /^I run the test suite "([^"]*)"$/ do |command|
-  When("I run \"#{command} --no-color --no-stacktrace\"")
+  step("I run \"#{command} --no-color --no-stacktrace\"")
   @last_command_output.sub!(/Finished in ([0-9]+m )?[0-9]+s\n$/, "");
 end
 
@@ -145,7 +145,7 @@ When /^I compile "(.*)" in (.*)$/ do |name, dir|
   #command="gnatmake #{ENV['GNAT_FLAGS']} -gnat05 -g -aI../step_definitions #{name}"
   command="gnatmake #{ENV['GNAT_FLAGS']} -Pmain.gpr 2>&1"
   #puts command
-  When("I run \"#{command}\" in #{dir}")
+  step("I run \"#{command}\" in #{dir}")
 end
 
 Then /^it should (fail|pass)$/ do |success|
@@ -162,7 +162,7 @@ end
 
 Then /^it should (fail|pass) with$/ do |success, output|
   @last_command_output.should == output
-  Then("it should #{success}")
+  step("it should #{success}")
 end
 
 Then /^the output should contain$/ do |text|
