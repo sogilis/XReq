@@ -390,6 +390,19 @@ package body XReqLib.Tables is
       return T.Head;
    end Header_Kind;
 
+   ------------------
+   --  Has_Header  --
+   ------------------
+
+   function Has_Header (T : Table) return Boolean is
+   begin
+      case T.Head is
+         when First_Row    => return True;
+         when First_Column => return True;
+         when others       => return False;
+      end case;
+   end Has_Header;
+
    -----------------------
    --  Set_Header_Kind  --
    -----------------------
@@ -406,18 +419,21 @@ package body XReqLib.Tables is
 
    procedure Data_To_XY      (T    : in     Table;
                               DS   : in     Table_Data_Set;
-                              Rec  : in     Integer;
+                              Rec  : in     Natural;
                               X    : out    Integer;
                               Y    : out    Integer)
    is
       Rec_Offset : Integer;
    begin
-      if T.Head = Transpose or T.Head = None then
-         --  No header, the first data at index 1 must be brought back to 0
-         Rec_Offset := 1;
-      else
+      if T.Has_Header then
          --  If there is a header, it is at index 0
          Rec_Offset := 0;
+      else
+         --  No header, the first data at index 1 must be brought back to 0
+         Rec_Offset := 1;
+         if Rec = 0 then
+            raise Constraint_Error with "No headers: record 0 does not exists";
+         end if;
       end if;
       if T.Head = Transpose or T.Head = First_Column then
          --  Data Sets are rows (the first column may be the header)
@@ -438,16 +454,16 @@ package body XReqLib.Tables is
                               X    : in     Integer;
                               Y    : in     Integer;
                               DS   : out    Table_Data_Set;
-                              Rec  : out    Integer)
+                              Rec  : out    Natural)
    is
       Rec_Offset : Integer;
    begin
-      if T.Head = Transpose or T.Head = None then
-         --  No header, the first data at index 1 must be brought back to 0
-         Rec_Offset := 1;
-      else
+      if T.Has_Header then
          --  If there is a header, it is at index 0
          Rec_Offset := 0;
+      else
+         --  No header, the first data at index 1 must be brought back to 0
+         Rec_Offset := 1;
       end if;
       if T.Head = Transpose or T.Head = First_Column then
          --  Data Sets are rows (the first column may be the header)
@@ -810,7 +826,9 @@ package body XReqLib.Tables is
       Rec  : Element_Type;
       Have : Boolean := True;
    begin
-      T.Set_Record (D1, 0, Rename);
+      if T.Has_Header then
+         T.Set_Record (D1, 0, Rename);
+      end if;
       while Have loop
          Other_Table.Get_Record (D2, I, Rec, Have);
          if Have then

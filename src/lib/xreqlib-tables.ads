@@ -144,6 +144,8 @@ package XReqLib.Tables is
      (T : in out Table;
       H : in     Table_Header_Kind := None);
 
+   function Has_Header (T : Table) return Boolean;
+
    ----------------------------------------------------------------------------
    ----------------------  Table by Data Set and Record  ----------------------
    ----------------------------------------------------------------------------
@@ -151,7 +153,7 @@ package XReqLib.Tables is
    procedure Data_To_XY
      (T    : in  Table;
       DS   : in  Table_Data_Set;
-      Rec  : in  Integer;
+      Rec  : in  Natural;
       X    : out Integer;
       Y    : out Integer);
 
@@ -160,7 +162,7 @@ package XReqLib.Tables is
       X    : in  Integer;
       Y    : in  Integer;
       DS   : out Table_Data_Set;
-      Rec  : out Integer);
+      Rec  : out Natural);
 
    function  Data_Set_For
      (T : in Table;
