@@ -527,7 +527,9 @@ package body XReqLib.Tables is
       D : Table_Data_Set := 1;
    begin
       loop
-         if T.Get_Record (D, 0) = H then
+         if not T.Has_Record (D, 0) then
+            return 0;
+         elsif T.Get_Record (D, 0) = H then
             return D;
          end if;
          D := D + 1;
@@ -726,51 +728,69 @@ package body XReqLib.Tables is
       Parsed_Data_Sets : Parsed_DS_Array := (others => False);
    begin
       Result := True;
-      if T.Is_Sparse or Other.Is_Sparse then
-         Result := False;
-         Reason := Fail_Sparse;
-      elsif T.Records_Count /= Other.Records_Count then
-         Result := False;
-         Reason := Fail_Num_Records;
-      else
-         while D2 <= Table_Data_Set (Other.Data_Sets_Count) loop
-            begin
-               D1 := T.Data_Set_For (Other.Get_Record (D2, 0));
-               Parsed_Data_Sets (D1) := True;
-               for R in 1 .. T.Records_Count loop
-                  if T.Get_Record (D1, R) /= Other.Get_Record (D2, R) then
-                     Result := False;
-                     Reason := Fail_Cell;
-                     DataSet1 := D1;
-                     DataSet2 := D2;
-                     Rec := R;
-                     return;
-                  end if;
-               end loop;
-            exception
-               when Constraint_Error =>
-                  if not Ignore_Missing_Headers then
-                     Result := False;
-                     Reason := Fail_Missing_Header;
-                     DataSet1 := 0;
-                     DataSet2 := D2;
-                     Rec := 0;
-                     return;
-                  end if;
-            end;
-            D2 := D2 + 1;
-         end loop;
-         for DS in Parsed_Data_Sets'Range loop
-            if not Parsed_Data_Sets (DS) then
+
+      --  Loop for each data set of the other table: D2
+      while D2 <= Table_Data_Set (Other.Data_Sets_Count) loop
+
+         --  Get the corresponding D1 data set for the self table
+         D1 := T.Data_Set_For (Other.Get_Record (D2, 0));
+
+         if D1 = 0 then
+
+            --  If the data set doesn't exist in the self table, we can either
+            --  fail or continue to the next D2 data set
+            if not Ignore_Missing_Headers then
                Result := False;
                Reason := Fail_Missing_Header;
-               DataSet1 := DS;
-               DataSet2 := 0;
+               DataSet1 := 0;
+               DataSet2 := D2;
                Rec := 0;
                return;
             end if;
-         end loop;
-      end if;
+
+         else
+
+            --  Mark the D1 data set (in self table) as being parsed
+            Parsed_Data_Sets (D1) := True;
+
+            --  Check each record from both data sets
+            for R in 1 .. T.Records_Count loop
+               if T.Has_Record (D1, R) /= Other.Has_Record (D2, R)
+                 or else T.Get_Record (D1, R) /= Other.Get_Record (D2, R)
+               then
+                  Result := False;
+                  Reason := Fail_Cell;
+                  DataSet1 := D1;
+                  DataSet2 := D2;
+                  Rec := R;
+                  return;
+               end if;
+            end loop;
+
+         end if;
+         D2 := D2 + 1;
+      end loop;
+
+      --  Check that all data sets from the self table have been parsed
+      for DS in Parsed_Data_Sets'Range loop
+         if not Parsed_Data_Sets (DS) then
+            Result := False;
+            Reason := Fail_Missing_Header;
+            DataSet1 := DS;
+            DataSet2 := 0;
+            Rec := 0;
+            return;
+         end if;
+      end loop;
+
+   exception
+      when Constraint_Error =>
+         if T.Is_Sparse or Other.Is_Sparse then
+            Result := False;
+            Reason := Fail_Sparse;
+         else
+            raise;
+         end if;
    end Compare;
 
    -----------------
