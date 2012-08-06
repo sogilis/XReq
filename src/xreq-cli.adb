@@ -121,7 +121,7 @@ package body XReq.CLI is
       Put_Line ("CONFIGURATION OPTIONS");
       Put_Line ("");
       Put_Line ("    These configurations options are specified on the command line using");
-      Put_Line ("    the scitch -c with an argument of the form NAME=VALUE. If an option is");
+      Put_Line ("    the switch -c with an argument of the form NAME=VALUE. If an option is");
       Put_Line ("    not recognized, it is silently ignored. Possible options are:");
       Put_Line ("");
       Put_Line ("    ada.gpr.with");
