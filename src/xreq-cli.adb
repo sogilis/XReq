@@ -60,8 +60,8 @@ package body XReq.CLI is
       Put_Line ("        Show version");
       Put_Line ("");
       Put_Line ("    -s, --step STEPDIR");
-      Put_Line ("        Specify a step directory.  By default, the step/ directory relative");
-      Put_Line ("        to each feature file specified is searched.");
+      Put_Line ("        Specify a step directory.  By default, the step_definitions/");
+      Put_Line ("        directory relative to each feature file specified is searched.");
       Put_Line ("");
       Put_Line ("    -k, --keep-going");
       Put_Line ("        Keep going if there are errors for a feature and compile the next");
