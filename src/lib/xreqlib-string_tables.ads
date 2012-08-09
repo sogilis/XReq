@@ -99,6 +99,11 @@ package XReqLib.String_Tables is
    procedure Sort_Data_Sets  (T : in out Table; Key : String);
    function  Data_Set_For    (T : Table; DS : String) return Table_Data_Set;
 
+   function To_String
+     (T      : Table;
+      Indent : String := "";
+      Index  : Boolean := True) return String;
+
    Comparison_Failed : exception;
 
 end XReqLib.String_Tables;

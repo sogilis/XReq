@@ -96,51 +96,9 @@ package body XReqLib.Format.Text is
 
    procedure Put_Table      (Format     : in out Text_Format_Type;
                              T          : in     Table_Type;
-                             Indent     : in     String)
-   is
-      function Is_Num (S : in String) return Boolean;
-      function Is_Num (S : in String) return Boolean is
-         I : Integer;
-      begin
-         I := Integer'Value (S);
-         return I = 0 or I /= 0 or True;
-      exception
-         when others =>
-            return False;
-      end Is_Num;
-
-      Cell    : Unbounded_String;
-      Cell_Ok : Boolean;
-      Num     : Boolean;
-      Pad     : Integer;
-      Width   : array (T.First_X .. T.Last_X) of Natural;
+                             Indent     : in     String) is
    begin
-      for X in Width'Range loop
-         Width (X) := T.Width (X);
-      end loop;
-      for Y in T.First_Y .. T.Last_Y loop
-         Format.Output.Put (Indent & "|");
-         for X in T.First_X .. T.Last_X loop
-            T.Item (X, Y, Cell, Cell_Ok);
-            if Cell_Ok then
-               Num := Is_Num (To_String (Cell));
-               Format.Output.Put (" ");
-               Pad := Width (X) - Length (Cell);
-               if Num and Pad > 0 then
-                  Format.Output.Put (Pad * " ");
-               end if;
-               Format.Output.Put (To_String (Cell));
-               if not Num and Pad > 0 then
-                  Format.Output.Put (Pad * " ");
-               end if;
-               Format.Output.Put (" ");
-            else
-               Format.Output.Put ((Width (X) + 2) * "-");
-            end if;
-            Format.Output.Put ("|");
-         end loop;
-         Format.Output.New_Line;
-      end loop;
+      Format.Output.Put (T.To_String (Indent, Index => False));
    end Put_Table;
 
    -------------------

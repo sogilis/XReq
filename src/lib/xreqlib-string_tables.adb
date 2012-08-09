@@ -207,7 +207,10 @@ package body XReqLib.String_Tables is
       DS  : Table_Data_Set;
    begin
       DS  := T.Data_Set_For (To_Unbounded_String (Data_Set));
-      Add_Data (T, Integer (DS), Data, Auto_Next);
+      Add_Data (T,
+                Data_Set  => DS,
+                Data      => Data,
+                Auto_Next => Auto_Next);
    end Add_Data;
 
    ----------------
@@ -264,7 +267,7 @@ package body XReqLib.String_Tables is
    begin
       while Swapped loop
          Swapped := False;
-         for Rec in Rec_Low .. Rec_Max - 1 loop
+         for Rec in reverse Rec_Low .. Rec_Max - 1 loop
             A := T.Get_Record (Key, Rec,     Null_Unbounded_String);
             B := T.Get_Record (Key, Rec + 1, Null_Unbounded_String);
             if A > B then
@@ -289,5 +292,86 @@ package body XReqLib.String_Tables is
    begin
       return T.Data_Set_For (To_Unbounded_String (DS));
    end Data_Set_For;
+
+   -----------------
+   --  To_String  --
+   -----------------
+
+   function To_String
+     (T      : Table;
+      Indent : String := "";
+      Index  : Boolean := True)
+      return String
+   is
+      function Is_Num (S : in String) return Boolean;
+      function Img (N : Integer) return String;
+
+      function Is_Num (S : in String) return Boolean is
+         I : Integer;
+      begin
+         I := Integer'Value (S);
+         return I = 0 or I /= 0 or True;
+      exception
+         when others =>
+            return False;
+      end Is_Num;
+
+      function Img (N : Integer) return String is
+         S : constant String := N'Img;
+      begin
+         if N >= 0 then
+            return S (S'First + 1 .. S'Last);
+         else
+            return S;
+         end if;
+      end Img;
+
+      Res       : Unbounded_String;
+      Cell      : Unbounded_String;
+      Cell_Ok   : Boolean;
+      Num       : Boolean;
+      Pad       : Integer;
+      Width     : array (T.First_X .. T.Last_X) of Natural;
+      Width_Num : Natural := 2;
+
+      pragma Unreferenced (Num);
+   begin
+      for X in Width'Range loop
+         Width (X) := T.Width (X);
+         Width (X) := Integer'Max (Width (X), Img (X)'Length);
+      end loop;
+      Width_Num := Integer'Max (Width_Num, Img (T.First_Y)'Length);
+      Width_Num := Integer'Max (Width_Num, Img (T.Last_Y)'Length);
+      if Index then
+         Append (Res, Indent & (Width_Num) * " ");
+         for X in T.First_X .. T.Last_X loop
+            Pad := Width (X) - Img (X)'Length;
+            Append (Res, "   " & Img (X) & (Pad * " "));
+         end loop;
+         Append (Res, ASCII.LF);
+      end if;
+      for Y in T.First_Y .. T.Last_Y loop
+         Append (Res, Indent);
+         if Index then
+            Pad := Width_Num - Img (Y)'Length;
+            Append (Res, (Pad * " ") & Img (Y) & " ");
+         end if;
+         Append (Res, "|");
+         for X in T.First_X .. T.Last_X loop
+            T.Item (X, Y, Cell, Cell_Ok);
+            if Cell_Ok then
+               Num := Is_Num (To_String (Cell));
+               Append (Res, " ");
+               Pad := Width (X) - Length (Cell);
+               Append (Res, Cell & (Pad * " ") & " ");
+            else
+               Append (Res, (Width (X) + 2) * "-");
+            end if;
+            Append (Res, "|");
+         end loop;
+         Append (Res, ASCII.LF);
+      end loop;
+      return To_String (Res);
+   end To_String;
 
 end XReqLib.String_Tables;

@@ -18,6 +18,7 @@
 -------------------------------------------------------------------------------
 -- kate: hl Ada; indent-width 3;
 
+with "aunit";
 with "config.gpr";
 with "xreq.gpr";
 
@@ -28,7 +29,7 @@ project Unit_Tests is
 
    for Languages   use ("Ada");
    for Main        use ("test_main");
-   for Source_Dirs use ("unit_tests");
+   for Source_Dirs use ("tests");
    for Object_Dir  use "obj/" & Mode;
    for Exec_Dir    use "bin";
 
@@ -42,11 +43,9 @@ project Unit_Tests is
    end Builder;
 
    package Compiler is
-      for Default_Switches ("Ada") use
-        ("-gnat05",
-         "-gnatQ",
-         "-gnata",
-         "-g");
+      for Default_Switches ("Ada") use Config.Ada_Switches_Debug & (
+         "-gnatQ"
+         );
    end Compiler;
 
    package Binder is

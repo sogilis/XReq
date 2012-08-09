@@ -13,5 +13,5 @@ redo-ifchange conf/flags tools/redo_gprbuild
 . tools/redo_gprbuild
 
 GPR_FLAGS="-Xmode=$BUILD_MODE"
-redo_gprbuild unit_tests.gpr "$3"
+redo_gprbuild old_unit_tests.gpr "$3"
 
