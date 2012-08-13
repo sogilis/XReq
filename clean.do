@@ -3,7 +3,7 @@ exec 2>/dev/null >&2
 
 redo bin/clean
 
-make cov-clean
+gmake cov-clean
 
 rm -rf tmp
 rm -rf obj/*/*

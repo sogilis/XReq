@@ -276,7 +276,7 @@ package body Steps is
          when Constraint_Error =>
             null;
       end;
-      Execute (Args.Match (1) & " --no-color");
+      Execute (Args.Match (1) & " --no-color --no-stacktrace");
       Set_Directory (Dir);
       declare
          Output : constant String := To_String (Last_Command_Output);

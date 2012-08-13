@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 prjdir="$(dirname "$0")/.."
 testdir="$(dirname "$0")"

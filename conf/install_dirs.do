@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 redo-ifchange help
 redo-always

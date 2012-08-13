@@ -9,7 +9,7 @@ Feature: Bootstrapping
   @bootstrap
   Scenario: Bootstrap
     Given I am in the xreq directory
-    When I run "make clean" in features/tests
+    When I run "gmake clean" in features/tests
     Then it should pass
     When I run xreq -m -x bootstrap_suite features/*.feature
     Then it should pass
