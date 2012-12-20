@@ -677,6 +677,7 @@ package body XReq.Generator.Ada05 is
       Lang        : constant Language_Handle := Gen.Feature.R.Language;
    begin
       Gen.Adb.Put_Line ("pragma Style_Checks (Off);");
+      Gen.Ads.Put_Line ("pragma Style_Checks (Off);");
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");
       Gen.Ads.Put_Line ("with XReqLib.Args;");
@@ -810,6 +811,7 @@ package body XReq.Generator.Ada05 is
       Gen.Ads.Put_Line ("end " & Gen.Id_Pkgname & ";");
       Gen.Adb.Put_Line ("end " & Gen.Id_Pkgname & ";");
       Gen.Adb.Put_Line ("pragma Style_Checks (On);");
+      Gen.Ads.Put_Line ("pragma Style_Checks (On);");
       Generate_With (Gen);
 
       Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
