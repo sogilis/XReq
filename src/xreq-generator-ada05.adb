@@ -676,6 +676,7 @@ package body XReq.Generator.Ada05 is
       Num         : Positive := 1;
       Lang        : constant Language_Handle := Gen.Feature.R.Language;
    begin
+      Gen.Adb.Put_Line ("pragma Style_Checks (Off);");
       Gen.Ads.Put_Line ("with Ada.Strings.Unbounded;");
       Gen.Ads.Put_Line ("with XReqLib;");
       Gen.Ads.Put_Line ("with XReqLib.Args;");
@@ -808,6 +809,7 @@ package body XReq.Generator.Ada05 is
       Gen.Adb.New_Line;
       Gen.Ads.Put_Line ("end " & Gen.Id_Pkgname & ";");
       Gen.Adb.Put_Line ("end " & Gen.Id_Pkgname & ";");
+      Gen.Adb.Put_Line ("pragma Style_Checks (On);");
       Generate_With (Gen);
 
       Set_File (To_String (Gen.Ads_File), To_String (Gen.Ads.Buffer));
@@ -863,6 +865,8 @@ package body XReq.Generator.Ada05 is
          With_B.Put_Line ("with " & To_String (E.Id_Pkgname) & ";");
          Next (I);
       end loop;
+      With_B.Put_Line ("pragma Style_Checks (Off);");
+      With_B.New_Line;
       With_B.Put_Line ("with Ada.Command_Line;");
       With_B.Put_Line ("with Ada.Real_Time;");
       With_B.Put_Line ("with XReqLib;");
@@ -938,6 +942,8 @@ package body XReq.Generator.Ada05 is
       Body_B.UnIndent;
       Body_B.UnIndent;
       Body_B.Put_Line ("end " & Prc_Name & ";");
+      Body_B.New_Line;
+      Body_B.Put_Line ("pragma Style_Checks (On);");
 
       Gpr_B.Put_Line ("with ""xreqlib"";");
       Split_String_Start (Splitter,
