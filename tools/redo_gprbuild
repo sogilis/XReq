@@ -18,7 +18,8 @@ redo_gprbuild(){
   : ${GPRBUILD_FLAGS:=-p}
   : ${GPR_FLAGS:=}
 
-  echo $GPRBUILD $GPRBUILD_FLAGS -P"$gpr" $GPR_FLAGS >&2
+  # Warning: gprbuild -o option doesn't handle absolute paths such as $out :/
+  echo PWD=$PWD $GPRBUILD $GPRBUILD_FLAGS -P"$gpr" $GPR_FLAGS -o "$2" >&2
   $GPRBUILD $GPRBUILD_FLAGS -P"$gpr" $GPR_FLAGS -o "$2" --create-map-file="$out.map" >&2
 
   if [ -f "$out.map" ]; then
