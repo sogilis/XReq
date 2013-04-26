@@ -77,12 +77,16 @@ package body XReqLib.Register is
    is
       P : Feature_List_Access := All_Features;
    begin
-      Call_Hook (Hook_Begin, Hook_Test_Suite);
+      if not List_Mode and not Count_Mode then
+         Call_Hook (Hook_Begin, Hook_Test_Suite);
+      end if;
       while P /= null loop
          P.Proc (Format, Cond, Report, List_Mode, Count_Mode);
          P := P.Next;
       end loop;
-      Call_Hook (Hook_End, Hook_Test_Suite);
+      if not List_Mode and not Count_Mode then
+         Call_Hook (Hook_End, Hook_Test_Suite);
+      end if;
    end Call_Features;
 
 end XReqLib.Register;
