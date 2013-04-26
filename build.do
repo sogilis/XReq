@@ -1,1 +1,2 @@
-redo-ifchange bin/xreq lib/xreqlib
+redo-ifchange bin/xreq
+redo lib/xreqlib
