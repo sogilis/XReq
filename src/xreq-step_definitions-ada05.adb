@@ -112,6 +112,7 @@ package body XReq.Step_Definitions.Ada05 is
    is
       use String_Sets;
    begin
+      Logger.Put_Line (2, "Parse: " & S.File_Name);
       Parse (File_Name  => To_String (S.File_Name),
              Fill_Steps => S.Fill_Steps,
              Steps      => S.Steps,
@@ -290,9 +291,9 @@ package body XReq.Step_Definitions.Ada05 is
                Current_Step := Element (I);
                Current_Step.Proc_Name := Package_S & '.' & Procedure_S;
                Steps.Append (Current_Step);
---                Logger.Put_Line (
---                   "Step: " & To_String (Current_Step.Pattern_S) &
---                   " -> " & To_String (Current_Step.Proc_Name));
+               Logger.Put_Line
+                 (2, "Step: " & To_String (Current_Step.Pattern_S) &
+                    " -> " & To_String (Current_Step.Proc_Name));
                Next (I);
             end loop;
             Clear (Current_Steps);

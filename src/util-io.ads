@@ -113,7 +113,7 @@ package Util.IO is
       end record;
    type Logger_Ptr  is access all Logger_Type'Class;
 
-   procedure Set_Verbosity (Log : in out Logger_Type;
+   procedure Add_Verbosity (Log : in out Logger_Type;
                             V   : in     Integer);
    function  Verbosity     (Log : in     Logger_Type)
                                   return Integer;

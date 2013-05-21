@@ -104,6 +104,9 @@ package body XReq.CLI is
       Put_Line ("    -q, --quiet");
       Put_Line ("        Display minimum output only.");
       Put_Line ("");
+      Put_Line ("    -v, --verbose");
+      Put_Line ("        Increase verbosity level.");
+      Put_Line ("");
       Put_Line ("    -c NAME=VALUE");
       Put_Line ("        Specify an additional configuration option NAME with the value");
       Put_Line ("        VALUE. See below for the documentation of those options. If the");

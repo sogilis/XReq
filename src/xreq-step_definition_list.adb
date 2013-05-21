@@ -132,82 +132,26 @@ package body XReq.Step_Definition_List is
       return Step_Definition_Vectors.Element (Steps.List, Idx);
    end Element;
 
-   ----------------
-   --  Contains  --
-   ----------------
-
-   function  Contains  (Steps     : in Step_File_List_Type;
-                        Stanza    : in Step_Handle) return Boolean
-   is
-   begin
-      return Find (Steps, Stanza) /= "";
-   end Contains;
-
    ------------
    --  Find  --
    ------------
 
-   function  Find      (Steps     : in Step_File_List_Type;
-                        Stanza    : in Step_Handle) return String
-   is
-      Proc    : Unbounded_String;
-      Matches : Step_Match_Vectors.Vector;
-      Found   : Boolean;
-   begin
-      Find (Steps, Stanza, Proc, Matches, Found);
-      if Found then
-         return To_String (Proc);
-      else
-         return "";
-      end if;
-   end Find;  --  GCOV_IGNORE
-
-   ------------
-   --  Find  --
-   ------------
-
-   function  Find      (Steps     : in Step_File_List_Type;
-                        Stanza    : in Step_Handle) return Step_Match_Type
+   procedure Find      (Steps     : in Step_File_List_Type;
+                        Stanza    : in Step_Handle;
+                        Log       : in Logger_Ptr;
+                        Result    : in Find_Result_Procedure)
    is
       use Step_Definition_Vectors;
-      Result : Step_Match_Type;
       I      : Step_Definition_Vectors.Cursor := First (Steps.List);
       Step   : Step_File_Handle;
-      Res2   : Step_Match_Type;
    begin
       while Has_Element (I) loop
          Step := Element (I);
-         Res2 := Step.R.all.Find (Stanza);
-         if Res2.Match then
-            if Result.Match then
-               raise Step_Definitions.Ambiguous_Match;
-            else
-               Result := Res2;
-            end if;
-         end if;
+         Log.Put_Line (2, "Matching with file " & Step.Ref.File_Name);
+         Step.R.all.Find (Stanza, Log, Result);
          Next (I);
       end loop;
-      return Result;
    end Find;  --  GCOV_IGNORE
-
-   ------------
-   --  Find  --
-   ------------
-
-   procedure Find      (Steps     : in  Step_File_List_Type;
-                        Stanza    : in  Step_Handle;
-                        Proc      : out Unbounded_String;
-                        Matches   : out Step_Match_Vectors.Vector;
-                        Found     : out Boolean)
-   is
-      Res : constant Step_Match_Type := Find (Steps, Stanza);
-   begin
-      Found := Res.Match;
-      if Found then
-         Proc    := Res.Proc_Name;
-         Matches := Res.Matches;
-      end if;
-   end Find;
 
    ----------------
    --  Finalize  --

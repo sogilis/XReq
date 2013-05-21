@@ -28,6 +28,8 @@ package XReq.Step_Definitions.Handles is
    subtype Step_File_Handle is Handles_Pkg.Handle;
 
    subtype Step_Match_Type is XReq.Step_Definitions.Step_Match_Type;
+   subtype Find_Result_Procedure
+     is XReq.Step_Definitions.Find_Result_Procedure;
    package Step_Match_Vectors renames XReq.Step_Definitions.Match_Vectors;
    subtype Step_Match_Location is XReq.Step_Definitions.Match_Location;
 

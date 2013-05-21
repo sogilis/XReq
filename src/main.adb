@@ -60,7 +60,7 @@ procedure Main is
    Options    : constant String := "help h -help V -version k -keep-going " &
               "s: -step= o: -output= x: -executable= l: -lang= " &
               "-fill-steps -progress -partial -step-matching m -make " &
-              "q -quiet -fill-steps-in= c: ";
+              "q -quiet v -verbose -fill-steps-in= c: ";
    Arg        : Unbounded_String;
    Step_Dir   : String_Vector;
    Lang       : Unbounded_String;
@@ -129,7 +129,12 @@ begin
       elsif Full_Switch = "q" or else
          Full_Switch = "-quiet"
       then
-         Logger.Set_Verbosity (-1);
+         Logger.Add_Verbosity (-1);
+
+      elsif Full_Switch = "v" or else
+         Full_Switch = "-verbose"
+      then
+         Logger.Add_Verbosity (1);
 
       elsif Full_Switch = "-fill-steps-in" then
          Fill_Steps := True;

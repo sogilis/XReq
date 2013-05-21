@@ -34,8 +34,6 @@ package XReq.Step_Definitions is
 
    --  Result values for the step matching algorithm  -------------------------
 
-   Ambiguous_Match : exception;
-
    type Match_Location is  --  GCOV_IGNORE
       record
          First : Natural;
@@ -53,6 +51,9 @@ package XReq.Step_Definitions is
          Position  : Position_Type;
       end record;
 
+   type Find_Result_Procedure is
+     access procedure (Match : Step_Match_Type);
+
    -------------------------------  abstract type  ----------------------------
    --  Step_File_Type  --
    ----------------------
@@ -67,19 +68,10 @@ package XReq.Step_Definitions is
    procedure Parse     (S       : in out Step_File_Type;
                         Logger  : in     Logger_Ptr) is abstract;
 
-   function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Handle) return Boolean;
-
-   function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Handle) return String;
-   function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Handle)
-                        return Step_Match_Type;
    procedure Find      (S       : in  Step_File_Type;
                         Stanza  : in  Step_Handle;
-                        Proc    : out Unbounded_String;
-                        Matches : out Match_Vectors.Vector;
-                        Found   : out Boolean);
+                        Log     : in  Logger_Ptr;
+                        Result  : in  Find_Result_Procedure);
    procedure Finalize  (S       : in out Step_File_Type);
 
 

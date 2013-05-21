@@ -33,66 +33,17 @@ package body XReq.Step_Definitions is
       return S.Parsed;
    end Parsed;
 
-   ----------------
-   --  Contains  --
-   ----------------
-
-   function  Contains  (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Handle) return Boolean
-   is
-      This : constant access constant Step_File_Type'Class := S'Access;
-   begin
-      return This.Find (Stanza) /= "";
-   end Contains;
-
    ------------
    --  Find  --
    ------------
 
-   function  Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Handle) return String
-   is
-      This    : constant access constant Step_File_Type'Class := S'Access;
-      Proc    : Unbounded_String;
-      Matches : Match_Vectors.Vector;
-      Found   : Boolean;
-   begin
-      This.Find (Stanza, Proc, Matches, Found);
-      if Found then
-         return To_String (Proc);
-      else
-         return "";
-      end if;
-   end Find;
-
-   ------------
-   --  Find  --
-   ------------
-
-   procedure Find      (S       : in  Step_File_Type;
-                        Stanza  : in  Step_Handle;
-                        Proc    : out Unbounded_String;
-                        Matches : out Match_Vectors.Vector;
-                        Found   : out Boolean)
-   is
-      This   : constant access constant Step_File_Type'Class := S'Access;
-      Result : constant Step_Match_Type := This.Find (Stanza);
-   begin
-      Found   := Result.Match;
-      Proc    := Result.Proc_Name;
-      Matches := Result.Matches;
-   end Find;
-
-   ------------
-   --  Find  --
-   ------------
-
-   function  Find      (S       : in     Step_File_Type;
-                        Stanza  : in     Step_Handle)
-                                  return Step_Match_Type
+   procedure Find      (S       : in     Step_File_Type;
+                        Stanza  : in     Step_Handle;
+                        Log     : in     Logger_Ptr;
+                        Result  : in     Find_Result_Procedure)
    is
       use Match_Vectors;
-      Result   : Step_Match_Type;
+      Res   : Step_Match_Type;
       Step     : Step_Definition_Type;
       Matches2 : Match_Vectors.Vector;
    begin
@@ -109,46 +60,43 @@ package body XReq.Step_Definitions is
             declare
                Matched  : Match_Array (0 .. Paren_Count (Step.Pattern_R.all));
             begin
---                Put_Line ("XReq.Steps.Ada.Find: Match """ &
---                          Stanza.To_String & """ against |" &
---                          To_String (Step.Pattern_S) & "|");
+               Log.Put_Line (2, "XReq.Steps.Ada.Find: Match """ &
+                           Stanza.Ref.To_String & """ against |" &
+                           To_String (Step.Pattern_S) & "|");
                Match (Step.Pattern_R.all, Stanza.R.Stanza, Matched);
                if Matched (0) /= No_Match then
-                  if Result.Match then
-                     raise Ambiguous_Match;
-                  end if;
---                   Put_Line ("Matched (0) = " & Stanza.Stanza
---                               (Matched (0).First .. Matched (0).Last));
-                  Result.Proc_Name := Step.Proc_Name;
-                  Result.Position  := Step.Position;
-                  Result.Match     := True;
+                  Log.Put_Line (2, String '("Matched (0) = " & Stanza.R.Stanza
+                             (Matched (0).First .. Matched (0).Last)));
+                  Res.Proc_Name := Step.Proc_Name;
+                  Res.Position  := Step.Position;
+                  Res.Match     := True;
                   for J in Matched'First + 1 .. Matched'Last loop
---                      Put_Line ("Matched (" & J'Img & ") = " &
---                               Slice (Stanza.Stanza,
---                                     Matched (J).First,
---                                     Matched (J).Last));
+                     Log.Put_Line
+                       (2, "Matched (" & J'Img & ") = " &
+                          Stanza.R.Stanza
+                          (Matched (J).First .. Matched (J).Last));
                      if Matched (J) /= No_Match then
                         Append (Matches2, Match_Location'(Matched (J).First,
                                                           Matched (J).Last));
                      end if;
                   end loop;  --  GCOV_IGNORE
-                  Result.Matches := Matches2;
---                else
---                   Put_Line ("Matched (0) = No_Match");
+                  Res.Matches := Matches2;
+                  Result (Res);
+               else
+                  Log.Put_Line (2, "Matched (0) = No_Match");
                end if;
             end;  --  GCOV_IGNORE
---          else
---             Put_Line ("XReq.Steps.Ada.Find: Don't Match " &
---                       Stanza.Prefix'Img & " """ &
---                       To_String (Stanza.Stanza) & """ against " &
---                       Step.Prefix'Img & " |" &
---                       To_String (Step.Pattern_S) & "|");
+         else
+            Log.Put_Line (2, String'("XReq.Steps.Ada.Find: Don't Match " &
+                            Stanza.R.Kind'Img & " """ &
+                            Stanza.R.Stanza & """ against " &
+                            Step.Prefix'Img & " |" &
+                            To_String (Step.Pattern_S) & "|"));
          end if;
       end loop;
 
       --  No match
---       Put_Line ("XReq.Steps.Ada.Find: Not found");
-      return Result;
+      Log.Put_Line (2, "XReq.Steps.Ada.Find: Not found");
    end Find;
 
    -----------------

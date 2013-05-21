@@ -33,12 +33,12 @@ package body Util.IO is
    --  Logger_Type  --
    -------------------
 
-   procedure Set_Verbosity (Log : in out Logger_Type;
+   procedure Add_Verbosity (Log : in out Logger_Type;
                             V   : in     Integer)
    is
    begin
-      Log.Verbosity_Level := V;
-   end Set_Verbosity;
+      Log.Verbosity_Level := Log.Verbosity_Level + V;
+   end Add_Verbosity;
 
    function  Verbosity     (Log : in     Logger_Type)
                                   return Integer

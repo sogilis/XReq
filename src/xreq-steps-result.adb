@@ -95,22 +95,36 @@ package body XReq.Steps.Result is
                                Missing_Steps : in out String_Set)
    is
       use String_Sets;
+      procedure Result (R : Step_Match_Type);
+      --  Callback when finding step definitions
+      Ambiguous_Match : exception;
+
       Match  : Step_Match_Type;
       RegExp : Unbounded_String;
+
+      procedure Result (R : Step_Match_Type) is
+      begin
+         if Match.Match then
+            Log.Put_Line (-1, To_String (Stanza.R.Position) & ": ERROR: " &
+                            "Ambiguous match for: " & Stanza.R.To_String);
+            Log.Put_Line (-1, To_String (Stanza.R.Position) & ": ERROR: " &
+                            "with: " & To_String (Match.Position) &
+                            ": " & Match.Proc_Name);
+            Log.Put_Line (-1, To_String (Stanza.R.Position) & ": ERROR: " &
+                            "and:  " & To_String (R.Position) &
+                            ": " & R.Proc_Name);
+            raise Ambiguous_Match;
+         end if;
+         Log.Put_Line (1, To_String (Stanza.R.Position) & ": Match with: " &
+                            To_String (R.Position) & ": " & R.Proc_Name);
+         Match := R;
+      end Result;
    begin
       Errors := False;
       begin
-         Match := Steps.Ref.all.Find (Stanza);
+         Steps.Ref.all.Find (Stanza, Log, Result'Unrestricted_Access);
       exception
-         when XReq.Step_Definitions.Ambiguous_Match =>
-            if Log.Verbosity < 0 then
-               Log.Put_Line (-1, To_String (Stanza.R.Position) & ": ERROR: " &
-                             "Ambiguous match for: " & Stanza.R.To_String);
-            else
-               Log.Put_Line ("ERROR: Ambiguous match in " &
-                             To_String (Stanza.R.Position) & " for:");
-               Log.Put_Line ("  " & Stanza.R.To_String);
-            end if;
+         when Ambiguous_Match =>
             Errors := True;
             return;
       end;

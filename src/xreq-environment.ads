@@ -56,10 +56,6 @@ package XReq.Environment is
                                                Empty_String_Vector;
                            Out_Dir    : in     String := "";
                            Language   : in     Language_Type := Lang_Ada);
-   procedure Make         (Env        : in out Job_Environment;
-                           Step_Dir   : in     String;
-                           Out_Dir    : in     String := "";
-                           Language   : in     Language_Type := Lang_Ada);
    function  First_Step_Dir (Env      : in     Job_Environment) return String;
    function  Step_Dir     (Env        : in     Job_Environment)
                                         return String_Vector;

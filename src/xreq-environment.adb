@@ -44,22 +44,6 @@ package body XReq.Environment is
          others   => <>);
    end Make;
 
-   ---------------------------------
-   --  Job_Environment  -- Make   --
-   ---------------------------------
-
-   procedure Make         (Env      : in out Job_Environment;
-                           Step_Dir : in     String;
-                           Out_Dir  : in     String := "";
-                           Language : in     Language_Type := Lang_Ada)
-   is
-      use String_Vectors;
-      V : String_Vector;
-   begin
-      Append (V, To_Unbounded_String (Step_Dir));
-      Make (Env, V, Out_Dir, Language);
-   end Make;
-
    -------------------------------------------
    --  Job_Environment  --  First_Step_Dir  --
    -------------------------------------------

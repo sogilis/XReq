@@ -132,6 +132,9 @@ all: bin lib gps-plugin tests doc
 build: redo
 	$(REDO) release
 
+redo-test: redo
+	$(REDO) test
+
 check-all: all build gnatcheck run-unit run-features coverage
 
 $(VERBOSE).SILENT:
