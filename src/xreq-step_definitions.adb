@@ -71,11 +71,11 @@ package body XReq.Step_Definitions is
                   Res.Position  := Step.Position;
                   Res.Match     := True;
                   for J in Matched'First + 1 .. Matched'Last loop
-                     Log.Put_Line
-                       (2, "Matched (" & J'Img & ") = " &
-                          Stanza.R.Stanza
-                          (Matched (J).First .. Matched (J).Last));
                      if Matched (J) /= No_Match then
+                        Log.Put_Line
+                          (2, "Matched (" & J'Img & ") = " &
+                             Stanza.R.Stanza
+                             (Matched (J).First .. Matched (J).Last));
                         Append (Matches2, Match_Location'(Matched (J).First,
                                                           Matched (J).Last));
                      end if;

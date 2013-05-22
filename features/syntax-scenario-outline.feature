@@ -76,7 +76,7 @@ Feature: Scenario Outlines
 
           Examples:
             | start |
-            |    12 |
+            | 12    |
 
         Scenario Outline: eating
           Given there are <start> cucumbers
@@ -85,8 +85,8 @@ Feature: Scenario Outlines
 
           Examples:
             | start | eat | left |
-            |    12 |   5 |    7 |
-            |    20 |   5 |   15 |
+            | 12    | 5   | 7    |
+            | 20    | 5   | 15   |
 
       3 scenarios (3 passed)
       7 steps (7 passed)
@@ -151,8 +151,8 @@ Feature: Scenario Outlines
 
           Examples:
             | start | eat | left |
-            |    12 |   5 |    7 |
-            |    20 |   5 | NaN  |
+            | 12    | 5   | 7    |
+            | 20    | 5   | NaN  |
       
       ./failing_suite features/data/tmp-outline2.feature:4
 

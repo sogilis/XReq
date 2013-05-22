@@ -28,19 +28,18 @@ use XReq.Step_Definition_List.Handles;
 package XReq.Step_Definitions.Ada05 is
 
 
-   --  Called in XReq.Steps.Load
    procedure Parse_Directory (Steps      : in     Step_File_List_Handle;
                               Logger     : in     Logger_Ptr;
                               Directory  : in     String;
                               Fill_Steps : in     Boolean := False);
    --  IMPORTANT: deallocate Steps_Type
 
-   --  Called in XReq.Steps.Add_Steps
    procedure Add_Steps       (Steps      : in     Step_File_List_Handle;
                               New_Steps  : in     String_Set;
                               Step_Pkg   : in     String;
                               Directory  : in     String;
                               Logger     : in     Logger_Ptr);
+   --  Create missing step definitions
    --  IMPORTANT: deallocate Steps_Type
 
 

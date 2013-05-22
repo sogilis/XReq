@@ -36,39 +36,23 @@ Feature: ambiguous step definition error reporting
     Then it should fail
     And the output should contain
       """
-      ERROR: Ambiguous match in features/data/tmp-ambiguous.feature:4 for:
-        Given this step is ambiguous
-
-      """
-    And the output should contain
-      """
-      ERROR: Ambiguous match in features/data/tmp-ambiguous.feature:8 for:
-        Given this step is ambiguous
-
-      """
-    And the output should contain
-      """
-      ERROR: Ambiguous match in features/data/tmp-ambiguous.feature:11 for:
-        Given this step is ambiguous
-
-      """
-
-  Scenario: Ambiguity within the same step package - Quiet mode
-    When I run xreq -q features/data/tmp-ambiguous.feature
-    Then it should fail
-    And the output should contain
-      """
       features/data/tmp-ambiguous.feature:4: ERROR: Ambiguous match for: Given this step is ambiguous
+      features/data/tmp-ambiguous.feature:4: ERROR: with: features/data/step_definitions/simple_steps.ads:6: Simple_Steps.Given_this_step_works
+      features/data/tmp-ambiguous.feature:4: ERROR: and:  features/data/step_definitions/simple_steps.ads:7: Simple_Steps.Given_this_step_works
 
       """
     And the output should contain
       """
       features/data/tmp-ambiguous.feature:8: ERROR: Ambiguous match for: Given this step is ambiguous
+      features/data/tmp-ambiguous.feature:8: ERROR: with: features/data/step_definitions/simple_steps.ads:6: Simple_Steps.Given_this_step_works
+      features/data/tmp-ambiguous.feature:8: ERROR: and:  features/data/step_definitions/simple_steps.ads:7: Simple_Steps.Given_this_step_works
 
       """
     And the output should contain
       """
       features/data/tmp-ambiguous.feature:11: ERROR: Ambiguous match for: Given this step is ambiguous
+      features/data/tmp-ambiguous.feature:11: ERROR: with: features/data/step_definitions/simple_steps.ads:6: Simple_Steps.Given_this_step_works
+      features/data/tmp-ambiguous.feature:11: ERROR: and:  features/data/step_definitions/simple_steps.ads:7: Simple_Steps.Given_this_step_works
 
       """
 
@@ -77,8 +61,9 @@ Feature: ambiguous step definition error reporting
     Then it should fail
     And the output should contain
       """
-      ERROR: Ambiguous match in features/data/tmp-ambiguous2.feature:4 for:
-        Given this is ambiguous too
+      features/data/tmp-ambiguous2.feature:4: ERROR: Ambiguous match for: Given this is ambiguous too
+      features/data/tmp-ambiguous2.feature:4: ERROR: with: features/data/step_definitions/ambiguous_steps.ads:6: 
+      features/data/tmp-ambiguous2.feature:4: ERROR: and:  features/data/step_definitions/simple_steps.ads:8: Simple_Steps.Given_this_step_works
 
       """
 

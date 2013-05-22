@@ -112,7 +112,12 @@ package body XReq.Step_Definitions.Ada05 is
    is
       use String_Sets;
    begin
-      Logger.Put_Line (2, "Parse: " & S.File_Name);
+      if S.Parsed then
+         Logger.Put_Line (2, "Re-Parse: " & S.File_Name);
+         S.Steps := Step_Container.Empty_Vector;
+      else
+         Logger.Put_Line (2, "Parse: " & S.File_Name);
+      end if;
       Parse (File_Name  => To_String (S.File_Name),
              Fill_Steps => S.Fill_Steps,
              Steps      => S.Steps,

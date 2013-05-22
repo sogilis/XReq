@@ -53,6 +53,8 @@ package XReq.Job is
                        Logger        : in     Logger_Ptr;
                        Add_Steps_Pkg : in     String  := "";
                        Step_Matching : in     Boolean := False);
+   --  If Add_Steps_Pkg is not empty, add missing step definitions to this
+   --  package
 
 
    procedure Init (Env          : in out Environment_Handle;

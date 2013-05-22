@@ -59,6 +59,7 @@ package XReq.Step_Definition_List is
                         Directory  : in     String;
                         Language   : in     Language_Type;
                         Logger     : in     Logger_Ptr);
+   --  Create missing steps (New_Steps) in Step_Pkg to be found in Directory
 
    procedure Append    (Steps      : in out Step_File_List_Type;
                         File       : in     Step_File_Handle);

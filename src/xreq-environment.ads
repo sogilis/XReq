@@ -60,11 +60,16 @@ package XReq.Environment is
    function  Step_Dir     (Env        : in     Job_Environment)
                                         return String_Vector;
    function  Out_Dir      (Env        : in     Job_Environment) return String;
+
    procedure Fill_Missing (Env        : in out Job_Environment;
                            Feature    : in     String);
+   --  Fill_Missing will set default paths if none were specified
+
    procedure Load         (Env        : in out Job_Environment;
                            Logger     : in     Logger_Ptr;
                            Fill_Steps : in     Boolean := False);
+   --  Fill_Steps if set to True will replace @todo tags
+
    procedure Set_Option   (Env        : in out Job_Environment;
                            Name       : in     String;
                            Value      : in     String);

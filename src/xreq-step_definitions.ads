@@ -67,6 +67,8 @@ package XReq.Step_Definitions is
    function  Parsed    (S       : in     Step_File_Type) return Boolean;
    procedure Parse     (S       : in out Step_File_Type;
                         Logger  : in     Logger_Ptr) is abstract;
+   --  Parse or re-parse a given file. if the file was already parsed, the old
+   --  parsed data should be removed to keep only the new parsed data
 
    procedure Find      (S       : in  Step_File_Type;
                         Stanza  : in  Step_Handle;

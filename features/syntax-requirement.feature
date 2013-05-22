@@ -57,8 +57,8 @@ Feature: Requirement Syntax
 
           Examples:
             | start | eat | left |
-            |    12 |   5 |    7 |
-            |    20 |   5 |   15 |
+            | 12    | 5   | 7    |
+            | 20    | 5   | 15   |
 
       3 scenarios (3 passed)
       12 steps (12 passed)

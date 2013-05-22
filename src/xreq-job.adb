@@ -85,6 +85,7 @@ package body XReq.Job is
       Job.Result.R.Process_Feature
         (Job.Feature, Env.Ref.Steps, Logger, Missing_Steps, Step_Matching);
 
+      --  Create missing step definitions
       if Add_Steps_Pkg /= "" and not Is_Empty (Missing_Steps) then
          Env.Ref.Steps.Ref.Add_Steps (Missing_Steps, Add_Steps_Pkg,
                       Env.Ref.First_Step_Dir, Env.Ref.Language, Logger);
