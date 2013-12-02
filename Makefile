@@ -2,16 +2,16 @@
 
 $(V)$(VERBOSE).SILENT:
 
-REDO=$(shell which redo 2>/dev/null)
-ifeq ($(REDO),)
+#REDO=$(shell which redo 2>/dev/null)
+#ifeq ($(REDO),)
 redo: tools/redo/redo
 tools/redo/redo:
 	git submodule init
 	git submodule update tools/redo
 REDO=tools/redo/redo
-else
-redo:
-endif
+#else
+#redo:
+#endif
 .PHONY: redo
 
 GNATMAKE=gnatmake
