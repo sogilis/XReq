@@ -29,7 +29,7 @@ redo_gprbuild(){
     #        find a better way to locate object dependancies.
     local objfiles="$(grep "^LOAD " "$out.map" | cut -c6-)"
     if [ -z "$objfiles" ]; then
-      objfiles="$(egrep '^\[...\] .*\.o$' "$out.map" | cut -c7-)"
+      objfiles="$(grep -E '^\[...\] .*\.o$' "$out.map" | cut -c7-)"
     fi
     
     # move into object directory
@@ -45,7 +45,7 @@ redo_gprbuild(){
       | tr \\n \\0 \
       | xargs -0 -n 1 gnat ls -P"$gpr" $GPR_FLAGS -d -a -s \
       | grep -v -F "Can't find library info for " \
-      | sed 's/^\s*//' \
+      | sed 's/^ *//' \
       | grep . \
       | tr \\n \\0 \
       | xargs -0 redo-ifchange
