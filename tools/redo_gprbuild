@@ -35,22 +35,18 @@ redo_gprbuild(){
     cd "$(gnat ls -P"$gpr" $GPR_FLAGS -v | grep "^Object Search Path:$" -A2 | tail -n 1 | sed 's/^ *//')"
 
     # mark object files as dependencies
-    echo "$objfiles" | while read line; do
-      redo-ifchange "$line"
-    done
+    echo "$objfiles" | tr \\n \\0 | xargs -0 redo-ifchange
     
     # mark source files for each object file as dependency
     echo "$objfiles" \
       | grep "\.o$" \
-      | while read line; do
-          gnat ls -P"$gpr" $GPR_FLAGS -d -a -s "$line"
-        done \
+      | tr \\n \\0 \
+      | xargs -0 -n 1 gnat ls -P"$gpr" $GPR_FLAGS -d -a -s \
       | grep -v -F "Can't find library info for " \
       | sed 's/^\s*//' \
       | grep . \
-      | while read line; do
-          redo-ifchange "$line"
-        done
+      | tr \\n \\0 \
+      | xargs -0 redo-ifchange
     
     # move back
     cd "$olddir"
