@@ -25,6 +25,8 @@ redo_gprbuild(){
   if [ -f "$out.map" ]; then
 
     # extract object files and libraries from map file
+    # FIXME: this is very platform dependant (this is a linker script)
+    #        find a better way to locate object dependancies.
     local objfiles="$(grep "^LOAD " "$out.map" | cut -c6-)"
     if [ -z "$objfiles" ]; then
       objfiles="$(egrep '^\[...\] .*\.o$' "$out.map" | cut -c7-)"
