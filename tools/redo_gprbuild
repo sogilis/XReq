@@ -26,22 +26,31 @@ redo_gprbuild(){
 
     # extract object files and libraries from map file
     local objfiles="$(grep "^LOAD " "$out.map" | cut -c6-)"
+    if [ -z "$objfiles" ]; then
+      objfiles="$(egrep '^\[...\] .*\.o$' "$out.map" | cut -c7-)"
+    fi
     
     # move into object directory
     local olddir="$(pwd)"
-    cd "$(gnat ls -P"$gpr" $GPR_FLAGS -v | grep "^Object Search Path:$" -A2 | tail -n 1 | sed 's/^\s*//')"
+    cd "$(gnat ls -P"$gpr" $GPR_FLAGS -v | grep "^Object Search Path:$" -A2 | tail -n 1 | sed 's/^ *//')"
 
     # mark object files as dependencies
-    echo "$objfiles" | xargs -d "\n" redo-ifchange
+    echo "$objfiles" | while read line; do
+      redo-ifchange "$line"
+    done
     
     # mark source files for each object file as dependency
     echo "$objfiles" \
       | grep "\.o$" \
-      | xargs -d "\n" -n 1 gnat ls -P"$gpr" $GPR_FLAGS -d -a -s \
+      | while read line; do
+          gnat ls -P"$gpr" $GPR_FLAGS -d -a -s "$line"
+        done \
       | grep -v -F "Can't find library info for " \
       | sed 's/^\s*//' \
       | grep . \
-      | xargs -d "\n" redo-ifchange
+      | while read line; do
+          redo-ifchange "$line"
+        done
     
     # move back
     cd "$olddir"
