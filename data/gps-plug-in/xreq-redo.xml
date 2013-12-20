@@ -3,7 +3,7 @@
 <xreq-redo>
 
   <action name="redo xreq">
-    <external>redo features/xreq</external>
+    <external>./do features/xreq</external>
   </action>
 
   <button action="redo xreq">
